@@ -20,8 +20,6 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class DataHandlerSubscriber
 {
@@ -604,10 +602,8 @@ class DataHandlerSubscriber
      */
     protected function getProviderResolver(): ProviderResolver
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         return $providerResolver;
     }
 

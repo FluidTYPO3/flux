@@ -18,8 +18,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
@@ -38,15 +36,13 @@ class ContentTypeValidator
 {
     public function validateContentTypeRecord(array $parameters): string
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var Request $request */
-        $request = $objectManager->get(Request::class);
+        $request = GeneralUtility::makeInstance(Request::class);
         /** @var ControllerContext $context */
-        $context = $objectManager->get(ControllerContext::class);
+        $context = GeneralUtility::makeInstance(ControllerContext::class);
         $context->setRequest($request);
         /** @var TemplateView $view */
-        $view = $objectManager->get(TemplateView::class);
+        $view = GeneralUtility::makeInstance(TemplateView::class);
         $view->getRenderingContext()->setControllerContext($context);
         $view->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName('flux');
         $view->getRenderingContext()->setControllerName('Content');
@@ -61,7 +57,7 @@ class ContentTypeValidator
         }
 
         /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = $objectManager->get(ContentTypeManager::class);
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
         $contentType = $contentTypeManager->determineContentTypeForTypeString($record['content_type']);
         if (!$contentType) {
             $view->assign('recordIsNew', true);

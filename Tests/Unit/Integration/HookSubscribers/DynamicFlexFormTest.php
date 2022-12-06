@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * DynamicFlexFormTest
@@ -36,16 +35,15 @@ class DynamicFlexFormTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->singletonInstances[FluxService::class] = $this->fluxService;
+        $this->singletonInstances[WorkspacesAwareRecordService::class] = $this->recordService;
+
         parent::setUp();
     }
 
     public function testCreatesInstancesInConstructor(): void
     {
         $subject = new DynamicFlexForm();
-        self::assertInstanceOf(
-            ObjectManagerInterface::class,
-            $this->getInaccessiblePropertyValue($subject, 'objectManager')
-        );
         self::assertInstanceOf(
             FluxService::class,
             $this->getInaccessiblePropertyValue($subject, 'configurationService')
@@ -235,17 +233,5 @@ class DynamicFlexFormTest extends AbstractTestCase
         unset($GLOBALS['TCA']['tt_content']['ctrl']);
 
         self::assertSame($expected, $result);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [FluxService::class, $this->fluxService],
-                [WorkspacesAwareRecordService::class, $this->recordService]
-            ]
-        );
-        return $instance;
     }
 }

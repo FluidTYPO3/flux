@@ -17,40 +17,40 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
 
-/**
- * Class PageServiceTest
- * @package FluidTYPO3\Flux\Tests\Unit\Service
- */
 class PageServiceTest extends AbstractTestCase
 {
-    /**
-     * @return PageService
-     */
-    protected function getPageService()
+    protected function setUp(): void
     {
-        return new PageService();
+        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getPageConfiguration', 'message', 'getFormFromTemplateFile'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->singletonInstances[WorkspacesAwareRecordService::class] = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->setMethods(['getSingle'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->singletonInstances[ConfigurationManager::class] = $this->getMockBuilder(ConfigurationManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        parent::setUp();
     }
 
-    /**
-     * @test
-     */
-    public function getPageFlexFormSourceWithZeroUidReturnsNull()
+    public function testGetPageFlexFormSourceWithZeroUidReturnsNull(): void
     {
-        $this->assertNull($this->getPageService()->getPageFlexFormSource(0));
+        $this->assertNull((new PageService())->getPageFlexFormSource(0));
     }
 
-    /**
-     * @test
-     */
-    public function getPageTemplateConfigurationWithZeroUidReturnsNull()
+    public function testGetPageTemplateConfigurationWithZeroUidReturnsNull(): void
     {
-        $this->assertNull($this->getPageService()->getPageTemplateConfiguration(0));
+        $this->assertNull((new PageService())->getPageTemplateConfiguration(0));
     }
 
     /**
@@ -58,7 +58,7 @@ class PageServiceTest extends AbstractTestCase
      * @param array $records
      * @param array|NULL $expected
      */
-    public function testGetPageTemplateConfiguration(array $records, $expected)
+    public function testGetPageTemplateConfiguration(array $records, $expected): void
     {
         $rootLineUtility = $this->getMockBuilder(RootlineUtility::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
         $rootLineUtility->expects(self::once())->method('get')->willReturn($records);
@@ -70,10 +70,7 @@ class PageServiceTest extends AbstractTestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getPageTemplateConfigurationTestValues()
+    public function getPageTemplateConfigurationTestValues(): array
     {
         $m = 'tx_fed_page_controller_action';
         $s = 'tx_fed_page_controller_action_sub';
@@ -85,23 +82,18 @@ class PageServiceTest extends AbstractTestCase
         );
     }
 
-    /**
-     * @return void
-     */
-    public function testGetPageFlexFormSource()
+    public function testGetPageFlexFormSource(): void
     {
         $record1 = array('pid' => 2, 'uid' => 1);
         $record2 = array('pid' => 0, 'uid' => 3, 'tx_fed_page_flexform' => 'test');
         /** @var WorkspacesAwareRecordService|MockObject $service */
-        $service = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle'))->getMock();
-        $service->method('getSingle')->willReturnMap(
+        $this->singletonInstances[WorkspacesAwareRecordService::class]->method('getSingle')->willReturnMap(
             [
                 ['pages', 'uid,pid,t3ver_oid,tx_fed_page_flexform', 1, $record1],
                 ['pages', 'uid,pid,t3ver_oid,tx_fed_page_flexform', 2, $record2],
             ]
         );
         $instance = new PageService();
-        $instance->injectWorkspacesAwareRecordService($service);
         $output = $instance->getPageFlexFormSource(1);
         $this->assertEquals('test', $output);
     }
@@ -111,44 +103,44 @@ class PageServiceTest extends AbstractTestCase
      * @param string|array $typoScript
      * @param mixed $expected
      */
-    public function testGetAvailablePageTemplateFiles($typoScript, $expected)
+    public function testGetAvailablePageTemplateFiles($typoScript, $expected): void
     {
-        $runtimeCache = new VariableFrontend('runtime', $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass());
-        /** @var FluxService|MockObject $service */
-        $service = $this->getMockBuilder(
-            FluxService::class
-        )->setMethods(
-            array('getPageConfiguration', 'message', 'getFormFromTemplateFile')
-        )->disableOriginalConstructor()->getMock();
+        $runtimeCache = new VariableFrontend(
+            'runtime',
+            $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass()
+        );
 
         $renderingContext = new RenderingContext();
 
-        $templateView = $this->getMockBuilder(TemplateView::class)->setMethods(['getRenderingContext'])->setConstructorArgs([$renderingContext])->getMock();
+        $templateView = $this->getMockBuilder(TemplateView::class)
+            ->setMethods(['getRenderingContext'])
+            ->setConstructorArgs([$renderingContext])
+            ->getMock();
         $templateView->method('getRenderingContext')->willReturn($renderingContext);
 
-        $templatePaths = $this->getMockBuilder(TemplatePaths::class)->setMethods(['getTemplateRootPaths', 'ensureAbsolutePath'])->disableOriginalConstructor()->getMock();
-        $templatePaths->method('getTemplateRootPaths')->willReturn(['Tests/Fixtures/Templates']);
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+            ->setMethods(['getTemplateRootPaths', 'ensureAbsolutePath'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $templatePaths->method('getTemplateRootPaths')->willReturn([__DIR__ . '/../../Fixtures/Templates']);
         $templatePaths->method('ensureAbsolutePath')->willReturnArgument(0);
 
-        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
-        $objectManager->method('get')->willReturn($templateView);
+        $this->singletonInstances[FluxService::class]->method('getFormFromTemplateFile')->willReturn(
+            $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock()
+        );
+        $this->singletonInstances[FluxService::class]->method('getPageConfiguration')->willReturn($typoScript);
 
-        $service->method('getFormFromTemplateFile')->willReturn($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
-        $service->method('getPageConfiguration')->willReturn($typoScript);
-
-        $instance = $this->getMockBuilder(PageService::class)->setMethods(['getRuntimeCache', 'getLogger', 'createTemplatePaths'])->getMock();
+        $instance = $this->getMockBuilder(PageService::class)
+            ->setMethods(['getRuntimeCache', 'getLogger', 'createTemplatePaths'])
+            ->getMock();
         $instance->method('getRuntimeCache')->willReturn($runtimeCache);
-        $instance->method('getLogger')->willReturn($this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass());
+        $instance->method('getLogger')->willReturn(
+            $this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass()
+        );
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
-        $instance->injectConfigurationService($service);
-        $instance->injectObjectManager($objectManager);
 
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces'] = [
-            'f' => [
-                'TYPO3\\CMS\\Fluid\\ViewHelpers',
-                'TYPO3Fluid\\Fluid\\ViewHelpers'
-            ]
-        ];
+        GeneralUtility::addInstance(TemplateView::class, $templateView);
+
         $result = $instance->getAvailablePageTemplateFiles();
         if (null === $expected) {
             $this->assertEmpty($result);
@@ -157,10 +149,7 @@ class PageServiceTest extends AbstractTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getAvailablePageTemplateFilesTestValues()
+    public function getAvailablePageTemplateFilesTestValues(): array
     {
         return array(
             array(array(), null),

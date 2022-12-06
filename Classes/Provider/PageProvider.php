@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Provider;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\PreviewView;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -42,9 +41,18 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     protected ?string $controllerName = 'Page';
     protected ?string $configurationSectionName = 'Configuration';
 
+    private static array $cache = [];
+
     protected PageService $pageService;
 
-    private static array $cache = [];
+    public function __construct()
+    {
+        parent::__construct();
+
+        /** @var PageService $pageService */
+        $pageService = GeneralUtility::makeInstance(PageService::class);
+        $this->pageService = $pageService;
+    }
 
     /**
      * Returns TRUE that this Provider should trigger if:
@@ -58,16 +66,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $isRightTable = ($table === $this->tableName);
         $isRightField = (null === $field || $field === $this->fieldName);
         return (true === $isRightTable && true === $isRightField);
-    }
-
-    public function injectPageService(PageService $pageService): void
-    {
-        $this->pageService = $pageService;
-    }
-
-    public function injectPageConfigurationService(FluxService $pageConfigurationService): void
-    {
-        $this->configurationService = $pageConfigurationService;
     }
 
     public function getForm(array $row): ?Form

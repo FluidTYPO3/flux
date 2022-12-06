@@ -27,8 +27,6 @@ use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request as WebRequest;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -80,13 +78,14 @@ class AbstractProvider implements ProviderInterface
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
 
-    public function injectConfigurationService(FluxService $configurationService): void
+    public function __construct()
     {
+        /** @var FluxService $configurationService */
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $configurationService;
-    }
 
-    public function injectRecordService(WorkspacesAwareRecordService $recordService): void
-    {
+        /** @var WorkspacesAwareRecordService $recordService */
+        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->recordService = $recordService;
     }
 
@@ -631,10 +630,8 @@ class AbstractProvider implements ProviderInterface
 
         $controllerExtensionKey = $this->getControllerExtensionKeyFromRecord($row);
 
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var WebRequest $request */
-        $request = $objectManager->get(WebRequest::class);
+        $request = GeneralUtility::makeInstance(WebRequest::class);
         if (method_exists($request, 'setRequestUri')) {
             $request->setRequestUri($this->getEnvironmentVariable('TYPO3_REQUEST_URL'));
         }
@@ -645,14 +642,14 @@ class AbstractProvider implements ProviderInterface
         $request->setControllerActionName($this->getControllerActionFromRecord($row));
         $request->setControllerName($this->getControllerNameFromRecord($row));
         /** @var UriBuilder $uriBuilder */
-        $uriBuilder = $objectManager->get(UriBuilder::class);
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $uriBuilder->setRequest($request);
         /** @var ControllerContext $controllerContext */
-        $controllerContext = $objectManager->get(ControllerContext::class);
+        $controllerContext = GeneralUtility::makeInstance(ControllerContext::class);
         $controllerContext->setRequest($request);
         $controllerContext->setUriBuilder($uriBuilder);
         /** @var RenderingContextInterface $renderingContext */
-        $renderingContext = $objectManager->get(RenderingContext::class);
+        $renderingContext = GeneralUtility::makeInstance(RenderingContext::class);
         $renderingContext->setControllerContext($controllerContext);
         $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
             ExtensionNamingUtility::getExtensionKey($controllerExtensionKey)
@@ -663,7 +660,7 @@ class AbstractProvider implements ProviderInterface
         $renderingContext->setControllerName($this->getControllerNameFromRecord($row));
         $renderingContext->setControllerAction($this->getControllerActionFromRecord($row));
         /** @var T&ViewInterface $view */
-        $view = $objectManager->get($viewClassName);
+        $view = GeneralUtility::makeInstance($viewClassName);
         $view->setRenderingContext($renderingContext);
         return $view;
     }

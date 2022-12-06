@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
 use TYPO3\CMS\Core\Mail\MailMessage;
 

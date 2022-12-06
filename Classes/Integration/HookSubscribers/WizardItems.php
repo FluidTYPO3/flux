@@ -19,46 +19,21 @@ use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * WizardItemsHookSubscriber
- */
 class WizardItems implements NewContentElementWizardHookInterface
 {
-    protected ObjectManagerInterface $objectManager;
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
 
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    public function injectConfigurationService(FluxService $configurationService): void
-    {
-        $this->configurationService = $configurationService;
-    }
-
-    public function injectRecordService(WorkspacesAwareRecordService $recordService): void
-    {
-        $this->recordService = $recordService;
-    }
-
     public function __construct()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectObjectManager($objectManager);
-
         /** @var FluxService $configurationService */
-        $configurationService = $this->objectManager->get(FluxService::class);
-        $this->injectConfigurationService($configurationService);
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
+        $this->configurationService = $configurationService;
 
         /** @var WorkspacesAwareRecordService $recordService */
-        $recordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
-        $this->injectRecordService($recordService);
+        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
+        $this->recordService = $recordService;
     }
 
     /**

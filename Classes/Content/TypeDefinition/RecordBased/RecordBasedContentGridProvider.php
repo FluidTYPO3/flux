@@ -34,9 +34,13 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
 
     protected ContentTypeManager $contentTypeDefinitions;
 
-    public function injectContentTypes(ContentTypeManager $contentTypes): void
+    public function __construct()
     {
-        $this->contentTypeDefinitions = $contentTypes;
+        parent::__construct();
+
+        /** @var ContentTypeManager $contentTypeManager */
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        $this->contentTypeDefinitions = $contentTypeManager;
     }
 
     public function trigger(array $row, ?string $table, ?string $field, ?string $extensionKey = null): bool

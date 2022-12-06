@@ -18,9 +18,8 @@ use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class PageLayoutDataProvider
 {
@@ -28,34 +27,19 @@ class PageLayoutDataProvider
     protected FluxService $configurationService;
     protected PageService $pageService;
 
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
-    {
-        $this->configurationManager = $configurationManager;
-    }
-
-    public function injectConfigurationService(FluxService $configurationService): void
-    {
-        $this->configurationService = $configurationService;
-    }
-
-    public function injectPageService(PageService $pageService): void
-    {
-        $this->pageService = $pageService;
-    }
-
     public function __construct()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ConfigurationManagerInterface $configurationManager */
-        $configurationManager = $objectManager->get(ConfigurationManagerInterface::class);
-        $this->injectConfigurationManager($configurationManager);
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+        $this->configurationManager = $configurationManager;
+
         /** @var FluxService $fluxService */
-        $fluxService = $objectManager->get(FluxService::class);
-        $this->injectConfigurationService($fluxService);
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        $this->configurationService = $fluxService;
+
         /** @var PageService $pageService */
-        $pageService = $objectManager->get(PageService::class);
-        $this->injectPageService($pageService);
+        $pageService = GeneralUtility::makeInstance(PageService::class);
+        $this->pageService = $pageService;
     }
 
     public function addItems(array $parameters): array

@@ -14,15 +14,20 @@ use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3Fluid\Fluid\View\TemplateView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
+use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolver;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 
 class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
 {
     protected ?array $record = null;
     protected ?ContentTypeDefinitionInterface $contentTypeDefinition = null;
     protected ?ContentTypeManager $contentTypeManager = null;
+    protected ?TemplateView $templateView;
 
     protected function setUp(): void
     {
@@ -43,6 +48,34 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
         $this->contentTypeDefinition->method('getGridConfiguration')->willReturn([]);
 
         $this->contentTypeManager->registerTypeDefinition($this->contentTypeDefinition);
+
+        $templateParser = new TemplateParser();
+
+        $renderingContext = $this->getMockBuilder(RenderingContext::class)
+            ->setMethods(
+                [
+                    'getViewHelperVariableContainer',
+                    'getViewHelperResolver',
+                    'getTemplateParser',
+                    'getVariableProvider',
+                ]
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $renderingContext->method('getViewHelperVariableContainer')->willReturn(new ViewHelperVariableContainer());
+        $renderingContext->method('getViewHelperResolver')->willReturn(new ViewHelperResolver());
+        $renderingContext->method('getVariableProvider')->willReturn(new StandardVariableProvider());
+        $renderingContext->method('getTemplateParser')->willReturn($templateParser);
+
+        $templateParser->setRenderingContext($renderingContext);
+
+        $this->templateView = new TemplateView($renderingContext);
+        $this->templateView->getRenderingContext()
+            ->getViewHelperResolver()
+            ->addNamespace('flux', 'FluidTYPO3\\Flux\\ViewHelpers');
+
+
+        $this->singletonInstances[ContentTypeManager::class] = $this->contentTypeManager;
 
         parent::setUp();
     }
@@ -67,6 +100,8 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
 
     public function testDumpTemplateFromRecordBasedContentTypeDefinition(): void
     {
+        GeneralUtility::addInstance(TemplateView::class, $this->templateView);
+
         $this->contentTypeDefinition->method('getTemplateSource')->willReturn('');
 
         $parameters = [
@@ -137,23 +172,5 @@ SOURCE;
 SOURCE;
 
         self::assertSame($expected, $output);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $templateView = new TemplateView();
-        $templateView->getRenderingContext()
-            ->getViewHelperResolver()
-            ->addNamespace('flux', 'FluidTYPO3\\Flux\\ViewHelpers');
-
-        /** @var ObjectManagerInterface&MockObject $objectManager */
-        $objectManager = parent::createObjectManagerInstance();
-        $objectManager->method('get')->willReturnMap(
-            [
-                [\TYPO3\CMS\Fluid\View\TemplateView::class, $templateView],
-                [ContentTypeManager::class, $this->contentTypeManager],
-            ]
-        );
-        return $objectManager;
     }
 }

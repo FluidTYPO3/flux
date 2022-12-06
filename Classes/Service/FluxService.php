@@ -29,8 +29,8 @@ use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -42,33 +42,21 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
 class FluxService implements SingletonInterface
 {
     protected ConfigurationManagerInterface $configurationManager;
-    protected ObjectManagerInterface $objectManager;
-    protected ProviderResolver $providerResolver;
     protected WorkspacesAwareRecordService $recordService;
     protected ResourceFactory $resourceFactory;
 
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
+    public function __construct()
     {
+        /** @var ConfigurationManagerInterface $configurationManager */
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
         $this->configurationManager = $configurationManager;
-    }
 
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    public function injectProviderResolver(ProviderResolver $providerResolver): void
-    {
-        $this->providerResolver = $providerResolver;
-    }
-
-    public function injectRecordService(WorkspacesAwareRecordService $recordService): void
-    {
+        /** @var WorkspacesAwareRecordService $recordService */
+        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->recordService = $recordService;
-    }
 
-    public function injectResourceFactory(ResourceFactory $resourceFactory): void
-    {
+        /** @var ResourceFactory $resourceFactory */
+        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         $this->resourceFactory = $resourceFactory;
     }
 
@@ -139,7 +127,9 @@ class FluxService implements SingletonInterface
         ?string $extensionKey = null,
         array $interfaces = [ProviderInterface::class]
     ) {
-        return $this->providerResolver->resolvePrimaryConfigurationProvider(
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        return $providerResolver->resolvePrimaryConfigurationProvider(
             $table,
             $fieldName,
             $row,
@@ -163,7 +153,9 @@ class FluxService implements SingletonInterface
         ?string $extensionKey = null,
         array $interfaces = [ProviderInterface::class]
     ): array {
-        return $this->providerResolver->resolveConfigurationProviders(
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        return $providerResolver->resolveConfigurationProviders(
             $table,
             $fieldName,
             $row,
@@ -402,7 +394,7 @@ class FluxService implements SingletonInterface
     protected function getFormDataTransformer(): FormDataTransformer
     {
         /** @var FormDataTransformer $transformer */
-        $transformer = $this->objectManager->get(FormDataTransformer::class);
+        $transformer = GeneralUtility::makeInstance(FormDataTransformer::class);
         return $transformer;
     }
 
@@ -412,7 +404,7 @@ class FluxService implements SingletonInterface
     protected function getFlexFormService(): FlexFormService
     {
         /** @var FlexFormService $flexFormService */
-        $flexFormService = $this->objectManager->get(FlexFormService::class);
+        $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
         return $flexFormService;
     }
 

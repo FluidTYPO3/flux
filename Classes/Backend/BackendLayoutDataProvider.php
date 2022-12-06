@@ -19,43 +19,21 @@ use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderInterface;
 use TYPO3\CMS\Backend\View\BackendLayout\DefaultDataProvider;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class BackendLayoutDataProvider extends DefaultDataProvider implements DataProviderInterface
 {
-    protected ObjectManagerInterface $objectManager;
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
 
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    public function injectConfigurationService(FluxService $configurationService): void
-    {
-        $this->configurationService = $configurationService;
-    }
-
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService): void
-    {
-        $this->recordService = $workspacesAwareRecordService;
-    }
-
     public function __construct()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectObjectManager($objectManager);
-
         /** @var FluxService $fluxService */
-        $fluxService = $this->objectManager->get(FluxService::class);
-        $this->injectConfigurationService($fluxService);
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        $this->configurationService = $fluxService;
 
         /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
-        $workspacesAwareRecordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
-        $this->injectWorkspacesAwareRecordService($workspacesAwareRecordService);
+        $workspacesAwareRecordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
+        $this->recordService = $workspacesAwareRecordService;
     }
 
     public function addBackendLayouts(

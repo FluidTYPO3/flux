@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class UserFunctionsTest extends AbstractTestCase
 {
@@ -26,17 +25,15 @@ class UserFunctionsTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->singletonInstances[ProviderResolver::class] = $this->providerResolver;
+
         parent::setUp();
     }
 
     /**
-     * @param string $method
-     * @param array $parameters
-     * @param boolean $expectsNull
-     * @test
      * @dataProvider getUserFunctionTestValues
      */
-    public function canCallMethodAndReceiveOutput($method, array $parameters, $expectsNull)
+    public function testCanCallMethodAndReceiveOutput(string $method, array $parameters, bool $expectsNull): void
     {
         $reference = $this->getMockBuilder(UserFunctions::class)->getMock();
         $subject = $this->getMockBuilder(UserFunctions::class)->setMethods(['translate'])->getMock();
@@ -49,7 +46,7 @@ class UserFunctionsTest extends AbstractTestCase
         }
     }
 
-    public function getUserFunctionTestValues()
+    public function getUserFunctionTestValues(): array
     {
         return [
             'clear value field' => [
@@ -134,16 +131,5 @@ class UserFunctionsTest extends AbstractTestCase
         self::assertStringContainsString('data-min-value="0"', $output);
         self::assertStringContainsString('data-max-value="99"', $output);
         self::assertStringContainsString('data-taken-values="1,2"', $output);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [ProviderResolver::class, $this->providerResolver],
-            ]
-        );
-        return $instance;
     }
 }

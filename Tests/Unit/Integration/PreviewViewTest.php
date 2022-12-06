@@ -29,9 +29,6 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
-/**
- * PreviewViewTest
- */
 class PreviewViewTest extends AbstractTestCase
 {
     public function testInjectsDependencies(): void
@@ -242,7 +239,7 @@ class PreviewViewTest extends AbstractTestCase
     public function testRenderGridWithChildren($renderer): void
     {
         $subject = $this->getMockBuilder(PreviewView::class)
-            ->setMethods(['getInitializedPageLayoutView'])
+            ->setMethods(['getInitializedPageLayoutView', 'getBackendUser'])
             ->disableOriginalConstructor()
             ->getMock();
         $subject->method('getInitializedPageLayoutView')->willReturn($renderer);
@@ -440,9 +437,15 @@ class PreviewViewTest extends AbstractTestCase
      */
     public function avoidsRenderPreviewSectionIfTemplateFileDoesNotExist()
     {
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(array('getTemplatePathAndFilename'))->getMock();
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(array('getTemplatePathAndFilename'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->expects($this->atLeastOnce())->method('getTemplatePathAndFilename')->willReturn(null);
-        $previewView = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
+        $previewView = $this->getMockBuilder($this->createInstanceClassName())
+            ->setMethods(array('dummy'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->callInaccessibleMethod($previewView, 'renderPreviewSection', $provider, array());
     }
 
@@ -451,7 +454,10 @@ class PreviewViewTest extends AbstractTestCase
      */
     protected function createInstance()
     {
-        $instance = $this->getMockBuilder(PreviewView::class)->setMethods(['configurePageLayoutViewForLanguageMode'])->getMock();
+        $instance = $this->getMockBuilder(PreviewView::class)
+            ->setMethods(['configurePageLayoutViewForLanguageMode'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance->expects($this->any())->method('configurePageLayoutViewForLanguageMode')->willReturnArgument(0);
         return $instance;
     }

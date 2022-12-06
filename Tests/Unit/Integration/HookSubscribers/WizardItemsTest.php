@@ -18,17 +18,26 @@ use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class WizardItemsTest extends AbstractTestCase
 {
+    protected function setUp(): void
+    {
+        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->singletonInstances[WorkspacesAwareRecordService::class] = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->setMethods(['getSingle'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        parent::setUp();
+    }
+
     public function testCreatesInstancesInConstructor(): void
     {
         $subject = new WizardItems();
-        self::assertInstanceOf(
-            ObjectManagerInterface::class,
-            $this->getInaccessiblePropertyValue($subject, 'objectManager')
-        );
         self::assertInstanceOf(
             FluxService::class,
             $this->getInaccessiblePropertyValue($subject, 'configurationService')
@@ -49,10 +58,7 @@ class WizardItemsTest extends AbstractTestCase
      */
     public function processesWizardItems($items, $whitelist, $blacklist, $expectedList)
     {
-        $instance = $this->getMockBuilder(WizardItems::class)
-            ->setMethods(['dummy'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $instance = new WizardItems();
         $emulatedPageAndContentRecord = ['uid' => 1, 'tx_flux_column' => 'area'];
 
         $controller = $this->getMockBuilder(NewContentElementController::class)
@@ -72,29 +78,29 @@ class WizardItemsTest extends AbstractTestCase
         $row->add($column);
         $grid->add($row);
 
-        $provider1 = new Provider();
+        $provider1 = $this->getMockBuilder(Provider::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider1->setTemplatePaths([]);
         $provider1->setTemplateVariables([]);
         $provider1->setGrid($grid);
         $provider1->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
-        $provider2 = $this->getMockBuilder(Provider::class)->setMethods(['getGrid'])->getMock();
+        $provider2 = $this->getMockBuilder(Provider::class)
+            ->setMethods(['getGrid'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(Grid::create()));
 
-        $configurationService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolveConfigurationProviders'])
-            ->getMock();
-
-        $configurationService->expects($this->once())->method('resolveConfigurationProviders')
+        $this->singletonInstances[FluxService::class]->expects($this->once())
+            ->method('resolveConfigurationProviders')
             ->will($this->returnValue([$provider1, $provider2]));
 
-        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
-            ->setMethods(['getSingle'])
-            ->getMock();
+        $this->singletonInstances[WorkspacesAwareRecordService::class]->expects($this->once())
+            ->method('getSingle')
+            ->willReturn($emulatedPageAndContentRecord);
 
-        $recordService->expects($this->once())->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
-        $instance->injectConfigurationService($configurationService);
-        $instance->injectRecordService($recordService);
         $instance->manipulateWizardItems($items, $controller);
 
         $this->assertEquals($expectedList, $items);
@@ -179,23 +185,5 @@ class WizardItemsTest extends AbstractTestCase
         $controller = $this->getMockBuilder(NewContentElementController::class)->setMethods(['init'])->disableOriginalConstructor()->getMock();
         $instance->manipulateWizardItems($items, $controller);
         $this->assertNotEmpty($items);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [
-                    FluxService::class,
-                    $this->getMockBuilder(FluxService::class)->disableOriginalConstructor()->getMock(),
-                ],
-                [
-                    WorkspacesAwareRecordService::class,
-                    $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
-                ]
-            ]
-        );
-        return $instance;
     }
 }

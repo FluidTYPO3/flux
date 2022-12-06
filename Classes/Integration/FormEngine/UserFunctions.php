@@ -13,8 +13,6 @@ use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class UserFunctions
@@ -36,10 +34,8 @@ class UserFunctions
     public function fluxFormFieldDisplayCondition(array $parameters): bool
     {
         [$table, $field] = $parameters['conditionParameters'];
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         $provider = $providerResolver->resolvePrimaryConfigurationProvider($table, $field, $parameters['record']);
 
         if (!$provider) {

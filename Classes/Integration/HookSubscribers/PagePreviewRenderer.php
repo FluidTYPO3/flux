@@ -13,8 +13,6 @@ use FluidTYPO3\Flux\Provider\PageProvider;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class PagePreviewRenderer
 {
@@ -55,10 +53,8 @@ class PagePreviewRenderer
      */
     protected function getPageProvider(): PageProvider
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var PageProvider $pageProvider */
-        $pageProvider = $objectManager->get(PageProvider::class);
+        $pageProvider = GeneralUtility::makeInstance(PageProvider::class);
         return $pageProvider;
     }
 }

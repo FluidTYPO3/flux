@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux;
  */
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
-use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
