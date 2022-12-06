@@ -10,10 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -59,10 +56,8 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         if (empty($controller)) {
             $controller = $controllerContext->getRequest()->getControllerObjectName();
         }
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ControllerPipe $pipe */
-        $pipe = $objectManager->get(ControllerPipe::class);
+        $pipe = GeneralUtility::makeInstance(ControllerPipe::class);
         $pipe->setAction((string) $arguments['action']);
         $pipe->setController((string) $controller);
         $pipe->setExtensionName((string) $extensionName);

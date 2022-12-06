@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Provider Resolver
@@ -26,16 +26,12 @@ class ProviderResolver implements SingletonInterface
     protected array $providers = [];
 
     protected FluxService $configurationService;
-    protected ObjectManagerInterface $objectManager;
 
-    public function injectConfigurationService(FluxService $configurationService): void
+    public function __construct()
     {
+        /** @var FluxService $configurationService */
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $configurationService;
-    }
-
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
     }
 
     /**
@@ -129,7 +125,7 @@ class ProviderResolver implements SingletonInterface
                 $className = $providerSettings['className'];
             }
             /** @var ProviderInterface $provider */
-            $provider = $this->objectManager->get($className);
+            $provider = GeneralUtility::makeInstance($className);
             $provider->setName($name);
             $provider->loadSettings($providerSettings);
             $providers[$name] = $provider;
@@ -170,7 +166,7 @@ class ProviderResolver implements SingletonInterface
                 $provider = $classNameOrInstance;
             } else {
                 /** @var ProviderInterface $provider */
-                $provider = $this->objectManager->get($classNameOrInstance);
+                $provider = GeneralUtility::makeInstance($classNameOrInstance);
             }
             $instances[] = $provider;
         }

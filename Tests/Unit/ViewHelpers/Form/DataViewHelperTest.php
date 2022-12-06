@@ -260,9 +260,15 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     public function readDataArrayFromProvidersOrUsingDefaultMethodUsesProvidersToReadData()
     {
         $mock = $this->createInstance();
-        $provider1 = $this->getMockBuilder(Provider::class)->setMethods(array('getFlexFormValues'))->getMock();
+        $provider1 = $this->getMockBuilder(Provider::class)
+            ->setMethods(array('getFlexFormValues'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider1->method('getFlexFormValues')->willReturn(array('foo' => array('bar' => 'test')));
-        $provider2 = $this->getMockBuilder(Provider::class)->setMethods(array('getFlexFormValues'))->getMock();
+        $provider2 = $this->getMockBuilder(Provider::class)
+            ->setMethods(array('getFlexFormValues'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider2->method('getFlexFormValues')->willReturn(
             array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test')
         );

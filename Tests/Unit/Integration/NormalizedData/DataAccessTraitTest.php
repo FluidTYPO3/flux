@@ -15,24 +15,31 @@ use FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation;
 use FluidTYPO3\Flux\Integration\NormalizedData\ImplementationRegistry;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class DataAccessTraitTest extends AbstractTestCase
 {
-    private ?FormDataTransformer $formDataTransformer;
-
     protected function setUp(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE] = 1;
 
-        $this->formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
-            ->setMethods(['transformAccordingToConfiguration'])
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getForm')->willReturn(Form::create());
+
+        $providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->setMethods(['resolvePrimaryConfigurationProvider'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+
+        $this->singletonInstances[ProviderResolver::class] = $providerResolver;
+        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -79,35 +86,19 @@ class DataAccessTraitTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->formDataTransformer->expects(self::once())
+        $formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
+            ->setMethods(['transformAccordingToConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formDataTransformer->expects(self::once())
             ->method('transformAccordingToConfiguration')
             ->willReturnArgument(0);
 
         $subject = new DummyPageController();
 
+        GeneralUtility::addInstance(FormDataTransformer::class, $formDataTransformer);
         GeneralUtility::addInstance(FlexFormImplementation::class, $flexFormImplementation);
 
         $subject->injectConfigurationManager($configurationManager);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
-        $provider->method('getForm')->willReturn(Form::create());
-
-        $providerResolver = $this->getMockBuilder(ProviderResolver::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
-
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [ProviderResolver::class, $providerResolver],
-                [FormDataTransformer::class, $this->formDataTransformer],
-            ]
-        );
-        return $instance;
     }
 }

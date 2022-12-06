@@ -25,23 +25,17 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 
-/**
- * AbstractProviderTest
- */
 abstract class AbstractProviderTest extends AbstractTestCase
 {
-    /**
-     * @var string
-     */
-    protected $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\Provider';
-
+    protected FluxService $fluxService;
+    protected WorkspacesAwareRecordService $recordService;
+    protected string $configurationProviderClassName = 'FluidTYPO3\Flux\Provider\Provider';
     private array $dummyGridConfiguration = [
         'columns' => [
             [
@@ -61,10 +55,31 @@ abstract class AbstractProviderTest extends AbstractTestCase
         ],
     ];
 
-    /**
-     * @return ProviderInterface
-     */
-    protected function getConfigurationProviderInstance()
+    protected function setUp(): void
+    {
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->setMethods(
+                [
+                    'getFromCaches',
+                    'setInCaches',
+                    'getSettingsForExtensionName',
+                    'convertFlexFormContentToArray',
+                    'message'
+                ]
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->setMethods(['getSingle', 'update'])
+            ->getMock();
+
+        $this->singletonInstances[FluxService::class] = $this->fluxService;
+        $this->singletonInstances[WorkspacesAwareRecordService::class] = $this->recordService;
+
+        parent::setUp();
+    }
+
+    protected function getConfigurationProviderInstance(): ProviderInterface
     {
         $potentialClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
 
@@ -80,10 +95,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         return $instance;
     }
 
-    /**
-     * @return array
-     */
-    protected function getBasicRecord()
+    protected function getBasicRecord(): array
     {
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
@@ -97,13 +109,14 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = Xml::EXPECTING_FLUX_PRUNING;
-        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle', 'update'))->getMock();
-        $recordService->expects($this->once())->method('getSingle')->willReturn($row);
-        $recordService->expects($this->once())->method('update');
+
+        $this->recordService->expects($this->once())->method('getSingle')->willReturn($row);
+        $this->recordService->expects($this->once())->method('update');
+
         $provider = $this->getConfigurationProviderInstance();
         $provider->setFieldName('pi_flexform');
         $provider->setTableName('tt_content');
-        $provider->injectRecordService($recordService);
+
         $tceMain = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
         $tceMain->datamap['tt_content'][$row['uid']]['pi_flexform']['data'] = array();
         $provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
@@ -189,10 +202,10 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $record = $this->getBasicRecord();
         $provider = $this->getMockBuilder(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)))->setMethods(array('getForm'))->getMock();
-        $mockConfigurationService = $this->getMockBuilder(FluxService::class)->setMethods(array('convertFlexFormContentToArray'))->getMock();
-        $mockConfigurationService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
+
+        $this->fluxService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
+
         $provider->expects($this->once())->method('getForm')->will($this->returnValue($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock()));
-        $provider->injectConfigurationService($mockConfigurationService);
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
         $values = $provider->getFlexformValues($record);
         $this->assertIsArray($values);
@@ -361,10 +374,10 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $record = $this->getBasicRecord();
         $record['test'] = 'test';
         $provider = $this->getConfigurationProviderInstance();
-        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle', 'update'))->getMock();
-        $recordService->expects($this->once())->method('getSingle')->willReturn($record);
-        $recordService->expects($this->once())->method('update');
-        $provider->injectRecordService($recordService);
+
+        $this->recordService->expects($this->once())->method('getSingle')->willReturn($record);
+        $this->recordService->expects($this->once())->method('update');
+
         $parentInstance = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
         $id = $record['uid'];
         $tableName = $provider->getTableName($record);
@@ -404,9 +417,9 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function canPostProcessRecordWithNullFieldName()
     {
         $provider = $this->getConfigurationProviderInstance();
-        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->setMethods(array('getSingle'))->getMock();
-        $recordService->expects($this->any())->method('getSingle')->willReturn(['uid' => 123]);
-        $provider->injectRecordService($recordService);
+
+        $this->recordService->expects($this->any())->method('getSingle')->willReturn(['uid' => 123]);
+
         $record = $this->getBasicRecord();
         $parentInstance = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
         $record['test'] = 'test';
@@ -432,12 +445,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $record = $this->getBasicRecord();
         $parentInstance = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
         $tableName = $provider->getTableName($record);
-        if (true === empty($tableName)) {
+        if (empty($tableName)) {
             $tableName = 'tt_content';
             $provider->setTableName($tableName);
         }
         $fieldName = $provider->getFieldName($record);
-        if (true === empty($fieldName)) {
+        if (empty($fieldName)) {
             $fieldName = 'pi_flexform';
             $provider->setFieldName($fieldName);
         }
@@ -679,7 +692,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
 
     public function testGetViewForRecord(): void
     {
-        $singletons = GeneralUtility::getSingletonInstances();
         $this->prepareTemplateViewMock();
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
@@ -687,15 +699,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->getMockForAbstractClass();
         $output = $instance->getViewForRecord(['uid' => 123]);
         self::assertInstanceOf(TemplateView::class, $output);
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     public function testExtractConfiguration(): void
     {
         $form = Form::create();
 
-        $singletons = GeneralUtility::getSingletonInstances();
         $view = $this->prepareTemplateViewMock();
         $view->getRenderingContext()->getViewHelperVariableContainer()->add(
             FormViewHelper::class,
@@ -703,16 +712,11 @@ abstract class AbstractProviderTest extends AbstractTestCase
             $form
         );
 
-        $fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getFromCaches', 'getSettingsForExtensionName'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setMethods(['dispatchFlashMessageForException', 'getEnvironmentVariable'])
             ->getMockForAbstractClass();
-        $instance->injectConfigurationService($fluxService);
 
         $output = $this->callInaccessibleMethod(
             $instance,
@@ -722,8 +726,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
         );
 
         self::assertSame($form, $output);
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     public function testExtractConfigurationCachesStaticForms(): void
@@ -731,7 +733,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $form = Form::create();
         $form->setOption(Form::OPTION_STATIC, true);
 
-        $singletons = GeneralUtility::getSingletonInstances();
         $view = $this->prepareTemplateViewMock();
         $view->getRenderingContext()->getViewHelperVariableContainer()->add(
             FormViewHelper::class,
@@ -739,17 +740,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
             $form
         );
 
-        $fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getFromCaches', 'getSettingsForExtensionName', 'setInCaches'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fluxService->method('getSettingsForExtensionName')->willReturn([]);
-        $fluxService->expects(self::once())->method('setInCaches');
+        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->fluxService->expects(self::once())->method('setInCaches');
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setMethods(['dispatchFlashMessageForException', 'getEnvironmentVariable'])
             ->getMockForAbstractClass();
-        $instance->injectConfigurationService($fluxService);
 
         $output = $this->callInaccessibleMethod(
             $instance,
@@ -759,46 +755,31 @@ abstract class AbstractProviderTest extends AbstractTestCase
         );
 
         self::assertSame($form, $output);
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     public function testExtractConfigurationWithoutConfigurationSectionName(): void
     {
-        $singletons = GeneralUtility::getSingletonInstances();
         $view = $this->prepareTemplateViewMock();
 
-        $fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getFromCaches', 'getSettingsForExtensionName'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setMethods(['getConfigurationSectionName', 'getEnvironmentVariable'])
             ->getMockForAbstractClass();
         $instance->method('getConfigurationSectionName')->willReturn(null);
-        $instance->injectConfigurationService($fluxService);
 
         $output = $this->callInaccessibleMethod($instance, 'extractConfiguration', ['uid' => 123], 'test');
 
         self::assertSame(null, $output);
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     public function testExtractConfigurationReturnsValueFromCache(): void
     {
-        $fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getFromCaches', 'getSettingsForExtensionName'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fluxService->method('getFromCaches')->willReturn(['test' => 'foo']);
+        $this->fluxService->method('getFromCaches')->willReturn(['test' => 'foo']);
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setMethods(['dispatchFlashMessageForException'])
             ->getMockForAbstractClass();
-        $instance->injectConfigurationService($fluxService);
 
         $output = $this->callInaccessibleMethod($instance, 'extractConfiguration', ['uid' => 123], 'test');
 
@@ -807,26 +788,18 @@ abstract class AbstractProviderTest extends AbstractTestCase
 
     public function testExtractConfigurationReturnsNullOnInvalidTemplateResource(): void
     {
-        $singletons = GeneralUtility::getSingletonInstances();
         $view = $this->prepareTemplateViewMock();
         $view->method('renderSection')->willThrowException(new InvalidTemplateResourceException(''));
 
-        $fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getFromCaches', 'getSettingsForExtensionName'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setMethods(['dispatchFlashMessageForException', 'getEnvironmentVariable'])
             ->getMockForAbstractClass();
-        $instance->injectConfigurationService($fluxService);
 
         $output = $this->callInaccessibleMethod($instance, 'extractConfiguration', ['uid' => 123], 'test');
 
         self::assertSame(null, $output);
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     private function prepareTemplateViewMock(): TemplateView
@@ -846,21 +819,17 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->getMock();
         $templateView->method('getRenderingContext')->willReturn($renderingContext);
 
-        $objectManager = $this->getMockBuilder(ObjectManager::class)
-            ->setMethods(['get'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-        $objectManager->method('get')->willReturnMap(
-            [
-                [Request::class, $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()],
-                [UriBuilder::class, $this->getMockBuilder(UriBuilder::class)->disableOriginalConstructor()->getMock()],
-                [ControllerContext::class, $controllerContext],
-                [RenderingContext::class, $renderingContext],
-                [TemplateView::class, $templateView],
-            ]
+        GeneralUtility::addInstance(
+            Request::class,
+            $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()
         );
-
-        GeneralUtility::setSingletonInstance(ObjectManager::class, $objectManager);
+        GeneralUtility::addInstance(
+            UriBuilder::class,
+            $this->getMockBuilder(UriBuilder::class)->disableOriginalConstructor()->getMock()
+        );
+        GeneralUtility::addInstance(RenderingContext::class, $renderingContext);
+        GeneralUtility::addInstance(ControllerContext::class, $controllerContext);
+        GeneralUtility::addInstance(TemplateView::class, $templateView);
 
         return $templateView;
     }

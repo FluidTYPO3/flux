@@ -14,8 +14,6 @@ use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * ### Outlet Definition
@@ -97,10 +95,8 @@ abstract class AbstractOutlet implements OutletInterface
     protected static function createPipeInstance(string $class, array $settings): PipeInterface
     {
         /** @var class-string $class */
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var T&PipeInterface $pipe */
-        $pipe = $objectManager->get($class);
+        $pipe = GeneralUtility::makeInstance($class);
         foreach ($settings as $property => $value) {
             $setterMethod = 'set' . ucfirst($property);
             if (method_exists($pipe, $setterMethod)) {

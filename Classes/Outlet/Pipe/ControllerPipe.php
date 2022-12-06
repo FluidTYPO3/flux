@@ -9,11 +9,11 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  */
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Extbase\Mvc\Response;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Pipe: Controller Action
@@ -22,16 +22,9 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class ControllerPipe extends AbstractPipe implements PipeInterface
 {
-    protected ObjectManagerInterface $objectManager;
-
     protected string $controller = '';
     protected string $action = '';
     protected string $extensionName = '';
-
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
 
     public function setController(string $controller): self
     {
@@ -76,16 +69,16 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 
         /** @var Request $request */
-        $request = $this->objectManager->get(Request::class);
+        $request = GeneralUtility::makeInstance(Request::class);
         $request->setControllerName($this->getController());
         $request->setControllerActionName($this->getAction());
         $request->setControllerExtensionName($extensionName);
         $request->setArguments($data);
 
         /** @var Response $response */
-        $response = $this->objectManager->get(Response::class);
+        $response = GeneralUtility::makeInstance(Response::class);
         /** @var Dispatcher $dispatcher */
-        $dispatcher = $this->objectManager->get(Dispatcher::class);
+        $dispatcher = GeneralUtility::makeInstance(Dispatcher::class);
         /** @var RequestInterface $request */
         $dispatcher->dispatch($request, $response);
         return $response->getContent();

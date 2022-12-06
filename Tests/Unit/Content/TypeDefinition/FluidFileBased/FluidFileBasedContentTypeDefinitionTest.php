@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class FluidFileBasedContentTypeDefinitionTest extends AbstractTestCase
 {
@@ -26,6 +25,8 @@ class FluidFileBasedContentTypeDefinitionTest extends AbstractTestCase
             ->setMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->singletonInstances[ProviderResolver::class] = $this->providerResolver;
 
         parent::setUp();
     }
@@ -106,16 +107,5 @@ class FluidFileBasedContentTypeDefinitionTest extends AbstractTestCase
 
         $subject = new FluidFileBasedContentTypeDefinition('', '', '');
         self::assertInstanceOf(Form\Container\Grid::class, $subject->getGrid([]));
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [ProviderResolver::class, $this->providerResolver],
-            ]
-        );
-        return $instance;
     }
 }

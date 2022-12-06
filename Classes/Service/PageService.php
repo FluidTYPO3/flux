@@ -19,8 +19,8 @@ use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Component\Error\ChildNotFoundException;
@@ -34,64 +34,23 @@ use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
  */
 class PageService implements SingletonInterface
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected ConfigurationManagerInterface $configurationManager;
+    protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $workspacesAwareRecordService;
 
-    /**
-     * @var ConfigurationManagerInterface
-     */
-    protected $configurationManager;
-
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $workspacesAwareRecordService;
-
-    /**
-     * @codeCoverageIgnore
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function __construct()
     {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @param ConfigurationManagerInterface $configurationManager
-     * @return void
-     */
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
-    {
+        /** @var ConfigurationManagerInterface $configurationManager */
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
         $this->configurationManager = $configurationManager;
-    }
 
-    /**
-     * @codeCoverageIgnore
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
-    {
+        /** @var FluxService $configurationService */
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $configurationService;
-    }
 
-    /**
-     * @codeCoverageIgnore
-     * @param WorkspacesAwareRecordService $workspacesAwareRecordService
-     * @return void
-     */
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService)
-    {
-        $this->workspacesAwareRecordService = $workspacesAwareRecordService;
+        /** @var WorkspacesAwareRecordService $recordService */
+        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
+        $this->workspacesAwareRecordService = $recordService;
     }
 
     /**
@@ -197,6 +156,9 @@ class PageService implements SingletonInterface
         }
         $typoScript = $this->configurationService->getPageConfiguration();
         $output = [];
+
+        /** @var TemplateView $view */
+        $view = GeneralUtility::makeInstance(TemplateView::class);
         foreach ((array) $typoScript as $extensionName => $group) {
             if (true === isset($group['enable']) && 1 > $group['enable']) {
                 continue;
@@ -217,8 +179,6 @@ class PageService implements SingletonInterface
                     continue;
                 }
 
-                /** @var TemplateView $view */
-                $view = $this->objectManager->get(TemplateView::class);
                 $view->getRenderingContext()->setTemplatePaths($templatePaths);
                 $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
                     FormViewHelper::SCOPE,

@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 
 use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 class DummyPageController extends PageController

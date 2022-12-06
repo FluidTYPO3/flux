@@ -15,9 +15,9 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDef
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Cache\FluidCacheInterface;
@@ -36,6 +36,7 @@ class ContentTypeValidatorTest extends AbstractTestCase
     protected ?PackageManager $packageManager;
     protected ?RenderingContextInterface $renderingContext;
     protected ?ContentTypeManager $contentTypeManager;
+    protected ?TemplateView $view;
 
     protected function setUp(): void
     {
@@ -116,7 +117,18 @@ Result:
 SOURCE
             );
 
+        $this->view = new TemplateView($this->renderingContext);
+
         AccessibleExtensionManagementUtility::setPackageManager($this->packageManager);
+
+        GeneralUtility::addInstance(
+            Request::class,
+            $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()
+        );
+        GeneralUtility::addInstance(ControllerContext::class, new ControllerContext());
+        GeneralUtility::addInstance(TemplateView::class, $this->view);
+
+        $this->singletonInstances[ContentTypeManager::class] = $this->contentTypeManager;
 
         parent::setUp();
     }
@@ -170,6 +182,8 @@ SOURCE;
 
     public function testValidatesTemplateSourceWithMatchedContentTypeRendersValidationInfo(): void
     {
+        GeneralUtility::addInstance(TemplateView::class, $this->view);
+
         $parameters = [
             'row' => [
                 'uid' => 123,
@@ -180,7 +194,7 @@ SOURCE;
             ->setMethods(['resolveAbsolutePathForFilename', 'countUsages'])
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->method('resolveAbsolutePathForFilename')->willReturn('./ext_tables.sql');
+        $subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
         $subject->method('countUsages')->willReturn(5);
         $rendered = $subject->validateContentTypeRecord($parameters);
         $expected = <<<SOURCE
@@ -205,7 +219,7 @@ SOURCE;
             ->setMethods(['resolveAbsolutePathForFilename', 'countUsages'])
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->method('resolveAbsolutePathForFilename')->willReturn('./ext_tables.sql');
+        $subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
         $subject->method('countUsages')->willReturn(5);
         $rendered = $subject->validateContentTypeRecord($parameters);
         $expected = <<<SOURCE
@@ -220,6 +234,8 @@ SOURCE;
 
     public function testValidatesTemplateSourceAndRendersErrorOnInvalidTemplateSource(): void
     {
+        GeneralUtility::addInstance(TemplateView::class, $this->view);
+
         $parameters = [
             'row' => [
                 'uid' => 123,
@@ -230,7 +246,7 @@ SOURCE;
             ->setMethods(['resolveAbsolutePathForFilename', 'countUsages'])
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->method('resolveAbsolutePathForFilename')->willReturn('./ext_tables.sql');
+        $subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
         $subject->method('countUsages')->willReturn(5);
         $rendered = $subject->validateContentTypeRecord($parameters);
         $errorMessage = 'Fluid parse error in template , line 1 at character 1. Error: The ViewHelper "<f:invalid>" '
@@ -247,19 +263,5 @@ Result:
     usages=5,
 SOURCE;
         self::assertSame($expected, $rendered);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [Request::class, $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()],
-                [ControllerContext::class, new ControllerContext()],
-                [TemplateView::class, new TemplateView($this->renderingContext)],
-                [ContentTypeManager::class, $this->contentTypeManager],
-            ]
-        );
-        return $instance;
     }
 }

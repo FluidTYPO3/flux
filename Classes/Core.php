@@ -18,8 +18,6 @@ use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Quick-access API methods to easily integrate with Flux
@@ -27,11 +25,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 class Core
 {
     const CONTROLLER_ALL = '_all';
-
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected static $objectManager;
 
     protected static array $providers = [];
     protected static array $pipes = [];
@@ -163,9 +156,8 @@ class Core
         ?array $paths = null,
         string $fieldName = 'pi_flexform'
     ): ProviderInterface {
-        $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
-        $provider = $objectManager->get(Provider::class);
+        $provider = GeneralUtility::makeInstance(Provider::class);
         $provider->setTableName('tt_content');
         $provider->setFieldName($fieldName);
         $provider->setExtensionKey($extensionKey);
@@ -200,9 +192,8 @@ class Core
         ?array $paths = null,
         string $fieldName = 'pi_flexform'
     ): ProviderInterface {
-        $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
-        $provider = $objectManager->get(Provider::class);
+        $provider = GeneralUtility::makeInstance(Provider::class);
         $provider->setTableName('tt_content');
         $provider->setFieldName($fieldName);
         $provider->setExtensionKey($extensionKey);
@@ -235,9 +226,8 @@ class Core
         ?string $section = null,
         ?array $paths = null
     ): ProviderInterface {
-        $objectManager = static::getObjectManager();
         /** @var ProviderInterface $provider */
-        $provider = $objectManager->get(Provider::class);
+        $provider = GeneralUtility::makeInstance(Provider::class);
         $provider->setTableName($table);
         $provider->setFieldName($fieldName);
         $provider->setTemplatePathAndFilename($templateFilename);
@@ -362,18 +352,5 @@ class Core
             return $filename;
         }
         return realpath($filename) ?: GeneralUtility::getFileAbsFileName($filename);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected static function getObjectManager(): ObjectManagerInterface
-    {
-        if (static::$objectManager === null) {
-            /** @var ObjectManagerInterface $objectManager */
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            static::$objectManager = $objectManager;
-        }
-        return static::$objectManager;
     }
 }

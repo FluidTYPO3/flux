@@ -9,8 +9,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class ProviderProcessor implements FormDataProviderInterface
 {
@@ -95,18 +93,7 @@ class ProviderProcessor implements FormDataProviderInterface
     protected function getProviderResolver()
     {
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $this->getObjectManager()->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         return $providerResolver;
-    }
-
-    /**
-     * @return ObjectManagerInterface
-     * @codeCoverageIgnore
-     */
-    protected function getObjectManager()
-    {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        return $objectManager;
     }
 }

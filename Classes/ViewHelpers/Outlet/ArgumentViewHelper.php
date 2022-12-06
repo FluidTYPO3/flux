@@ -12,8 +12,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -41,8 +39,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ArgumentViewHelper extends AbstractFormViewHelper
 {
-    protected static ?ObjectManagerInterface $objectManager = null;
-
     public function initializeArguments(): void
     {
         parent::initializeArguments();
@@ -56,9 +52,8 @@ class ArgumentViewHelper extends AbstractFormViewHelper
         RenderingContextInterface $renderingContext
     ): string {
         $outlet = static::getFormFromRenderingContext($renderingContext)->getOutlet();
-        $objectManager = static::getObjectManager();
         /** @var OutletArgument $argument */
-        $argument = $objectManager->get(OutletArgument::class, $arguments['name'], $arguments['type']);
+        $argument = GeneralUtility::makeInstance(OutletArgument::class, $arguments['name'], $arguments['type']);
 
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $viewHelperVariableContainer->addOrUpdate(ValidateViewHelper::class, 'validators', []);
@@ -70,18 +65,5 @@ class ArgumentViewHelper extends AbstractFormViewHelper
         }
         $outlet->addArgument($argument);
         return '';
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected static function getObjectManager(): ObjectManagerInterface
-    {
-        if (static::$objectManager === null) {
-            /** @var ObjectManagerInterface $objectManager */
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            static::$objectManager = $objectManager;
-        }
-        return static::$objectManager;
     }
 }

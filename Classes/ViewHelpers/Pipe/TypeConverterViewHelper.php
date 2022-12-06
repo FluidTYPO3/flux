@@ -9,11 +9,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -48,10 +45,8 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
         ?\Closure $renderChildrenClosure = null
     ): TypeConverterPipe {
         /** @var array $arguments */
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var TypeConverterPipe $pipe */
-        $pipe = $objectManager->get(TypeConverterPipe::class);
+        $pipe = GeneralUtility::makeInstance(TypeConverterPipe::class);
         /** @var TypeConverterInterface|class-string $converterInstanceOrClassName */
         $converterInstanceOrClassName = $arguments['typeConverter'];
         if (false === $converterInstanceOrClassName instanceof TypeConverterInterface) {
@@ -64,7 +59,7 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
                 $converterClassName = $converterInstanceOrClassName;
             }
             /** @var TypeConverterInterface $converter */
-            $converter = $objectManager->get($converterClassName);
+            $converter = GeneralUtility::makeInstance($converterClassName);
         } else {
             /** @var TypeConverterInterface $converter */
             $converter = $converterInstanceOrClassName;

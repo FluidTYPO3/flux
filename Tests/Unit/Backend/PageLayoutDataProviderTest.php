@@ -13,15 +13,11 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * Class PageLayoutDataProviderTest
- */
 class PageLayoutDataProviderTest extends AbstractTestCase
 {
-
     protected ?FluxService $fluxService = null;
     protected ?PageService $pageService = null;
     protected ?ConfigurationManagerInterface $configurationManager = null;
@@ -38,9 +34,15 @@ class PageLayoutDataProviderTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
-            ->getMockForAbstractClass();
+        $this->configurationManager = $this->getMockBuilder(ConfigurationManager::class)
+            ->setMethods(['getConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->configurationManager->method('getConfiguration')->willReturn([]);
+
+        $this->singletonInstances[FluxService::class] = $this->fluxService;
+        $this->singletonInstances[PageService::class] = $this->pageService;
+        $this->singletonInstances[ConfigurationManager::class] = $this->configurationManager;
 
         parent::setUp();
     }
@@ -132,18 +134,5 @@ class PageLayoutDataProviderTest extends AbstractTestCase
                 ]
             ],
         ];
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [FluxService::class, $this->fluxService],
-                [PageService::class, $this->pageService],
-                [ConfigurationManagerInterface::class, $this->configurationManager],
-            ]
-        );
-        return $instance;
     }
 }

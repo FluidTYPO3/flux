@@ -23,6 +23,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -54,7 +55,10 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testConvertFileReferenceToTemplatePathAndFilename($reference, $resourceFactoryOutput, $expected)
     {
-        $instance = $this->getMockBuilder(FluxService::class)->setMethods(['resolveAbsolutePathForFilename'])->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['resolveAbsolutePathForFilename'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance->method('resolveAbsolutePathForFilename')->willReturnArgument(0);
         if (null !== $resourceFactoryOutput) {
             $file = $this->getMockBuilder(File::class)->setMethods(['getIdentifier'])->disableOriginalConstructor()->getMock();
@@ -67,7 +71,7 @@ class FluxServiceTest extends AbstractTestCase
             )->disableOriginalConstructor()->getMock();
             $resourceFactory->expects($this->once())->method('getFileObjectFromCombinedIdentifier')
                 ->with($reference)->willReturn($file);
-            $instance->injectResourceFactory($resourceFactory);
+            $this->setInaccessiblePropertyValue($instance, 'resourceFactory', $resourceFactory);
         }
         $result = $instance->convertFileReferenceToTemplatePathAndFilename($reference);
         $this->assertEquals($expected, $result);
@@ -95,7 +99,10 @@ class FluxServiceTest extends AbstractTestCase
     {
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)->setMethods(['toArray'])->getMock();
         $templatePaths->method('toArray')->willReturn($expectedParameter);
-        $instance = $this->getMockBuilder(FluxService::class)->setMethods(['createTemplatePaths'])->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['createTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
         $result = $instance->getViewConfigurationByFileReference($reference);
         $this->assertEquals($expectedParameter, $result);
@@ -124,7 +131,10 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetPageConfigurationReturnsEmptyArrayOnInvalidInput($input)
     {
-        $instance = $this->getMockBuilder(FluxService::class)->setMethods(['getLogger'])->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getLogger'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance->method('getLogger')->willReturn($this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass());
         $result = $instance->getPageConfiguration($input);
         $this->assertEquals(array(), $result);
@@ -147,7 +157,7 @@ class FluxServiceTest extends AbstractTestCase
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
             = ['foo'];
 
-        $instance = new FluxService();
+        $instance = $this->createFluxServiceInstance();
 
         $result = $instance->getPageConfiguration('Flux');
         unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
@@ -161,7 +171,7 @@ class FluxServiceTest extends AbstractTestCase
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
             = './';
 
-        $instance = new FluxService();
+        $instance = $this->createFluxServiceInstance();
 
         $result = $instance->getPageConfiguration('Flux');
         unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
@@ -237,7 +247,10 @@ class FluxServiceTest extends AbstractTestCase
     public function testGetPageConfigurationWithoutExtensionNameReadsRegisteredProviders()
     {
         $templatePaths = new TemplatePaths();
-        $instance = $this->getMockBuilder(FluxService::class)->setMethods(['createTemplatePaths'])->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['createTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
         Core::registerProviderExtensionKey('foo', 'Page');
         Core::registerProviderExtensionKey('bar', 'Page');
@@ -255,7 +268,7 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testSortObjectsByProperty($input, $sortBy, $direction, $expectedOutput)
     {
-        $service = new FluxService();
+        $service = $this->createFluxServiceInstance();
         $sorted = $service->sortObjectsByProperty($input, $sortBy, $direction);
         $this->assertSame($expectedOutput, $sorted);
     }
@@ -299,7 +312,12 @@ class FluxServiceTest extends AbstractTestCase
     public function canResolvePrimaryConfigurationProviderWithEmptyArray()
     {
         $service = $this->createFluxServiceInstance();
-        $service->injectProviderResolver($this->getMockBuilder(ProviderResolver::class)->getMock());
+
+        GeneralUtility::setSingletonInstance(
+            ProviderResolver::class,
+            $this->getMockBuilder(ProviderResolver::class)->disableOriginalConstructor()->getMock()
+        );
+
         $result = $service->resolvePrimaryConfigurationProvider('foobar', null);
         $this->assertNull($result);
     }
@@ -324,7 +342,9 @@ class FluxServiceTest extends AbstractTestCase
         $configurationManager->expects($this->once())->method('getConfiguration')
             ->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT)
             ->willReturn(array('plugin.' => array('tx_test.' => array('settings.' => array('test_var' => 'test_val')))));
-        $service->injectConfigurationManager($configurationManager);
+
+        $this->setInaccessiblePropertyValue($service, 'configurationManager', $configurationManager);
+
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
         $this->assertEquals(array('test_var' => 'test_val'), $result);
     }
@@ -348,7 +368,9 @@ class FluxServiceTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $configurationManager->expects($this->never())->method('getConfiguration');
-        $service->injectConfigurationManager($configurationManager);
+
+        $this->setInaccessiblePropertyValue($service, 'configurationManager', $configurationManager);
+
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
         $this->assertEquals(array('test_var' => 'test_val'), $result);
     }
@@ -358,7 +380,10 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetSettingsForExtensionName()
     {
-        $instance = $this->getMockBuilder(FluxService::class)->setMethods(array('getTypoScriptByPath'))->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(array('getTypoScriptByPath'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance->expects($this->once())->method('getTypoScriptByPath')
             ->with('plugin.tx_underscore.settings')
             ->willReturn(array('test' => 'test'));
@@ -381,7 +406,10 @@ class FluxServiceTest extends AbstractTestCase
         $serviceClassName = class_exists(FlexFormService::class) ? FlexFormService::class : \TYPO3\CMS\Extbase\Service\FlexFormService::class;
         $flexFormService = $this->getMockBuilder($serviceClassName)->setMethods(['convertFlexFormContentToArray'])->disableOriginalConstructor()->getMock();
         $flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
-        $instance = $this->getMockBuilder(FluxService::class)->setMethods(['getFlexFormService'])->getMock();
+        $instance = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getFlexFormService'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance->method('getFlexFormService')->willReturn($flexFormService);
 
         $result = $instance->convertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer);
@@ -444,7 +472,11 @@ class FluxServiceTest extends AbstractTestCase
 
     public function testResolveConfigurationProviders(): void
     {
-        $subject = new FluxService();
+        $subject = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $resolver = $this->getMockBuilder(ProviderResolver::class)
             ->setMethods(['resolveConfigurationProviders'])
             ->disableOriginalConstructor()
@@ -454,7 +486,8 @@ class FluxServiceTest extends AbstractTestCase
             ->with('table', 'field', ['uid' => 123], 'ext', [GridProviderInterface::class])
             ->willReturn([]);
 
-        $subject->injectProviderResolver($resolver);
+        GeneralUtility::setSingletonInstance(ProviderResolver::class, $resolver);
+
         $subject->resolveConfigurationProviders(
             'table',
             'field',
