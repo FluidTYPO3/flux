@@ -15,8 +15,6 @@ use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Fluid Template preview renderer
@@ -79,10 +77,8 @@ class Preview implements PageLayoutViewDrawItemHookInterface
      */
     protected function getConfigurationService(): FluxService
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var FluxService $fluxService */
-        $fluxService = $objectManager->get(FluxService::class);
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
         return $fluxService;
     }
 }

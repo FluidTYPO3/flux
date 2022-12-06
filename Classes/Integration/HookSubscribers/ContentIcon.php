@@ -20,8 +20,6 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
 class ContentIcon
@@ -37,32 +35,22 @@ class ContentIcon
                         </div></div><div>',
     ];
 
-    protected ObjectManagerInterface $objectManager;
     protected FluxService $fluxService;
+    protected IconFactory $iconFactory;
     protected FrontendInterface $cache;
-
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    public function injectFluxService(FluxService $fluxService): void
-    {
-        $this->fluxService = $fluxService;
-    }
 
     public function __construct()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectObjectManager($objectManager);
-
         /** @var FluxService $fluxService */
-        $fluxService = $objectManager->get(FluxService::class);
-        $this->injectFluxService($fluxService);
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        $this->fluxService = $fluxService;
+
+        /** @var IconFactory $iconFactory */
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $this->iconFactory = $iconFactory;
 
         /** @var CacheManager $cacheManager */
-        $cacheManager = $objectManager->get(CacheManager::class);
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         $this->cache = $cacheManager->getCache('flux');
     }
 
@@ -120,10 +108,8 @@ class ContentIcon
 
     protected function drawGridToggle(array $row): string
     {
-        $iconFactory = $this->getIconFactory();
-
-        $collapseIcon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
-        $expandIcon = $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
+        $collapseIcon = $this->iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
+        $expandIcon = $this->iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
         $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
         $icon = $collapseIcon . $expandIcon;
 
@@ -184,15 +170,5 @@ class ContentIcon
     protected function getCookie(): ?string
     {
         return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getIconFactory(): IconFactory
-    {
-        /** @var IconFactory $iconFactory */
-        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        return $iconFactory;
     }
 }

@@ -19,27 +19,26 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 
-/**
- * PreviewTest
- */
 class PreviewTest extends AbstractTestCase
 {
-    /**
-     * Setup
-     */
     public function setUp(): void
     {
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->disableOriginalConstructor()->getMock();
-        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
-        $fluxService->injectConfigurationManager($configurationManager);
+        $fluxService = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->singletonInstances[FluxService::class] = $fluxService;
+
         $tempFiles = (array) glob('typo3temp/flux-preview-*.tmp');
         foreach ($tempFiles as $tempFile) {
             if (true === file_exists($tempFile)) {
                 unlink($tempFile);
             }
         }
+
+        parent::setUp();
     }
 
     /**
@@ -59,10 +58,7 @@ class PreviewTest extends AbstractTestCase
         Core::unregisterConfigurationProvider(DummyConfigurationProvider::class);
     }
 
-    /**
-     * @test
-     */
-    public function testAttachAssets()
+    public function testAttachAssets(): void
     {
         $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['loadRequireJsModule'])->disableOriginalConstructor()->getMock();
         $pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');

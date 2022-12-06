@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Flux Provider for runtime-defined content types
@@ -36,8 +37,12 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 
     protected ContentTypeManager $contentTypeDefinitions;
 
-    public function injectContentTypes(ContentTypeManager $contentTypes): void
+    public function __construct()
     {
+        parent::__construct();
+
+        /** @var ContentTypeManager $contentTypes */
+        $contentTypes = GeneralUtility::makeInstance(ContentTypeManager::class);
         $this->contentTypeDefinitions = $contentTypes;
     }
 

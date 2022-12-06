@@ -8,8 +8,6 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 trait DataAccessTrait
 {
@@ -33,8 +31,6 @@ trait DataAccessTrait
             return;
         }
 
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $contentObject = $this->configurationManager->getContentObject();
         if ($contentObject === null) {
             throw new \UnexpectedValueException(
@@ -51,12 +47,12 @@ trait DataAccessTrait
             $data = $implementation->getConverterForTableFieldAndRecord($table, $field, $record)->convertData($data);
         }
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         $provider = $providerResolver->resolvePrimaryConfigurationProvider($table, $field, $record);
         $form = $provider instanceof FormProviderInterface ? $provider->getForm($record) : null;
         if ($form) {
             /** @var FormDataTransformer $transformer */
-            $transformer = $objectManager->get(FormDataTransformer::class);
+            $transformer = GeneralUtility::makeInstance(FormDataTransformer::class);
             $data = $transformer->transformAccordingToConfiguration($data, $form);
         }
 

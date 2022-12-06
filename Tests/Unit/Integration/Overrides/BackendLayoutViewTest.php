@@ -16,11 +16,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderCollection;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * Class ColumnPositionsTest
- */
 class BackendLayoutViewTest extends AbstractTestCase
 {
     private ?FluxService $fluxService;
@@ -31,6 +27,7 @@ class BackendLayoutViewTest extends AbstractTestCase
             ->setMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->singletonInstances[FluxService::class] = $this->fluxService;
 
         parent::setUp();
     }
@@ -177,8 +174,6 @@ class BackendLayoutViewTest extends AbstractTestCase
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getGrid')->willReturn($grid);
 
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(null);
-
         $subject = $this->getMockBuilder(BackendLayoutView::class)
             ->setMethods(
                 [
@@ -186,6 +181,7 @@ class BackendLayoutViewTest extends AbstractTestCase
                     'getSelectedCombinedIdentifier',
                     'determinePageId',
                     'loadRecordFromTable',
+                    'resolvePrimaryProviderForRecord',
                 ]
             )
             ->disableOriginalConstructor()
@@ -196,7 +192,7 @@ class BackendLayoutViewTest extends AbstractTestCase
         $subject->method('getBackendLayoutForPage')->willReturn(
             $this->getMockBuilder(BackendLayout::class)->disableOriginalConstructor()->getMock()
         );
-
+        $subject->method('resolvePrimaryProviderForRecord')->willReturn(null);
         $subject->setProvider($provider);
 
         $parameters = [
@@ -234,6 +230,7 @@ class BackendLayoutViewTest extends AbstractTestCase
                     'determinePageId',
                     'loadRecordFromTable',
                     'getDataProviderCollection',
+                    'resolvePrimaryProviderForRecord',
                 ]
             )
             ->disableOriginalConstructor()
@@ -282,6 +279,7 @@ class BackendLayoutViewTest extends AbstractTestCase
                     'getSelectedBackendLayout',
                     'loadRecordFromTable',
                     'getLanguageService',
+                    'resolvePrimaryProviderForRecord',
                 ]
             )
             ->disableOriginalConstructor()
@@ -290,6 +288,7 @@ class BackendLayoutViewTest extends AbstractTestCase
         $subject->method('loadRecordFromTable')->willReturn(['uid' => 123]);
         $subject->method('getSelectedBackendLayout')->willReturn(['__items' => []]);
         $subject->method('getLanguageService')->willReturn($languageService);
+        $subject->method('resolvePrimaryProviderForRecord')->willReturn($provider);
 
         $subject->setRecord(['uid' => 123, 'colPos' => 12300]);
 
@@ -322,12 +321,5 @@ class BackendLayoutViewTest extends AbstractTestCase
 
         $output = $this->callInaccessibleMethod($subject, 'addColPosListLayoutItems', 123, []);
         self::assertSame([], $output);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturn($this->fluxService);
-        return $instance;
     }
 }

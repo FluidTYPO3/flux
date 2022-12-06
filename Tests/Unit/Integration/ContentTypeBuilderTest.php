@@ -18,7 +18,7 @@ use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -53,20 +53,14 @@ class ContentTypeBuilderTest extends AbstractTestCase
         AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
-    /**
-     * @return void
-     */
-    public function testAddBoilerplateTableConfiguration()
+    public function testAddBoilerplateTableConfiguration(): void
     {
         $subject = new ContentTypeBuilder();
         $subject->addBoilerplateTableConfiguration('foobar');
         $this->assertNotEmpty($GLOBALS['TCA']['tt_content']['types']['foobar']);
     }
 
-    /**
-     * @return void
-     */
-    public function testRegisterContentType()
+    public function testRegisterContentType(): void
     {
         $subject = $this->getMockBuilder(ContentTypeBuilder::class)->setMethods(['getCache', 'getRuntimeCache', 'createIcon'])->getMock();
         $subject->method('getCache')->willReturn($this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass());
@@ -89,15 +83,11 @@ class ContentTypeBuilderTest extends AbstractTestCase
         $this->assertNotEmpty($GLOBALS['TCA']['tt_content']['columns']['list_type']['config']['items']);
     }
 
-    /**
-     * @return void
-     */
-    public function testConfigureContentTypeFromTemplateFile()
+    public function testConfigureContentTypeFromTemplateFile(): void
     {
-        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
-        $objectManager->method('get')->with(Provider::class)->willReturn(new Provider());
-        $subject = $this->getMockBuilder(ContentTypeBuilder::class)->setMethods(['getObjectManager'])->getMock();
-        $subject->method('getObjectManager')->willReturn($objectManager);
+        $provider = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock();
+        GeneralUtility::addInstance(Provider::class, $provider);
+        $subject = $this->getMockBuilder(ContentTypeBuilder::class)->setMethods(['dummy'])->getMock();
         $result = $subject->configureContentTypeFromTemplateFile(
             'FluidTYPO3.Flux',
             $this->getAbsoluteFixtureTemplatePathAndFilename(static::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL)

@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
+use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 
 class SelectTest extends AbstractFieldTest
 {
@@ -105,13 +106,19 @@ class SelectTest extends AbstractFieldTest
     {
         $GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';
 
-        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods(['getTypoScriptByPath'])->getMock();
+        $fluxService = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $fluxService->method('getTypoScriptByPath')->willReturn([]);
 
         /** @var Select $instance */
         $instance = $this->getMockBuilder(Select::class)->setMethods(['getConfigurationService'])->getMock();
         $instance->method('getConfigurationService')->willReturn($fluxService);
-        $query = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query')->setMethods(array('execute', 'getType'))->disableOriginalConstructor()->getMock();
+        $query = $this->getMockBuilder(Query::class)
+            ->setMethods(array('execute', 'getType'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $query->expects($this->any())->method('getType')->will($this->returnValue('foobar'));
         $query->expects($this->any())->method('execute')->will($this->returnValue(array(
             new FrontendUser('user1'),
@@ -132,7 +139,10 @@ class SelectTest extends AbstractFieldTest
     {
         $table = 'foo';
         $type = 'bar';
-        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
+        $service = $this->getMockBuilder(FluxService::class)
+            ->setMethods(array('getTypoScriptByPath'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $service->expects($this->once())->method('getTypoScriptByPath')->willReturn($table . 'suffix');
         $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getConfigurationService'))->getMock();
         $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);

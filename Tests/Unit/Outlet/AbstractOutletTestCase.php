@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Validation\Validator\NotEmptyValidator;
 use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
 use TYPO3\CMS\Fluid\View\TemplateView;
@@ -186,17 +185,5 @@ abstract class AbstractOutletTestCase extends AbstractTestCase
         );
         $output = $instance->setPipesIn($pipes)->setPipesOut($pipes)->fill($data)->produce();
         $this->assertSame($data, $output);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [StandardPipe::class, new StandardPipe()],
-                [FlashMessagePipe::class, new FlashMessagePipe()],
-            ]
-        );
-        return $instance;
     }
 }

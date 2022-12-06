@@ -15,8 +15,6 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Fluid File-based Content Type Definition
@@ -58,10 +56,8 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getForm(array $record = []): Form
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         $provider = $providerResolver->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
@@ -78,10 +74,8 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getGrid(array $record = []): Form\Container\Grid
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         $provider = $providerResolver->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',

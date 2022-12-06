@@ -16,48 +16,25 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class DynamicFlexForm extends FlexFormTools
 {
-    protected ObjectManagerInterface $objectManager;
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
 
     protected static bool $recursed = false;
 
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    public function injectConfigurationService(FluxService $service): void
-    {
-        $this->configurationService = $service;
-    }
-
-    public function injectRecordService(WorkspacesAwareRecordService $recordService): void
-    {
-        $this->recordService = $recordService;
-    }
-
     public function __construct()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectObjectManager($objectManager);
-
         /** @var FluxService $fluxService */
-        $fluxService = $objectManager->get(FluxService::class);
-        $this->injectConfigurationService($fluxService);
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        $this->configurationService = $fluxService;
 
         /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
-        $workspacesAwareRecordService = $objectManager->get(WorkspacesAwareRecordService::class);
-        $this->injectRecordService($workspacesAwareRecordService);
+        $workspacesAwareRecordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
+        $this->recordService = $workspacesAwareRecordService;
     }
 
     /**

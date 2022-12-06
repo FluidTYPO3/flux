@@ -15,18 +15,10 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
 class FormDataTransformer
 {
-    protected ObjectManagerInterface $objectManager;
-
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
     /**
      * Transforms members on $values recursively according to the provided
      * Flux configuration extracted from a Flux template. Uses "transform"
@@ -116,7 +108,7 @@ class FormDataTransformer
             /** @var class-string $class */
             [$class, $function] = explode('->', $dataType);
             /** @var object $object */
-            $object = $this->objectManager->get($class);
+            $object = GeneralUtility::makeInstance($class);
             return $object->{$function}($value);
         } else {
             return $this->getObjectOfType($dataType, $value);
@@ -148,7 +140,7 @@ class FormDataTransformer
         if ($isModel && null === $container) {
             if (class_exists($repositoryClassName)) {
                 /** @var RepositoryInterface $repository */
-                $repository = $this->objectManager->get($repositoryClassName);
+                $repository = GeneralUtility::makeInstance($repositoryClassName);
                 $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
                 /** @var DomainObjectInterface|false $firstRepositoryObject */
                 $firstRepositoryObject = reset($repositoryObjects);
@@ -156,16 +148,16 @@ class FormDataTransformer
             }
         } elseif (class_exists($dataType)) {
             // using constructor value to support objects like DateTime
-            return $this->objectManager->get($dataType, $uids);
+            return GeneralUtility::makeInstance($dataType, $uids);
         }
         // slower decisions with support for type-hinted collection objects
         if ($container && $object) {
             if ($isModel && class_exists($repositoryClassName) && count($identifiers) > 0) {
                 /** @var RepositoryInterface $repository */
-                $repository = $this->objectManager->get($repositoryClassName);
+                $repository = GeneralUtility::makeInstance($repositoryClassName);
                 return $this->loadObjectsFromRepository($repository, $identifiers);
             } else {
-                $container = $this->objectManager->get($container);
+                $container = GeneralUtility::makeInstance($container);
                 return $container;
             }
         }

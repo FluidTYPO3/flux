@@ -21,8 +21,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 abstract class AbstractFormComponent implements FormInterface
@@ -401,20 +399,10 @@ abstract class AbstractFormComponent implements FormInterface
     /**
      * @codeCoverageIgnore
      */
-    protected function getObjectManager(): ObjectManagerInterface
-    {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        return $objectManager;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
     protected function getConfigurationService(): FluxService
     {
         /** @var FluxService $fluxService */
-        $fluxService = $this->getObjectManager()->get(FluxService::class);
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
         return $fluxService;
     }
 

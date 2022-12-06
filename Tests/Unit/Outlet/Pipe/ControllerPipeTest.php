@@ -10,10 +10,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
 use PHPUnit\Framework\MockObject\MockObject;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\Response;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * ControllerPipeTest
@@ -37,22 +37,13 @@ class ControllerPipeTest extends AbstractPipeTestCase
     protected function setUp(): void
     {
         $this->response = $this->getMockBuilder(Response::class)->setMethods(['getContent'])->getMock();
-    }
+        $this->singletonInstances[Dispatcher::class] = $this->getMockBuilder(Dispatcher::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::addInstance(Request::class, new Request());
+        GeneralUtility::addInstance(Response::class, $this->response);
 
-    protected function createInstance()
-    {
-        /** @var ControllerPipe $instance */
-        $instance = parent::createInstance();
-        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
-        $objectManager->method('get')->willReturnMap(
-            [
-                [Request::class, new Request()],
-                [Response::class, $this->response],
-                [Dispatcher::class, $this->getMockBuilder(Dispatcher::class)->disableOriginalConstructor()->getMock()],
-            ]
-        );
-        $instance->injectObjectManager($objectManager);
-        return $instance;
+        parent::setUp();
     }
 
     /**

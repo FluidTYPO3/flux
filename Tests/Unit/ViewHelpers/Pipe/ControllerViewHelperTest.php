@@ -8,9 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class ControllerViewHelperTest extends AbstractViewHelperTestCase
 {
@@ -34,16 +32,5 @@ class ControllerViewHelperTest extends AbstractViewHelperTestCase
             array(array('controller' => 'SomeClass')),
             array(array('controller' => 'SomeClass', 'action' => 'foobar')),
         );
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $objectManager = parent::createObjectManagerInstance();
-        $objectManager->method('get')->willReturnMap(
-            [
-                [ControllerPipe::class, new ControllerPipe()],
-            ]
-        );
-        return $objectManager;
     }
 }

@@ -17,7 +17,6 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class BackendLayoutDataProviderTest
@@ -38,6 +37,9 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
             ->setMethods(['resolvePageProvider'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->singletonInstances[WorkspacesAwareRecordService::class] = $this->recordService;
+        $this->singletonInstances[FluxService::class] = $this->fluxService;
 
         parent::setUp();
     }
@@ -117,7 +119,10 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
             ->getMock();
         $grid->method('buildBackendLayout')->willReturn($backendLayout);
 
-        $provider = $this->getMockBuilder(PageProvider::class)->setMethods(['getGrid'])->getMock();
+        $provider = $this->getMockBuilder(PageProvider::class)
+            ->setMethods(['getGrid'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->method('getGrid')->willReturn($grid);
 
         $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
@@ -156,17 +161,5 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
             ->setMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [WorkspacesAwareRecordService::class, $this->recordService],
-                [FluxService::class, $this->fluxService],
-            ]
-        );
-        return $instance;
     }
 }
