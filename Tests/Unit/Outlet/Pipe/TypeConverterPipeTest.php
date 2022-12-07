@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverter\FloatConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
@@ -25,16 +23,6 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     protected $defaultData = [
         'targetType' => 'float',
     ];
-
-    protected function createInstance()
-    {
-        /** @var TypeConverterPipe $instance */
-        $instance = parent::createInstance();
-        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
-        $objectManager->method('get')->willReturn(new StringConverter());
-        $instance->injectObjectManager($objectManager);
-        return $instance;
-    }
 
     /**
      * @test

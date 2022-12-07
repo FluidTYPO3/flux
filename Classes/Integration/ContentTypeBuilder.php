@@ -26,8 +26,6 @@ use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 /**
@@ -90,7 +88,7 @@ class ContentTypeBuilder
         $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerActionName);
 
         /** @var BasicProviderInterface $provider */
-        $provider = $this->getObjectManager()->get($providerClassName);
+        $provider = GeneralUtility::makeInstance($providerClassName);
         if (!$provider instanceof BasicProviderInterface
             || !$provider instanceof RecordProviderInterface
             || !$provider instanceof ControllerProviderInterface
@@ -343,16 +341,6 @@ class ContentTypeBuilder
             )
         );
         $groups[$groupName] = true;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getObjectManager(): ObjectManagerInterface
-    {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        return $objectManager;
     }
 
     /**

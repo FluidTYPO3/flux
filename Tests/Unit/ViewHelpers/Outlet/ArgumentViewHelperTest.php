@@ -11,12 +11,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Outlet;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\Outlet\OutletInterface;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleArgumentViewHelper;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\ArgumentViewHelper;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\ValidateViewHelper;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ArgumentViewHelperTest extends AbstractViewHelperTestCase
 {
@@ -31,17 +30,14 @@ class ArgumentViewHelperTest extends AbstractViewHelperTestCase
 
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters'] = [];
 
-        $objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
-        $objectManager->method('get')->willReturn($this->argument);
+        GeneralUtility::addInstance(OutletArgument::class, $this->argument);
 
-        AccessibleArgumentViewHelper::setObjectManager($objectManager);
         parent::setUp();
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
-        AccessibleArgumentViewHelper::setObjectManager(null);
     }
 
     public function testAddsArgumentToOutlet()
@@ -52,7 +48,7 @@ class ArgumentViewHelperTest extends AbstractViewHelperTestCase
         $form->expects($this->once())->method('getOutlet')->willReturn($outlet);
         $this->viewHelperVariableContainer->add(AbstractFormViewHelper::SCOPE, 'form', $form);
 
-        AccessibleArgumentViewHelper::renderStatic(['name' => 'test', 'type' => 'string'], function () {
+        ArgumentViewHelper::renderStatic(['name' => 'test', 'type' => 'string'], function () {
             return null;
         }, $this->renderingContext);
     }

@@ -12,10 +12,20 @@ use FluidTYPO3\Flux\Content\ContentTypeForm;
 use FluidTYPO3\Flux\Content\ContentTypeProvider;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class ContentTypeProviderTest extends AbstractTestCase
 {
+    protected function setUp(): void
+    {
+        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        parent::setUp();
+    }
+
     public function testTriggersOnMatchedTableAndFieldWithAnyRowAndAnyExtension(): void
     {
         $subject = new ContentTypeProvider();

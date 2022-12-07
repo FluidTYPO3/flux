@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class SiteConfigurationProviderItemsTest extends AbstractTestCase
 {
@@ -27,6 +26,8 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
             ->setMethods(['getAvailablePageTemplateFiles'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->singletonInstances[PageService::class] = $this->pageService;
 
         parent::setUp();
     }
@@ -96,12 +97,5 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
                 $this->getMockBuilder(TcaSelectItems::class)->disableOriginalConstructor()->getMock()
             )
         );
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturn($this->pageService);
-        return $instance;
     }
 }

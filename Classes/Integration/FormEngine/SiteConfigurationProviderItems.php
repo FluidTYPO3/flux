@@ -6,8 +6,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\PageService;
 use TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class SiteConfigurationProviderItems
@@ -27,10 +25,8 @@ class SiteConfigurationProviderItems
 
     public function processPageTemplateItems(array $tca, TcaSelectItems $bar): array
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var PageService $pageService */
-        $pageService = $objectManager->get(PageService::class);
+        $pageService = GeneralUtility::makeInstance(PageService::class);
         foreach ($pageService->getAvailablePageTemplateFiles() as $extensionName => $templateGroup) {
             foreach ($templateGroup as $form) {
                 /** @var string|null $templateFilename */

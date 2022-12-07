@@ -7,8 +7,6 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDef
 use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
 
@@ -55,10 +53,8 @@ class ContentTypeFluxTemplateDumper
 
     protected function getContentType(string $contentTypeName): ?ContentTypeDefinitionInterface
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = $objectManager->get(ContentTypeManager::class);
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
         return $contentTypeManager->determineContentTypeForTypeString($contentTypeName);
     }
 

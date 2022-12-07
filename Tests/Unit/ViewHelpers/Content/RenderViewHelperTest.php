@@ -22,9 +22,6 @@ use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\TextNode;
 
 class RenderViewHelperTest extends AbstractViewHelperTestCase
 {
-    /**
-     * Setup
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -54,7 +51,10 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
             ]
         );
 
-        $provider = new Provider();
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->setGrid($grid);
         $provider->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 

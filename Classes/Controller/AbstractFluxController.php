@@ -17,7 +17,6 @@ use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -52,8 +51,10 @@ abstract class AbstractFluxController extends ActionController
     protected FluxService $configurationService;
     protected ?ControllerProviderInterface $provider = null;
 
-    public function injectConfigurationService(FluxService $configurationService): void
+    public function __construct()
     {
+        /** @var FluxService $configurationService */
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $configurationService;
     }
 
@@ -201,7 +202,7 @@ abstract class AbstractFluxController extends ActionController
         $view->setControllerContext($this->controllerContext);
 
         /** @var TemplatePaths $templatePaths */
-        $templatePaths = $this->objectManager->get(TemplatePaths::class, $extensionKey);
+        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $extensionKey);
 
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $view->getRenderingContext();
@@ -230,7 +231,7 @@ abstract class AbstractFluxController extends ActionController
             ? $this->defaultViewObjectName
             : $this->resolveViewObjectName()) ?: $this->defaultViewObjectName;
         /** @var ViewInterface $view */
-        $view = $this->objectManager->get($viewClassName);
+        $view = GeneralUtility::makeInstance($viewClassName);
         return $view;
     }
 
@@ -290,7 +291,7 @@ abstract class AbstractFluxController extends ActionController
         if (isset($this->responseFactory)) {
             $response = $this->responseFactory->createResponse();
         } else {
-            $response = $this->objectManager->get(Response::class);
+            $response = GeneralUtility::makeInstance(Response::class);
         }
     
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);

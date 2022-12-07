@@ -13,17 +13,11 @@ use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * ProviderTest
- */
 class ProviderTest extends AbstractProviderTest
 {
-
-    /**
-     * @var array
-     */
-    protected $definition = array(
+    protected array $definition = array(
         'name' => 'test',
         'label' => 'Test provider',
         'tableName' => 'tt_content',
@@ -100,7 +94,9 @@ class ProviderTest extends AbstractProviderTest
         $provider->setExtensionKey('test');
         $resolver = $this->getMockBuilder(ProviderResolver::class)->setMethods(['resolvePrimaryConfigurationProvider'])->getMock();
         $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
-        $service->injectProviderResolver($resolver);
+
+        GeneralUtility::setSingletonInstance(ProviderResolver::class, $resolver);
+
         $result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', [], 'flux');
         $this->assertSame($provider, $result);
         $extensionKey = $result->getExtensionKey($record);

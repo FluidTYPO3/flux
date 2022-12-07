@@ -57,7 +57,10 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             ]
         );
 
-        $provider = new Provider();
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->setGrid($grid);
         $provider->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
@@ -77,7 +80,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         );
         $variables = array(
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren,
-            'provider' => new Provider()
+            'provider' => $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
         );
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);

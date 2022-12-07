@@ -8,8 +8,8 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Error;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 
@@ -21,16 +21,10 @@ use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
  */
 class TypeConverterPipe extends AbstractPipe implements PipeInterface
 {
-    protected ObjectManagerInterface $objectManager;
     protected ?TypeConverterInterface $typeConverter = null;
 
     protected ?string $targetType = null;
     protected ?string $propertyName = null;
-
-    public function injectObjectManager(ObjectManagerInterface $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
 
     /**
      * @param TypeConverterInterface|class-string $typeConverter
@@ -39,7 +33,7 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
     {
         if (is_string($typeConverter)) {
             /** @var TypeConverterInterface $typeConverter */
-            $typeConverter = $this->objectManager->get($typeConverter);
+            $typeConverter = GeneralUtility::makeInstance($typeConverter);
         }
         $this->typeConverter = $typeConverter;
         return $this;

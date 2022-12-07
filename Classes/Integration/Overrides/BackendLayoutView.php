@@ -14,8 +14,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 {
@@ -162,10 +160,8 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 
     protected function resolvePrimaryProviderForRecord(string $table, array $record): ?GridProviderInterface
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var FluxService $fluxService */
-        $fluxService = $objectManager->get(FluxService::class);
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
         return $fluxService->resolvePrimaryConfigurationProvider(
             $table,
             null,

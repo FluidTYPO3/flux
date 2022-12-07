@@ -35,16 +35,18 @@ class PageControllerTest extends AbstractTestCase
     {
         /** @var FluxService|MockObject $pageConfigurationService */
         $pageConfigurationService = $this->getMockBuilder(
-            FluxService::class
-        )->setMethods(
-            ['resolvePrimaryConfigurationProvider']
-        )->getMock();
+                FluxService::class
+            )->setMethods(
+                ['resolvePrimaryConfigurationProvider']
+            )->disableOriginalConstructor()
+            ->getMock();
         /** @var PageService $pageService */
         $pageService = $this->getMockBuilder(
-            PageService::class
-        )->setMethods(
-            ['getPageTemplateConfiguration']
-        )->getMock();
+                PageService::class
+            )->setMethods(
+                ['getPageTemplateConfiguration']
+            )->disableOriginalConstructor()
+            ->getMock();
         $pageConfigurationService->expects($this->once())->method('resolvePrimaryConfigurationProvider');
         /** @var PageController|MockObject $instance */
         $instance = $this->getMockBuilder(PageController::class)->setMethods(['getRecord'])->disableOriginalConstructor()->getMock();

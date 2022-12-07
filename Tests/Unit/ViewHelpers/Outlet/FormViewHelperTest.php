@@ -16,7 +16,6 @@ use FluidTYPO3\Flux\ViewHelpers\Outlet\FormViewHelper;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 class FormViewHelperTest extends AbstractViewHelperTestCase
@@ -51,7 +50,10 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
 
     public function testAddsTableAndUidHiddenFields()
     {
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['getTableName'])->getMock();
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(['getTableName'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->expects($this->once())->method('getTableName')->willReturn('foobar');
         $method = new \ReflectionMethod(FormViewHelper::class, 'renderAdditionalIdentityFields');
         $method->setAccessible(true);

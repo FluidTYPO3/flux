@@ -16,11 +16,8 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * CoreTest
- */
 class CoreTest extends AbstractTestCase
 {
     protected $objectManager;
@@ -29,21 +26,11 @@ class CoreTest extends AbstractTestCase
     {
         parent::setUp();
 
-        $this->objectManager = $this->getMockBuilder(ObjectManagerInterface::class)->getMockForAbstractClass();
-        $this->objectManager->method('get')->willReturnMap(
-            [
-                [Provider::class, new Provider()],
-            ]
+        GeneralUtility::addInstance(
+            Provider::class,
+            $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
         );
-        AccessibleCore::setObjectManager($this->objectManager);
         AccessibleCore::resetQueuedRegistrations();
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        AccessibleCore::setObjectManager(null);
     }
 
     /**
@@ -123,7 +110,7 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterProviderInstance()
     {
-        $provider = new Provider();
+        $provider = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock();
         AccessibleCore::registerConfigurationProvider($provider);
         $registered = AccessibleCore::getRegisteredFlexFormProviders();
         $this->assertContains($provider, $registered);

@@ -9,8 +9,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\AbstractProvider;
-use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
