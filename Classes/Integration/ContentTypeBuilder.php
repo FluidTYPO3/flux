@@ -210,7 +210,9 @@ class ContentTypeBuilder
 
     protected function addIcon(Form $form, string $contentType): string
     {
-        if (isset($GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType])) {
+        if (isset($GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType])
+            && preg_match('~^(?!content-)[^./]+$~', $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType])
+        ) {
             return $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType];
         }
         $icon = MiscellaneousUtility::getIconForTemplate($form);
