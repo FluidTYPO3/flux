@@ -13,15 +13,20 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer;
+use TYPO3\CMS\Backend\View\PageLayoutContext;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Configuration\Features;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Lang\LanguageService;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
 /**
@@ -38,79 +43,31 @@ class PreviewView extends TemplateView
     const PREVIEW_SECTION = 'Preview';
     const CONTROLLER_NAME = 'Content';
 
-    /**
-     * @var array
-     */
-    protected $templates = [
-        'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">
-							%s
-						</div>',
-        'link' => '<a href="%s" title="%s"
-                      class="btn btn-default btn-sm">%s %s</a>'
+    protected array $templates = [
+        'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">%s</div>',
+        'link' => '<a href="%s" title="%s" class="btn btn-default btn-sm">%s %s</a>'
     ];
 
-    /**
-     * @var ConfigurationManagerInterface
-     */
-    protected $configurationManager;
+    protected ConfigurationManagerInterface $configurationManager;
+    protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $workspacesAwareRecordService;
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $workspacesAwareRecordService;
-
-    /**
-     * @var RecordService
-     */
-    protected $recordService;
-
-    /**
-     * @param ConfigurationManagerInterface $configurationManager
-     * @return void
-     */
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
+    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
     }
 
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
+    public function injectConfigurationService(FluxService $configurationService): void
     {
         $this->configurationService = $configurationService;
     }
 
-    /**
-     * @param WorkspacesAwareRecordService $workspacesAwareRecordService
-     * @return void
-     */
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService)
+    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService): void
     {
         $this->workspacesAwareRecordService = $workspacesAwareRecordService;
     }
 
-    /**
-     * @param RecordService $recordService
-     * @return void
-     */
-    public function injectRecordService(RecordService $recordService)
-    {
-        $this->recordService = $recordService;
-    }
-
-    /**
-     * @param ProviderInterface $provider
-     * @param array $row
-     * @return string
-     */
-    public function getPreview(ProviderInterface $provider, array $row)
+    public function getPreview(ProviderInterface $provider, array $row): string
     {
         $form = $provider->getForm($row);
         $options = $this->getPreviewOptions($form);
@@ -123,7 +80,7 @@ class PreviewView extends TemplateView
 
         $gridContent = $this->renderGrid($provider, $row, $form);
         $collapsedClass = '';
-        if (in_array($row['uid'], (array) json_decode((string) $_COOKIE['fluxCollapseStates']))) {
+        if (in_array($row['uid'], (array) json_decode($this->getCookie() ?? ''))) {
             $collapsedClass = ' flux-grid-hidden';
         }
         $gridContent = sprintf(
@@ -140,14 +97,13 @@ class PreviewView extends TemplateView
 
         $previewContent = trim($previewContent);
 
-        return HookHandler::trigger(HookHandler::PREVIEW_RENDERED, ['form' => $form, 'preview' => $previewContent])['preview'];
+        return HookHandler::trigger(
+            HookHandler::PREVIEW_RENDERED,
+            ['form' => $form, 'preview' => $previewContent]
+        )['preview'];
     }
 
-    /**
-     * @param Form $form
-     * @return array
-     */
-    protected function getPreviewOptions(Form $form = null)
+    protected function getPreviewOptions(Form $form = null): array
     {
         if (!is_object($form) || !$form->hasOption(static::OPTION_PREVIEW)) {
             return [
@@ -156,14 +112,10 @@ class PreviewView extends TemplateView
             ];
         }
 
-        return $form->getOption(static::OPTION_PREVIEW);
+        return (array) $form->getOption(static::OPTION_PREVIEW);
     }
 
-    /**
-     * @param array $options
-     * @return string
-     */
-    protected function getOptionMode(array $options = null)
+    protected function getOptionMode(array $options = []): string
     {
         if (isset($options[static::OPTION_MODE])) {
             if (static::MODE_APPEND === $options[static::OPTION_MODE] ||
@@ -176,22 +128,12 @@ class PreviewView extends TemplateView
         return static::MODE_APPEND;
     }
 
-    /**
-     * @param array $options
-     * @return boolean
-     */
-    protected function getOptionToggle(array $options = null)
+    protected function getOptionToggle(array $options = []): bool
     {
         return (boolean) ($options[static::OPTION_TOGGLE] ?? true);
     }
 
-    /**
-     * @param ProviderInterface $provider
-     * @param array $row
-     * @param Form $form
-     * @return string|NULL
-     */
-    protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null)
+    protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null): ?string
     {
         $templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
         if (!$templatePathAndFilename) {
@@ -207,26 +149,21 @@ class PreviewView extends TemplateView
 
         if (is_object($form)) {
             $formLabel = $form->getLabel();
-            $label = $this>$this->getLanguageService()->sL($formLabel);
+            $label = $this->getLanguageService()->sL((string) $formLabel);
             $variables['label'] = $label;
         }
 
-        $this->getRenderingContext()->setControllerName($provider->getControllerNameFromRecord($row));
-        $this->getRenderingContext()->setControllerAction($provider->getControllerActionFromRecord($row));
-        $this->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName(
+        $renderingContext = $this->getRenderingContext();
+        $renderingContext->setControllerName($provider->getControllerNameFromRecord($row));
+        $renderingContext->setControllerAction($provider->getControllerActionFromRecord($row));
+        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
             ExtensionNamingUtility::getExtensionKey($extensionKey)
         );
-        $this->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
+        $renderingContext->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
         return $this->renderSection('Preview', $variables, true);
     }
 
-    /**
-     * @param ProviderInterface $provider
-     * @param array $row
-     * @param Form $form
-     * @return string
-     */
-    protected function renderGrid(ProviderInterface $provider, array $row, Form $form)
+    protected function renderGrid(ProviderInterface $provider, array $row, Form $form): string
     {
         $content = '';
         $grid = $provider->getGrid($row);
@@ -246,145 +183,195 @@ class PreviewView extends TemplateView
                 $grid->buildExtendedBackendLayoutArray($row['uid'])['__items']
             );
 
+            $pageUid = $row['pid'];
+            if (($workspaceId = $this->getBackendUser()->workspace) > 0) {
+                $workspaceVersion = $this->fetchWorkspaceVersionOfRecord($workspaceId, $row['uid']);
+                $pageUid = $workspaceVersion['pid'] ?? $pageUid;
+            }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
-            $pageLayoutView->start($row['pid'], 'tt_content', 0);
-            $pageLayoutView->generateList();
+            if ($pageLayoutView instanceof BackendLayoutRenderer) {
+                $content .= $pageLayoutView->drawContent(false);
+            } elseif (method_exists($pageLayoutView, 'start') && method_exists($pageLayoutView, 'generateList')) {
+                $pageLayoutView->start($pageUid, 'tt_content', 0);
+                $pageLayoutView->generateList();
+                $content .= $pageLayoutView->HTMLcode;
+            } else {
+                $content .= $pageLayoutView->getTable_tt_content($row['pid']);
+            }
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
-
-            $content .= $pageLayoutView->HTMLcode;
         }
         return $content;
     }
 
-    /**
-     * @param array $row
-     * @param string $content
-     * @return string
-     */
-    protected function drawGridToggle(array $row, $content)
+    protected function drawGridToggle(array $row, string $content): string
     {
         return sprintf($this->templates['gridToggle'], $row['uid'], $content);
     }
 
     /**
-     * @param array $row
-     * @return string
-     */
-    protected function isRowCollapsed(array $row)
-    {
-        $collapsed = false;
-        $cookie = $this->getCookie();
-        if (null !== $_COOKIE) {
-            $cookie = json_decode(urldecode($cookie));
-            $collapsed = in_array($row['uid'], (array) $cookie);
-        }
-        return $collapsed;
-    }
-
-    /**
-     * @return string|NULL
-     */
-    protected function getCookie()
-    {
-        return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
-    }
-
-    /**
-     * @param ProviderInterface $provider
-     * @param array $row
-     * @return PageLayoutView
+     * @return PageLayoutView|BackendLayoutRenderer
      */
     protected function getInitializedPageLayoutView(ProviderInterface $provider, array $row)
     {
-        $pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $row['pid']);
-        $moduleData = $GLOBALS['BE_USER']->getModuleData('web_layout', '');
+        $pageId = (int) $row['pid'];
+        $pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $pageId);
+        $moduleData = $this->getBackendUser()->getModuleData('web_layout', '');
         $showHiddenRecords = (int) ($moduleData['tt_content_showHidden'] ?? 1);
 
         // For all elements to be shown in draft workspaces & to also show hidden elements by default if user hasn't
         // disabled the option analog behavior to the PageLayoutController at the end of menuConfig()
-        if ($this->getActiveWorkspaceId() != 0
-            || !isset($moduleData['tt_content_showHidden'])
-            || $moduleData['tt_content_showHidden'] !== '0'
-        ) {
+        if ($this->getActiveWorkspaceId() !== 0 || !$showHiddenRecords) {
             $moduleData['tt_content_showHidden'] = 1;
         }
 
-        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : $row['uid'];
+        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : ($row['t3ver_oid'] ?: $row['uid']);
 
-        $dblist = $this->getPageLayoutView($provider, $row);
-        $layoutConfiguration = $provider->getGrid($row)->buildExtendedBackendLayoutArray($parentRecordUid);
+        $backendLayout = $provider->getGrid($row)->buildBackendLayout($parentRecordUid);
+        $layoutConfiguration = $backendLayout->getStructure();
 
-        $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList']);
+        /** @var Features $features */
+        $features = GeneralUtility::makeInstance(Features::class);
+        $fluidBasedLayoutFeatureEnabled = $features->isFeatureEnabled('fluidBasedPageModule');
 
-        $dblist->script = 'db_layout.php';
-        $dblist->showIcon = 1;
-        $dblist->setLMargin = 0;
-        $dblist->doEdit = 1;
-        $dblist->no_noWrap = 1;
-        $dblist->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
-        $dblist->id = $row['pid'];
-        $dblist->table = 'tt_content';
-        $dblist->tableList = 'tt_content';
-        $dblist->currentTable = 'tt_content';
-        $dblist->tt_contentConfig['showCommands'] = 1;
-        $dblist->tt_contentConfig['showInfo'] = 1;
-        $dblist->tt_contentConfig['single'] = 0;
-        $dblist->nextThree = 1;
-        $dblist->tt_contentConfig['sys_language_uid'] = $row['sys_language_uid'];
-        $dblist->tt_contentConfig['showHidden'] = $showHiddenRecords;
-        $dblist->tt_contentConfig['activeCols'] = $columnsAsCSV;
-        $dblist->tt_contentConfig['cols'] = $columnsAsCSV;
-        $dblist->CType_labels = [];
-        $dblist->setPageinfo(BackendUtility::readPageAccess($row['pid'], ''));
-        foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
-            $dblist->CType_labels[$val[1]] = $this->getLanguageService()->sL($val[0]);
+        if ($fluidBasedLayoutFeatureEnabled) {
+            /** @var SiteFinder $siteFinder */
+            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+            $site = $siteFinder->getSiteByPageId($pageId);
+            $language = null;
+            if ($row['sys_language_uid'] >= 0) {
+                $language = $site->getLanguageById((int) $row['sys_language_uid']);
+            }
+
+            /** @var PageLayoutContext $context */
+            $context = GeneralUtility::makeInstance(
+                PageLayoutContext::class,
+                $this->fetchPageRecordWithoutOverlay($pageId),
+                $backendLayout
+            );
+            if (isset($language)) {
+                 $context = $context->cloneForLanguage($language);
+            }
+
+            $configuration = $context->getDrawingConfiguration();
+            $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
+
+            if (isset($language)) {
+                $configuration->setSelectedLanguageId($language->getLanguageId());
+            }
+
+            /** @var BackendLayoutRenderer $backendLayoutRenderer */
+            $backendLayoutRenderer = GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
+            return $backendLayoutRenderer;
         }
-        $dblist->itemLabels = [];
-        foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
-            $dblist->itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
-        }
-        return $dblist;
-    }
 
-    /**
-     * @param ProviderInterface $provider
-     * @param array $record
-     * @return PageLayoutView
-     */
-    protected function getPageLayoutView(ProviderInterface $provider, array $record)
-    {
+        $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
+
         /** @var PageLayoutView $view */
-        $view = GeneralUtility::makeInstance(PageLayoutView::class);
+        $view = GeneralUtility::makeInstance(PageLayoutView::class, $eventDispatcher);
         $view->setProvider($provider);
-        $view->setRecord($record);
+        $view->setRecord($row);
+
+        $contentTypeLabels = [];
+        foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
+            $contentTypeLabels[$val[1]] = $this->getLanguageService()->sL($val[0]);
+        }
+        $itemLabels = [];
+        foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
+            $itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
+        }
+
+        array_push(
+            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
+            ...($layoutConfiguration['__items'] ?? [])
+        );
+
+        $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList'] ?? []);
+
+        $view->script = 'db_layout.php';
+        $view->showIcon = 1;
+        $view->setLMargin = 0;
+        $view->doEdit = 1;
+        $view->no_noWrap = 1;
+        $view->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
+        $view->id = $row['pid'];
+        $view->table = 'tt_content';
+        $view->tableList = 'tt_content';
+        $view->currentTable = 'tt_content';
+        $view->tt_contentConfig['showCommands'] = 1;
+        $view->tt_contentConfig['showInfo'] = 1;
+        $view->tt_contentConfig['single'] = 0;
+        $view->nextThree = 1;
+        $view->tt_contentConfig['sys_language_uid'] = (int) $row['sys_language_uid'];
+        $view->tt_contentConfig['showHidden'] = $showHiddenRecords;
+        $view->tt_contentConfig['activeCols'] = $columnsAsCSV;
+        $view->tt_contentConfig['cols'] = $columnsAsCSV;
+        $view->CType_labels = $contentTypeLabels;
+        $view->itemLabels = $itemLabels;
+
+        if (($pageInfo = $this->checkAccessToPage($pageId))) {
+            $view->setPageinfo($pageInfo);
+        }
+
         return $view;
     }
 
     /**
      * @codeCoverageIgnore
-     * @return BackendUserAuthentication
      */
-    protected function getBackendUser()
+    protected function fetchWorkspaceVersionOfRecord(int $workspaceId, int $recordUid): ?array
+    {
+        /** @var array|false $workspaceVersion */
+        $workspaceVersion = BackendUtility::getWorkspaceVersionOfRecord($workspaceId, 'tt_content', $recordUid);
+        return $workspaceVersion ?: null;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return array|false
+     */
+    protected function checkAccessToPage(int $pageId)
+    {
+        return BackendUtility::readPageAccess($pageId, '');
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function fetchPageRecordWithoutOverlay(int $pageId): ?array
+    {
+        return BackendUtility::getRecord('pages', $pageId);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
     }
 
     /**
      * @codeCoverageIgnore
-     * @return LanguageService
      */
-    protected function getLanguageService()
+    protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }
 
     /**
      * @codeCoverageIgnore
-     * @return integer
      */
-    protected function getActiveWorkspaceId()
+    protected function getCookie(): ?string
     {
-        return (integer) (true === isset($GLOBALS['BE_USER']->workspace) ? $GLOBALS['BE_USER']->workspace : 0);
+        return $_COOKIE['fluxCollapseStates'] ?? null;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getActiveWorkspaceId(): int
+    {
+        return (integer) ($GLOBALS['BE_USER']->workspace ?? 0);
     }
 }

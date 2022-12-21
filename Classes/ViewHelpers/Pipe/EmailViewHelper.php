@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -9,9 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -21,16 +20,12 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class EmailViewHelper extends AbstractPipeViewHelper
 {
-
     /**
      * @var boolean
      */
     protected $escapeChildren = false;
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('body', 'string', 'Message body. Can also be inserted as tag content');
@@ -50,28 +45,23 @@ class EmailViewHelper extends AbstractPipeViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
-        array $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        iterable $arguments,
+        ?\Closure $renderChildrenClosure = null
+    ): EmailPipe {
+        /** @var array $arguments */
         $body = $arguments['body'];
-        if (true === empty($body) && $renderChildrenClosure instanceof \Closure) {
+        if (empty($body) && $renderChildrenClosure instanceof \Closure) {
             $body = $renderChildrenClosure();
         }
         /** @var EmailPipe $pipe */
-        $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(EmailPipe::class);
-        $pipe->setSubject($arguments['subject']);
-        $pipe->setSender($arguments['sender']);
-        $pipe->setRecipient($arguments['recipient']);
-        $pipe->setBody($body);
-        $pipe->setBodySection($arguments['bodySection']);
+        $pipe = GeneralUtility::makeInstance(EmailPipe::class);
+        $pipe->setSubject((string) $arguments['subject']);
+        $pipe->setSender($arguments['sender'] ?? '');
+        $pipe->setRecipient($arguments['recipient'] ?? '');
+        $pipe->setBody((string) $body);
+        $pipe->setBodySection($arguments['bodySection'] ?? null);
 
         return $pipe;
     }

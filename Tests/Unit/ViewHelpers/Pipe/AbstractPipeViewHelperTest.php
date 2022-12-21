@@ -8,23 +8,22 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
+use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
+use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\ViewHelpers\Pipe\AbstractPipeViewHelper;
 
-/**
- * AbstractPipeViewHelperTest
- */
-class AbstractPipeViewHelperTest extends AbstractTestCase
+class AbstractPipeViewHelperTest extends AbstractViewHelperTestCase
 {
+    protected function createInstance()
+    {
+        return $this->getMockBuilder($this->createInstanceClassName())->getMockForAbstractClass();
+    }
 
-    /**
-     * @test
-     */
     public function testPreparePipeInstanceDefaultReturnsStandardPipe()
     {
-        $className = 'FluidTYPO3\\Flux\\ViewHelpers\\Pipe\\AbstractPipeViewHelper';
-        $instance = $this->getMockBuilder($className)->getMock();
-        $result = $this->callInaccessibleMethod($instance, 'preparePipeInstance', new RenderingContext(), array());
-        $this->assertInstanceOf('FluidTYPO3\\Flux\\Outlet\\Pipe\\StandardPipe', $result);
+        $className = AbstractPipeViewHelper::class;
+        $instance = $this->getMockBuilder($className)->getMockForAbstractClass();
+        $result = $this->callInaccessibleMethod($instance, 'preparePipeInstance', $this->renderingContext, []);
+        $this->assertInstanceOf(StandardPipe::class, $result);
     }
 }

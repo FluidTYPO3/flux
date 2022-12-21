@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -20,12 +21,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ObjectViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'name',
@@ -76,18 +72,22 @@ class ObjectViewHelper extends AbstractFormViewHelper
             'Set this to transform your value to this type - integer, array (for csv values), float, DateTime, ' .
             'Vendor\\MyExt\\Domain\\Model\\Object or ObjectStorage with type hint. '
         );
+        $this->registerArgument(
+            'contentContainer',
+            'boolean',
+            'If TRUE, each object that is created of this type results in a content column of the same name, with ' .
+            'an automatic colPos value.',
+            false,
+            false
+        );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return SectionObject
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): SectionObject
     {
+        /** @var array $arguments */
         /** @var SectionObject $object */
-        $object = static::getFormFromRenderingContext($renderingContext)
-            ->createContainer('SectionObject', $arguments['name'], $arguments['label']);
+        $object = static::getContainerFromRenderingContext($renderingContext)
+            ->createContainer(SectionObject::class, $arguments['name'], $arguments['label']);
         $object->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
@@ -95,6 +95,7 @@ class ObjectViewHelper extends AbstractFormViewHelper
         $object->setInherit($arguments['inherit']);
         $object->setInheritEmpty($arguments['inheritEmpty']);
         $object->setTransform($arguments['transform']);
+        $object->setContentContainer($arguments['contentContainer']);
         return $object;
     }
 }

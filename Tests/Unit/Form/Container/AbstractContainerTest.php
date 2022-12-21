@@ -9,18 +9,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  */
 
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
-/**
- * AbstractContainerTest
- */
 abstract class AbstractContainerTest extends AbstractFormTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string');
+    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string');
 
     /**
      * @return ContainerInterface
@@ -28,7 +22,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     protected function createInstance()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         return $instance;
     }
 
@@ -39,7 +33,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     {
         $instance = $this->createInstance();
         $result = $instance->get('doesNotExist');
-        $this->assertSame(false, $result);
+        $this->assertSame(null, $result);
     }
 
     /**
@@ -73,7 +67,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
         $subContainer->add($subField);
         $instance->add($subContainer);
         $result = $instance->get('doesNotExist', true);
-        $this->assertSame(false, $result);
+        $this->assertSame(null, $result);
     }
 
     /**
@@ -81,16 +75,16 @@ abstract class AbstractContainerTest extends AbstractFormTest
      */
     public function canCreateFromDefinitionContainingFields()
     {
-        $properties = array($this->chainProperties);
+        $properties = $this->chainProperties;
         $properties['fields'] = array(
             'foo' => array(
-                'type' => 'Input'
+                'type' => Input::class,
             ),
             'bar' => array(
-                'type' => 'Input'
+                'type' => Input::class,
             ),
         );
-        $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+        $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), [$properties]);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
     }
 }

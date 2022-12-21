@@ -8,26 +8,24 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Wizard;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\WizardInterface;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use FluidTYPO3\Flux\ViewHelpers\Wizard\AbstractWizardViewHelper;
 
-/**
- * AbstractWizardViewHelperTestCase
- */
 abstract class AbstractWizardViewHelperTestCase extends AbstractFormViewHelperTestCase
 {
-
     /**
      * @test
      */
     public function createsValidFieldInterfaceComponents()
     {
+        /** @var AbstractWizardViewHelper $instance */
         $instance = $this->buildViewHelperInstance($this->defaultArguments);
-        $instance->render();
+        $this->renderingContext->getViewHelperInvoker()->invoke($instance, [], $this->renderingContext);
         $component = $instance->getComponent(
-            ObjectAccess::getProperty($instance, 'renderingContext', true),
-            ObjectAccess::getProperty($instance, 'arguments', true)
+            $this->renderingContext,
+            $this->buildViewHelperArguments($instance, $this->defaultArguments)
         );
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\WizardInterface', $component);
+        $this->assertInstanceOf(WizardInterface::class, $component);
     }
 }

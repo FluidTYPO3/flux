@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -15,96 +16,105 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * WizardItemsHookSubscriber
- */
 class WizardItems implements NewContentElementWizardHookInterface
 {
+    protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $recordService;
 
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $recordService;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
-    {
-        $this->configurationService = $configurationService;
-    }
-
-    /**
-     * @param WorkspacesAwareRecordService $recordService
-     * @return void
-     */
-    public function injectRecordService(WorkspacesAwareRecordService $recordService)
-    {
-        $this->recordService = $recordService;
-    }
-
-    /**
-     * Constructor
-     */
     public function __construct()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->injectObjectManager($objectManager);
         /** @var FluxService $configurationService */
-        $configurationService = $this->objectManager->get(FluxService::class);
-        $this->injectConfigurationService($configurationService);
-        /** @var WorkspacesAwareRecordService $recordService */
-        $recordService = $this->objectManager->get(WorkspacesAwareRecordService::class);
-        $this->injectRecordService($recordService);
-    }
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
+        $this->configurationService = $configurationService;
 
-    /**
-     * @param array $items
-     * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController
-     * @return void
-     */
-    public function manipulateWizardItems(&$items, &$parentObject)
-    {
-        $items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject);
+        /** @var WorkspacesAwareRecordService $recordService */
+        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
+        $this->recordService = $recordService;
     }
 
     /**
      * @param array $items
      * @param NewContentElementController $parentObject
-     * @return array
      */
-    protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, $parentObject)
+    public function manipulateWizardItems(&$items, &$parentObject): void
     {
-        $dataArray = GeneralUtility::_GET('defVals')['tt_content'] ?? [];
+        $enabledContentTypes = [];
+        $fluidContentTypeNames = [];
+        /** @var int $pageUid */
+        $pageUid = 0;
+
+        $defaultValues = (array) GeneralUtility::_GET('defVals');
+        /** @var array $dataArray */
+        $dataArray = $defaultValues['tt_content'] ?? [];
+        $pageUidFromUrl = GeneralUtility::_GET('id');
+        $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : 0;
+        $pageUidFromDataArray = (int) key($dataArray);
+
+        if ($pageUidFromDataArray > 0) {
+            $pageUid = $pageUidFromDataArray;
+        } elseif ($pageUidFromUrl > 0) {
+            $pageUid = $pageUidFromUrl;
+        }
+
+        if ($pageUid === 0) {
+            $reflectionProperty = new \ReflectionProperty($parentObject, 'id');
+            $reflectionProperty->setAccessible(true);
+            $pageUidFroimParentObject = $reflectionProperty->getValue($parentObject);
+            $pageUid = is_scalar($pageUidFroimParentObject) ? (int) $pageUidFroimParentObject : 0;
+        }
+        if ($pageUid > 0) {
+            try {
+                /** @var SiteFinder $siteFinder */
+                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                $site = $siteFinder->getSiteByPageId($pageUid);
+                $siteConfiguration = $site->getConfiguration();
+                $enabledContentTypes = GeneralUtility::trimExplode(
+                    ',',
+                    $siteConfiguration['flux_content_types'] ?? '',
+                    true
+                );
+            } catch (SiteNotFoundException $exception) {
+                // Suppressed; a site not being found is not a fatal error in this context.
+            }
+        }
+
+        /** @var ContentTypeManager $contentTypeManager */
+        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+        $fluidContentTypeNames = (array) $contentTypeManager->fetchContentTypeNames();
+        $items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject, $pageUid);
+        if (!empty($enabledContentTypes)) {
+            foreach ($items as $name => $item) {
+                $contentTypeName = $item['tt_content_defValues']['CType'] ?? null;
+                if (!empty($contentTypeName)
+                    && in_array($contentTypeName, $fluidContentTypeNames, true)
+                    && !in_array($contentTypeName, $enabledContentTypes, true)
+                ) {
+                    unset($items[$name]);
+                }
+            }
+        }
+    }
+
+    protected function filterPermittedFluidContentTypesByInsertionPosition(
+        array $items,
+        NewContentElementController $parentObject,
+        int $pageUid
+    ): array {
+        /** @var int|null $colPos */
+        $colPos = GeneralUtility::_GET('colPos');
+        if ($colPos === null) {
+            $reflectionProperty = new \ReflectionProperty($parentObject, 'colPos');
+            $reflectionProperty->setAccessible(true);
+            $colPosFromParentObject = $reflectionProperty->getValue($parentObject);
+            $colPos = is_scalar($colPosFromParentObject) ? (int) $colPosFromParentObject : 0;
+        }
         list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
-            key($dataArray) ?? ObjectAccess::getProperty($parentObject, 'id', true),
-            (int) ($dataArray['colPos'] ?? ObjectAccess::getProperty($parentObject, 'colPos', true))
+            $pageUid,
+            (int) $colPos
         );
         $overrides = HookHandler::trigger(
             HookHandler::ALLOWED_CONTENT_RULES_FETCHED,
@@ -131,13 +141,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         )['items'];
     }
 
-    /**
-     * @param integer $pageUid
-     * @param integer $columnPosition
-     * @param integer $relativeUid
-     * @return array
-     */
-    protected function getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition)
+    protected function getWhiteAndBlackListsFromPageAndContentColumn(int $pageUid, int $columnPosition): array
     {
         $whitelist = [];
         $blacklist = [];
@@ -147,7 +151,9 @@ class WizardItems implements NewContentElementWizardHookInterface
         $pageRecord = (array) $this->recordService->getSingle('pages', '*', $pageUid);
         $pageProviders = $this->configurationService->resolveConfigurationProviders('pages', null, $pageRecord);
         $parentRecordUid = ColumnNumberUtility::calculateParentUid($columnPosition);
-        $pageColumnPosition = $parentRecordUid > 0 ? $this->findParentColumnPosition($parentRecordUid) : $columnPosition;
+        $pageColumnPosition = $parentRecordUid > 0
+            ? $this->findParentColumnPosition($parentRecordUid)
+            : $columnPosition;
         $this->appendToWhiteAndBlacklistFromProviders(
             $pageProviders,
             $pageRecord,
@@ -188,28 +194,18 @@ class WizardItems implements NewContentElementWizardHookInterface
         return [$whitelist, $blacklist];
     }
 
-    /**
-     * @param array $providers
-     * @param array $record
-     * @param array $whitelist
-     * @param array $blacklist
-     * @param integer $columnPosition
-     */
     protected function appendToWhiteAndBlacklistFromProviders(
         array $providers,
         array $record,
         array &$whitelist,
         array &$blacklist,
-        $columnPosition
-    ) {
+        int $columnPosition
+    ): void {
         if ($columnPosition >= ColumnNumberUtility::MULTIPLIER) {
             $columnPosition = ColumnNumberUtility::calculateLocalColumnNumber($columnPosition);
         }
         foreach ($providers as $provider) {
             $grid = $provider->getGrid($record);
-            if (null === $grid) {
-                continue;
-            }
             foreach ($grid->getRows() as $row) {
                 foreach ($row->getColumns() as $column) {
                     if ($column->getColumnPosition() === $columnPosition) {
@@ -224,16 +220,13 @@ class WizardItems implements NewContentElementWizardHookInterface
         }
     }
 
-    /**
-     * @param array $items
-     * @return array
-     */
-    protected function trimItems(array $items)
+    protected function trimItems(array $items): array
     {
         $preserveHeaders = [];
         foreach ($items as $name => $item) {
             if (false !== strpos($name, '_')) {
-                array_push($preserveHeaders, reset(explode('_', $name)));
+                $parts = explode('_', $name);
+                array_push($preserveHeaders, reset($parts));
             }
         }
         foreach ($items as $name => $item) {
@@ -244,18 +237,13 @@ class WizardItems implements NewContentElementWizardHookInterface
         return $items;
     }
 
-    /**
-     * @param array $items
-     * @param array $blacklist
-     * @return array
-     */
-    protected function applyBlacklist(array $items, array $blacklist)
+    protected function applyBlacklist(array $items, array $blacklist): array
     {
         $blacklist = array_unique($blacklist);
         if (0 < count($blacklist)) {
             foreach ($blacklist as $contentElementType) {
                 foreach ($items as $name => $item) {
-                    if ($item['tt_content_defValues']['CType'] === $contentElementType) {
+                    if (($item['tt_content_defValues']['CType'] ?? null) === $contentElementType) {
                         unset($items[$name]);
                     }
                 }
@@ -264,12 +252,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         return $items;
     }
 
-    /**
-     * @param array $items
-     * @param array $whitelist
-     * @return array
-     */
-    protected function applyWhitelist(array $items, array $whitelist)
+    protected function applyWhitelist(array $items, array $whitelist): array
     {
         $whitelist = array_unique($whitelist);
         if (0 < count($whitelist)) {
@@ -282,21 +265,17 @@ class WizardItems implements NewContentElementWizardHookInterface
         return $items;
     }
 
-    /**
-     * @param FormInterface $component
-     * @param array $whitelist
-     * @param array $blacklist
-     * @return array
-     */
     protected function appendToWhiteAndBlacklistFromComponent(
         FormInterface $component,
         array $whitelist,
         array $blacklist
-    ) {
+    ): array {
+        /** @var string|null $allowed */
         $allowed = $component->getVariable('allowedContentTypes');
         if (null !== $allowed) {
             $whitelist = array_merge($whitelist, GeneralUtility::trimExplode(',', $allowed));
         }
+        /** @var string|null $denied */
         $denied = $component->getVariable('deniedContentTypes');
         if (null !== $denied) {
             $blacklist = array_merge($blacklist, GeneralUtility::trimExplode(',', $denied));

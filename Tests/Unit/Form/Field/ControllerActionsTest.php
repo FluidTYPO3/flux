@@ -10,17 +10,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
+use FluidTYPO3\Flux\Form\FormInterface;
 
-/**
- * ControllerActionsTest
- */
 class ControllerActionsTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'switchableControllerActions',
         'label' => 'Test field',
         'enabled' => true,
@@ -34,6 +28,17 @@ class ControllerActionsTest extends AbstractFieldTest
         'prefixOnRequiredArguments' => '*',
         'subActions' => array()
     );
+
+    /**
+     * @return FormInterface
+     */
+    protected function createInstance()
+    {
+        $className = $this->getObjectClassName();
+        $instance = $this->getMockBuilder($className)->setMethods(['resolvePathToFileInExtension'])->getMock();
+        $instance->method('resolvePathToFileInExtension')->willReturn('./');
+        return $instance;
+    }
 
     /**
      * @test
@@ -97,28 +102,24 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function acceptsLegacyNamedClasses()
-    {
-        $expectedClassName = 'Tx_Flux_Controller_ContentController';
-        $component = $this->createInstance();
-        $component->setControllerExtensionName('flux');
-        $className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
-        $this->assertSame($expectedClassName, $className);
-    }
-
-    /**
-     * @test
-     */
     public function canGenerateLabelFromLanguageFile()
     {
         $extensionKey = 'flux';
         $pluginName = 'Test';
         $controllerName = 'Content';
         $actionName = 'fake';
-        $localLanguageFileRelativePath = '/Resources/Private/Language/locallang.xlf';
+        $localLanguageFileRelativePath = 'Resources/Private/Language/locallang.xlf';
         $labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
-        $expectedLabel = 'LLL:EXT:' . $extensionKey . $localLanguageFileRelativePath . ':' . $labelPath;
-        $label = $this->buildLabelForControllerAndAction($controllerName, $actionName, $localLanguageFileRelativePath);
+        $expectedLabel = 'LLL:EXT:' . $extensionKey . '/' . $localLanguageFileRelativePath . ':' . $labelPath;
+
+        $component = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['resolvePathToFileInExtension'])->getMock();
+        $component->method('resolvePathToFileInExtension')->willReturn($localLanguageFileRelativePath);
+        $component->setControllerName($controllerName);
+        $component->setControllerExtensionName('FluidTYPO3.Flux');
+        $component->setPluginName('Test');
+
+        $label = $this->callInaccessibleMethod($component, 'getLabelForControllerAction', $controllerName, $actionName);
+
         $this->assertSame($expectedLabel, $label);
     }
 
@@ -128,9 +129,18 @@ class ControllerActionsTest extends AbstractFieldTest
     public function canGenerateLabelFromActionMethodAnnotation()
     {
         $controllerName = 'Content';
-        $actionName = 'fake';
-        $expectedLabel = 'Fake Action';
-        $label = $this->buildLabelForControllerAndAction($controllerName, $actionName);
+        $actionName = 'render';
+        $expectedLabel = 'Render content';
+
+        /** @var ControllerActions $component */
+        $component = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['resolvePathToFileInExtension'])->getMock();
+        $component->method('resolvePathToFileInExtension')->willReturn('does/not/exist');
+        $component->setControllerName($controllerName);
+        $component->setControllerExtensionName('FluidTYPO3.Flux');
+        $component->setPluginName('Test');
+        $component->setDisableLocalLanguageLabels(true);
+
+        $label = $this->callInaccessibleMethod($component, 'getLabelForControllerAction', $controllerName, $actionName);
         $this->assertSame($expectedLabel, $label);
     }
 
@@ -166,14 +176,17 @@ class ControllerActionsTest extends AbstractFieldTest
         $extensionName = 'FluidTYPO3.Flux';
         $pluginName = 'Test';
         $controllerName = 'Content';
-        $actionName = 'fakeWithRequiredArgument';
+        $actionName = 'callSubController';
+
         $component = $this->createInstance();
         $component->setControllerExtensionName($extensionName);
         $component->setPluginName($pluginName);
         $component->setControllerName($controllerName);
         $component->setDisableLocalLanguageLabels(true);
+
         $label = $this->callInaccessibleMethod($component, 'getLabelForControllerAction', $controllerName, $actionName);
         $prefixedLabel = $this->callInaccessibleMethod($component, 'prefixLabel', $controllerName, $actionName, $label);
+
         $this->assertStringStartsWith('*', $prefixedLabel);
         $this->assertNotSame($label, $prefixedLabel);
     }
@@ -316,7 +329,6 @@ class ControllerActionsTest extends AbstractFieldTest
         }
         $items = $this->callInaccessibleMethod($component, 'buildItemsForActions', $actions);
         return $items;
-
     }
 
     /**
@@ -345,7 +357,6 @@ class ControllerActionsTest extends AbstractFieldTest
      */
     public function prefixesParentObjectNameToAutoLabelIfInsideObject()
     {
-
     }
 
     /**
@@ -364,7 +375,7 @@ class ControllerActionsTest extends AbstractFieldTest
         ));
         $form->add($instance);
         $label = $instance->getLabel();
-        $this->assertContains('switchableControllerActions', $label);
+        $this->assertStringContainsString('switchableControllerActions', $label);
         $this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux', $label);
     }
 

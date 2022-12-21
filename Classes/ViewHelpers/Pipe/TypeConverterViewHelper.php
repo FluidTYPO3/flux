@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -8,10 +9,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\TypeConverterPipe;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -22,11 +21,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class TypeConverterViewHelper extends AbstractPipeViewHelper
 {
-
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('targetType', 'string', 'Target type (class name, integer, array, etc.)', true);
@@ -37,29 +32,40 @@ class TypeConverterViewHelper extends AbstractPipeViewHelper
             '"Converter" suffix, e.g. PersistentObject, Array etc.',
             true
         );
+        $this->registerArgument(
+            'property',
+            'string',
+            'Optional property which needs to be converted in data. If empty, uses entire form data array as input.'
+        );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
-        array $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        iterable $arguments,
+        ?\Closure $renderChildrenClosure = null
+    ): TypeConverterPipe {
+        /** @var array $arguments */
         /** @var TypeConverterPipe $pipe */
-        $pipe = $objectManager->get(TypeConverterPipe::class);
-        $converter = $arguments['typeConverter'];
-        if (false === $converter instanceof TypeConverterInterface) {
-            if (false === class_exists($converter)) {
-                $converter = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\' . $converter . 'Converter';
+        $pipe = GeneralUtility::makeInstance(TypeConverterPipe::class);
+        /** @var TypeConverterInterface|class-string $converterInstanceOrClassName */
+        $converterInstanceOrClassName = $arguments['typeConverter'];
+        if (false === $converterInstanceOrClassName instanceof TypeConverterInterface) {
+            $coreConverterTemplate = 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\%sConverter';
+            /** @var class-string $coreConverterFqn */
+            $coreConverterFqn = sprintf($coreConverterTemplate, $converterInstanceOrClassName);
+            if (class_exists($coreConverterFqn)) {
+                $converterClassName = $coreConverterFqn;
+            } else {
+                $converterClassName = $converterInstanceOrClassName;
             }
-            $converter = $objectManager->get($converter);
+            /** @var TypeConverterInterface $converter */
+            $converter = GeneralUtility::makeInstance($converterClassName);
+        } else {
+            /** @var TypeConverterInterface $converter */
+            $converter = $converterInstanceOrClassName;
         }
+
+        $pipe->setPropertyName($arguments['property']);
         $pipe->setTypeConverter($converter);
         $pipe->setTargetType($arguments['targetType']);
         return $pipe;

@@ -8,39 +8,21 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 
-/**
- * VariableViewHelperTest
- */
 class VariableViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @test
      */
     public function addsVariableToContainer()
     {
-        $containerMock = $this->getMockBuilder('FluidTYPO3\Flux\Form')->setMethods(array('setVariable'))->getMock();
+        $containerMock = $this->getMockBuilder(Form::class)->setMethods(array('setVariable'))->getMock();
         $containerMock->expects($this->once())->method('setVariable')->with('test', 'testvalue');
-        $viewHelperVariableContainerMock = $this->getMockBuilder(
-            'TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer'
-        )->setMethods(
-            array('exists', 'get')
-        )->getMock();
-        $viewHelperVariableContainerMock->expects($this->once())->method('get')->willReturn($containerMock);
-        $renderingContext = $this->getMockBuilder(
-            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContext'
-        )->setMethods(
-            array('getViewHelperVariableContainer', 'getControllerContext')
-        )->getMock();
-        $renderingContext->expects($this->atLeastOnce())
-            ->method('getViewHelperVariableContainer')
-            ->willReturn($viewHelperVariableContainerMock);
-        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('buildRenderChildrenClosure'))->getMock();
-        $instance->expects($this->once())->method('buildRenderChildrenClosure')->willReturn(function() { return null; });
-        $instance->setRenderingContext($renderingContext);
-        $instance->setArguments(array('name' => 'test', 'value' => 'testvalue'));
-        $instance->render();
+
+        $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'container', $containerMock);
+        $this->executeViewHelper(['name' => 'test', 'value' => 'testvalue']);
     }
 }

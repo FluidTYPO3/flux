@@ -8,19 +8,15 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
+use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 
-/**
- * SelectTest
- */
 class SelectTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
         'itemListStyle' => 'color: red',
@@ -30,6 +26,41 @@ class SelectTest extends AbstractFieldTest
         'maxItems' => 3,
         'requestUpdate' => true,
     );
+
+    /**
+     * @test
+     */
+    public function canAddEmptyOptionWithStringValue()
+    {
+        /** @var Select $instance */
+        $instance = $this->createInstance();
+        $instance->setItems('1');
+        $instance->setEmptyOption('2');
+        $this->assertSame(2, count($instance->getItems()));
+    }
+
+    /**
+     * @test
+     */
+    public function canAddEmptyOptionWithArrayValue()
+    {
+        /** @var Select $instance */
+        $instance = $this->createInstance();
+        $instance->setItems('1');
+        $instance->setEmptyOption(['', 2]);
+        $this->assertSame(2, count($instance->getItems()));
+    }
+
+    /**
+     * @test
+     */
+    public function canUseRangeNotation()
+    {
+        /** @var Select $instance */
+        $instance = $this->createInstance();
+        $instance->setItems('1..10');
+        $this->assertSame(10, count($instance->getItems()));
+    }
 
     /**
      * @test
@@ -74,9 +105,20 @@ class SelectTest extends AbstractFieldTest
     public function canConsumeQueryObjectItems()
     {
         $GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';
+
+        $fluxService = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $fluxService->method('getTypoScriptByPath')->willReturn([]);
+
         /** @var Select $instance */
-        $instance = $this->objectManager->get($this->createInstanceClassName());
-        $query = $this->getMockBuilder('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Query')->setMethods(array('execute', 'getType'))->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder(Select::class)->setMethods(['getConfigurationService'])->getMock();
+        $instance->method('getConfigurationService')->willReturn($fluxService);
+        $query = $this->getMockBuilder(Query::class)
+            ->setMethods(array('execute', 'getType'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $query->expects($this->any())->method('getType')->will($this->returnValue('foobar'));
         $query->expects($this->any())->method('execute')->will($this->returnValue(array(
             new FrontendUser('user1'),
@@ -97,7 +139,10 @@ class SelectTest extends AbstractFieldTest
     {
         $table = 'foo';
         $type = 'bar';
-        $service = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('getTypoScriptByPath'))->getMock();
+        $service = $this->getMockBuilder(FluxService::class)
+            ->setMethods(array('getTypoScriptByPath'))
+            ->disableOriginalConstructor()
+            ->getMock();
         $service->expects($this->once())->method('getTypoScriptByPath')->willReturn($table . 'suffix');
         $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getConfigurationService'))->getMock();
         $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
@@ -115,7 +160,7 @@ class SelectTest extends AbstractFieldTest
         $instance = $this->createInstance();
         $instance->setExtensionName('flux');
 
-        $form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->add($instance);
         $form->setName('parent');
         $instance->setName('child');

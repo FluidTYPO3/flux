@@ -9,33 +9,62 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  */
 
 use Doctrine\DBAL\Statement;
-use FluidTYPO3\Flux\Service\RecordService;
+use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleDataViewHelper;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * DataViewHelperTest
- */
 class DataViewHelperTest extends AbstractViewHelperTestCase
 {
+    protected ?FluxService $fluxService;
+    protected ?FlexFormService $flexFormService;
+    protected ?WorkspacesAwareRecordService $recordService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['resolveConfigurationProviders', 'getFlexFormService', 'convertFlexFormContentToArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->flexFormService = $this->getMockBuilder(FlexFormService::class)
+            ->setMethods(['convertFlexFormContentToArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->fluxService->method('getFlexFormService')->willReturn($this->flexFormService);
+        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)->getMock();
+        AccessibleDataViewHelper::setFluxService($this->fluxService);
+        AccessibleDataViewHelper::setRecordService($this->recordService);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        AccessibleDataViewHelper::setFluxService(null);
+        AccessibleDataViewHelper::setRecordService(null);
+    }
 
     /**
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         $GLOBALS['TCA'] = array(
             'tt_content' => array(
                 'columns' => array(
-                    'pi_flexform' => array()
+                    'pi_flexform' => []
                 )
             ),
             'be_users' => array(
                 'columns' => array(
-                    'username' => array()
+                    'username' => []
                 )
             ),
         );
@@ -44,7 +73,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @return void
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         unset($GLOBALS['TCA']);
     }
@@ -60,9 +89,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'uid' => 1
         );
         $viewHelper = $this->buildViewHelperInstance($arguments);
-        $prophecy = $this->prophesize(RecordService::class);
-        $prophecy->getSingle()->shouldNotBeCalled();
-        $prophecy->reveal();
 
         $this->expectViewHelperException(
             'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
@@ -80,17 +106,30 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'table' => 'tt_content',
             'field' => 'pi_flexform',
         );
-        $statement = $this->prophesize(Statement::class);
-        $statement->fetchAll()->willReturn([]);
-        $queryBuilder = $this->prophesize(QueryBuilder::class);
-        $prophecy = $this->prophesize(ConnectionPool::class);
-        $prophecy->getQueryBuilderForTable('tt_content')->willReturn($queryBuilder->reveal());
 
-        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
+        $statement = $this->getMockBuilder(Statement::class)
+            ->setMethods(['fetchAll'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $statement->method('fetchAll')->willReturn([]);
 
-        $this->expectViewHelperException(
-            'Either table "' . $arguments['table'] . '", field "' . $arguments['field'] . '" or record with uid 0 do not exist and you did not manually provide the "record" attribute.'
-        );
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->setMethods(['select', 'from', 'where', 'execute'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder->method('select')->willReturnSelf();
+        $queryBuilder->method('from')->willReturnSelf();
+        $queryBuilder->method('where')->willReturnSelf();
+        $queryBuilder->method('execute')->willReturn($statement);
+        $connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->setMethods(['getQueryBuilderForTable'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connectionPool->method('getQueryBuilderForTable')->with('tt_content')->willReturn($queryBuilder);
+
+        GeneralUtility::addInstance(ConnectionPool::class, $connectionPool);
+
+        $this->expectViewHelperException('dummy');
         $this->executeViewHelper($arguments);
     }
 
@@ -104,9 +143,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'invalid',
             'uid' => 1
         );
-        $this->expectViewHelperException(
-            'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
-        );
+        $this->expectViewHelperException('dummy');
         $this->executeViewHelper($arguments);
     }
 
@@ -115,19 +152,20 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canExecuteViewHelper()
     {
-        $arguments = array(
+        $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
+        $arguments = [
             'table' => 'tt_content',
             'field' => 'pi_flexform',
             'record' => [
-                'foo' => 'bar'
-            ]
+                'foo' => 'bar',
+                'pi_flexform' => '',
+            ],
+        ];
+
+        $this->assertSame(
+            [],
+            $this->executeViewHelper($arguments)
         );
-
-        $prophecy = $this->prophesize(RecordService::class);
-        $prophecy->getSingle()->shouldNotBeCalled();
-        $prophecy->reveal();
-
-        $this->executeViewHelper($arguments);
     }
 
     /**
@@ -135,10 +173,13 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canUseRecordAsArgument()
     {
+        $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
+        $record = Records::$contentRecordIsParentAndHasChildren;
+        $record['pi_flexform'] = '';
         $arguments = array(
             'table' => 'tt_content',
             'field' => 'pi_flexform',
-            'record' => Records::$contentRecordIsParentAndHasChildren
+            'record' => $record
         );
         $result = $this->executeViewHelper($arguments);
         $this->assertIsArray($result);
@@ -149,14 +190,16 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canUseChildNodeAsRecord()
     {
+        $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
         $arguments = array(
             'table' => 'tt_content',
             'field' => 'pi_flexform',
             'uid' => 1
         );
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
+        $record['pi_flexform'] = '';
         $content = $this->createNode('Array', $record);
-        $viewHelper = $this->buildViewHelperInstance($arguments, array(), $content);
+        $viewHelper = $this->buildViewHelperInstance($arguments, [], $content);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
     }
@@ -166,6 +209,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function supportsAsArgument()
     {
+        $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
+        $this->flexFormService->method('convertFlexFormContentToArray')->willReturn([]);
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = $row['test'];
         $arguments = array(
@@ -183,16 +228,9 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function supportsAsArgumentAndBacksUpExistingVariable()
     {
-        $row = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $row['pi_flexform'] = $row['test'];
-        $arguments = array(
-            'record' => $row,
-            'table' => 'tt_content',
-            'field' => 'pi_flexform',
-            'as' => 'test'
-        );
-        $output = $this->executeViewHelperUsingTagContent('Some text', $arguments, array('test' => 'somevar'));
-        $this->assertEquals($output, 'Some text');
+        $this->templateVariableContainer->add('test', 'test');
+        $this->supportsAsArgument();
+        self::assertSame('test', $this->templateVariableContainer->get('test'));
     }
 
     /**
@@ -200,14 +238,20 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function readDataArrayFromProvidersOrUsingDefaultMethodCallsConfigurationServiceConvertOnEmptyProviderArray()
     {
+        $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
+        $this->fluxService->method('convertFlexFormContentToArray')->willReturn([]);
         $mock = $this->createInstance();
-        $configurationService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods(array('convertFlexFormContentToArray'))->getMock();
-        $providers = array();
-        $record = array();
-        $field = null;
-        $mock->injectConfigurationService($configurationService);
-        $result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
-        $this->assertNull($result);
+        $providers = [];
+        $record = ['test' => ''];
+        $field = 'test';
+        $result = $this->callInaccessibleMethod(
+            $mock,
+            'readDataArrayFromProvidersOrUsingDefaultMethod',
+            $providers,
+            $record,
+            $field
+        );
+        $this->assertSame([], $result);
     }
 
     /**
@@ -216,15 +260,28 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     public function readDataArrayFromProvidersOrUsingDefaultMethodUsesProvidersToReadData()
     {
         $mock = $this->createInstance();
-        $provider1 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getFlexFormValues'))->getMock();
-        $provider1->expects($this->once())->method('getFlexFormValues')->willReturn(array('foo' => array('bar' => 'test')));
-        $provider2 = $this->getMockBuilder('FluidTYPO3\\Flux\\Provider\\Provider')->setMethods(array('getFlexFormValues'))->getMock();
-        $provider2->expects($this->once())->method('getFlexFormValues')
-            ->willReturn(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'));
+        $provider1 = $this->getMockBuilder(Provider::class)
+            ->setMethods(array('getFlexFormValues'))
+            ->disableOriginalConstructor()
+            ->getMock();
+        $provider1->method('getFlexFormValues')->willReturn(array('foo' => array('bar' => 'test')));
+        $provider2 = $this->getMockBuilder(Provider::class)
+            ->setMethods(array('getFlexFormValues'))
+            ->disableOriginalConstructor()
+            ->getMock();
+        $provider2->method('getFlexFormValues')->willReturn(
+            array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test')
+        );
         $providers = array($provider1, $provider2);
         $record = Records::$contentRecordIsParentAndHasChildren;
         $field = 'pi_flexform';
-        $result = $this->callInaccessibleMethod($mock, 'readDataArrayFromProvidersOrUsingDefaultMethod', $providers, $record, $field);
+        $result = $this->callInaccessibleMethod(
+            $mock,
+            'readDataArrayFromProvidersOrUsingDefaultMethod',
+            $providers,
+            $record,
+            $field
+        );
         $this->assertEquals(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'), $result);
     }
 }

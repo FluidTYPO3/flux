@@ -12,16 +12,9 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
-/**
- * AbstractFieldTest
- */
 abstract class AbstractFieldTest extends AbstractFormTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
+    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
 
     /**
      * @test
@@ -71,23 +64,9 @@ abstract class AbstractFieldTest extends AbstractFormTest
     public function returnsEmptyLabelIfFormExtensionNameIsEmpty()
     {
         $instance = $this->createInstance();
-        /** @var Form $form */
-        $form = $this->objectManager->get('FluidTYPO3\Flux\Form');
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->add($instance);
         $form->setExtensionName(null);
-        $this->assertEmpty($form->getLabel());
-    }
-
-    /**
-     * @test
-     */
-    public function returnsEmptyLabelIfFormExtensionNameIsNotLoaded()
-    {
-        $instance = $this->createInstance();
-        /** @var Form $form */
-        $form = $this->objectManager->get('FluidTYPO3\Flux\Form');
-        $form->add($instance);
-        $form->setExtensionName('void');
         $this->assertEmpty($form->getLabel());
     }
 
@@ -102,12 +81,12 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $this->assertSame($added, $instance);
         $fetched = $instance->get('add');
         $bad = $instance->get('bad');
-        $this->assertFalse($bad);
+        $this->assertNull($bad);
         $this->assertSame($fetched, $wizard);
         $removed = $instance->remove('add');
         $this->assertSame($removed, $wizard);
         $bad = $instance->remove('bad');
-        $this->assertTrue(false === $bad);
+        $this->assertNull($bad);
         $instance->add($wizard);
         $built = $this->performTestBuild($instance);
         $this->assertIsArray($built);
@@ -146,7 +125,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $properties = $this->chainProperties;
         $properties['type'] = $this->getObjectClassName();
         $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
+        $this->assertInstanceOf(Form\FormInterface::class, $instance);
     }
 
     /**
@@ -160,7 +139,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
             'type' => 'Section'
         );
         $section = AbstractFormField::create($definition);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Section', $section);
+        $this->assertInstanceOf(Form\Container\Section::class, $section);
         $this->assertSame($definition['name'], $section->getName());
     }
 
@@ -175,7 +154,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $instance->setName('child');
         $parent->add($instance);
         $output = $instance->getLabel();
-        $this->assertContains('parent.child', $output);
+        $this->assertStringContainsString('parent.child', $output);
     }
 
     /**
@@ -194,7 +173,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
      */
     public function modifyCreatesWizards()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $field = $form->createField('Input', 'testfield');
         $this->assertFalse($field->has('add'));
         $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
@@ -206,7 +185,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
      */
     public function modifyModifiesWizards()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $field = $form->createField('Input', 'testfield');
         $wizard = $field->createWizard('Add', 'add', 'Original label');
         $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));

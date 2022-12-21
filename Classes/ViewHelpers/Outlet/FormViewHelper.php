@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
 
 /*
@@ -8,7 +9,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\AbstractProvider;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 /**
  * Outlet Form Renderer
@@ -31,56 +34,72 @@ use FluidTYPO3\Flux\Provider\AbstractProvider;
  */
 class FormViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper
 {
+    protected ?ProviderInterface $provider = null;
+    protected array $record = [];
 
-    /**
-     * @var AbstractProvider
-     */
-    protected $provider;
-
-    /**
-     * @var array
-     */
-    protected $record;
-
-    /**
-     * NB: We use this method because 7.6 LTS FormViewHelper uses render() method
-     * arguments which cannot be overridden by other means while preserving
-     * compatibility between 7.6 and 8.x branches. Once 8.x LTS is the only
-     * supported TYPO3 version we can move these.
-     *
-     * @return void
-     */
-    public function initialize()
+    public function render(): string
     {
-        $this->provider = $this->viewHelperVariableContainer->get(static::class, 'provider');
-        $this->record = $this->viewHelperVariableContainer->get(static::class, 'record');
+        /** @var ProviderInterface|null $provider */
+        $provider = $this->viewHelperVariableContainer->get(self::class, 'provider');
+        if (!$provider instanceof ProviderInterface) {
+            throw new Exception(
+                'Provider associated with outlet must be instance of ' . ProviderInterface::class,
+                1669647845
+            );
+        }
+
+        /** @var array|null $record */
+        $record = $this->viewHelperVariableContainer->get(self::class, 'record');
+        if (!is_array($record)) {
+            throw new Exception('Record not found in context of outlet form', 1669647846);
+        }
+
+        $this->provider = $provider;
+        $this->record = $record;
 
         if (!$this->hasArgument('extensionName')) {
-            $this->arguments['extensionName'] = $this->viewHelperVariableContainer->get(static::class, 'extensionName');
+            $this->arguments['extensionName'] = ExtensionNamingUtility::getExtensionName(
+                $this->provider->getControllerExtensionKeyFromRecord($this->record)
+            );
+        }
+
+        if (!$this->hasArgument('controller')) {
+            $this->arguments['controller'] = $this->provider->getControllerNameFromRecord($this->record);
         }
 
         if (!$this->hasArgument('pluginName')) {
-            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(static::class, 'pluginName');
+            $this->arguments['pluginName'] = $this->viewHelperVariableContainer->get(self::class, 'pluginName');
         }
 
         if (!$this->hasArgument('action')) {
             $this->arguments['action'] = 'outlet';
         }
 
-        parent::initialize();
+        return parent::render();
     }
 
     /**
      * Render additional identity fields which were registered by form elements.
-     * This happens if a form field is defined like property="bla.blubb" - then we might need an identity property for the sub-object "bla".
-     *
-     * @return string HTML-string for the additional identity properties
+     * This happens if a form field is defined like property="bla.blubb" - then we might
+     * need an identity property for the sub-object "bla".
      */
-    protected function renderAdditionalIdentityFields()
+    protected function renderAdditionalIdentityFields(): string
     {
+        /** @var ProviderInterface $provider */
+        $provider = $this->provider;
         $output = parent::renderAdditionalIdentityFields();
-        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[table]') . '" value="' . $this->provider->getTableName($this->record) . '" />' . LF;
-        $output .= '<input type="hidden" name="' . $this->prefixFieldName('__outlet[recordUid]') . '" value="' . $this->record['uid'] . '" />' . LF;
+        $output .= '<input type="hidden" name="'
+            . $this->prefixFieldName('__outlet[table]')
+            . '" value="'
+            . $provider->getTableName($this->record)
+            . '" />'
+            . PHP_EOL
+            . '<input type="hidden" name="'
+            . $this->prefixFieldName('__outlet[recordUid]')
+            . '" value="'
+            . $this->record['uid']
+            . '" />'
+            . PHP_EOL;
         return $output;
     }
 }

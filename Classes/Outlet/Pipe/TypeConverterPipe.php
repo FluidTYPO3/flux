@@ -8,11 +8,9 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Select;
-use FluidTYPO3\Flux\Form\FieldInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Error;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
 use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
 
 /**
@@ -23,86 +21,50 @@ use TYPO3\CMS\Extbase\Property\TypeConverterInterface;
  */
 class TypeConverterPipe extends AbstractPipe implements PipeInterface
 {
+    protected ?TypeConverterInterface $typeConverter = null;
+
+    protected ?string $targetType = null;
+    protected ?string $propertyName = null;
 
     /**
-     * @var ObjectManagerInterface
+     * @param TypeConverterInterface|class-string $typeConverter
      */
-    protected $objectManager;
-
-    /**
-     * @var TypeConverterInterface
-     */
-    protected $typeConverter;
-
-    /**
-     * @var string
-     */
-    protected $targetType;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
+    public function setTypeConverter($typeConverter): self
     {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @return FieldInterface[]
-     */
-    public function getFormFields()
-    {
-        $fields = parent::getFormFields();
-        $converters = array_values((array) $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['typeConverters']);
-        $converters = array_combine($converters, $converters);
-        /** @var Select $typeConverter */
-        $typeConverter = Select::create(['type' => 'Select']);
-        $typeConverter->setName('typeConverter');
-        $typeConverter->setItems($converters);
-        $fields['typeConverter'] = $typeConverter;
-        $fields['targetType'] = Input::create(['type' => 'Input'])->setName('targetType');
-        return $fields;
-    }
-
-
-    /**
-     * @param TypeConverterInterface|string $typeConverter
-     * @return TypeConverterPipe
-     */
-    public function setTypeConverter($typeConverter)
-    {
-        if (true === is_string($typeConverter)) {
-            $typeConverter = $this->objectManager->get($typeConverter);
+        if (is_string($typeConverter)) {
+            /** @var TypeConverterInterface $typeConverter */
+            $typeConverter = GeneralUtility::makeInstance($typeConverter);
         }
         $this->typeConverter = $typeConverter;
         return $this;
     }
 
-    /**
-     * @return TypeConverterInterface
-     */
-    public function getTypeConverter()
+    public function getTypeConverter(): TypeConverterInterface
     {
-        return $this->typeConverter;
+        return $this->typeConverter ?? new StringConverter();
     }
 
-    /**
-     * @param string $targetType
-     * @return TypeConverterPipe
-     */
-    public function setTargetType($targetType)
+    public function setTargetType(?string $targetType): self
     {
         $this->targetType = $targetType;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTargetType()
+    public function getTargetType(): string
     {
-        return $this->targetType;
+        return $this->targetType ?? 'string';
+    }
+
+    public function getPropertyName(): ?string
+    {
+        return $this->propertyName;
+    }
+
+    public function setPropertyName(?string $propertyName): self
+    {
+        $this->propertyName = $propertyName;
+
+        return $this;
     }
 
     /**
@@ -112,21 +74,32 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
      */
     public function conduct($data)
     {
+        $output = &$data;
+        $subject = &$data;
+        if (!empty($this->propertyName)) {
+            if (strpos($this->propertyName, '.') !== false && is_array($subject)) {
+                foreach (explode('.', $this->propertyName) as $segment) {
+                    $subject = &$subject[$segment];
+                }
+            } elseif (is_array($subject)) {
+                $subject =& $subject[$this->propertyName];
+            }
+        }
         $targetType = $this->getTargetType();
         $typeConverter = $this->getTypeConverter();
-        if (false === $typeConverter->canConvertFrom($data, $targetType)) {
+        if (!$typeConverter->canConvertFrom($subject, $targetType)) {
             throw new Exception(
                 sprintf(
                     'TypeConverter %s cannot convert %s to %s',
                     get_class($typeConverter),
-                    gettype($data),
+                    gettype($subject),
                     $targetType
                 ),
                 1386292424
             );
         }
-        $output = $this->typeConverter->convertFrom($data, $targetType);
-        if (true === $output instanceof Error) {
+        $subject = $this->getTypeConverter()->convertFrom($subject, $targetType);
+        if ($output instanceof Error) {
             throw new Exception(
                 sprintf(
                     'Conversion of %s to %s was unsuccessful, Error was: %s',

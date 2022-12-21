@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -23,7 +24,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *     <f:section name="Configuration">
  *      <flux:grid>
  *       <flux:grid.row>
- *        <flux:grid.column name="teaser"/>
+ *        <flux:grid.column name="teaser" colPos="0"/>
  *       </flux:grid.row>
  *      </flux:grid>
  *     </f:section>
@@ -42,11 +43,6 @@ class RenderViewHelper extends GetViewHelper
     protected $escapeOutput = false;
 
     /**
-     * Default implementation for use in compiled templates
-     *
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
      * @return mixed
      */
     public static function renderStatic(
@@ -56,7 +52,7 @@ class RenderViewHelper extends GetViewHelper
     ) {
         $content = parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
         if (true === is_array($content)) {
-            return implode(LF, $content);
+            return implode(PHP_EOL, $content);
         }
         return $content;
     }

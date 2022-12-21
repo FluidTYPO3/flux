@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
 
 /*
@@ -22,17 +23,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class GroupViewHelper extends OptionViewHelper
 {
+    public static string $option = Form::OPTION_GROUP;
 
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_GROUP;
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('value', 'string', 'Name of the group');
     }

@@ -10,12 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
-/**
- * ContainerViewHelperTest
- */
 class ContainerViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @test
      */

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
 
 /*
@@ -11,7 +12,6 @@ namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
 use FluidTYPO3\Flux\Outlet\OutletArgument;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -39,39 +39,31 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ArgumentViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('name', 'string', 'name of the argument', true);
         $this->registerArgument('type', 'string', 'type of the argument', false, 'string');
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $outlet = static::getFormFromRenderingContext($renderingContext)->getOutlet();
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $argument = $objectManager->get(OutletArgument::class, $arguments['name'], $arguments['type']);
+        /** @var OutletArgument $argument */
+        $argument = GeneralUtility::makeInstance(OutletArgument::class, $arguments['name'], $arguments['type']);
 
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $viewHelperVariableContainer->addOrUpdate(ValidateViewHelper::class, 'validators', []);
         $renderChildrenClosure();
+        /** @var array[] $validators */
         $validators = $viewHelperVariableContainer->get(ValidateViewHelper::class, 'validators');
         foreach ($validators as $validator) {
             $argument->addValidator($validator['type'], (array)$validator['options']);
         }
         $outlet->addArgument($argument);
+        return '';
     }
 }

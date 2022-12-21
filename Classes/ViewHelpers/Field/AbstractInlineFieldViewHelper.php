@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -8,20 +9,18 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Field\Inline;
 use FluidTYPO3\Flux\Form\InlineRelationFieldInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Inline-style FlexForm field ViewHelper
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -55,8 +54,8 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $this->registerArgument(
             'useCombination',
             'boolean',
-            "For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit ' .
-            'attributes and the related child record.",
+            "For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit '
+            . 'attributes and the related child record.",
             false,
             false
         );
@@ -92,8 +91,8 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $this->registerArgument(
             'enabledControls',
             'array',
-            "Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. ' .
-            'Set either one to TRUE or FALSE to show or hide it.",
+            "Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. '
+            . 'Set either one to TRUE or FALSE to show or hide it.",
             false,
             false
         );
@@ -101,41 +100,41 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $this->registerArgument(
             'foreignMatchFields',
             'array',
-            'The fields and values of the child record which have to match. For FAL the field/key is "fieldname" ' .
-            'and the value has to be defined.',
+            'The fields and values of the child record which have to match. For FAL the field/key is "fieldname" '
+            . 'and the value has to be defined.',
             false,
             false
         );
         $this->registerArgument(
             'foreignTypes',
             'array',
-            'Overrides the "types" TCA array of the target table with this array (beware! must be specified fully ' .
-            'in order to work!). Expects an array of arrays; indexed by type number - each array containing for ' .
-            'example a "showitem" CSV list value of field names to be shown when inline-editing the related record.'
+            'Overrides the "types" TCA array of the target table with this array (beware! must be specified fully '
+            . 'in order to work!). Expects an array of arrays; indexed by type number - each array containing for '
+            . 'example a "showitem" CSV list value of field names to be shown when inline-editing the related record.'
         );
         $this->registerArgument('levelLinksPosition', 'string', 'Level links position.');
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return InlineRelationFieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
-    {
-        $component = static::getPreparedComponent('Inline', $renderingContext, $arguments);
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): InlineRelationFieldInterface {
+        $component = static::getPreparedComponent(Inline::class, $renderingContext, $arguments);
         return $component;
     }
 
     /**
-     * @param string $type
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return InlineRelationFieldInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&InlineRelationFieldInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
-    {
-        /** @var InlineRelationFieldInterface $component */
+    protected static function getPreparedComponent(
+        $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): InlineRelationFieldInterface {
+        /** @var array $arguments */
+        /** @var T&InlineRelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setCollapseAll($arguments['collapseAll']);
         $component->setExpandSingle($arguments['expandSingle']);
@@ -147,16 +146,16 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $component->setShowRemovedLocalizationRecords($arguments['showRemovedLocalizationRecords']);
         $component->setShowAllLocalizationLink($arguments['showAllLocalizationLink']);
         $component->setShowSynchronizationLink($arguments['showSynchronizationLink']);
-        if (true === is_array($arguments['enabledControls'])) {
+        if (is_array($arguments['enabledControls'])) {
             $component->setEnabledControls($arguments['enabledControls']);
         }
-        if (true === is_array($arguments['headerThumbnail'])) {
+        if (is_array($arguments['headerThumbnail'])) {
             $component->setHeaderThumbnail($arguments['headerThumbnail']);
         }
-        if (true === is_array($arguments['foreignMatchFields'])) {
+        if (is_array($arguments['foreignMatchFields'])) {
             $component->setForeignMatchFields($arguments['foreignMatchFields']);
         }
-        if (true === is_array($arguments['foreignTypes'])) {
+        if (is_array($arguments['foreignTypes'])) {
             $component->setForeignTypes($arguments['foreignTypes']);
         }
         $component->setLevelLinksPosition($arguments['levelLinksPosition']);

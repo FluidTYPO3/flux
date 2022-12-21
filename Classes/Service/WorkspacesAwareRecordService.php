@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Service;
  */
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
@@ -18,18 +19,17 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  */
 class WorkspacesAwareRecordService extends RecordService implements SingletonInterface
 {
-
     /**
      * @param string $table
      * @param string $fields
      * @param string $clause
      * @param string $groupBy
      * @param string $orderBy
-     * @param string $limit
-     * @param string $offset
+     * @param integer $limit
+     * @param integer $offset
      * @return array|null
      */
-    public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = '', $offset = '')
+    public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = 0, $offset = 0)
     {
         $records = parent::get($table, $fields, $clause, $groupBy, $orderBy, $limit, $offset);
         return null === $records ? null : $this->overlayRecords($table, $records);
@@ -38,17 +38,14 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     /**
      * @param string $table
      * @param string $fields
-     * @param string $uid
+     * @param integer $uid
      * @return array|null
      */
     public function getSingle($table, $fields, $uid)
     {
         $record = parent::getSingle($table, $fields, $uid);
         if ($record) {
-            $overlay = $this->overlayRecord($table, $record);
-            if ($overlay) {
-                return $overlay;
-            }
+            return $this->overlayRecord($table, $record);
         }
         return $record;
     }
@@ -77,7 +74,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
             return $records;
         }
         foreach ($records as $index => $record) {
-            $overlay = $this->overlayRecord($table, $record);
+            $overlay = $this->overlayRecordInternal($table, $record);
             if (!$overlay) {
                 unset($records[$index]);
             } else {
@@ -90,28 +87,24 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     /**
      * @param string $table
      * @param array $record
-     * @return array|boolean
+     * @return array
      */
     protected function overlayRecord($table, array $record)
     {
-        $enabled = $this->hasWorkspacesSupport($table);
-        return (true === $enabled) ? $this->getWorkspaceVersionOfRecordOrRecordItself($table, $record) : $record;
+        return $this->getWorkspaceVersionOfRecordOrRecordItself($table, $record) ?: $record;
     }
 
     /**
      * @param string $table
      * @param array $record
-     * @return array|boolean
+     * @return array
      */
     protected function getWorkspaceVersionOfRecordOrRecordItself($table, $record)
     {
         $copy = false;
-        if (null !== $GLOBALS['BE_USER']) {
+        if ($this->hasWorkspacesSupport($table)) {
             $copy = $record;
-            BackendUtility::workspaceOL($table, $copy, -99, true);
-            if (!$copy) {
-                return false;
-            }
+            $this->overlayRecordInternal($table, $copy);
         }
         return $copy === false ? $record : $copy;
     }
@@ -123,9 +116,22 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     protected function hasWorkspacesSupport($table)
     {
         return (
-            null !== $GLOBALS['BE_USER']
+            $GLOBALS['BE_USER'] instanceof BackendUserAuthentication
             && ExtensionManagementUtility::isLoaded('workspaces')
             && BackendUtility::isTableWorkspaceEnabled($table)
         );
+    }
+
+    /**
+     * @param string $table
+     * @param array $copy
+     * @return array|false
+     * @codeCoverageIgnore
+     */
+    protected function overlayRecordInternal(string $table, array $copy)
+    {
+        BackendUtility::workspaceOL($table, $copy, -99, false);
+        /** array|false */
+        return $copy;
     }
 }

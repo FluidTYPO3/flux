@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -16,20 +17,15 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by arguments.
+ *
+ * DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
+ * @deprecated Will be removed in Flux 10.0
  */
 class ColorPickerViewHelper extends AbstractWizardViewHelper
 {
+    protected ?string $label = 'Choose color';
 
-    /**
-     * @var string
-     */
-    protected $label = 'Choose color';
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('dim', 'string', 'Dimensions (WxH, e.g. 20x20) of color picker', false, '20x20');
@@ -44,15 +40,11 @@ class ColorPickerViewHelper extends AbstractWizardViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return ColorPicker
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): ColorPicker
     {
+        /** @var array $arguments */
         /** @var ColorPicker $component */
-        $component = static::getPreparedComponent('ColorPicker', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(ColorPicker::class, $renderingContext, $arguments);
         $component->setIcon($arguments['exampleImg']);
         $component->setDimensions($arguments['dim']);
         $component->setWidth($arguments['width']);

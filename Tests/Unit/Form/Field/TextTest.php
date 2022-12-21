@@ -8,15 +8,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * TextTest
- */
+use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Field\Text;
+
 class TextTest extends InputTest
 {
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
         'enabled' => true,
@@ -27,7 +24,8 @@ class TextTest extends InputTest
         'default' => 'test',
         'columns' => 85,
         'rows' => 8,
-        'requestUpdate' => true
+        'requestUpdate' => true,
+        'format' => 'html',
     );
 
     /**
@@ -40,5 +38,37 @@ class TextTest extends InputTest
         $chained = $instance->setEnableRichText(true);
         $this->assertSame($instance, $chained);
         $this->assertTrue($instance->getEnableRichText());
+    }
+
+    public function testBuildConfigurationWithRteResolving(): void
+    {
+        $subject = $this->getMockBuilder(Text::class)
+            ->setMethods(['fetchPageTsConfig'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->expects(self::once())->method('fetchPageTsConfig')->with(123)->willReturn([]);
+        $subject->setEnableRichText(true);
+        $subject->setRenderType('rte');
+
+        $form = Form::create();
+        $form->setOption(Form::OPTION_RECORD, ['pid' => 123]);
+        $form->add($subject);
+
+        $expected = [
+            'type' => 'text',
+            'transform' => null,
+            'default' => null,
+            'rows' => 10,
+            'cols' => 85,
+            'eval' => 'trim',
+            'placeholder' => null,
+            'enableRichtext' => true,
+            'softref' => 'typolink_tag,images,email[subst],url',
+            'richtextConfiguration' => 'default',
+            'renderType' => 'rte',
+            'format' => '',
+        ];
+        $output = $subject->buildConfiguration();
+        self::assertSame($expected, $output);
     }
 }

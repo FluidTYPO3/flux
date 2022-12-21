@@ -13,7 +13,6 @@ namespace FluidTYPO3\Flux\Form;
  */
 abstract class AbstractRelationFormField extends AbstractMultiValueFormField implements RelationFieldInterface
 {
-
     /**
      * @var string
      */
@@ -165,11 +164,7 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
      */
     protected $oppositeField;
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    public function prepareConfiguration($type)
+    public function prepareConfiguration(string $type): array
     {
         $configuration = parent::prepareConfiguration($type);
         $configuration['foreign_table'] = $this->getTable();
@@ -450,24 +445,6 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     }
 
     /**
-     * @param string $itemListStyle
-     * @return RelationFieldInterface
-     */
-    public function setItemListStyle($itemListStyle)
-    {
-        $this->itemListStyle = $itemListStyle;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getItemListStyle()
-    {
-        return $this->itemListStyle;
-    }
-
-    /**
      * @param string $localizationMode
      * @return RelationFieldInterface
      */
@@ -501,24 +478,6 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     public function getLocalizeChildrenAtParentLocalization()
     {
         return $this->localizeChildrenAtParentLocalization;
-    }
-
-    /**
-     * @param string $selectedListStyle
-     * @return  RelationFieldInterface
-     */
-    public function setSelectedListStyle($selectedListStyle)
-    {
-        $this->selectedListStyle = $selectedListStyle;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSelectedListStyle()
-    {
-        return $this->selectedListStyle;
     }
 
     /**
@@ -591,23 +550,5 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     public function getShowThumbnails()
     {
         return $this->showThumbnails;
-    }
-
-    /**
-     * @param boolean|string $emptyOption
-     * @return RelationFieldInterface
-     */
-    public function setEmptyOption($emptyOption)
-    {
-        $this->emptyOption = $emptyOption;
-        return $this;
-    }
-
-    /**
-     * @return boolean|string
-     */
-    public function getEmptyOption()
-    {
-        return $this->emptyOption;
     }
 }

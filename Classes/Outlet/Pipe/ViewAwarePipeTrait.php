@@ -15,18 +15,14 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 trait ViewAwarePipeTrait
 {
-
     /**
      * @var ViewInterface
      */
     protected $view;
 
-    /**
-     * @param ViewInterface $view
-     * @return void
-     */
-    public function setView($view)
+    public function setView(ViewInterface $view): self
     {
         $this->view = $view;
+        return $this;
     }
 }

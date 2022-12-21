@@ -13,69 +13,16 @@ namespace FluidTYPO3\Flux\Form;
  */
 interface MultiValueFieldInterface extends FieldInterface
 {
-
-    /**
-     * @param integer $size
-     * @return MultiValueFieldInterface
-     */
-    public function setSize($size);
-
-    /**
-     * @return integer
-     */
-    public function getSize();
-
-    /**
-     * @param boolean $multiple
-     */
-    public function setMultiple($multiple);
-
-    /**
-     * @return boolean
-     */
-    public function getMultiple();
-
-    /**
-     * @param integer $maxItems
-     * @return MultiValueFieldInterface
-     */
-    public function setMaxItems($maxItems);
-
-    /**
-     * @return integer
-     */
-    public function getMaxItems();
-
-    /**
-     * @param integer $minItems
-     * @return MultiValueFieldInterface
-     */
-    public function setMinItems($minItems);
-
-    /**
-     * @return integer
-     */
-    public function getMinItems();
-
-    /**
-     * @param string $itemListStyle
-     * @return MultiValueFieldInterface
-     */
-    public function setItemListStyle($itemListStyle);
-
-    /**
-     * @return string
-     */
-    public function getItemListStyle();
-
-    /**
-     * @param string $selectedListStyle
-     * @return MultiValueFieldInterface
-     */
-    public function setSelectedListStyle($selectedListStyle);
-
-    /**
-     * @return string
-     */
-    public function getSelectedListStyle();
+    public function setSize(int $size): self;
+    public function getSize(): int;
+    public function setMultiple(bool $multiple): self;
+    public function getMultiple(): bool;
+    public function setMaxItems(int $maxItems): self;
+    public function getMaxItems(): ?int;
+    public function setMinItems(int $minItems): self;
+    public function getMinItems(): int;
+    public function setItemListStyle(?string $itemListStyle): self;
+    public function getItemListStyle(): ?string;
+    public function setSelectedListStyle(?string $selectedListStyle): self;
+    public function getSelectedListStyle(): ?string;
 }

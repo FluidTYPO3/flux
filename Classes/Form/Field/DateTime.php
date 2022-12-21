@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,23 +11,14 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\FieldInterface;
 
-/**
- * DateTime
- */
 class DateTime extends Input implements FieldInterface
 {
+    protected ?string $validate = 'date';
 
-    /**
-     * @var string
-     */
-    protected $validate = 'date';
-
-    /**
-     * @param array $settings
-     * @return FieldInterface
-     */
-    public static function create(array $settings = [])
+    public static function create(array $settings = []): self
     {
-        return parent::create($settings);
+        /** @var self $object */
+        $object = parent::create($settings);
+        return $object;
     }
 }

@@ -10,26 +10,27 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 
 use FluidTYPO3\Flux\Form;
 
-/**
- * SheetTest
- */
 class SheetTest extends AbstractContainerTest
 {
-
-    /**
-     * @test
-     */
-    public function testDescriptionPropertyWorks()
+    public function testDescriptionPropertyWorks(): void
     {
         $this->assertGetterAndSetterWorks('description', 'foobardescription', 'foobardescription', true);
     }
 
-    /**
-     * @test
-     */
-    public function testShortDescriptionPropertyWorks()
+    public function testShortDescriptionPropertyWorks(): void
     {
         $this->assertGetterAndSetterWorks('shortDescription', 'foobarshortdescription', 'foobarshortdescription', true);
+    }
+
+    public function testAddTogglesTransformOnIfChildHasTransformProperty(): void
+    {
+        $form = Form::create();
+        $sheet = $form->createContainer(Form\Container\Sheet::class, 'sheet');
+        $child = new Form\Field\Input();
+        $child->setTransform('string');
+        self::assertFalse($form->hasOption(Form::OPTION_TRANSFORM));
+        $sheet->add($child);
+        self::assertTrue($form->hasOption(Form::OPTION_TRANSFORM));
     }
 
     /**
@@ -37,9 +38,9 @@ class SheetTest extends AbstractContainerTest
      */
     public function modifyCreatesFields()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $sheet = $form->createContainer('Sheet', 'testsheet');
-        $form->modify(array('fields' => array('test' => array('name' => 'test', 'label' => 'Test', 'type' => 'Input'))));
+        $form->modify(array('fields' => array('test' => array('name' => 'test', 'label' => 'Test', 'type' => Form\Field\Input::class))));
         $fields  = $sheet->getFields();
         $this->assertArrayHasKey('test', $fields);
     }
@@ -49,7 +50,7 @@ class SheetTest extends AbstractContainerTest
      */
     public function modifyModifiesFields()
     {
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $sheet = $form->createContainer('Sheet', 'testsheet');
         $field = $sheet->createField('Input', 'testfield', 'Testfield');
         $sheet->modify(array('fields' => array('testfield' => array('label' => 'Test'))));

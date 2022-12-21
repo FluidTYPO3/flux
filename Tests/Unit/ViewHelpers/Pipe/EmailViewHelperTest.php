@@ -8,13 +8,30 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\Pipe\AbstractPipeViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\Pipe\EmailViewHelper;
 
-/**
- * EmailViewHelperTest
- */
 class EmailViewHelperTest extends AbstractViewHelperTestCase
 {
+    public function testReadsBodyFromTagContent(): void
+    {
+        $form = Form::create();
+        $closure = function () { return 'Body'; };
+        $this->viewHelperVariableContainer->addOrUpdate(
+            AbstractFormViewHelper::SCOPE,
+            AbstractFormViewHelper::SCOPE_VARIABLE_FORM,
+            $form
+        );
+        $output = EmailViewHelper::renderStatic(
+            ['body' => '', 'subject' => 'test', 'direction' => AbstractPipeViewHelper::DIRECTION_OUT],
+            $closure,
+            $this->renderingContext
+        );
+        self::assertSame('', $output);
+    }
 
     /**
      * @dataProvider getTestArguments
@@ -23,13 +40,10 @@ class EmailViewHelperTest extends AbstractViewHelperTestCase
     public function testWithArguments(array $arguments)
     {
         $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
-        $this->assertNull($result);
+        $this->assertSame('', $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getTestArguments()
+    public function getTestArguments(): array
     {
         return array(
             array(array()),

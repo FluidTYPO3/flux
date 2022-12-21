@@ -13,189 +13,68 @@ namespace FluidTYPO3\Flux\Form;
  */
 interface FormInterface
 {
+    public function build(): array;
+    public function setName(string $name): self;
+    public function getName(): ?string;
+    public function setTransform(?string $transform): self;
+    public function getTransform(): ?string;
+    public function getEnabled(): bool;
+    public function setEnabled(bool $enabled): self;
+    public function setLabel(?string $label): self;
+    public function getLabel(): ?string;
+    public function setLocalLanguageFileRelativePath(string $localLanguageFileRelativePath): self;
+    public function getLocalLanguageFileRelativePath(): string;
+    public function setDisableLocalLanguageLabels(bool $disableLocalLanguageLabels): self;
+    public function getDisableLocalLanguageLabels(): bool;
+    public function setVariables(array $variables): self;
+    public function getVariables(): array;
+    public function getPath(): string;
+    public function setExtensionName(?string $extensionName): self;
+    public function getExtensionName(): ?string;
+    public function isChildOfType(string $type): bool;
+    public function hasChildren(): bool;
+    public function setInherit(bool $inherit): self;
+    public function getInherit(): bool;
+    public function setInheritEmpty(bool $inheritEmpty): self;
+    public function getInheritEmpty(): bool;
+    public function setParent(?FormInterface $parent): self;
+    public function getParent(): ?FormInterface;
 
     /**
-     * @return array
-     */
-    public function build();
-
-    /**
-     * @param string $name
-     */
-    public function setName($name);
-
-    /**
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * @param string $transform
-     * @return FormInterface
-     */
-    public function setTransform($transform);
-
-    /**
-     * @return string
-     */
-    public function getTransform();
-
-    /**
-     * @return boolean
-     */
-    public function getEnabled();
-
-    /**
-     * @param boolean $enabled
-     * @return FormInterface
-     */
-    public function setEnabled($enabled);
-
-    /**
-     * @param string $label
-     */
-    public function setLabel($label);
-
-    /**
-     * @return string
-     */
-    public function getLabel();
-
-    /**
-     * @param string $localLanguageFileRelativePath
-     * @return FormInterface
-     */
-    public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath);
-
-    /**
-     * @return string
-     */
-    public function getLocalLanguageFileRelativePath();
-
-
-    /**
-     * @param boolean $disableLocalLanguageLabels
-     * @return FormInterface
-     */
-    public function setDisableLocalLanguageLabels($disableLocalLanguageLabels);
-
-    /**
-     * @return boolean
-     */
-    public function getDisableLocalLanguageLabels();
-
-    /**
-     * @param ContainerInterface $parent
-     * @return FormInterface
-     */
-    public function setParent($parent);
-
-    /**
-     * @return ContainerInterface
-     */
-    public function getParent();
-
-    /**
-     * @param array $variables
-     * @return FormInterface
-     */
-    public function setVariables($variables);
-
-    /**
-     * @return array
-     */
-    public function getVariables();
-
-    /**
-     * @param string $name
      * @param mixed $value
-     * @return FormInterface
      */
-    public function setVariable($name, $value);
-
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public function getVariable($name);
-
-    /**
-     * @return ContainerInterface
-     */
-    public function getRoot();
-
-    /**
-     * @return string
-     */
-    public function getPath();
-
-    /**
-     * @param string $extensionName
-     * @return FormInterface
-     */
-    public function setExtensionName($extensionName);
+    public function setVariable(string $name, $value): self;
 
     /**
      * @return mixed
      */
-    public function getExtensionName();
+    public function getVariable(string $name);
 
     /**
-     * @param string $type
-     * @return boolean
+     * @return ContainerInterface|FieldInterface
      */
-    public function isChildOfType($type);
+    public function getRoot(): FormInterface;
 
     /**
-     * @return boolean
+     * @template T
+     * @param class-string<T> $type
+     * @return T&FieldInterface
      */
-    public function hasChildren();
+    public function createField(string $type, string $name, ?string $label = null): FieldInterface;
 
     /**
-     * @param string $type
-     * @param string $name
-     * @param string $label
-     * @return FieldInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&ContainerInterface
      */
-    public function createField($type, $name, $label = null);
+    public function createContainer(string $type, string $name, ?string $label = null): ContainerInterface;
 
     /**
-     * @param string $type
-     * @param string $name
-     * @param string $label
-     * @return ContainerInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&WizardInterface
      */
-    public function createContainer($type, $name, $label = null);
-
-    /**
-     * @param string $type
-     * @param string $name
-     * @param string $label
-     * @return WizardInterface
-     */
-    public function createWizard($type, $name, $label = null);
-
-    /**
-     * @param integer $inherit
-     * @return FormInterface
-     */
-    public function setInherit($inherit);
-
-    /**
-     * @return integer
-     */
-    public function getInherit();
-
-    /**
-     * @param boolean $inheritEmpty
-     * @return FormInterface
-     */
-    public function setInheritEmpty($inheritEmpty);
-
-    /**
-     * @return boolean
-     */
-    public function getInheritEmpty();
+    public function createWizard(string $type, string $name, ?string $label = null): WizardInterface;
 
     /**
      * Modifies the current Form Component by changing any properties
@@ -210,9 +89,6 @@ interface FormInterface
      * function which uses the same structure syntax). If it already
      * exists, the `modify()` method is called on that object to trigger
      * the recursive modification of all child components.
-     *
-     * @param array $structure
-     * @return FormInterface
      */
-    public function modify(array $structure);
+    public function modify(array $structure): self;
 }

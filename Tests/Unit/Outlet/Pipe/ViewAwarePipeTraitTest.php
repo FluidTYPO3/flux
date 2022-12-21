@@ -25,6 +25,6 @@ class ViewAwarePipeTraitTest extends AbstractTestCase
         $view = $this->getMockBuilder(ViewInterface::class)->disableOriginalConstructor()->getMockForAbstractClass();
         $subject = $this->getMockBuilder(ViewAwarePipeTrait::class)->getMockForTrait();
         $subject->setView($view);
-        $this->assertAttributeSame($view, 'view', $subject);
+        $this->assertSame($view, $this->getInaccessiblePropertyValue($subject, 'view'));
     }
 }

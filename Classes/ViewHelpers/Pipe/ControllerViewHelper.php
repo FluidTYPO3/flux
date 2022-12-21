@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -9,9 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -21,11 +20,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ControllerViewHelper extends AbstractPipeViewHelper
 {
-
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -46,31 +41,26 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
-        array $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        iterable $arguments,
+        ?\Closure $renderChildrenClosure = null
+    ): ControllerPipe {
+        /** @var array $arguments */
         $extensionName = $arguments['extensionName'];
         $controller = $arguments['controller'];
         $controllerContext = $renderingContext->getControllerContext();
-        if (true === empty($extensionName)) {
+        if (empty($extensionName)) {
             $extensionName = $controllerContext->getRequest()->getControllerExtensionName();
         }
-        if (true === empty($controller)) {
+        if (empty($controller)) {
             $controller = $controllerContext->getRequest()->getControllerObjectName();
         }
         /** @var ControllerPipe $pipe */
-        $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(ControllerPipe::class);
-        $pipe->setAction($arguments['action']);
-        $pipe->setController($controller);
-        $pipe->setExtensionName($extensionName);
+        $pipe = GeneralUtility::makeInstance(ControllerPipe::class);
+        $pipe->setAction((string) $arguments['action']);
+        $pipe->setController((string) $controller);
+        $pipe->setExtensionName((string) $extensionName);
         return $pipe;
     }
 }

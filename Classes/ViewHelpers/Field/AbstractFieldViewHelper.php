@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -8,21 +9,18 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', true);
         $this->registerArgument(
@@ -106,18 +104,31 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
             'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
             'is otherwise automatically detected from rendering context.'
         );
+        $this->registerArgument(
+            'config',
+            'array',
+            'Raw TCA options - passed directly to "config" section of created field and overrides anything generated ' .
+            'by the component itself. Can be used to provide options that Flux itself does not support, and can be ' .
+            'used to pass root-level arguments for a "userFunc"',
+            false,
+            []
+        );
     }
 
     /**
-     * @param string $type
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return FieldInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&FormInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
-    {
-        $component = static::getFormFromRenderingContext($renderingContext)
+    protected static function getPreparedComponent(
+        $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): FormInterface {
+        /** @var array $arguments */
+        $component = static::getContainerFromRenderingContext($renderingContext)
             ->createField($type, $arguments['name'], $arguments['label']);
+        $component->setConfig((array)$arguments['config']);
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );

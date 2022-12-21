@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
 
 /*
@@ -53,25 +54,42 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  *     <flux:field.inline.fal name="settings.image" required="1" maxItems="1" minItems="1"/>
  *
+ * #### Define crop variants
+ *
+ *     <flux:field.inline.fal name="settings.slides" required="1" maxItems="10" minItems="1" cropVariants="{
+ *       default: {
+ *         title: 'Default',
+ *         allowedAspectRatios: {
+ *           default: {
+ *             title: '1200:450',
+ *             value: '2.6666666666'
+ *           }
+ *         }
+ *       }
+ *     }"/>
+ *
+ * The crop configuration can now be passed to the image viewhelper:
+ *
+ *     <f:section name="Main">
+ *       <f:for each="{v:content.resources.fal(field: 'settings.slides')}" as="image" iteration="iterator">
+ *         <f:image src="{image.uid}" height="300" class="leb-pic" crop="{image.crop}" cropVariant="default"/>
+ *       </f:for>
+ *     </f:section>
+ *
  * #### Rendering the image
  *
  *     {v:content.resources.fal(field: 'settings.image') -> v:iterator.first() -> v:variable.set(name: 'image')}
- *     <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+ *     <f:image treatIdAsReference="1" src="{image.uid}" title="{image.title}" alt="{image.alternative}"/><br/>
  *
  * #### Rendering multiple images
  *
  *     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
- *         <f:image treatIdAsReference="1" src="{image.id}" title="{image.title}" alt="{image.alternative}"/><br/>
+ *         <f:image treatIdAsReference="1" src="{image.uid}" title="{image.title}" alt="{image.alternative}"/><br/>
  *     </f:for>
  */
 class FalViewHelper extends AbstractInlineFieldViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
 
@@ -166,7 +184,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
             'string',
             'Allowed File Extensions .',
             false,
-            $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
+            $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'] ?? ''
         );
         $this->registerArgument('disallowedExtensions', 'string', 'Disallowed File Extensions .', false, '');
         $this->registerArgument(
@@ -176,31 +194,37 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
             false,
             Fal::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE
         );
+        $this->registerArgument(
+            'cropVariants',
+            'array',
+            'Add one or multiple crop variants for uploaded images'
+        );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Fal
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Fal
     {
+        /** @var array $arguments */
         $allowedExtensions = $arguments['allowedExtensions'];
         $disallowedExtensions = $arguments['disallowedExtensions'];
         $createNewRelationLinkTitle = $arguments['createNewRelationLinkTitle'];
+        $cropVariants = $arguments['cropVariants'];
 
         /** @var Fal $component */
-        $component = static::getPreparedComponent('Inline/Fal', $renderingContext, $arguments);
-        if (false === is_array($arguments['foreignMatchFields'])) {
+        $component = static::getPreparedComponent(Fal::class, $renderingContext, $arguments);
+        if (!is_array($arguments['foreignMatchFields'])) {
             $component->setForeignMatchFields([
                 'fieldname' => $arguments['name']
             ]);
         }
-        $component->setForeignSelectorFieldTcaOverride([
-            'config' => [
-                'appearance' => [
-                    'elementBrowserType' => 'file',
-                    'elementBrowserAllowed' => $allowedExtensions
+        $component->setOverrideChildTca([
+            'columns' => [
+                'uid_local' => [
+                    'config' => [
+                        'appearance' => [
+                            'elementBrowserType' => 'file',
+                            'elementBrowserAllowed' => $allowedExtensions
+                        ]
+                    ]
                 ]
             ]
         ]);
@@ -212,7 +236,7 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
                 ]
             ]]);
 
-        if (false === isset($arguments['foreignTypes'])) {
+        if (!isset($arguments['foreignTypes'])) {
             $component->setForeignTypes([
                 '0' => [
                     'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.' .
@@ -223,6 +247,10 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
                         'imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
                 ],
             ]);
+        }
+        
+        if (!empty($cropVariants)) {
+            $component->setCropVariants($cropVariants);
         }
 
         $component->setCreateNewRelationLinkTitle($createNewRelationLinkTitle);

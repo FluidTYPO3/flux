@@ -11,20 +11,21 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
 use FluidTYPO3\Flux\Service\FluxService;
+use PHPUnit\Framework\Constraint\IsType;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\TestCase;
+use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
+use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3Fluid\Fluid\Core\Parser\Interceptor\Escape;
 
-/**
- * AbstractTestCase
- */
-abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends TestCase
 {
-
     const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
     const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/Content/WithoutForm.html';
     const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Content/Sheets.html';
-    const FIXTURE_TEMPLATE_COMPACTED = 'EXT:flux/Tests/Fixtures/Templates/Content/CompactToggledOn.html';
     const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/Content/UsesPartial.html';
     const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/Content/CustomSection.html';
     const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/Content/EmptyPreview.html';
@@ -34,24 +35,50 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/CollidingGrid.html';
     const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
-    /**
-     * @param string $name
-     * @param array $data
-     * @param string $dataName
-     */
-    public function __construct($name = null, array $data = array(), $dataName = '')
+    protected array $singletonInstances = [];
+    private array $singletonInstancesBackup = [];
+
+    protected function setUp(): void
     {
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        $this->objectManager = clone $objectManager;
-        parent::__construct($name, $data, $dataName);
+        if (!defined('LF')) {
+            define('LF', PHP_EOL);
+        }
+        if (!defined('TYPO3_MODE')) {
+            define('TYPO3_MODE', 'FE');
+        }
+        if (!defined('TYPO3_REQUESTTYPE')) {
+            define('TYPO3_REQUESTTYPE', 1);
+        }
+        if (!defined('TYPO3_REQUESTTYPE_FE')) {
+            define('TYPO3_REQUESTTYPE_FE', 1);
+        }
+        if (!defined('TYPO3_version')) {
+            define('TYPO3_version', '9.5.0');
+        }
+
+        $GLOBALS['EXEC_TIME'] = time();
+        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [
+            Escape::class
+        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fluid_template'] = [
+            'frontend' => VariableFrontend::class,
+            'backend' => TransientMemoryBackend::class,
+        ];
+
+        $this->singletonInstancesBackup = GeneralUtility::getSingletonInstances();
+        foreach ($this->singletonInstances as $className => $singletonInstance) {
+            GeneralUtility::setSingletonInstance($className, $singletonInstance);
+        }
     }
 
-    /**
-     * @return void
-     */
-    protected function setUp()
+    protected function tearDown(): void
     {
-        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
+        parent::tearDown();
+
+        GeneralUtility::purgeInstances();
+        GeneralUtility::resetSingletonInstances($this->singletonInstancesBackup);
     }
 
     /**
@@ -71,6 +98,31 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param object $object
+     * @param string $propertyName
+     * @param mixed $value
+     * @return void
+     */
+    protected function setInaccessiblePropertyValue(object $object, string $propertyName, $value): void
+    {
+        $reflectionProperty = new \ReflectionProperty($object, $propertyName);
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($object, $value);
+    }
+
+    /**
+     * @param object $object
+     * @param string $propertyName
+     * @return mixed
+     */
+    protected function getInaccessiblePropertyValue(object $object, string $propertyName)
+    {
+        $reflectionProperty = new \ReflectionProperty($object, $propertyName);
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->getValue($object);
+    }
+
+    /**
      * @param string $propertyName
      * @param mixed $value
      * @param mixed $expectedValue
@@ -83,6 +135,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         $setter = 'set' . ucfirst($propertyName);
         $getter = 'get' . ucfirst($propertyName);
         $chained = $instance->$setter($value);
+        $expectedValue = $expectedValue ?? $value;
         if (true === $expectsChaining) {
             $this->assertSame($instance, $chained);
         } else {
@@ -92,23 +145,25 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param mixed $value
-     * @return void
+     * Asserts that a variable is of type array.
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws ExpectationFailedException
+     *
+     * @psalm-assert array $actual
      */
-    protected function assertIsArray($value)
+    public static function assertIsArray($actual, string $message = ''): void
     {
-        $isArrayConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
-        $this->assertThat($value, $isArrayConstraint);
-    }
-
-    /**
-     * @param mixed $value
-     * @return void
-     */
-    protected function assertIsString($value)
-    {
-        $isStringConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_STRING);
-        $this->assertThat($value, $isStringConstraint);
+        if (class_exists(IsType::class)) {
+            $constraint = new IsType(IsType::TYPE_ARRAY);
+        } else {
+            $constraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY);
+        }
+        static::assertThat(
+            $actual,
+            $constraint,
+            $message
+        );
     }
 
     /**
@@ -117,7 +172,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertIsInteger($value)
     {
-        $isIntegerConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_INT);
+        $isIntegerConstraint = new IsType(IsType::TYPE_INT);
         $this->assertThat($value, $isIntegerConstraint);
     }
 
@@ -127,7 +182,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertIsBoolean($value)
     {
-        $isBooleanConstraint = new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_BOOL);
+        $isBooleanConstraint = new IsType(IsType::TYPE_BOOL);
         $this->assertThat($value, $isBooleanConstraint);
     }
 
@@ -136,9 +191,9 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertIsValidAndWorkingFormObject($value)
     {
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form', $value);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $value);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+        $this->assertInstanceOf(Form::class, $value);
+        $this->assertInstanceOf(Form\FormInterface::class, $value);
+        $this->assertInstanceOf(Form\ContainerInterface::class, $value);
         /** @var Form $value */
         $structure = $value->build();
         $this->assertIsArray($structure);
@@ -157,8 +212,8 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function assertIsValidAndWorkingGridObject($value)
     {
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\Container\Grid', $value);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\ContainerInterface', $value);
+        $this->assertInstanceOf(Form\Container\Grid::class, $value);
+        $this->assertInstanceOf(Form\ContainerInterface::class, $value);
         /** @var Form $value */
         $structure = $value->build();
         $this->assertIsArray($structure);
@@ -178,7 +233,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath)
     {
-        return GeneralUtility::getFileAbsFileName($shorthandTemplatePath);
+        return realpath(str_replace('EXT:flux/', './', $shorthandTemplatePath));
     }
 
     /**
@@ -188,15 +243,14 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     protected function createFluxServiceInstance($methods = array('dummy'))
     {
         /** @var FluxService $fluxService */
-        $fluxService = $this->getMockBuilder('FluidTYPO3\\Flux\\Service\\FluxService')->setMethods($methods)->disableOriginalConstructor()->getMock();
-        $fluxService->injectObjectManager($this->objectManager);
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
-        $fluxService->injectConfigurationManager($configurationManager);
+        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods($methods)->disableOriginalConstructor()->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->disableOriginalConstructor()->getMock();
+        $this->setInaccessiblePropertyValue($fluxService, 'configurationManager', $configurationManager);
         return $fluxService;
     }
 
     /**
-     * @return object
+     * @return string
      */
     protected function createInstanceClassName()
     {
@@ -208,8 +262,10 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function createInstance()
     {
-        $instance = $this->objectManager->get($this->createInstanceClassName());
-        return $instance;
+        $instanceClassName = $this->createInstanceClassName();
+        return $this->getMockBuilder($instanceClassName)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
     }
-
 }

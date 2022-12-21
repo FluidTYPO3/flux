@@ -1,7 +1,20 @@
-Latest release: 9.0.1 (2018/07/23)
+Latest release: 9.7.2 (2022/11/28)
 
 All previous release change logs:
 
+* [9.7.2 (2022/11/28)](Documentation/Changelog/9.7.2.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.7.0...9.7.2)
+* [9.7.0 (2022/11/17)](Documentation/Changelog/9.7.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.6.1...9.7.0)
+* [9.6.1 (2022/05/02)](Documentation/Changelog/9.6.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.6.0...9.6.1)
+* [9.6.0 (2022/05/01)](Documentation/Changelog/9.6.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.5.0...9.6.0)
+* [9.5.0 (2021/05/24)](Documentation/Changelog/9.5.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.4.2...9.5.0)
+* [9.4.2 (2020/09/24)](Documentation/Changelog/9.4.2.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.4.1...9.4.2)
+* [9.4.1 (2020/06/28)](Documentation/Changelog/9.4.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.4.0...9.4.1)
+* [9.4.0 (2020/05/31)](Documentation/Changelog/9.4.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.3.2...9.4.0)
+* [9.3.2 (2020/02/08)](Documentation/Changelog/9.3.2.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.3.1...9.3.2)
+* [9.3.1 (2020/02/04)](Documentation/Changelog/9.3.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.3.0...9.3.1)
+* [9.3.0 (2020/01/31)](Documentation/Changelog/9.3.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.2.0...9.3.0)
+* [9.2.0 (2019/04/01)](Documentation/Changelog/9.2.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.1.0...9.2.0)
+* [9.1.0 (2018/10/02)](Documentation/Changelog/9.1.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.0.1...9.1.0)
 * [9.0.1 (2018/07/23)](Documentation/Changelog/9.0.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/9.0.0...9.0.1)
 * [9.0.0 (2018/07/10)](Documentation/Changelog/9.0.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/8.2.1...9.0.0)
 * [8.2.1 (2017/04/24)](Documentation/Changelog/8.2.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/8.2.0...8.2.1)

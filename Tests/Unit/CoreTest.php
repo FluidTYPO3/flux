@@ -8,17 +8,30 @@ namespace FluidTYPO3\Flux\Tests\Unit;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use TYPO3\CMS\Core\Package\Package;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * CoreTest
- */
 class CoreTest extends AbstractTestCase
 {
+    protected $objectManager;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        GeneralUtility::addInstance(
+            Provider::class,
+            $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
+        );
+        AccessibleCore::resetQueuedRegistrations();
+    }
 
     /**
      * @test
@@ -26,7 +39,7 @@ class CoreTest extends AbstractTestCase
     public function returnsEmptyArrayForUnknownExtensionKeysAndControllerObjects()
     {
         $fakeControllerName = 'Flux';
-        $registered = Core::getRegisteredProviderExtensionKeys($fakeControllerName);
+        $registered = AccessibleCore::getRegisteredProviderExtensionKeys($fakeControllerName);
         $this->assertEmpty($registered);
     }
 
@@ -36,12 +49,12 @@ class CoreTest extends AbstractTestCase
     public function canRegisterFormInstanceForTable()
     {
         $table = 'this_table_does_not_exist';
-        $form = Form::create();
-        Core::registerFormForTable($table, $form);
-        $forms = Core::getRegisteredFormsForTables();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        AccessibleCore::registerFormForTable($table, $form);
+        $forms = AccessibleCore::getRegisteredFormsForTables();
         $this->assertArrayHasKey($table, $forms);
-        $returnedForm = Core::getRegisteredFormForTable($table);
-        $incorrectReturnedForm = Core::getRegisteredFormForTable($table . 'badname');
+        $returnedForm = AccessibleCore::getRegisteredFormForTable($table);
+        $incorrectReturnedForm = AccessibleCore::getRegisteredFormForTable($table . 'badname');
         $this->assertSame($form, $returnedForm);
         $this->assertNull($incorrectReturnedForm);
     }
@@ -53,9 +66,43 @@ class CoreTest extends AbstractTestCase
     {
         $fakeExtensionKey = 'flux';
         $fakeControllerName = 'Flux';
-        Core::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
-        $registered = Core::getRegisteredProviderExtensionKeys($fakeControllerName);
+        AccessibleCore::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
+        $registered = AccessibleCore::getRegisteredProviderExtensionKeys($fakeControllerName);
         $this->assertContains($fakeExtensionKey, $registered);
+    }
+
+    /**
+     * @test
+     */
+    public function canRegisterProviderExtensionKeyWithContentController()
+    {
+        $package = $this->getMockBuilder(Package::class)
+            ->setMethods(['getPackagePath'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $package->method('getPackagePath')->willReturn('');
+
+        $packageManager = $this->getMockBuilder(PackageManager::class)
+            ->setMethods(['isPackageActive', 'getPackage'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $packageManager->method('getPackage')->willReturn($package);
+        $packageManager->method('isPackageActive')->willReturnMap(
+            [
+                ['fluidcontent', false],
+                ['flux', true],
+            ]
+        );
+
+        AccessibleExtensionManagementUtility::setPackageManager($packageManager);
+
+        $fakeExtensionKey = 'flux';
+        $fakeControllerName = 'Content';
+        AccessibleCore::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
+        $registered = AccessibleCore::getRegisteredProviderExtensionKeys($fakeControllerName);
+        $this->assertContains($fakeExtensionKey, $registered);
+
+        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
     /**
@@ -63,10 +110,9 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterProviderInstance()
     {
-        /** @var \FluidTYPO3\Flux\Provider\ProviderInterface $provider */
-        $provider = $this->objectManager->get('FluidTYPO3\Flux\Provider\Provider');
-        Core::registerConfigurationProvider($provider);
-        $registered = Core::getRegisteredFlexFormProviders();
+        $provider = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock();
+        AccessibleCore::registerConfigurationProvider($provider);
+        $registered = AccessibleCore::getRegisteredFlexFormProviders();
         $this->assertContains($provider, $registered);
     }
 
@@ -75,12 +121,12 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterAndUnregisterProviderClassName()
     {
-        $providerClassName = 'FluidTYPO3\Flux\Provider\Provider';
-        Core::registerConfigurationProvider($providerClassName);
-        $registered = Core::getRegisteredFlexFormProviders();
+        $providerClassName = Provider::class;
+        AccessibleCore::registerConfigurationProvider($providerClassName);
+        $registered = AccessibleCore::getRegisteredFlexFormProviders();
         $this->assertContains($providerClassName, $registered);
-        Core::unregisterConfigurationProvider($providerClassName);
-        $registered = Core::getRegisteredFlexFormProviders();
+        AccessibleCore::unregisterConfigurationProvider($providerClassName);
+        $registered = AccessibleCore::getRegisteredFlexFormProviders();
         $this->assertNotContains($providerClassName, $registered);
     }
 
@@ -90,15 +136,13 @@ class CoreTest extends AbstractTestCase
     public function canRegisterStandaloneTemplateForContentObject()
     {
         $variables = array('test' => 'test');
-        $paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
+        $paths = array('templateRootPaths' => array('Resources/Private/Templates'));
         $extensionKey = 'fake';
         $contentObjectType = 'void';
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
-        $record = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $record['CType'] = $contentObjectType;
-        $absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
+        $absoluteTemplatePathAndFilename = str_replace('EXT:flux/', './', $relativeTemplatePathAndFilename);
         $configurationSectionName = 'Configuration';
-        $result = Core::registerFluidFlexFormContentObject(
+        $result = AccessibleCore::registerFluidFlexFormContentObject(
             $extensionKey,
             $contentObjectType,
             $absoluteTemplatePathAndFilename,
@@ -115,16 +159,16 @@ class CoreTest extends AbstractTestCase
     public function canRegisterStandaloneTemplateForPlugin()
     {
         $variables = array('test' => 'test');
-        $paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
+        $paths = array('templateRootPaths' => array('Resources/Private/Templates'));
         $extensionKey = 'more_fake';
         $pluginType = 'void';
         $fieldName = null;
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $record['list_type'] = $pluginType;
-        $absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
+        $absoluteTemplatePathAndFilename = $relativeTemplatePathAndFilename;
         $configurationSectionName = 'Configuration';
-        $result = Core::registerFluidFlexFormPlugin(
+        $result = AccessibleCore::registerFluidFlexFormPlugin(
             $extensionKey,
             $pluginType,
             $absoluteTemplatePathAndFilename,
@@ -141,13 +185,13 @@ class CoreTest extends AbstractTestCase
     public function canRegisterStandaloneTemplateForTable()
     {
         $variables = array('test' => 'test');
-        $paths = array('templateRootPaths' => array('EXT:flux/Resources/Private/Templates'));
+        $paths = array('templateRootPaths' => array('Resources/Private/Templates'));
         $table = 'fake';
         $fieldName = null;
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
-        $absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
+        $absoluteTemplatePathAndFilename = $relativeTemplatePathAndFilename;
         $configurationSectionName = 'Configuration';
-        $result = Core::registerFluidFlexFormTable(
+        $result = AccessibleCore::registerFluidFlexFormTable(
             $table,
             $fieldName,
             $absoluteTemplatePathAndFilename,
@@ -165,11 +209,12 @@ class CoreTest extends AbstractTestCase
     {
         $fieldName = null;
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
-        $absoluteTemplatePathAndFilename = GeneralUtility::getFileAbsFileName($relativeTemplatePathAndFilename);
-        Core::registerTemplateAsContentType(
+        $absoluteTemplatePathAndFilename = $relativeTemplatePathAndFilename;
+        AccessibleCore::registerTemplateAsContentType(
             'FluidTYPO3.Flux',
             $absoluteTemplatePathAndFilename
         );
+        $this->assertNotEmpty(AccessibleCore::getQueuedContentTypeRegistrations());
     }
 
     /**
@@ -178,10 +223,10 @@ class CoreTest extends AbstractTestCase
     public function canAddAndRetrieveOutlets()
     {
         $fakeClass = 'MyFakeClass';
-        Core::registerOutlet($fakeClass);
-        $this->assertContains($fakeClass, Core::getOutlets());
-        Core::unregisterOutlet($fakeClass);
-        $this->assertNotContains($fakeClass, Core::getOutlets());
+        AccessibleCore::registerOutlet($fakeClass);
+        $this->assertContains($fakeClass, AccessibleCore::getOutlets());
+        AccessibleCore::unregisterOutlet($fakeClass);
+        $this->assertNotContains($fakeClass, AccessibleCore::getOutlets());
     }
 
     /**
@@ -190,10 +235,10 @@ class CoreTest extends AbstractTestCase
     public function canAddAndRetrievePipes()
     {
         $fakeClass = 'MyFakeClass';
-        Core::registerPipe($fakeClass);
-        $this->assertContains($fakeClass, Core::getPipes());
-        Core::unregisterPipe($fakeClass);
-        $this->assertNotContains($fakeClass, Core::getPipes());
+        AccessibleCore::registerPipe($fakeClass);
+        $this->assertContains($fakeClass, AccessibleCore::getPipes());
+        AccessibleCore::unregisterPipe($fakeClass);
+        $this->assertNotContains($fakeClass, AccessibleCore::getPipes());
     }
 
     /**
@@ -202,9 +247,9 @@ class CoreTest extends AbstractTestCase
     public function canUnregisterNotCurrentlyRegisteredProviders()
     {
         $fakeClass = 'MyFakeClass';
-        Core::unregisterConfigurationProvider($fakeClass);
-        core::registerConfigurationProvider($fakeClass);
-        $this->assertNotContains($fakeClass, Core::getRegisteredFlexFormProviders());
+        AccessibleCore::unregisterConfigurationProvider($fakeClass);
+        AccessibleCore::registerConfigurationProvider($fakeClass);
+        $this->assertNotContains($fakeClass, AccessibleCore::getRegisteredFlexFormProviders());
     }
 
     /**
@@ -213,9 +258,10 @@ class CoreTest extends AbstractTestCase
     public function registerFormForTableSetsExtensionNameFromExtensionKeyGlobal()
     {
         $GLOBALS['_EXTKEY'] = 'test';
-        $form = $this->getMockBuilder('FluidTYPO3\\Flux\\Form')->setMethods(array('setExtensionName'))->getMock();
+        $form = $this->getMockBuilder(Form::class)->setMethods(array('setExtensionName', 'getExtensionName'))->getMock();
+        $form->method('getExtensionName')->willReturn(null);
         $form->expects($this->once())->method('setExtensionName')->with('Test');
-        Core::registerFormForTable('foobar', $form);
+        AccessibleCore::registerFormForTable('foobar', $form);
         unset($GLOBALS['_EXTKEY']);
     }
 }

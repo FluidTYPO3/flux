@@ -9,13 +9,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
  */
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
+use FluidTYPO3\Flux\ViewHelpers\Pipe\AbstractPipeViewHelper;
+use TYPO3\CMS\Extbase\Property\TypeConverter\ArrayConverter;
 
-/**
- * TypeConverterViewHelperTest
- */
 class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @dataProvider getTestArguments
      * @param array $arguments
@@ -23,17 +21,16 @@ class TypeConverterViewHelperTest extends AbstractViewHelperTestCase
     public function testWithArguments(array $arguments)
     {
         $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
-        $this->assertNull($result);
+        $this->assertSame('', $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getTestArguments()
+    public function getTestArguments(): array
     {
         return array(
             array(array('typeConverter' => 'Array')),
-            array(array('typeConverter' => 'TYPO3\\CMS\\Extbase\\Property\\TypeConverter\\ArrayConverter')),
+            array(array('typeConverter' => ArrayConverter::class)),
+            array(array('typeConverter' => new ArrayConverter())),
+            array(array('typeConverter' => ArrayConverter::class, 'direction' => AbstractPipeViewHelper::DIRECTION_IN)),
         );
     }
 }

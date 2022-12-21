@@ -11,26 +11,19 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Fluid Template preview renderer
  */
 class Preview implements PageLayoutViewDrawItemHookInterface
 {
-    /**
-     * @var boolean
-     */
-    protected static $assetsIncluded = false;
+    protected static bool $assetsIncluded = false;
 
     /**
-     *
      * @param PageLayoutView $parentObject
      * @param boolean $drawItem
      * @param string $headerContent
@@ -38,16 +31,21 @@ class Preview implements PageLayoutViewDrawItemHookInterface
      * @param array $row
      * @return void
      */
-    public function preProcess(PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row)
-    {
+    public function preProcess(
+        PageLayoutView &$parentObject,
+        &$drawItem,
+        &$headerContent,
+        &$itemContent,
+        array &$row
+    ): void {
         $fieldName = null;
         $itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
         $providers = $this->getConfigurationService()->resolveConfigurationProviders('tt_content', $fieldName, $row);
         foreach ($providers as $provider) {
             /** @var ProviderInterface $provider */
-            list ($previewHeader, $previewContent, $continueDrawing) = $provider->getPreview($row);
+            [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);
             if (false === empty($previewHeader)) {
-                $headerContent = $previewHeader . (false === empty($headerContent) ? ': ' . $headerContent : '');
+                $headerContent = $previewHeader . (!empty($headerContent) ? ': ' . $headerContent : '');
                 $drawItem = false;
             }
             if (false === empty($previewContent)) {
@@ -62,37 +60,25 @@ class Preview implements PageLayoutViewDrawItemHookInterface
         unset($parentObject);
     }
 
-    /**
-     * @return void
-     */
-    protected function attachAssets()
+    protected function attachAssets(): void
     {
         if (false === static::$assetsIncluded) {
-            $doc = GeneralUtility::makeInstance(ModuleTemplate::class);
-            $doc->backPath = $GLOBALS['BACK_PATH'] ?? '';
-
             /** @var PageRenderer $pageRenderer */
-            $pageRenderer = $doc->getPageRenderer();
-
-            $fullJsPath = PathUtility::getRelativePath(
-                PATH_typo3,
-                GeneralUtility::getFileAbsFileName('EXT:flux/Resources/Public/js/')
-            );
-
-            // requirejs
-            $pageRenderer->addRequireJsConfiguration([
-                'paths' => [
-                    'FluidTypo3/Flux/FluxCollapse' => $fullJsPath . 'fluxCollapse',
-                ],
-            ]);
-            $pageRenderer->loadRequireJsModule('FluidTypo3/Flux/FluxCollapse');
+            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+            $pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
+            $pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
 
             static::$assetsIncluded = true;
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getConfigurationService(): FluxService
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(FluxService::class);
+        /** @var FluxService $fluxService */
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        return $fluxService;
     }
 }

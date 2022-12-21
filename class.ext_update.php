@@ -5,6 +5,12 @@ use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\EndTimeRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\FrontendGroupRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\FrontendWorkspaceRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -24,7 +30,8 @@ class ext_update
      */
     public function access()
     {
-        return $this->validatePresenceOfLegacyFieldsInDatabaseSchema();
+        return $this->validatePresenceOfLegacyFieldsInDatabaseSchema()
+            || !empty($this->detectFluidPagesNotInstalledAndBackendLayoutFieldsReferenceFluidpages());
     }
 
     /**
@@ -86,6 +93,11 @@ class ext_update
         }
 
         if ($performMigration) {
+            $migratedPageRecords = $this->detectFluidPagesNotInstalledAndBackendLayoutFieldsReferenceFluidpages();
+            if (!empty($migratedPageRecords)) {
+                $this->updateBackendLayoutSelection();
+            }
+
             // Integrity check and data gathering loop. Verify that all records which have a Provider which returns a Grid,
             // are able to load the template that is associated with it. Failure to load the template gets analysed and the
             // reason gets reported; if the reason is "required argument colPos not used on flux:grid.column" the failure
@@ -119,6 +131,7 @@ class ext_update
                                 );
                             }
                         }
+                        unset($grid);
                     } catch (\TYPO3Fluid\Fluid\Core\Parser\Exception $exception) {
                         if (strpos($exception->getMessage(), 'Required argument "colPos" was not supplied.') !== false) {
                             $templateFilesRequiringMigration[$templatePathAndFilename] = $exception->getMessage();
@@ -142,6 +155,7 @@ class ext_update
                         'tx_flux_parent' => $row['tx_flux_parent']
                     ];
                 }
+                unset($row);
             }
 
             foreach ($childContentRequiringMigration as $childContent) {
@@ -169,11 +183,53 @@ class ext_update
                 'templatesWithErrors' => $this->removeBasePathFromKeys($templateFilesWithErrors),
                 'templateFilesRequiringMigration' => $this->removeBasePathFromKeys($templateFilesRequiringMigration),
                 'migratedChildContent' => $migratedChildContent,
+                'migratedPageRecords' => $migratedPageRecords,
                 'notMigratedChildContentUids' => $notMigratedChildContentUids,
             ]
         );
 
         return $view->render();
+    }
+
+    protected function detectFluidPagesNotInstalledAndBackendLayoutFieldsReferenceFluidpages(): array
+    {
+        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages')) {
+            return [];
+        }
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->select('uid')->from('pages')->where(
+            $queryBuilder->expr()->orX(
+                $queryBuilder->expr()->eq('backend_layout', $queryBuilder->createNamedParameter('fluidpages__fluidpages', \PDO::PARAM_STR)),
+                $queryBuilder->expr()->eq('backend_layout_next_level', $queryBuilder->createNamedParameter('fluidpages__fluidpages', \PDO::PARAM_STR)),
+                $queryBuilder->expr()->eq('backend_layout', $queryBuilder->createNamedParameter('fluidpages__grid', \PDO::PARAM_STR)),
+                $queryBuilder->expr()->eq('backend_layout_next_level', $queryBuilder->createNamedParameter('fluidpages__grid', \PDO::PARAM_STR))
+            )
+        );
+        return $queryBuilder->execute()->fetchAll();
+    }
+
+    protected function updateBackendLayoutSelection(): void
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->update('pages');
+        $q1 = clone $queryBuilder;
+        $q2 = clone $queryBuilder;
+        $q1->set('backend_layout', 'flux__grid')
+            ->where(
+                $q1->expr()->orX(
+                    $q1->expr()->eq('backend_layout', $q1->createNamedParameter('fluidpages__fluidpages', \PDO::PARAM_STR)),
+                    $q1->expr()->eq('backend_layout_next_level', $q1->createNamedParameter('fluidpages__grid', \PDO::PARAM_STR))
+                )
+            )->execute();
+        $q2->set('backend_layout_next_level', 'flux__grid')
+            ->where(
+                $q2->expr()->orX(
+                    $q2->expr()->eq('backend_layout_next_level', $q2->createNamedParameter('fluidpages__fluidpages', \PDO::PARAM_STR)),
+                    $q2->expr()->eq('backend_layout_next_level', $q2->createNamedParameter('fluidpages__grid', \PDO::PARAM_STR))
+                )
+            )->execute();
     }
 
     protected function removeBasePathFromKeys(array $values)
@@ -251,6 +307,7 @@ class ext_update
         $queryBuilder->select('uid', 'pid', 'colPos')
             ->from('tt_content')
             ->andWhere(
+                $queryBuilder->expr()->eq('deleted', 0),
                 $queryBuilder->expr()->neq('colPos', 18181),
                 $queryBuilder->expr()->gt('colPos', 99),
                 $queryBuilder->expr()->isNull('tx_flux_migrated_version')
@@ -261,7 +318,12 @@ class ext_update
     protected function loadContentRecords(): \Doctrine\DBAL\Driver\Statement
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
-        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(StartTimeRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(EndTimeRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(BackendWorkspaceRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(FrontendGroupRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(FrontendWorkspaceRestriction::class);
         $queryBuilder->select('*')->from('tt_content');
         return $queryBuilder->execute();
     }
@@ -299,6 +361,18 @@ class ext_update
 
 <f:if condition="{performMigration}">
     <h3>Migration results</h3>
+    <f:if condition="{migratedPageRecords -> f:count()}">
+        <f:then>
+            <ul>
+                <f:for each="{migratedPageRecords}" as="migratedRecord">
+                    <li>pages:{migratedRecord.uid} has new backend layout selection "flux__grid" where either "fluidpages__grid" or "fluidpages__fluidpages" was selected.</li>
+                </f:for>
+            </ul>
+        </f:then>
+        <f:else>
+            <p>No content records were migrated</p>
+        </f:else>    
+    </f:if>
     <f:if condition="{migratedChildContent -> f:count()}">
         <f:then>
             <ul>
@@ -308,7 +382,7 @@ class ext_update
             </ul>
         </f:then>
         <f:else>
-            <p>No records were migrated</p>
+            <p>No content records were migrated</p>
         </f:else>
     </f:if>
     

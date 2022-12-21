@@ -14,16 +14,9 @@ use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * AbstractFormTest
- */
 abstract class AbstractFormTest extends AbstractTestCase
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
+    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
 
     /**
      * @return FormInterface
@@ -31,7 +24,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     protected function createInstance()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         return $instance;
     }
 
@@ -71,7 +64,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     public function canGetLabel()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         $instance->setName('test');
         $instance->setExtensionName('FluidTYPO3.Flux');
         $label = $instance->getLabel();
@@ -107,10 +100,11 @@ abstract class AbstractFormTest extends AbstractTestCase
                 'name' => 'test',
                 'extensionName' => 'flux'
             ));
+            $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
             $form->add($instance);
         }
         $label = $instance->getLabel();
-        $this->assertContains('testFormId', $label);
+        $this->assertStringContainsString('testFormId', $label);
         $this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux', $label);
     }
 
@@ -137,7 +131,7 @@ abstract class AbstractFormTest extends AbstractTestCase
         }
         $instance = $this->createInstance();
         foreach ($chainPropertiesAndValues as $propertyName => $propertValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+            $setterMethodName = 'set' . ucfirst($propertyName);
             $chained = call_user_func_array(array($instance, $setterMethodName), array($propertValue));
             $this->assertSame($instance, $chained, 'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.');
             if ($chained === $instance) {
@@ -167,7 +161,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     {
         $instance = $this->createInstance();
         foreach ($this->chainProperties as $propertyName => $propertValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
+            $setterMethodName = 'set' . ucfirst($propertyName);
             $instance->$setterMethodName($propertValue);
             $result = ObjectAccess::getProperty($instance, $propertyName);
             $this->assertEquals($propertValue, $result);
@@ -199,7 +193,7 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canCreateFromDefinition()
     {
-        $properties = array($this->chainProperties);
+        $properties = $this->chainProperties;
         $class = $this->getObjectClassName();
         $type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
         $properties['type'] = $type;

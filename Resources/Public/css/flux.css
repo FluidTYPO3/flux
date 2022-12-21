@@ -24,7 +24,7 @@
 .fluidcontent-toggler {
 	opacity: 0.3;
 	float: right;
-	margin-left: 10px;
+	margin-right: 10px;
 }
 .t3-page-ce:hover .fluidcontent-toggler {
 	opacity: 1;

@@ -8,16 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * PassthroughTest
- */
 class PassthroughTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
     );

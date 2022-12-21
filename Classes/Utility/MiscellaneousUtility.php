@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 /*
@@ -8,6 +9,9 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use DOMElement;
+use DOMNode;
+use DOMNodeList;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
@@ -16,58 +20,58 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * MiscellaneousUtility Utility
- */
 class MiscellaneousUtility
 {
-
-
-    /**
-     * @var array
-     */
-    private static $allowedIconTypes = ['svg', 'png', 'gif'];
+    private static array $allowedIconTypes = ['svg', 'png', 'gif'];
 
     /**
      * Returns the icon for a template
      * - checks and returns if manually set as option or
      * - checks and returns Icon if it exists by convention in
      *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
-     *
-     * @param Form $form
-     * @return string|NULL
      */
-    public static function getIconForTemplate(Form $form)
+    public static function getIconForTemplate(Form $form): ?string
     {
         if (true === $form->hasOption(Form::OPTION_ICON)) {
-            return $form->getOption(Form::OPTION_ICON);
+            $iconOptionValue = $form->getOption(Form::OPTION_ICON);
+            return is_scalar($iconOptionValue) ? (string) $iconOptionValue : null;
         }
         if (true === $form->hasOption(Form::OPTION_TEMPLATEFILE)) {
-            $extensionKey = ExtensionNamingUtility::getExtensionKey($form->getExtensionName());
+            $extensionKey = ExtensionNamingUtility::getExtensionKey((string) $form->getExtensionName());
             $fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
-            $templatePathParts = explode('/', $fullTemplatePathAndName);
+            $templatePathParts = is_scalar($fullTemplatePathAndName)
+                ? explode('/', (string) $fullTemplatePathAndName)
+                : [];
+            if (empty($templatePathParts)) {
+                return null;
+            }
             $templateName = pathinfo(array_pop($templatePathParts), PATHINFO_FILENAME);
             $controllerName = array_pop($templatePathParts);
+            $relativeIconFolder = 'Resources/Public/Icons/' . $controllerName . '/';
             $iconFolder = ExtensionManagementUtility::extPath(
                 $extensionKey,
-                'Resources/Public/Icons/' . $controllerName . '/'
+                $relativeIconFolder
             );
-            $iconAbsoluteUrl = '/' . str_replace(PATH_site, '', $iconFolder);
             $iconPathAndName = $iconFolder . $templateName;
             $filesInFolder = array();
             if (true === is_dir($iconFolder)) {
-                if (true === defined(GLOB_BRACE)) {
-                    $allowedExtensions = implode(',', static::$allowedIconTypes);
+                if (true === defined('GLOB_BRACE')) {
+                    $allowedExtensions = implode(',', self::$allowedIconTypes);
                     $iconMatchPattern = $iconPathAndName . '.{' . $allowedExtensions . '}';
                     $filesInFolder = glob($iconMatchPattern, GLOB_BRACE);
                 } else {
-                    foreach (static::$allowedIconTypes as $allowedIconType) {
-                        $filesInFolder = array_merge($filesInFolder, glob($iconPathAndName . '.' . $allowedIconType));
+                    foreach (self::$allowedIconTypes as $allowedIconType) {
+                        $filesInFolder = array_merge(
+                            $filesInFolder,
+                            glob($iconPathAndName . '.' . $allowedIconType) ?: []
+                        );
                     }
                 }
             }
             $iconFile = (is_array($filesInFolder) && 0 < count($filesInFolder) ? reset($filesInFolder) : null);
-            $iconRelPathAndFilename = $iconFile ? $iconAbsoluteUrl . str_replace($iconFolder, '', $iconFile) : null;
+            $iconRelPathAndFilename = $iconFile
+                ? 'EXT:' . $extensionKey . '/' . $relativeIconFolder . pathinfo($iconFile, PATHINFO_BASENAME)
+                : null;
             return $iconRelPathAndFilename;
         }
         return null;
@@ -75,12 +79,8 @@ class MiscellaneousUtility
 
     /**
      * Returns a generated icon file into typo3temp/pics
-     * @param string $originalFile
-     * @param integer $width
-     * @param integer $height
-     * @return string
      */
-    public static function createIcon($originalFile, $width, $height)
+    public static function createIcon(string $originalFile, ?string $identifier = null): string
     {
         $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
         switch (strtolower($extension)) {
@@ -91,21 +91,22 @@ class MiscellaneousUtility
             default:
                 $iconProvider = BitmapIconProvider::class;
         }
-        $iconIdentifier = 'icon-' . md5($originalFile);
+        $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
+        /** @var IconRegistry $iconRegistry */
         $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
-        $iconRegistry->registerIcon($iconIdentifier, $iconProvider, ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]);
+        $iconRegistry->registerIcon(
+            $iconIdentifier,
+            $iconProvider,
+            ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]
+        );
         return $iconIdentifier;
     }
 
     /**
      * Cleans flex form XML, removing any field nodes identified
      * in $removals and trimming the result to avoid empty containers.
-     *
-     * @param string $xml
-     * @param array $removals
-     * @return string
      */
-    public static function cleanFlexFormXml($xml, array $removals = [])
+    public static function cleanFlexFormXml(string $xml, array $removals = []): string
     {
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
@@ -113,28 +114,30 @@ class MiscellaneousUtility
         $dom->formatOutput = true;
         $fieldNodesToRemove = [];
         foreach ($dom->getElementsByTagName('field') as $fieldNode) {
-            /** @var \DOMElement $fieldNode */
+            /** @var DOMElement $fieldNode */
             if (true === in_array($fieldNode->getAttribute('index'), $removals)) {
                 $fieldNodesToRemove[] = $fieldNode;
             }
         }
 
         foreach ($fieldNodesToRemove as $fieldNodeToRemove) {
-            /** @var \DOMElement $fieldNodeToRemove */
-            $fieldNodeToRemove->parentNode->removeChild($fieldNodeToRemove);
+            /** @var DOMNode $parent */
+            $parent = $fieldNodeToRemove->parentNode;
+            /** @var DOMElement $fieldNodeToRemove */
+            $parent->removeChild($fieldNodeToRemove);
         }
 
         // Assign a hidden ID to all container-type nodes, making the value available in templates etc.
         foreach ($dom->getElementsByTagName('el') as $containerNode) {
-            /** @var \DOMElement $containerNode */
+            /** @var DOMElement $containerNode */
             $hasIdNode = false;
-            if (0 < $containerNode->attributes->length) {
+            if ($containerNode->attributes instanceof \DOMNamedNodeMap && 0 < $containerNode->attributes->length) {
                 // skip <el> tags reserved for other purposes by attributes; only allow pure <el> tags.
                 continue;
             }
             foreach ($containerNode->childNodes as $fieldNodeInContainer) {
-                /** @var \DOMElement $fieldNodeInContainer */
-                if (false === $fieldNodeInContainer instanceof \DOMElement) {
+                /** @var DOMNode $fieldNodeInContainer */
+                if (false === $fieldNodeInContainer instanceof DOMElement) {
                     continue;
                 }
                 $isFieldNode = ('field' === $fieldNodeInContainer->tagName);
@@ -167,19 +170,25 @@ class MiscellaneousUtility
         }
 
         foreach ($nodesToBeRemoved as $node) {
-            /** @var \DOMElement $node */
-            $node->parentNode->removeChild($node);
+            /** @var DOMNode $parent */
+            $parent = $node->parentNode;
+            /** @var DOMElement $node */
+            $parent->removeChild($node);
         }
 
         // Return empty string in case remaining flexform XML is all empty
-        $dataNode = $dom->getElementsByTagName('data')->item(0);
-        if (0 === $dataNode->getElementsByTagName('sheet')->length) {
+        /** @var DOMNodeList $dataNodes */
+        $dataNodes = $dom->getElementsByTagName('data');
+        /** @var DOMElement $dataNode */
+        $dataNode = $dataNodes->item(0);
+        $elements = $dataNode->getElementsByTagName('sheet');
+        if (0 === $elements->length) {
             return '';
         }
-        $xml = $dom->saveXML();
+        $xml = (string) $dom->saveXML();
         // hack-like pruning of empty-named node inserted when removing objects from a previously populated Section
-        $xml = preg_replace('#<el index="el">\s*</el>#', '', $xml);
-        $xml = preg_replace('#<field index="[^"]*">\s*</field>#', '', $xml);
+        $xml = (string) preg_replace('#<el index="el">\s*</el>#', '', $xml);
+        $xml = (string) preg_replace('#<field index="[^"]*">\s*</field>#', '', $xml);
         return $xml;
     }
 }

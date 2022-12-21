@@ -13,41 +13,18 @@ namespace FluidTYPO3\Flux\Form;
  */
 interface ContainerInterface extends FormInterface
 {
+    public function get(string $childName, bool $recursive = false, ?string $requiredClass = null): ?FormInterface;
 
     /**
-     * @param string $childName
-     * @param boolean $recursive
-     * @param string $requiredClass
-     * @return FormInterface|FALSE
+     * @return FormInterface[]|\SplObjectStorage
      */
-    public function get($childName, $recursive = false, $requiredClass = null);
+    public function getChildren(): iterable;
+
+    public function add(FormInterface $child): self;
+    public function remove(string $childName): ?FormInterface;
 
     /**
-     * @param FormInterface $child
-     * @return FormInterface
+     * @param FormInterface|string $childOrChildName
      */
-    public function add(FormInterface $child);
-
-    /**
-     * @param mixed $childOrChildName
-     * @return boolean
-     */
-    public function has($childOrChildName);
-
-    /**
-     * @param string $childName
-     * @return FormInterface|FALSE
-     */
-    public function remove($childName);
-
-    /**
-     * @param string $transform
-     * @return ContainerInterface
-     */
-    public function setTransform($transform);
-
-    /**
-     * @return string
-     */
-    public function getTransform();
+    public function has($childOrChildName): bool;
 }

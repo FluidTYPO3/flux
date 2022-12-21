@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -71,15 +72,13 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * cases leave out the "name" argument which is required on all other
  * field types at the time of writing this). Where the field is placed
  * is not important; the order and the sheet location don't matter.
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class ControllerActionsViewHelper extends SelectViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->overrideArgument(
@@ -160,33 +159,31 @@ class ControllerActionsViewHelper extends SelectViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return ControllerActions
-     * @throws \RuntimeException
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): ControllerActions {
+        /** @var array $arguments */
         $extensionName = $arguments['controllerExtensionName'];
+        /** @var string|null $pluginName */
         $pluginName = $arguments['pluginName'];
         $actions = $arguments['actions'];
         $controllerName = $arguments['controllerName'];
         $separator = $arguments['separator'];
         $controllerContext = $renderingContext->getControllerContext();
-        if (true === $actions instanceof \Traversable) {
+        if ($actions instanceof \Traversable) {
             $actions = iterator_to_array($actions);
         }
-        if (null !== $controllerContext) {
-            if (true === empty($extensionName)) {
+        if ($controllerContext) {
+            if (empty($extensionName)) {
                 $request = $controllerContext->getRequest();
                 $extensionName = static::getFullExtensionNameFromRequest($request);
             }
-            if (true === empty($pluginName)) {
+            if (empty($pluginName)) {
                 $pluginName = $controllerContext->getRequest()->getPluginName();
             }
         }
-        if (true === empty($extensionName) && true === empty($pluginName) && 1 > count($actions)) {
+        if (empty($extensionName) && empty($pluginName) && count($actions) < 1) {
             throw new \RuntimeException(
                 'Either "actions", or both "extensionName" and "pluginName" must be used on ' .
                 'flux:field.controllerActions. None were found and none were detected from the Request.',
@@ -194,12 +191,12 @@ class ControllerActionsViewHelper extends SelectViewHelper
             );
         }
         /** @var ControllerActions $component */
-        $component = static::getPreparedComponent('ControllerActions', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(ControllerActions::class, $renderingContext, $arguments);
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
         $component->setItems($arguments['items']);
-        $component->setControllerExtensionName($extensionName);
+        $component->setControllerExtensionName($extensionName ?? 'FluidTYPO3.Flux');
         $component->setPluginName($pluginName);
         $component->setControllerName($controllerName);
         $component->setActions($actions);
@@ -208,26 +205,16 @@ class ControllerActionsViewHelper extends SelectViewHelper
         $component->setDisableLocalLanguageLabels($arguments['disableLocalLanguageLabels']);
         $component->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $component->setSubActions($arguments['subActions']);
-        if (false === empty($separator)) {
+        if (!empty($separator)) {
             $component->setSeparator($separator);
         }
         return $component;
     }
 
-    /**
-     * @param Request $request
-     * @return string
-     */
-    protected static function getFullExtensionNameFromRequest(Request $request)
+    protected static function getFullExtensionNameFromRequest(Request $request): string
     {
-        $vendorName = null;
-        if (true === method_exists($request, 'getControllerVendorName')) {
-            $vendorName = $request->getControllerVendorName();
-        }
-        $extensionName = $request->getControllerExtensionName();
-        if (null !== $vendorName) {
-            $extensionName = $vendorName . '.' . $extensionName;
-        }
-        return $extensionName;
+        $vendorName = method_exists($request, 'getControllerVendorName') ? $request->getControllerVendorName() : null;
+        $extensionName = (string) $request->getControllerExtensionName();
+        return $vendorName ? $vendorName . '.' . $extensionName : $extensionName;
     }
 }

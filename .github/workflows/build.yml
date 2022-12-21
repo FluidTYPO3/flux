@@ -1,0 +1,148 @@
+name: build
+
+on:
+  push:
+    branches: [ master, development, '[0-9]+.[0-9]+', '[0-9]+.[0-9]+.[0-9]+' ]
+  pull_request:
+    branches: [ master, development, '[0-9]+.[0-9]', '[0-9]+.[0-9]+.[0-9]+' ]
+
+jobs:
+  phpcs:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    name: "CodeSniffer, PHP ${{ matrix.php }} TYPO3 ${{ matrix.typo3 }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: "8.1"
+            typo3: "^11.5"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, json
+          ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
+          tools: composer:v2.2
+
+      - name: Select TYPO3 version
+        run: "composer require typo3/cms-core:${{ matrix.typo3 }} -W --no-update"
+
+      - name: Composer install
+        uses: ramsey/composer-install@v2
+
+      - name: Run phpcs
+        run: vendor/bin/phpcs Classes --standard=PSR2
+
+  phpstan:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    name: "PHPStan, PHP ${{ matrix.php }} TYPO3 ${{ matrix.typo3 }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: "7.4"
+            typo3: "^10.4"
+          - php: "8.0"
+            typo3: "^11.5"
+          - php: "8.1"
+            typo3: "^11.5"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, json
+          ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
+          tools: composer:v2.2
+
+      - name: Select TYPO3 version
+        run: "composer require typo3/cms-core:${{ matrix.typo3 }} -W --no-update"
+
+      - name: Composer install
+        uses: ramsey/composer-install@v2
+
+      - name: Run phpstan
+        run: vendor/bin/phpstan analyze
+
+  build:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    name: "PHPUnit, PHP ${{ matrix.php }} TYPO3 ${{ matrix.typo3 }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: "7.4"
+            typo3: "^10.4"
+          - php: "8.0"
+            typo3: "^11.5"
+          - php: "8.1"
+            typo3: "^11.5"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, json
+          ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
+          tools: composer:v2.2
+
+      - name: Select TYPO3 version
+        run: "composer require typo3/cms-core:${{ matrix.typo3 }} --no-update"
+
+      - name: Composer install
+        uses: ramsey/composer-install@v2
+
+      - name: Run tests
+        run: vendor/bin/phpunit
+
+  coverage:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    name: "Coveralls upload"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          extensions: mbstring, json
+          coverage: xdebug
+          ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
+
+      - name: Select TYPO3 version 9.5
+        run: "composer require typo3/cms-core:^10.4 --no-update"
+
+      - name: Composer install
+        uses: ramsey/composer-install@v2
+
+      - name: Run tests
+        run: vendor/bin/phpunit --coverage-clover=build/logs/clover.xml
+
+      - name: Upload test coverage
+        run: vendor/bin/php-coveralls -vvv
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}

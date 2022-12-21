@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
 
 /*
@@ -27,17 +28,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class IconViewHelper extends OptionViewHelper
 {
+    public static string $option = Form::OPTION_ICON;
 
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_ICON;
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('value', 'string', 'Path and name of the icon file');
     }

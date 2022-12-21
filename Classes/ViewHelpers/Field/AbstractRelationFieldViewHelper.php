@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -8,20 +9,18 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Field\Relation;
 use FluidTYPO3\Flux\Form\RelationFieldInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldViewHelper
 {
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -38,8 +37,8 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'foreignField',
             'string',
-            'The `foreign_field` is the field of the child record pointing to the parent record. This defines where to ' .
-            'store the uid of the parent record.',
+            'The `foreign_field` is the field of the child record pointing to the parent record. This defines where '
+            . 'to store the uid of the parent record.',
             false,
             ''
         );
@@ -53,11 +52,11 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'foreignSelector',
             'string',
-            'A selector is used to show all possible child records that could be used to create a relation with ' .
-            'the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the ' .
-            'selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` ' .
-            'that is responsible for providing a selector-box - this field on the `foreign_table` usually has the ' .
-            'type "select" and also has a `foreign_table` defined.'
+            'A selector is used to show all possible child records that could be used to create a relation with '
+            . 'the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the '
+            . 'selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` '
+            . 'that is responsible for providing a selector-box - this field on the `foreign_table` usually has the '
+            . 'type "select" and also has a `foreign_table` defined.'
         );
         $this->registerArgument(
             'foreignSortby',
@@ -69,17 +68,17 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'foreignDefaultSortby',
             'string',
-            'If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the ' .
-            '"ORDER BY" statement to sort the records in the table when listed.',
+            'If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the '
+            . '"ORDER BY" statement to sort the records in the table when listed.',
             false,
             ''
         );
         $this->registerArgument(
             'foreignTableField',
             'string',
-            'The field of the child record pointing to the parent record. This defines where to store the table ' .
-            'name of the parent record. On setting this configuration key together with `foreign_field`, the child ' .
-            'record knows what its parent record is - so the child record could also be used on other parent tables.',
+            'The field of the child record pointing to the parent record. This defines where to store the table '
+            . 'name of the parent record. On setting this configuration key together with `foreign_field`, the child '
+            . 'record knows what its parent record is - so the child record could also be used on other parent tables.',
             false,
             ''
         );
@@ -91,8 +90,8 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'symmetricField',
             'string',
-            'In case of bidirectional symmetric relations, this defines in which field on the foreign table the ' .
-            'uid of the "other" parent is stored.',
+            'In case of bidirectional symmetric relations, this defines in which field on the foreign table the '
+            . 'uid of the "other" parent is stored.',
             false,
             ''
         );
@@ -106,7 +105,8 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'symmetricSortby',
             'string',
-            'Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.',
+            'Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is '
+            . 'stored.',
             false,
             ''
         );
@@ -141,8 +141,8 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'matchFields',
             'array',
-            'When using manyToMany you can provide an additional array of field=>value pairs that must match in ' .
-            'the relation table',
+            'When using manyToMany you can provide an additional array of field=>value pairs that must match in '
+            . 'the relation table',
             false,
             []
         );
@@ -155,25 +155,25 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return RelationFieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
-    {
-        return static::getPreparedComponent('Relation', $renderingContext, $arguments);
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): RelationFieldInterface {
+        return static::getPreparedComponent(Relation::class, $renderingContext, $arguments);
     }
 
     /**
-     * @param string $type
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return RelationFieldInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&RelationFieldInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
-    {
-        /** @var RelationFieldInterface $component */
+    protected static function getPreparedComponent(
+        $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): RelationFieldInterface {
+        /** @var array $arguments */
+        /** @var T&RelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setCondition($arguments['condition']);

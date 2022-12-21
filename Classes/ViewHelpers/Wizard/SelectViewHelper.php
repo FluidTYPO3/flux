@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -16,15 +17,13 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by arguments.
+ *
+ * DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
+ * @deprecated Will be removed in Flux 10.0
  */
 class SelectViewHelper extends AbstractWizardViewHelper
 {
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -42,15 +41,11 @@ class SelectViewHelper extends AbstractWizardViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Select
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Select
     {
+        /** @var array $arguments */
         /** @var Select $component */
-        $component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Select::class, $renderingContext, $arguments);
         $component->setMode($arguments['mode']);
         $component->setItems($arguments['items']);
         return $component;

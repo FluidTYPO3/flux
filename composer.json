@@ -4,12 +4,10 @@
     "type": "typo3-cms-extension",
     "homepage": "http://fluidtypo3.org",
     "license": "GPL-2.0+",
-    "preferred-install": "dist",
     "prefer-stable": true,
     "minimum-stability": "dev",
     "support": {
-        "irc": "irc://irc.freenode.org/fedext",
-        "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
+        "issues": "https://github.com/FluidTYPO3/flux/issues"
     },
     "autoload": {
         "psr-4": {
@@ -22,24 +20,40 @@
         }
     },
     "suggest": {
-        "fluidtypo3/vhs": "ViewHelper library for Fluid templates.",
-        "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid.",
-        "fluidtypo3/fluidcontent_core": "Gives the ability to render core content elements with pure fluid."
+        "fluidtypo3/vhs": "ViewHelper library for Fluid templates."
     },
     "require": {
-        "php": ">=7.0.0",
-        "typo3/cms-core": "^8.7 || ^9 || dev-master",
-        "typo3/cms-fluid": "^8.7 || ^9 || dev-master",
-        "typo3/cms-backend": "^8.7 || ^9 || dev-master",
-        "typo3/cms-frontend": "^8.7 || ^9 || dev-master",
-        "typo3/cms-recordlist": "^8.7 || ^9 || dev-master"
+        "php": "^7.4.0 || ^8",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-dom": "*",
+        "typo3/cms-core": "^10 || ^11 || dev-master",
+        "typo3/cms-fluid": "^10 || ^11 || dev-master",
+        "typo3/cms-backend": "^10 || ^11 || dev-master",
+        "typo3/cms-frontend": "^10 || ^11 || dev-master",
+        "typo3/cms-recordlist": "^10 || ^11 || dev-master"
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "flux"
+        }
     },
     "replace": {
-        "flux": "self.version",
         "typo3-ter/flux": "self.version"
     },
     "require-dev": {
-        "fluidtypo3/development": "^4"
+        "phpstan/phpstan": "^1.8",
+        "phpunit/phpunit": "^5.7 || ^9.5",
+        "php-coveralls/php-coveralls": "^2.5",
+        "squizlabs/php_codesniffer": "^3.7",
+        "mikey179/vfsstream": "^1.6",
+        "phpspec/prophecy": "*"
     },
-    "non-feature-branches": ["development", "staging"]
+    "non-feature-branches": ["development", "staging"],
+    "config": {
+        "allow-plugins": {
+            "typo3/cms-composer-installers": true,
+            "typo3/class-alias-loader": true
+        }
+    }
 }

@@ -8,9 +8,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Text;
-use FluidTYPO3\Flux\Form\FieldInterface;
+use Symfony\Component\Mime\Exception\RfcComplianceException;
 use TYPO3\CMS\Core\Mail\MailMessage;
 
 /**
@@ -23,60 +21,32 @@ use TYPO3\CMS\Core\Mail\MailMessage;
  */
 class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInterface
 {
-
     use ViewAwarePipeTrait;
 
-    /**
-     * @var string
-     */
-    protected $subject;
+    protected string $subject = '';
 
     /**
-     * @var mixed
+     * @var string|array
      */
     protected $recipient;
 
     /**
-     * @var mixed
+     * @var string|array
      */
     protected $sender;
 
-    /**
-     * @var string|null
-     */
-    protected $body = null;
+    protected ?string $body = null;
 
     /**
      * The name of a section that will be rendered using
      * the view set by the outlet and will be used instead of the body property
-     *
-     * @var string|null
      */
-    protected $bodySection = null;
+    protected ?string $bodySection = null;
 
     /**
-     * @return FieldInterface[]
+     * @param string|array $recipient
      */
-    public function getFormFields()
-    {
-        $fields = parent::getFormFields();
-        $fields['subject'] = Input::create(['type' => 'Input'])
-            ->setName('subject');
-        $fields['body'] = Text::create(['type' => 'Text'])
-            ->setName('body');
-        $fields['receipent'] = Input::create(['type' => 'Input'])
-            ->setName('recipient');
-        $fields['sender'] = Input::create(['type' => 'Input'])
-            ->setName('sender');
-
-        return $fields;
-    }
-
-    /**
-     * @param string $recipient
-     * @return EmailPipe
-     */
-    public function setRecipient($recipient)
+    public function setRecipient($recipient): self
     {
         $this->recipient = $recipient;
 
@@ -84,7 +54,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getRecipient()
     {
@@ -93,9 +63,8 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
 
     /**
      * @param string $sender
-     * @return EmailPipe
      */
-    public function setSender($sender)
+    public function setSender($sender): self
     {
         $this->sender = $sender;
 
@@ -103,70 +72,51 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getSender()
     {
         return $this->sender;
     }
 
-    /**
-     * @param string $subject
-     * @return EmailPipe
-     */
-    public function setSubject($subject)
+    public function setSubject(string $subject): self
     {
         $this->subject = $subject;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
 
-    /**
-     * @param string|null $body
-     * @return EmailPipe
-     */
-    public function setBody($body)
+    public function setBody(?string $body): self
     {
         $this->body = $body;
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getBody()
+    public function getBody(): ?string
     {
         return $this->body;
     }
 
-    /**
-     * @return null|string
-     */
-    public function getBodySection()
+    public function getBodySection(): ?string
     {
         return $this->bodySection;
     }
 
-    /**
-     * @param null|string $bodySection
-     */
-    public function setBodySection($bodySection)
+    public function setBodySection(?string $bodySection): self
     {
         $this->bodySection = $bodySection;
+        return $this;
     }
 
     /**
-     * @param mixed $data
-     * @return mixed
+     * @param array|string $data
+     * @return array|string
      * @throws Exception
      */
     public function conduct($data)
@@ -174,7 +124,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         try {
             $message = $this->prepareEmail($data);
             $this->sendEmail($message);
-        } catch (\Swift_RfcComplianceException $error) {
+        } catch (RfcComplianceException $error) {
             throw new Exception($error->getMessage(), $error->getCode());
         }
 
@@ -182,50 +132,48 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
     }
 
     /**
-     * @param string $data
-     * @return MailMessage
+     * @param array|string $data
      */
-    protected function prepareEmail($data)
+    protected function prepareEmail($data): MailMessage
     {
-        $body = null;
-        if ($this->getBodySection() !== null) {
-            $body = $this->view->renderStandaloneSection($this->getBodySection(), $data, true);
-        }
+        $body = $this->getBody();
         if (empty($body)) {
-            $body = $this->getBody();
+            if ($this->getBodySection() !== null && method_exists($this->view, 'renderSection')) {
+                $body = $this->view->renderSection($this->getBodySection(), $data, true);
+            } else {
+                $this->view->assignMultiple((array) $data);
+                $body = $this->view->render();
+            }
         }
+
         $sender = $this->getSender();
         $recipient = $this->getRecipient();
-        if (true === is_array($recipient)) {
-            list ($recipientAddress, $recipientName) = $recipient;
+        if (is_array($recipient)) {
+            [$recipientAddress, $recipientName] = $recipient;
         } else {
             $recipientAddress = $recipient;
             $recipientName = null;
         }
-        if (true === is_array($sender)) {
-            list ($senderAddress, $senderName) = $sender;
+        if (is_array($sender)) {
+            [$senderAddress, $senderName] = $sender;
         } else {
             $senderAddress = $sender;
             $senderName = null;
         }
         $subject = $this->getSubject();
-        if (true === is_string($data)) {
+        if (is_string($data)) {
             $body = $data;
         }
         $message = new MailMessage();
-        $message->setSubject($subject);
-        $message->setFrom($senderAddress, $senderName);
-        $message->setTo($recipientAddress, $recipientName);
-        $message->setBody($body);
+        $message->html($body);
+        $message->subject($subject);
+        $message->from(($senderName ?? $senderAddress) . ' <' . $senderAddress . '>');
+        $message->to(($recipientName ?? $recipientAddress) . ' <' . $recipientAddress . '>');
 
         return $message;
     }
 
-    /**
-     * @param MailMessage $message
-     * @return void
-     */
-    protected function sendEmail(MailMessage $message)
+    protected function sendEmail(MailMessage $message): void
     {
         $message->send();
     }

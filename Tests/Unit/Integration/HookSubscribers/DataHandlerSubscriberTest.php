@@ -8,51 +8,185 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\HookSubscribers\ContentUsedDecision;
 use FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 
 class DataHandlerSubscriberTest extends AbstractTestCase
 {
     /**
-     * @param array $parameters
-     * @param bool $expectsCascading
-     * @dataProvider getBeforeCommandMapCascadeTestValues
+     * @dataProvider getClearCacheCommandTestValues
      */
-    public function testBeforeCommandMapCascadesExpectedOperations(array $parameters, bool $expectsCascading)
+    public function testClearCacheCommand(bool $expectsRegenerateMethodCall, array $command): void
     {
-        $dataHandler = new DataHandler();
-        $dataHandler->cmdmap = $parameters;
-        $instance = $this->getMockBuilder(DataHandlerSubscriber::class)->setMethods(['cascadeCommandToChildRecords'])->getMock();
-        $instance->expects($expectsCascading ? $this->once() : $this->never())->method('cascadeCommandToChildRecords');
-        $instance->processCmdmap_beforeStart($dataHandler);
+        $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
+            ->setMethods(['regenerateContentTypes'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        if ($expectsRegenerateMethodCall) {
+            $subject->expects(self::once())->method('regenerateContentTypes');
+        } else {
+            $subject->expects(self::never())->method('regenerateContentTypes');
+        }
+        $subject->clearCacheCommand($command);
     }
 
-    public function getBeforeCommandMapCascadeTestValues(): array
+    public function getClearCacheCommandTestValues(): array
     {
         return [
-            'command "copy" does not cascade' => [
-                ['tt_content' => [123 => ['copy' => 321]]],
-                false
+            'with matched command "all"' => [true, ['cacheCmd' => 'all']],
+            'with matched command "system"' => [true, ['cacheCmd' => 'system']],
+            'with unmatched command' => [false, ['cacheCmd' => 'any']],
+        ];
+    }
+
+    public function testProcessCommandMapBeforeStartWithContentTypesTable(): void
+    {
+        $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
+            ->setMethods(['regenerateContentTypes'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->expects(self::once())->method('regenerateContentTypes');
+
+        $dataHandler = $this->getMockBuilder(DataHandler::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dataHandler->cmdmap = [
+            'content_types' => [],
+        ];
+
+        $subject->processCmdmap_beforeStart($dataHandler);
+    }
+
+    public function testProcessCommandMapBeforeStartWithNotContentTable(): void
+    {
+        $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
+            ->setMethods(
+                [
+                    'regenerateContentTypes',
+                    'fetchAllColumnNumbersBeneathParent',
+                    'cascadeCommandToChildRecords'
+                ]
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->expects(self::never())->method('regenerateContentTypes');
+        $subject->expects(self::never())->method('fetchAllColumnNumbersBeneathParent');
+        $subject->expects(self::never())->method('cascadeCommandToChildRecords');
+
+        $dataHandler = $this->getMockBuilder(DataHandler::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dataHandler->cmdmap = [
+            'pages' => [],
+        ];
+
+        $subject->processCmdmap_beforeStart($dataHandler);
+    }
+
+    public function testProcessCommandMapBeforeStartWithUnhandledCommand(): void
+    {
+        $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
+            ->setMethods(
+                [
+                    'regenerateContentTypes',
+                    'fetchAllColumnNumbersBeneathParent',
+                    'cascadeCommandToChildRecords'
+                ]
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->expects(self::never())->method('regenerateContentTypes');
+        $subject->expects(self::never())->method('fetchAllColumnNumbersBeneathParent');
+        $subject->expects(self::never())->method('cascadeCommandToChildRecords');
+
+        $dataHandler = $this->getMockBuilder(DataHandler::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dataHandler->cmdmap = [
+            'tt_content' => [
+                123 => [
+                    'unhandled' => [],
+                ],
             ],
-            'command "copyToLanguage" cascades' => [
-                ['tt_content' => [123 => ['copyToLanguage' => 321]]],
-                true
+        ];
+
+        $subject->processCmdmap_beforeStart($dataHandler);
+    }
+
+    public function testProcessCommandMapBeforeStartWithMoveCommandMovingToChildOfSelfLogsProblem(): void
+    {
+        $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
+            ->setMethods(['fetchAllColumnNumbersBeneathParent'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->expects(self::once())->method('fetchAllColumnNumbersBeneathParent')->willReturn([1, 2, 3]);
+
+        $dataHandler = $this->getMockBuilder(DataHandler::class)
+            ->setMethods(['log'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dataHandler->expects(self::once())->method('log');
+        $dataHandler->cmdmap = [
+            'tt_content' => [
+                123 => [
+                    'move' => [
+                        'update' => [
+                            'colPos' => 1,
+                        ],
+                    ],
+                ],
             ],
-            'command "localize" cascades' => [
-                ['tt_content' => [123 => ['localize' => 321]]],
-                true
+        ];
+
+        $subject->processCmdmap_beforeStart($dataHandler);
+    }
+
+    /**
+     * @dataProvider getProcessCommandMapBeforeStartCallsCascadeForHandledCommandTestValues
+     */
+    public function testProcessCommandMapBeforeStartCallsCascadeForHandledCommand(string $command): void
+    {
+        $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
+            ->setMethods(['getParentAndRecordsNestedInGrid'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->expects(self::exactly(3))->method('getParentAndRecordsNestedInGrid')->willReturnOnConsecutiveCalls(
+            [null, [['uid' => 123]]],
+            [null, [['uid' => 456]]],
+            [null, []]
+        );
+
+        $dataHandler = $this->getMockBuilder(DataHandler::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dataHandler->cmdmap = [
+            'tt_content' => [
+                123 => [
+                    $command => [
+                        'update' => [
+                            'colPos' => 1,
+                        ],
+                    ],
+                ],
             ],
-            'command "undelete" cascades' => [
-                ['tt_content' => [123 => ['undelete' => true]]],
-                true
-            ],
-            'command "delete" cascades' => [
-                ['tt_content' => [123 => ['delete' => true]]],
-                true
-            ],
+        ];
+
+        $subject->processCmdmap_beforeStart($dataHandler);
+    }
+
+    public function getProcessCommandMapBeforeStartCallsCascadeForHandledCommandTestValues(): array
+    {
+        return [
+            'delete' => ['delete'],
+            'undelete' => ['undelete'],
+            'copyToLanguage' => ['copyToLanguage'],
+            'localize' => ['localize'],
+            'copy' => ['copy'],
         ];
     }
 }

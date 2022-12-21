@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 /*
@@ -17,8 +18,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Used inside `<flux:grid.row>` tags.
  *
- * Use the `name` attribute for grids in content elements,
- * and the `colPos` attribute for grids in pages templates.
+ * Use the `colPos` attribute for grids in page and content elements.
  *
  * See `<flux:grid>` for an example.
  *
@@ -27,7 +27,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * It is possible to limit the elements allowed in the column by setting
  * the `allowedContentTypes` variable:
  *
- *     <flux:grid.column name="elements">
+ *     <flux:grid.column name="elements" colPos="0">
  *         <flux:form.variable name="allowedContentTypes" value="text,shortcut"/>
  *     </flux:grid.column>
  *
@@ -38,26 +38,18 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * It is also possible to limit the allowed fluid content elements:
  *
- *     <flux:grid.column name="elements">
- *         <flux:form.variable name="allowedContentTypes" value="fluidcontent_content"/>
- *         <flux:form.variable name="Fluidcontent"
- *             value="{allowedContentTypes: 'Vendor.Extension:ContentElement.html'}"/>
+ *     <flux:grid.column name="elements" colPos="0">
+ *         <flux:form.variable name="allowedContentTypes" value="extkey_vehicledetailssectionusedcarseal"/>
  *     </flux:grid.column>
  */
 class ColumnViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'name',
             'string',
-            'Identifies your column in generated configuration; also used as target ID when column is inside a ' .
-            'container content element. Page-level content columns use "colPos" instead.',
+            'Identifies your column and is used to fetch translations from XLF for example.',
             false,
             'column'
         );
@@ -83,21 +75,18 @@ class ColumnViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Column
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Column
     {
-        $column = Column::create(['name' => $arguments['name'], 'label' => $arguments['label']]);
+        /** @var array $arguments */
+        $column = static::getContainerFromRenderingContext($renderingContext)
+            ->createContainer(Column::class, $arguments['name'], $arguments['label']);
         $column->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
-        $column->setColspan($arguments['colspan']);
-        $column->setRowspan($arguments['rowspan']);
+        $column->setColspan((integer) ($arguments['colspan'] ?? 1));
+        $column->setRowspan((integer) ($arguments['rowspan'] ?? 1));
         $column->setStyle($arguments['style']);
-        $column->setColumnPosition($arguments['colPos']);
+        $column->setColumnPosition((integer) $arguments['colPos']);
         $column->setVariables($arguments['variables']);
         return $column;
     }

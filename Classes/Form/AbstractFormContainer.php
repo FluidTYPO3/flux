@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form;
 
 /*
@@ -11,56 +12,35 @@ namespace FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 
-/**
- * AbstractFormContainer
- */
 abstract class AbstractFormContainer extends AbstractFormComponent implements ContainerInterface
 {
-
     /**
-     * @var FormInterface[]
+     * @var FormInterface[]|\SplObjectStorage
      */
-    protected $children;
+    protected iterable $children;
 
-    /**
-     * @var boolean
-     */
-    protected $inherit = true;
+    protected bool $inherit = true;
+    protected bool $inheritEmpty = false;
 
-    /**
-     * @var boolean
-     */
-    protected $inheritEmpty = false;
-
-    /**
-     * CONSTRUCTOR
-     */
     public function __construct()
     {
         $this->children = new \SplObjectStorage();
     }
 
-    /**
-     * @param string $namespace
-     * @param string $type
-     * @param string $name
-     * @param null $label
-     * @return FormInterface
-     */
-    public function createComponent($namespace, $type, $name, $label = null)
-    {
+    public function createComponent(
+        ?string $namespace,
+        string $type,
+        string $name,
+        ?string $label = null
+    ): FormInterface {
         $component = parent::createComponent($namespace, $type, $name, $label);
         $this->add($component);
         return $component;
     }
 
-    /**
-     * @param FormInterface $child
-     * @return FormInterface
-     */
-    public function add(FormInterface $child)
+    public function add(FormInterface $child): self
     {
-        if (false === $this->children->contains($child)) {
+        if (!$this->children->contains($child)) {
             $this->children->attach($child);
             $child->setParent($this);
             if ($child->getTransform()) {
@@ -75,10 +55,9 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
     }
 
     /**
-     * @param array|\Traversable $children
-     * @return FormInterface
+     * @param FormInterface[] $children
      */
-    public function addAll($children)
+    public function addAll(iterable $children): self
     {
         foreach ($children as $child) {
             $this->add($child);
@@ -88,15 +67,14 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 
     /**
      * @param FieldInterface|string $childName
-     * @return FormInterface|FALSE
      */
-    public function remove($childName)
+    public function remove($childName): ?FormInterface
     {
         foreach ($this->children as $child) {
             /** @var FieldInterface $child */
             $isMatchingInstance = ($childName instanceof FormInterface && $childName->getName() === $child->getName());
             $isMatchingName = ($childName === $child->getName());
-            if (true === $isMatchingName || true === $isMatchingInstance) {
+            if ($isMatchingName || $isMatchingInstance) {
                 $this->children->detach($child);
                 $this->children->rewind();
                 $child->setParent(null);
@@ -104,83 +82,82 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
                 return $child;
             }
         }
-        return false;
+        return null;
     }
 
     /**
-     * @param mixed $childOrChildName
-     * @return boolean
+     * @param FormInterface|string $childOrChildName
      */
-    public function has($childOrChildName)
+    public function has($childOrChildName): bool
     {
-        $name = ($childOrChildName instanceof FormInterface) ? $childOrChildName->getName() : $childOrChildName;
-        return (false !== $this->get($name));
+        $name = ($childOrChildName instanceof FormInterface)
+            ? (string) $childOrChildName->getName()
+            : (string) $childOrChildName;
+        return (null !== $this->get($name));
     }
 
-    /**
-     * @param string $childName
-     * @param boolean $recursive
-     * @param string $requiredClass
-     * @return FormInterface|FALSE
-     */
-    public function get($childName, $recursive = false, $requiredClass = null)
+    public function get(string $childName, bool $recursive = false, ?string $requiredClass = null): ?FormInterface
     {
         foreach ($this->children as $index => $existingChild) {
-            if (
-                ($childName === $existingChild->getName() || $childName === $index)
+            /** @var string|int $index */
+            if (($childName === $existingChild->getName() || $childName === $index)
                 && (!$requiredClass || $existingChild instanceof $requiredClass)
             ) {
                 return $existingChild;
             }
             if (true === $recursive && true === $existingChild instanceof ContainerInterface) {
                 $candidate = $existingChild->get($childName, $recursive, $requiredClass);
-                if (false !== $candidate) {
+                if ($candidate instanceof FormInterface) {
                     return $candidate;
                 }
             }
         }
-        return false;
+        return null;
     }
 
     /**
-     * @return FormInterface|FALSE
+     * @return FormInterface[]|\SplObjectStorage
      */
-    public function last()
+    public function getChildren(): iterable
+    {
+        return $this->children;
+    }
+
+    public function last(): ?FormInterface
     {
         $asArray = iterator_to_array($this->children);
         $result = array_pop($asArray);
         return $result;
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasChildren()
+    public function hasChildren(): bool
     {
         return 0 < $this->children->count();
     }
 
-    /**
-     * @param array $structure
-     * @return ContainerInterface
-     */
-    public function modify(array $structure)
+    public function modify(array $structure): self
     {
-        if (isset($structure['fields']) || isset($structure['children'])) {
-            $data = isset($structure['children']) ? $structure['children'] : $structure['fields'];
-            foreach ((array) $data as $index => $fieldData) {
-                $fieldName = true === isset($fieldData['name']) ? $fieldData['name'] : $index;
-                // check if field already exists - if it does, modify it. If it does not, create it.
-                if (true === $this->has($fieldName)) {
-                    $field = $this->get($fieldName);
-                } else {
-                    $fieldType = true === isset($fieldData['type']) ? $fieldData['type'] : 'None';
-                    $field = $this->createField($fieldType, $fieldName);
-                }
-                $field->modify($fieldData);
+        foreach ($structure['children'] ?? $structure['fields'] ?? [] as $index => $childData) {
+            $childName = $childData['name'] ?? (string) $index;
+            // check if field already exists - if it does, modify it. If it does not, create it.
+
+            if ($this->has($childName)) {
+                /** @var FormInterface $child */
+                $child = $this->get($childName);
+            } else {
+                /** @var class-string $type */
+                $type = $childData['type'] ?? Form\Field\None::class;
+                /** @var FormInterface $child */
+                $child = $this->createComponent('', $type, $childName);
             }
-            unset($structure['children'], $structure['fields']);
+
+            $child->modify($childData);
         }
-        return parent::modify($structure);
+        unset($structure['children'], $structure['fields']);
+
+        /** @var self $fromParentMethodCall */
+        $fromParentMethodCall = parent::modify($structure);
+
+        return $fromParentMethodCall;
     }
 }

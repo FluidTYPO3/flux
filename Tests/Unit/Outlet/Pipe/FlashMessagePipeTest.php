@@ -8,12 +8,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+
 /**
  * FlashMessagePipeTest
  */
 class FlashMessagePipeTest extends AbstractPipeTestCase
 {
-
     /**
      * @var array
      */
@@ -27,17 +30,26 @@ class FlashMessagePipeTest extends AbstractPipeTestCase
     /**
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
-        $GLOBALS['BE_USER'] = $this->getMockBuilder('TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication')->getMock();
+        $GLOBALS['BE_USER'] = $this->getMockBuilder(BackendUserAuthentication::class)->disableOriginalConstructor()->getMock();
+        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)->disableOriginalConstructor()->getMock();
     }
 
     /**
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
-        unset($GLOBALS['BE_USER']);
+        unset($GLOBALS['BE_USER'], $GLOBALS['TSFE']);
+    }
+
+    protected function createInstance()
+    {
+        $flashMessageQueue = $this->getMockBuilder(FlashMessageQueue::class)->setMethods(['enqueue'])->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['getFlashMessageQueue'])->getMock();
+        $instance->method('getFlashMessageQueue')->willReturn($flashMessageQueue);
+        return $instance;
     }
 
     /**

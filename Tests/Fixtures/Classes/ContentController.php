@@ -9,48 +9,42 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 
 /**
  * ContentController
  */
-class ContentController extends AbstractFluxController {
+class ContentController extends AbstractFluxController
+{
+    /**
+     * @return void
+     */
+    public function initializeProvider()
+    {
+    }
 
-	/**
-	 * @return void
-	 */
-	public function initializeProvider() {
+    /**
+     * Fake Action
+     *
+     * @return void
+     */
+    public function fakeAction()
+    {
+    }
 
-	}
+    /**
+     * @return void
+     */
+    public function fakeWithoutDescriptionAction()
+    {
+    }
 
-	/**
-	 * @return void
-	 */
-	public function initializeOverriddenSettings() {
-		$this->settings = RecursiveArrayUtility::merge($this->settings, $this->data['settings']);
-	}
-
-	/**
-	 * Fake Action
-	 *
-	 * @return void
-	 */
-	public function fakeAction() {
-	}
-
-	/**
-	 * @return void
-	 */
-	public function fakeWithoutDescriptionAction() {
-	}
-
-	/**
-	 * Fake Action
-	 *
-	 * @param string $required
-	 * @return void
-	 */
-	public function fakeWithRequiredArgumentAction($required) {
-	}
-
+    /**
+     * Fake Action
+     *
+     * @param string $required
+     * @return void
+     */
+    public function fakeWithRequiredArgumentAction($required)
+    {
+    }
 }

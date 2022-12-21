@@ -9,18 +9,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleFormRenderViewHelper;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Form\NodeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 
-/**
- * RenderViewHelperTest
- */
 class RenderViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @test
      */
@@ -28,13 +24,15 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
     {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'] = array();
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeResolver'] = array();
-        $form = Form::create();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form->setOption(Form::OPTION_RECORD, ['uid' => 123, 'test' => '']);
+        $form->setOption(Form::OPTION_RECORD_FIELD, 'test');
         $nodeFactory = $this->getMockBuilder(NodeFactory::class)->setMethods(array('create'))->getMock();
-        $nodeFactory->expects($this->once())->method('create')->willReturn($this->getMockBuilder(NodeInterface::class)->getMock());
-        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
+        $nodeFactory->expects($this->once())->method('create')->willReturn($this->getMockBuilder(NodeInterface::class)->disableOriginalConstructor()->getMock());
+        $instance = new AccessibleFormRenderViewHelper();
         GeneralUtility::addInstance(NodeFactory::class, $nodeFactory);
         $instance->setArguments(['form' => $form]);
-        $instance->setRenderingContext(new RenderingContext());
+        $instance->setRenderingContext($this->renderingContext);
         $instance->render();
     }
 }

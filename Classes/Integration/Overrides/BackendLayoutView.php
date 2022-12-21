@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\Overrides;
 
 /*
@@ -11,49 +12,31 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
-use TYPO3\CMS\Backend\View\BackendLayout\DataProviderCollection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 {
-    /**
-     * @var GridProviderInterface
-     */
-    protected $provider;
+    protected ?GridProviderInterface $provider = null;
+    protected array $record = [];
+    protected bool $addingItemsForContent = false;
 
-    /**
-     * @var array
-     */
-    protected $record;
-
-    protected $addingItemsForContent = false;
-
-    public function setProvider(GridProviderInterface $provider)
+    public function setProvider(GridProviderInterface $provider): void
     {
         $this->provider = $provider;
     }
 
-    public function setRecord(array $record)
+    public function setRecord(array $record): void
     {
         $this->record = $record;
-    }
-
-    protected function initializeDataProviderCollection()
-    {
-        // This is an override designed to perform no operations except create a valid data provider collection instance
-        $this->setDataProviderCollection(GeneralUtility::makeInstance(DataProviderCollection::class));
     }
 
     /**
      * Gets colPos items to be shown in the forms engine.
      * This method is called as "itemsProcFunc" with the accordant context
      * for tt_content.colPos.
-     *
-     * @param array $parameters
      */
-    public function colPosListItemProcFunc(array $parameters)
+    public function colPosListItemProcFunc(array $parameters): void
     {
         $this->record = $parameters['row'];
         $this->addingItemsForContent = true;
@@ -61,10 +44,25 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         $this->addingItemsForContent = false;
     }
 
-    public function getSelectedBackendLayout($pageId)
+    /**
+     * @param int $pageId
+     */
+    public function getSelectedBackendLayout($pageId): ?array
     {
         if ($this->addingItemsForContent) {
+            $identifier = $this->getSelectedCombinedIdentifier($pageId);
+            if ($identifier === false) {
+                return null;
+            }
+
+            // Early return parent method's output if selected identifier is not from Flux
+            if (substr((string) $identifier, 0, 6) !== 'flux__') {
+                return parent::getSelectedBackendLayout($pageId);
+            }
             $pageRecord = $this->loadRecordFromTable('pages', (int)$pageId);
+            if (!$pageRecord) {
+                return null;
+            }
             $pageLevelProvider = $this->resolvePrimaryProviderForRecord('pages', $pageRecord);
             if ($pageLevelProvider instanceof GridProviderInterface) {
                 return $pageLevelProvider->getGrid($pageRecord)->buildExtendedBackendLayoutArray(0);
@@ -73,9 +71,26 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         // Delegate resolving of backend layout structure to the Provider, which will return a Grid, which can create
         // a full backend layout data array.
         if ($this->provider instanceof GridProviderInterface) {
-            return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray($this->record['l18n_parent'] ?: $this->record['uid']);
+            return $this->provider->getGrid($this->record)->buildExtendedBackendLayoutArray(
+                $this->resolveParentRecordUid($this->record)
+            );
         }
         return parent::getSelectedBackendLayout($pageId);
+    }
+
+    /**
+     * Extracts the UID to use as parent UID, based on properties of the record
+     * and composition of the values within it, to ensure an integer UID.
+     */
+    protected function resolveParentRecordUid(array $record): int
+    {
+        $uid = $record['l18n_parent'] ?: $record['uid'];
+        if (is_array($uid)) {
+            // The record was passed by a third-party integration which read the record from FormEngine's expanded
+            // format which stores select-type fields such as the l18n_parent as array values. Extract it from there.
+            return $uid = reset($uid);
+        }
+        return (int) $uid;
     }
 
     /**
@@ -91,27 +106,30 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      *
      * @param int $pageId
      * @param array $items
-     * @return array
      */
-    protected function addColPosListLayoutItems($pageId, $items)
+    protected function addColPosListLayoutItems($pageId, $items): array
     {
         $layout = $this->getSelectedBackendLayout($pageId);
-        if ($layout && $layout['__items']) {
+        if (isset($layout, $layout['__items'])) {
             $items = $layout['__items'];
         }
         if ($this->addingItemsForContent) {
             $parentRecordUid = ColumnNumberUtility::calculateParentUid($this->record['colPos']);
-            if ($parentRecordUid) {
+            if ($parentRecordUid > 0) {
                 $parentRecord = $this->loadRecordFromTable('tt_content', $parentRecordUid);
+                if (!$parentRecord) {
+                    return $items;
+                }
                 $provider = $this->resolvePrimaryProviderForRecord('tt_content', $parentRecord);
                 if ($provider) {
+                    $label = $this->getLanguageService()->sL(
+                        'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent'
+                    );
                     $items = array_merge(
                         $items,
                         [
                             [
-                                $this->getLanguageService()->sL(
-                                    'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent'
-                                ),
+                                $label,
                                 '--div--'
                             ]
                         ],
@@ -123,20 +141,33 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         return $items;
     }
 
-    protected function loadRecordFromTable(string $table, int $uid): array
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function loadRecordFromTable(string $table, int $uid): ?array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $query = $queryBuilder->select('*')
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $uid));
         $query->getRestrictions()->removeAll();
-        return $query->execute()->fetchAll()[0];
+        /** @var array[] $results */
+        $results = $query->execute()->fetchAll();
+        return $results[0] ?? null;
     }
 
-    protected function resolvePrimaryProviderForRecord(string $table, array $record)
+    protected function resolvePrimaryProviderForRecord(string $table, array $record): ?GridProviderInterface
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)
-            ->get(FluxService::class)
-            ->resolvePrimaryConfigurationProvider($table, null, $record, null, GridProviderInterface::class);
+        /** @var FluxService $fluxService */
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        return $fluxService->resolvePrimaryConfigurationProvider(
+            $table,
+            null,
+            $record,
+            null,
+            [GridProviderInterface::class]
+        );
     }
 }

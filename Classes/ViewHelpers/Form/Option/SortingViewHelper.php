@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
 
 /*
@@ -16,17 +17,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class SortingViewHelper extends OptionViewHelper
 {
+    public static string $option = Form::OPTION_SORTING;
 
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_SORTING;
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'value',

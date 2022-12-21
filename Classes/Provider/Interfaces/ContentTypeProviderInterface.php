@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider\Interfaces;
 
 /*
@@ -20,13 +21,6 @@ namespace FluidTYPO3\Flux\Provider\Interfaces;
  */
 interface ContentTypeProviderInterface
 {
-    /**
-     * @param string $contentObjectType
-     */
-    public function setContentObjectType($contentObjectType);
-
-    /**
-     * @return string
-     */
-    public function getContentObjectType();
+    public function setContentObjectType(string $contentObjectType): self;
+    public function getContentObjectType(): string;
 }

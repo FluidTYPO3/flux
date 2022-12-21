@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -17,30 +18,20 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class OutletViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('enabled', 'boolean', 'if the outlet is enabled', false, true);
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $outlet = static::getFormFromRenderingContext($renderingContext)->getOutlet();
         $outlet->setEnabled((boolean)$arguments['enabled']);
         $renderChildrenClosure();
+        return '';
     }
 }

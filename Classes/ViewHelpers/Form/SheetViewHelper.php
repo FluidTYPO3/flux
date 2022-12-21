@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -19,12 +20,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class SheetViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'name',
@@ -65,20 +61,17 @@ class SheetViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Sheet
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Sheet
     {
-        $form = static::getFormFromRenderingContext($renderingContext);
+        /** @var array $arguments */
+        $form = static::getContainerFromRenderingContext($renderingContext);
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        if (true === $form->has($arguments['name'])) {
+        if ($form->has($arguments['name'])) {
+            /** @var Sheet $sheet */
             $sheet = $form->get($arguments['name']);
         } else {
             /** @var Sheet $sheet */
-            $sheet = $form->createContainer('Sheet', $arguments['name'], $arguments['label']);
+            $sheet = $form->createContainer(Sheet::class, $arguments['name'], $arguments['label']);
         }
         $sheet->setExtensionName($extensionName);
         $sheet->setVariables($arguments['variables']);

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -12,63 +13,36 @@ use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 
-/**
- * Sheet
- */
 class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
 {
+    protected ?string $description = null;
+    protected ?string $shortDescription = null;
 
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var string
-     */
-    protected $shortDescription;
-
-    /**
-     * @param string $shortDescription
-     * @return self
-     */
-    public function setShortDescription($shortDescription)
+    public function setShortDescription(?string $shortDescription): self
     {
         $this->shortDescription = $shortDescription;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getShortDescription()
+    public function getShortDescription(): ?string
     {
         return $this->resolveLocalLanguageValueOfLabel($this->shortDescription, $this->getPath() . '.shortDescription');
     }
 
-    /**
-     * @param string $description
-     * @return self
-     */
-    public function setDescription($description)
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->resolveLocalLanguageValueOfLabel($this->description, $this->getPath() . '.description');
     }
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $sheetStructArray = [
             'ROOT' => [
@@ -83,9 +57,9 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     }
 
     /**
-     * @return \FluidTYPO3\Flux\Form\FieldInterface[]
+     * @return FormInterface[]
      */
-    public function getFields()
+    public function getFields(): iterable
     {
         $fields = [];
         foreach ($this->children as $child) {

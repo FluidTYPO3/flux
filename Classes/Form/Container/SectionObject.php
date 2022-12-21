@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -10,19 +11,28 @@ namespace FluidTYPO3\Flux\Form\Container;
 
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\Field\ColumnPosition;
+use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Form\Field\Select;
 use FluidTYPO3\Flux\Form\FieldContainerInterface;
-use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
 
 /**
- * Object
+ * Section Object
+ *
+ * Creates TCEForms objects inside Section. Also facilitates creating
+ * a grid where each object becomes a content column - to enable this,
+ * call setContentContainer(true) on the object.
+ *
+ * Content areas created from section objects can be rendered as either
+ * columns or rows - this behavior can be defined on the section parent
+ * object. The default is to render as rows.
  */
 class SectionObject extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
 {
+    protected bool $contentContainer = false;
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $label = $this->getLabel();
         $structureArray = [
@@ -33,11 +43,35 @@ class SectionObject extends AbstractFormContainer implements ContainerInterface,
         return $structureArray;
     }
 
-    /**
-     * @return FieldInterface[]
-     */
-    public function getFields()
+    public function isContentContainer(): bool
     {
-        return (array) iterator_to_array($this->children);
+        return $this->contentContainer;
+    }
+
+    public function setContentContainer(bool $contentContainer): self
+    {
+        $this->contentContainer = (bool) $contentContainer;
+        if ($this->contentContainer && !$this->has(ColumnPosition::FIELD_NAME)) {
+            $this->createContentContainerFields();
+        }
+        return $this;
+    }
+
+    /**
+     * @return FormInterface[]
+     */
+    public function getFields(): iterable
+    {
+        return iterator_to_array($this->children);
+    }
+
+    protected function createContentContainerFields(): void
+    {
+        $this->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);
+        $this->createField(Input::class, 'label', 'Content area name/label');
+        if ($this->parent instanceof Section && $this->parent->getGridMode() === Section::GRID_MODE_COLUMNS) {
+            $colSpanField = $this->createField(Select::class, 'colspan', 'Width of column');
+            $colSpanField->setItems(array_combine(range(1, 12), range(1, 12)));
+        }
     }
 }

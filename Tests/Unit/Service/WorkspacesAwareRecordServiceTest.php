@@ -9,23 +9,74 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  */
 
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Package\PackageManager;
 
 /**
  * WorkspacesAwareRecordServiceTest
  */
 class WorkspacesAwareRecordServiceTest extends RecordServiceTest
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $packageManager = $this->getMockBuilder(PackageManager::class)
+            ->setMethods(['isPackageActive'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $packageManager->method('isPackageActive')->willReturn(true);
+
+        AccessibleExtensionManagementUtility::setPackageManager($packageManager);
+
+        $GLOBALS['BE_USER'] = $this->getMockBuilder(BackendUserAuthentication::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        AccessibleExtensionManagementUtility::setPackageManager(null);
+
+        unset($GLOBALS['BE_USER']);
+    }
+
+    public function testGetSinglePerformsOverlay(): void
+    {
+        $table = 'test';
+        $fields = 'a,b';
+        $uid = 123;
+        $mock = $this->getMockServiceInstance(['hasWorkspacesSupport', 'overlayRecordInternal']);
+        $mock->expects(self::once())->method('hasWorkspacesSupport')->willReturn(true);
+        $mock->expects(self::once())
+            ->method('overlayRecordInternal')
+            ->with($table, ['uid' => $uid])
+            ->willReturn(['uid' => 456]);
+
+        $this->createAndRegisterMockForQueryBuilder();
+
+        $this->statement->method('fetchAll')->willReturn([['uid' => $uid]]);
+
+        $mock->getSingle($table, $fields, $uid);
+    }
 
     /**
      * @test
      */
     public function overlayRecordsCallsExpectedMethodSequence()
     {
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('hasWorkspacesSupport', 'overlayRecord'))->getMock();
+        $mock = $this->getMockBuilder($this->createInstanceClassName())
+            ->setMethods(array('hasWorkspacesSupport', 'overlayRecordInternal'))
+            ->getMock();
         $mock->expects($this->once())->method('hasWorkspacesSupport')->will($this->returnValue(true));
-        $mock->expects($this->exactly(2))->method('overlayRecord')->will($this->returnValue(array('foo')));
+        $mock->expects($this->exactly(2))
+            ->method('overlayRecordInternal')
+            ->willReturnOnConsecutiveCalls($this->returnValue(array('foo')), false);
         $records = array(array(), array());
-        $expected = array(array('foo'), array('foo'));
+        $expected = array(array('foo'));
         $result = $this->callInaccessibleMethod($mock, 'overlayRecords', 'table', $records);
         $this->assertEquals($expected, $result);
     }
@@ -35,10 +86,16 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
      */
     public function getWorkspaceVersionOfRecordOrRecordItselfReturnsSelf()
     {
-        $GLOBALS['BE_USER'] = new \stdClass();
-        $instance = new WorkspacesAwareRecordService();
-        $result = $this->callInaccessibleMethod($instance, 'getWorkspaceVersionOfRecordOrRecordItself', 'void', array('uid' => 1));
+        $instance = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->setMethods(['overlayRecordInternal'])
+            ->getMock();
+        $instance->method('overlayRecordInternal')->willReturn(false);
+        $result = $this->callInaccessibleMethod(
+            $instance,
+            'getWorkspaceVersionOfRecordOrRecordItself',
+            'void',
+            array('uid' => 1)
+        );
         $this->assertEquals(array('uid' => 1), $result);
-        unset($GLOBALS['BE_USER']);
     }
 }

@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use org\bovigo\vfs\vfsStream;
@@ -17,24 +18,32 @@ use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
+use TYPO3\CMS\Core\Package\Package;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * MiscellaneousUtilityTest
  */
 class MiscellaneousUtilityTest extends AbstractTestCase
 {
+    /**
+     * @var PackageManager|null
+     */
+    protected $packageManagerBackup;
 
     /**
      * Setup
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
+
+        $this->packageManagerBackup = AccessibleExtensionManagementUtility::getPackageManager();
+
         // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
         // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
-        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)->setMethods(['isRegistered', 'getIconConfigurationByIdentifier'])->getMock();
+        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)->setMethods(['isRegistered', 'getIconConfigurationByIdentifier'])->disableOriginalConstructor()->getMock();
         $iconRegistryMock->expects($this->any())->method('isRegistered')->willReturn(true);
         $iconRegistryMock->expects($this->any())->method('getIconConfigurationByIdentifier')->willReturn([
             'provider' => SvgIconProvider::class,
@@ -51,8 +60,9 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         }
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
+        AccessibleExtensionManagementUtility::setPackageManager($this->packageManagerBackup);
         GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
     }
 
@@ -73,11 +83,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
      */
     protected function getFormInstance()
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        /** @var Form $instance */
-        $instance = $objectManager->get('FluidTYPO3\Flux\Form');
-        return $instance;
+        return Form::create();
     }
 
     /**
@@ -98,6 +104,15 @@ class MiscellaneousUtilityTest extends AbstractTestCase
      */
     public function returnFalseResultForGivenTemplateButNoTemplateIconIsFound()
     {
+        $package = $this->getMockBuilder(Package::class)->setMethods(['getPackagePath'])->disableOriginalConstructor()->getMock();
+        $package->method('getPackagePath')->willReturn('.');
+
+        $packageManager = $this->getMockBuilder(PackageManager::class)->setMethods(['isPackageActive', 'getPackage'])->disableOriginalConstructor()->getMock();
+        $packageManager->method('isPackageActive')->willReturn(true);
+        $packageManager->method('getPackage')->willReturn($package);
+
+        AccessibleExtensionManagementUtility::setPackageManager($packageManager);
+
         $formOptionsFixture = $this->getFormOptionsFixture();
         $mockExtensionUrl = $this->getMockExtension();
         /** @var Form $form */
@@ -126,7 +141,18 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         $graphicsClassName = 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions';
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][$graphicsClassName]['className'] =
             'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyGraphicalFunctions';
-        $this->assertEquals('icon-b7c9dc75b2c29a9a52e8c1f7a996348b', MiscellaneousUtility::createIcon('foobar-icon', 1, 2));
+        $this->assertEquals('icon-b7c9dc75b2c29a9a52e8c1f7a996348b', MiscellaneousUtility::createIcon('foobar-icon'));
+    }
+
+    /**
+     * @test
+     */
+    public function testCreateIconWithCustomIdentifier()
+    {
+        $graphicsClassName = 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions';
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][$graphicsClassName]['className'] =
+            'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyGraphicalFunctions';
+        $this->assertEquals('icon-identifier', MiscellaneousUtility::createIcon('foobar-icon', 'icon-identifier'));
     }
 
     /**

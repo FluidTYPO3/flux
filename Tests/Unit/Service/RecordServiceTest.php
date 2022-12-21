@@ -11,9 +11,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use Prophecy\Argument;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -22,12 +21,17 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordServiceTest extends AbstractTestCase
 {
+    protected ?Statement $statement = null;
+
     /**
      * @param array $methods
-     * @return RecordService
+     * @return RecordService|MockObject
      */
     protected function getMockServiceInstance(array $methods = [])
     {
+        if (empty($methods)) {
+            $methods[] = 'dummy';
+        }
         return $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
     }
 
@@ -36,22 +40,49 @@ class RecordServiceTest extends AbstractTestCase
      */
     protected function createAndRegisterMockForQueryBuilder()
     {
-        $statement = $this->prophesize(Statement::class);
-        $statement->fetchAll()->willReturn([]);
+        $this->statement = $this->getMockBuilder(Statement::class)
+            ->setMethods(['fetchAll'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $queryBuilder = $this->prophesize(QueryBuilder::class);
-        $queryBuilder->from(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->where(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->select(Argument::type('string'))->will(function ($arguments) use ($queryBuilder) { return $queryBuilder->reveal(); });
-        $queryBuilder->orderBy('sorting', '');
-        $queryBuilder->delete(Argument::type('string'));
-        $queryBuilder->setMaxResults(Argument::type('int'));
-        $queryBuilder->execute()->willReturn($statement->reveal());
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->setMethods(
+                [
+                    'from',
+                    'where',
+                    'select',
+                    'update',
+                    'orderBy',
+                    'groupBy',
+                    'delete',
+                    'setMaxResults',
+                    'setFirstResult',
+                    'setParameters',
+                    'execute',
+                    'set',
+                ]
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder->method('select')->willReturnSelf();
+        $queryBuilder->method('update')->willReturnSelf();
+        $queryBuilder->method('from')->willReturnSelf();
+        $queryBuilder->method('where')->willReturnSelf();
+        $queryBuilder->method('orderBy')->willReturnSelf();
+        $queryBuilder->method('groupBy')->willReturnSelf();
+        $queryBuilder->method('delete')->willReturnSelf();
+        $queryBuilder->method('setMaxResults')->willReturnSelf();
+        $queryBuilder->method('setFirstResult')->willReturnSelf();
+        $queryBuilder->method('setParameters')->willReturnSelf();
+        $queryBuilder->method('execute')->willReturn($this->statement);
 
-        $prophecy = $this->prophesize(ConnectionPool::class);
-        $prophecy->getQueryBuilderForTable(Argument::type('string'))->willReturn($queryBuilder->reveal());
+        $prophecy = $this->getMockBuilder(ConnectionPool::class)
+            ->setMethods(['getQueryBuilderForTable'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $prophecy->method('getQueryBuilderForTable')->willReturn($queryBuilder);
 
-        GeneralUtility::addInstance(ConnectionPool::class, $prophecy->reveal());
+        GeneralUtility::addInstance(ConnectionPool::class, $prophecy);
 
         return $queryBuilder;
     }
@@ -67,11 +98,16 @@ class RecordServiceTest extends AbstractTestCase
         $groupBy = 'foo';
         $orderBy = 'bar';
         $limit = 60;
+        $offset = 10;
         $mock = $this->getMockServiceInstance();
 
         $this->createAndRegisterMockForQueryBuilder();
+        $this->statement->method('fetchAll')->willReturn([]);
 
-        $mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit);
+        $this->assertSame(
+            [],
+            $mock->get($table, $fields, $clause, $groupBy, $orderBy, $limit, $offset)
+        );
     }
 
     /**
@@ -86,7 +122,9 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->getSingle($table, $fields, $uid);
+        $this->assertNull(
+            $mock->getSingle($table, $fields, $uid)
+        );
     }
 
     /**
@@ -101,7 +139,10 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->update($table, $fields);
+        $this->assertInstanceOf(
+            Statement::class,
+            $mock->update($table, $fields)
+        );
     }
 
     /**
@@ -115,7 +156,9 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->delete($table, $uid);
+        $this->assertTrue(
+            $mock->delete($table, $uid)
+        );
     }
 
     /**
@@ -129,6 +172,19 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $mock->delete($table, $record);
+        $this->assertTrue(
+            $mock->delete($table, $record)
+        );
+    }
+
+    public function testPreparedGet(): void
+    {
+        $mock = $this->getMockServiceInstance();
+        $this->createAndRegisterMockForQueryBuilder();
+        $this->statement->method('fetchAll')->willReturn([]);
+        self::assertSame(
+            [],
+            $mock->preparedGet('table', 'fields', 'test = 1')
+        );
     }
 }

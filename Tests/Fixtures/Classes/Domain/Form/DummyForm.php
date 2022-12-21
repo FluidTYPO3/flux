@@ -6,6 +6,7 @@ use FluidTYPO3\Flux\Form;
 /**
  * Class DummyForm
  */
-class DummyForm extends Form {
+class DummyForm extends Form
+{
 
 }

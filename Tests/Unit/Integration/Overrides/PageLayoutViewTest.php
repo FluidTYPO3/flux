@@ -8,24 +8,48 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Overrides;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Integration\Overrides\BackendLayoutView;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * PageLayoutViewTest
- */
 class PageLayoutViewTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
-    public function testSetAndGetPageInfo()
+    public function testSetAndGetPageInfo(): void
     {
-        $instance = new PageLayoutView();
+        $instance = $this->getMockBuilder(PageLayoutView::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $info = ['foo' => 'bar'];
         $instance->setPageinfo($info);
-        $this->assertAttributeSame($info, 'pageinfo', $instance);
+        $this->assertSame($info, $instance->getPageinfo());
         $result = $instance->getPageinfo();
         $this->assertSame($info, $result);
+    }
+
+    public function testGetBackendLayoutView(): void
+    {
+        $singletons = GeneralUtility::getSingletonInstances();
+
+        $instance = $this->getMockBuilder(PageLayoutView::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->setProvider($this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass());
+        $instance->setRecord(['uid' => 123]);
+
+        $backendLayoutView = $this->getMockBuilder(BackendLayoutView::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::setSingletonInstance(BackendLayoutView::class, $backendLayoutView);
+
+        $output = $this->callInaccessibleMethod($instance, 'getBackendLayoutView');
+
+        GeneralUtility::resetSingletonInstances($singletons);
+
+        self::assertSame($backendLayoutView, $output);
     }
 }

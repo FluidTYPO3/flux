@@ -8,24 +8,25 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-
-/**
- * TextViewHelperTest
- */
 class TextViewHelperTest extends AbstractFieldViewHelperTestCase
 {
+    /**
+     * @var array
+     */
+    protected $defaultArguments = [
+        'name' => 'test',
+    ];
 
     /**
      * @test
      */
     public function supportsPlaceholders()
     {
-        $arguments = ['placeholder' => 'test'];
+        $arguments = ['name' => 'test', 'placeholder' => 'test'];
         $instance = $this->buildViewHelperInstance($arguments);
         $component = $instance->getComponent(
-            ObjectAccess::getProperty($instance, 'renderingContext', true),
-            ObjectAccess::getProperty($instance, 'arguments', true)
+            $this->getInaccessiblePropertyValue($instance, 'renderingContext'),
+            $this->getInaccessiblePropertyValue($instance, 'arguments')
         );
         $this->assertSame($arguments['placeholder'], $component->getPlaceholder());
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -16,15 +17,13 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by arguments.
+ *
+ * DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
+ * @deprecated Will be removed in Flux 10.0
  */
 class SuggestViewHelper extends AbstractWizardViewHelper
 {
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -79,15 +78,11 @@ class SuggestViewHelper extends AbstractWizardViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Suggest
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Suggest
     {
+        /** @var array $arguments */
         /** @var Suggest $component */
-        $component = static::getPreparedComponent('Suggest', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Suggest::class, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setStoragePageUids($arguments['pidList']);
         $component->setStoragePageRecursiveDepth($arguments['pidDepth']);

@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\Outlet;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
+use TYPO3\CMS\Extbase\Error\Result;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 /**
  * Outlet Interface
@@ -17,66 +19,42 @@ use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
  */
 interface OutletInterface
 {
-
-    /**
-     * @param boolean $enabled
-     * @return void
-     * @abstract
-     */
-    public function setEnabled($enabled);
-
-    /**
-     * @return boolean
-     * @abstract
-     */
-    public function getEnabled();
-
-    /**
-     * @param array $data
-     * @return mixed
-     * @abstract
-     */
-    public function fill($data);
-
-    /**
-     * @return mixed
-     * @abstract
-     */
-    public function produce();
-
-    /**
-     * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
-     */
-    public function setPipesIn(array $pipes);
+    public function setEnabled(bool $enabled): self;
+    public function getEnabled(): bool;
+    public function isValid(): bool;
+    public function getValidationResults(): Result;
+    public function produce(): array;
+    public function setPipesIn(array $pipes): self;
+    public function fill(array $data): self;
+    public function getView(): ViewInterface;
+    public function setView(ViewInterface $view): self;
 
     /**
      * @return PipeInterface[]
      */
-    public function getPipesIn();
+    public function getPipesIn(): array;
 
     /**
      * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
      */
-    public function setPipesOut(array $pipes);
+    public function setPipesOut(array $pipes): self;
 
     /**
      * @return PipeInterface[]
      */
-    public function getPipesOut();
+    public function getPipesOut(): array;
+
+    public function addPipeIn(PipeInterface $pipe): self;
+    public function addPipeOut(PipeInterface $pipe): self;
+    public function addArgument(OutletArgument $argument): self;
 
     /**
-     * @param PipeInterface $pipe
-     * @return OutletInterface
+     * @param OutletArgument[] $arguments
      */
-    public function addPipeIn(PipeInterface $pipe);
+    public function setArguments(array $arguments): self;
 
     /**
-     * @param PipeInterface $pipe
-     * @return OutletInterface
+     * @return OutletArgument[]
      */
-    public function addPipeOut(PipeInterface $pipe);
+    public function getArguments(): array;
 }

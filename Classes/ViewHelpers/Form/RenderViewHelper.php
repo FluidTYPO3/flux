@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -29,22 +30,16 @@ class RenderViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('form', Form::class, 'Form instance to render as HTML', true);
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
         $form = $arguments['form'];
         $record = $form->getOption(Form::OPTION_RECORD);
         $table = $form->getOption(Form::OPTION_RECORD_TABLE);
@@ -59,7 +54,7 @@ class RenderViewHelper extends AbstractViewHelper
             'inlineStructure' => [],
             'parameterArray' => [
                 'itemFormElName' => sprintf('data[%s][%d][%s]', $table, (integer) $record['uid'], $field),
-                'itemFormElValue' => GeneralUtility::xml2array($record[$field]),
+                'itemFormElValue' => static::convertXmlToArray($record[$field]),
                 'fieldChangeFunc' => [],
                 'fieldConf' => [
                     'config' => [
@@ -69,14 +64,28 @@ class RenderViewHelper extends AbstractViewHelper
             ],
         ]);
         $output = $node->render();
-        return $output['html'];
+        return $output['html'] ?? '';
     }
 
     /**
-     * @return NodeFactory
+     * @codeCoverageIgnore
      */
-    protected static function getNodeFactory()
+    protected static function convertXmlToArray(string $xml): array
     {
-        return GeneralUtility::makeInstance(NodeFactory::class);
+        $array = GeneralUtility::xml2array($xml);
+        if (is_array($array)) {
+            return $array;
+        }
+        return [];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected static function getNodeFactory(): NodeFactory
+    {
+        /** @var NodeFactory $nodeFactory */
+        $nodeFactory = GeneralUtility::makeInstance(NodeFactory::class);
+        return $nodeFactory;
     }
 }

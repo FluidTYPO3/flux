@@ -8,14 +8,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
+use FluidTYPO3\Flux\Outlet\Pipe\Exception;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 /**
  * EmailPipeTest
  */
 class EmailPipeTest extends AbstractPipeTestCase
 {
-
     /**
      * @var array
      */
@@ -26,31 +27,14 @@ class EmailPipeTest extends AbstractPipeTestCase
      */
     protected function createInstance()
     {
-        $pipe = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe')->setMethods(array('sendEmail'))->getMock();
-        ObjectAccess::setProperty($pipe, 'label', 'Mock EmailPipe', true);
+        $view = $this->getMockBuilder(ViewInterface::class)->getMockForAbstractClass();
+        $pipe = $this->getMockBuilder(EmailPipe::class)->setMethods(array('sendEmail'))->getMock();
+        $pipe->setSubject('Test subject')
+            ->setSender('test@test.com')
+            ->setRecipient('test@test.com')
+            ->setView($view);
+        $this->setInaccessiblePropertyValue($pipe, 'subject', 'Mock EmailPipe');
         return $pipe;
-    }
-
-    /**
-     * @test
-     */
-    public function supportsSenderArray()
-    {
-        $instance = $this->createInstance();
-        $instance->setSender(array('test@test.com', 'test'));
-        $output = $instance->conduct($this->defaultData);
-        $this->assertNotEmpty($output);
-    }
-
-    /**
-     * @test
-     */
-    public function supportsRecipientArray()
-    {
-        $instance = $this->createInstance();
-        $instance->setRecipient(array('test@test.com', 'test'));
-        $output = $instance->conduct($this->defaultData);
-        $this->assertNotEmpty($output);
     }
 
     /**
@@ -63,14 +47,55 @@ class EmailPipeTest extends AbstractPipeTestCase
         $this->assertNotEmpty($output);
     }
 
+    public function testSupportsArrayRecipient(): void
+    {
+        $instance = $this->createInstance();
+        $instance->setRecipient(['foo@bar.com', 'foo']);
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
+    public function testSupportsArraySender(): void
+    {
+        $instance = $this->createInstance();
+        $instance->setSender(['foo@bar.com', 'foo']);
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
+    public function testRendersBodyFromViewWithoutBodySection(): void
+    {
+        $view = $this->getMockBuilder(ViewInterface::class)->getMockForAbstractClass();
+        $view->expects(self::once())->method('render')->willReturn('rendered');
+
+        $instance = $this->createInstance();
+        $instance->setView($view);
+        $instance->setBody(null);
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
+    public function testRendersBodyFromViewWithBodySection(): void
+    {
+        $view = $this->getMockBuilder(ViewInterface::class)->addMethods(['renderSection'])->getMockForAbstractClass();
+        $view->expects(self::once())->method('renderSection')->willReturn('rendered');
+
+        $instance = $this->createInstance();
+        $instance->setView($view);
+        $instance->setBody(null);
+        $instance->setBodySection('section');
+        $output = $instance->conduct('test');
+        $this->assertNotEmpty($output);
+    }
+
     /**
      * @test
      */
     public function turnsMailboxValidationErrorIntoPipeException()
     {
         $instance = $this->createInstance();
-        $this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
-        $instance->setRecipient(array('test', 'test'));
+        $this->expectException(Exception::class);
+        $instance->setRecipient(array('test', 'test@test.com'));
         $instance->conduct($this->defaultData);
     }
 
@@ -79,7 +104,7 @@ class EmailPipeTest extends AbstractPipeTestCase
      */
     public function sendsEmail()
     {
-        $instance = $this->objectManager->get('FluidTYPO3\Flux\Outlet\Pipe\EmailPipe');
+        $instance = new EmailPipe();
         $message = $this->getMockBuilder('TYPO3\CMS\Core\Mail\MailMessage')->setMethods(array('send'))->getMock();
         $message->expects($this->once())->method('send');
         $this->callInaccessibleMethod($instance, 'sendEmail', $message);

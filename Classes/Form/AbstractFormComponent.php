@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form;
 
 /*
@@ -19,157 +20,105 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * AbstractFormComponent
- */
 abstract class AbstractFormComponent implements FormInterface
 {
-
     const NAMESPACE_FIELD = 'FluidTYPO3\\Flux\\Form\\Field';
     const NAMESPACE_CONTAINER = 'FluidTYPO3\\Flux\\Form\\Container';
     const NAMESPACE_WIZARD = 'FluidTYPO3\\Flux\\Form\\Wizard';
 
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var boolean
-     */
-    protected $enabled = true;
-
-    /**
-     * @var string
-     */
-    protected $label = null;
+    protected ?string $name = null;
+    protected bool $enabled = true;
+    protected ?string $label = null;
+    protected ?string $extensionName = 'FluidTYPO3.Flux';
+    protected ?FormInterface $parent = null;
+    protected array $variables = [];
+    protected bool $inherit = false;
+    protected bool $inheritEmpty = false;
+    protected ?string $transform = null;
 
     /**
      * If TRUE, disables LLL label usage and always returns the
      * raw value of $label.
-     *
-     * @var boolean
      */
-    protected $disableLocalLanguageLabels = false;
+    protected bool $disableLocalLanguageLabels = false;
 
     /**
      * Relative (from extension $extensionName) path to locallang
      * file containing labels for the LLL values built by this class.
-     *
-     * @var string
      */
-    protected $localLanguageFileRelativePath = Form::DEFAULT_LANGUAGEFILE;
+    protected string $localLanguageFileRelativePath = Form::DEFAULT_LANGUAGEFILE;
 
-    /**
-     * @var string
-     */
-    protected $extensionName = 'FluidTYPO3.Flux';
-
-    /**
-     * @var ContainerInterface
-     */
-    protected $parent;
-
-    /**
-     * @var array
-     */
-    protected $variables = [];
-
-    /**
-     * @var boolean
-     */
-    protected $inherit = false;
-
-    /**
-     * @var boolean
-     */
-    protected $inheritEmpty = false;
-
-    /**
-     * @var string
-     */
-    protected $transform;
-
-    /**
-     * @param array $settings
-     * @return FormInterface
-     */
-    public static function create(array $settings = [])
+    public static function create(array $settings = []): FormInterface
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $className = get_called_class();
         /** @var FormInterface $object */
-        $object = $objectManager->get($className);
+        $object = GeneralUtility::makeInstance($className);
         $object->modify($settings);
         return HookHandler::trigger(HookHandler::FORM_COMPONENT_CREATED, ['component' => $object])['component'];
     }
 
     /**
-     * @param string $type
-     * @param string $prefix
-     * @return string
+     * @param string|class-string $type
+     * @return class-string
      */
-    protected function createComponentClassName($type, $prefix)
+    protected function createComponentClassName(string $type, ?string $prefix): string
     {
+        /** @var class-string $className */
         $className = str_replace('/', '\\', $type);
-        $className = true === class_exists($prefix . '\\' . $className) ? $prefix . '\\' . $className : $className;
+        $className = class_exists($prefix . '\\' . $className) ? $prefix . '\\' . $className : $className;
+        /** @var class-string $className */
+        $className = trim($className, '\\');
         return $className;
     }
 
     /**
-     * @param string $type
-     * @param string $name
-     * @param string $label
-     * @return FieldInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&FieldInterface
      */
-    public function createField($type, $name, $label = null)
+    public function createField(string $type, string $name, ?string $label = null): FieldInterface
     {
-        return $this->createComponent(static::NAMESPACE_FIELD, $type, $name, $label);
+        /** @var T&FieldInterface $component */
+        $component = $this->createComponent(static::NAMESPACE_FIELD, $type, $name, $label);
+        return $component;
     }
 
     /**
-     * @param string $type
-     * @param string $name
-     * @param string $label
-     * @return ContainerInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&ContainerInterface
      */
-    public function createContainer($type, $name, $label = null)
+    public function createContainer(string $type, string $name, ?string $label = null): ContainerInterface
     {
-        return $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
+        /** @var T&ContainerInterface $component */
+        $component = $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
+        return $component;
     }
 
     /**
-     * @param string $type
-     * @param string $name
-     * @param string $label
-     * @return WizardInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&WizardInterface
      */
-    public function createWizard($type, $name, $label = null)
+    public function createWizard(string $type, string $name, string $label = null): WizardInterface
     {
-        return $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
+        /** @var T&WizardInterface $component */
+        $component = $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
+        return $component;
     }
 
-    /**
-     * @param string $namespace
-     * @param string $type
-     * @param string $name
-     * @param string|NULL $label
-     * @return FormInterface
-     */
-    public function createComponent($namespace, $type, $name, $label = null)
-    {
+    public function createComponent(
+        ?string $namespace,
+        string $type,
+        string $name,
+        ?string $label = null
+    ): FormInterface {
         /** @var FormInterface $component */
         $component = GeneralUtility::makeInstance($this->createComponentClassName($type, $namespace));
-        if (null === $component->getName()) {
-            $component->setName($name);
-        }
+        $component->setName($name);
         $component->setLabel($label);
         $component->setLocalLanguageFileRelativePath($this->getLocalLanguageFileRelativePath());
         $component->setDisableLocalLanguageLabels($this->getDisableLocalLanguageLabels());
@@ -177,11 +126,7 @@ abstract class AbstractFormComponent implements FormInterface
         return HookHandler::trigger(HookHandler::FORM_COMPONENT_CREATED, ['component' => $component])['component'];
     }
 
-    /**
-     * @param string $transform
-     * @return FormInterface
-     */
-    public function setTransform($transform)
+    public function setTransform(?string $transform): self
     {
         $this->transform = $transform;
         if ($transform) {
@@ -193,99 +138,70 @@ abstract class AbstractFormComponent implements FormInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTransform()
+    public function getTransform(): ?string
     {
         return $this->transform;
     }
 
-    /**
-     * @param string $name
-     * @return FormInterface
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getEnabled()
+    public function getEnabled(): bool
     {
-        return (boolean) $this->enabled;
+        return $this->enabled;
     }
 
-    /**
-     * @param boolean $enabled
-     * @return Form\FormInterface
-     */
-    public function setEnabled($enabled)
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = (boolean) $enabled;
         return $this;
     }
 
-    /**
-     * @param string $extensionName
-     * @return FormInterface
-     */
-    public function setExtensionName($extensionName)
+    public function setExtensionName(?string $extensionName): self
     {
         $this->extensionName = $extensionName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getExtensionName()
+    public function getExtensionName(): ?string
     {
         return $this->extensionName;
     }
 
-    /**
-     * @param string $label
-     * @return FormInterface
-     */
-    public function setLabel($label)
+    public function setLabel(?string $label): self
     {
         $this->label = $label;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getPath()
+    public function getPath(): string
     {
         $prefix = '';
-        if (true === $this instanceof Sheet) {
+        if ($this instanceof Sheet) {
             $prefix = 'sheets';
-        } elseif (true === $this instanceof Section) {
+        } elseif ($this instanceof Section) {
             $prefix = 'sections';
-        } elseif (true === $this instanceof Grid) {
+        } elseif ($this instanceof Grid) {
             $prefix = 'grids';
-        } elseif (true === $this instanceof Column) {
+        } elseif ($this instanceof Column) {
             $prefix = 'columns';
-        } elseif (true === $this instanceof SectionObject) {
+        } elseif ($this instanceof SectionObject) {
             $prefix = 'objects';
-        } elseif (true === $this instanceof Container) {
+        } elseif ($this instanceof Container) {
             $prefix = 'containers';
-        } elseif (true === $this instanceof FieldInterface) {
-            if (true === $this->isChildOfType('SectionObject')) {
-                $prefix = 'objects.' . $this->getParent()->getName();
+        } elseif ($this instanceof FieldInterface) {
+            if ($this->isChildOfType('SectionObject')) {
+                /** @var SectionObject $parent */
+                $parent = $this->getParent();
+                $prefix = 'objects.' . $parent->getName();
             } else {
                 $prefix = 'fields';
             }
@@ -293,40 +209,36 @@ abstract class AbstractFormComponent implements FormInterface
         return trim($prefix . '.' . $this->getName(), '.');
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): ?string
     {
         return $this->resolveLocalLanguageValueOfLabel($this->label);
     }
 
-    /**
-     * @param string $label
-     * @param string $path
-     * @return NULL|string
-     */
-    protected function resolveLocalLanguageValueOfLabel($label, $path = null)
+    protected function resolveLocalLanguageValueOfLabel(?string $label, ?string $path = null): ?string
     {
         if ($this->getDisableLocalLanguageLabels()) {
             return $label;
         }
 
         $name = $this->getName();
-        $extensionName = $this->extensionName;
-        $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-        if (empty($label) && !ExtensionManagementUtility::isLoaded($extensionKey)) {
+        $extensionName = (string) $this->getExtensionName();
+
+        if (empty($extensionName) && empty($label)) {
             return $name;
-        } elseif (strpos($label, 'LLL:EXT:') === 0) {
+        }
+
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+
+        if (strpos($label ?? '', 'LLL:EXT:') === 0) {
             return $label;
         }
 
         $relativeFilePath = $this->getLocalLanguageFileRelativePath();
         $relativeFilePath = ltrim($relativeFilePath, '/');
         $filePrefix = 'LLL:EXT:' . $extensionKey . '/' . $relativeFilePath;
-        if (strpos($label, 'LLL:') === 0) {
+        if (strpos($label ?? '', 'LLL:') === 0 && strpos($label ?? '', ':') !== false) {
             // Shorthand LLL:name.of.index reference, expand
-            list (, $labelIdentifier) = explode(':', $label, 2);
+            [, $labelIdentifier] = explode(':', $label, 2);
             return $filePrefix . ':' . $labelIdentifier;
         } elseif (!empty($label)) {
             return $label;
@@ -342,85 +254,54 @@ abstract class AbstractFormComponent implements FormInterface
         return $filePrefix . ':' . trim('flux.' . $id . '.' . $path, '.');
     }
 
-    /**
-     * @param string $localLanguageFileRelativePath
-     * @return FormInterface
-     */
-    public function setLocalLanguageFileRelativePath($localLanguageFileRelativePath)
+    public function setLocalLanguageFileRelativePath(string $localLanguageFileRelativePath): self
     {
         $this->localLanguageFileRelativePath = $localLanguageFileRelativePath;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getLocalLanguageFileRelativePath()
+    public function getLocalLanguageFileRelativePath(): string
     {
         return $this->localLanguageFileRelativePath;
     }
 
-
-    /**
-     * @param boolean $disableLocalLanguageLabels
-     * @return FormInterface
-     */
-    public function setDisableLocalLanguageLabels($disableLocalLanguageLabels)
+    public function setDisableLocalLanguageLabels(bool $disableLocalLanguageLabels): self
     {
         $this->disableLocalLanguageLabels = (boolean) $disableLocalLanguageLabels;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getDisableLocalLanguageLabels()
+    public function getDisableLocalLanguageLabels(): bool
     {
-        return (boolean) $this->disableLocalLanguageLabels;
+        return $this->disableLocalLanguageLabels;
     }
 
-    /**
-     * @param ContainerInterface $parent
-     * @return FormInterface
-     */
-    public function setParent($parent)
+    public function setParent(?FormInterface $parent): self
     {
         $this->parent = $parent;
         return $this;
     }
 
-    /**
-     * @return ContainerInterface
-     */
-    public function getParent()
+    public function getParent(): ?FormInterface
     {
         return $this->parent;
     }
 
-    /**
-     * @param array $variables
-     * @return FormInterface
-     */
-    public function setVariables($variables)
+    public function setVariables(array $variables): self
     {
         $this->variables = (array) $variables;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getVariables()
+    public function getVariables(): array
     {
         return $this->variables;
     }
 
     /**
-     * @param string $name
      * @param mixed $value
-     * @return FormInterface
      */
-    public function setVariable($name, $value)
+    public function setVariable(string $name, $value): self
     {
         $this->variables = RecursiveArrayUtility::mergeRecursiveOverrule(
             $this->variables,
@@ -430,18 +311,17 @@ abstract class AbstractFormComponent implements FormInterface
     }
 
     /**
-     * @param string $name
      * @return mixed
      */
-    public function getVariable($name)
+    public function getVariable(string $name)
     {
         return ObjectAccess::getPropertyPath($this->variables, $name);
     }
 
     /**
-     * @return ContainerInterface
+     * @return ContainerInterface|FormInterface|$this
      */
-    public function getRoot()
+    public function getRoot(): FormInterface
     {
         $parent = $this->getParent();
         if (null === $parent || $this === $parent) {
@@ -450,53 +330,35 @@ abstract class AbstractFormComponent implements FormInterface
         return $parent->getRoot();
     }
 
-    /**
-     * @param string $type
-     * @return boolean
-     */
-    public function isChildOfType($type)
+    public function isChildOfType(string $type): bool
     {
         $parent = $this->getParent();
         if ($parent === null) {
             return false;
         }
-        return (static::NAMESPACE_CONTAINER . '\\' . $type === get_class($parent) || true === is_a($parent, $type));
+        return (static::NAMESPACE_CONTAINER . '\\' . $type === get_class($parent) || is_a($parent, $type));
     }
 
-    /**
-     * @param boolean $inherit
-     * @return FormInterface
-     */
-    public function setInherit($inherit)
+    public function setInherit(bool $inherit): self
     {
-        $this->inherit = (boolean) $inherit;
+        $this->inherit = $inherit;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getInherit()
+    public function getInherit(): bool
     {
-        return (boolean) $this->inherit;
+        return $this->inherit;
     }
 
-    /**
-     * @param boolean $inheritEmpty
-     * @return FormInterface
-     */
-    public function setInheritEmpty($inheritEmpty)
+    public function setInheritEmpty(bool $inheritEmpty): self
     {
-        $this->inheritEmpty = (boolean) $inheritEmpty;
+        $this->inheritEmpty = $inheritEmpty;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getInheritEmpty()
+    public function getInheritEmpty(): bool
     {
-        return (boolean) $this->inheritEmpty;
+        return $this->inheritEmpty;
     }
 
     /**
@@ -512,53 +374,46 @@ abstract class AbstractFormComponent implements FormInterface
      * function which uses the same structure syntax). If it already
      * exists, the `modify()` method is called on that object to trigger
      * the recursive modification of all child components.
-     *
-     * @param array $structure
-     * @return FormInterface
      */
-    public function modify(array $structure)
+    public function modify(array $structure): self
     {
-        if (true === isset($structure['options']) && true === is_array($structure['options'])) {
+        if (isset($structure['options']) && is_array($structure['options'])) {
             foreach ($structure['options'] as $name => $value) {
                 $this->setVariable($name, $value);
             }
             unset($structure['options']);
         }
         foreach ($structure as $propertyName => $propertyValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($propertyName);
-            if (true === method_exists($this, $setterMethodName)) {
-                ObjectAccess::setProperty($this, $propertyName, $propertyValue);
+            $setterMethodName = 'set' . ucfirst($propertyName);
+            if (method_exists($this, $setterMethodName)) {
+                $this->{$setterMethodName}($propertyValue);
             }
         }
-        HookHandler::trigger(HookHandler::FORM_COMPONENT_MODIFIED, ['component' => $this, 'modififications' => $structure]);
+        HookHandler::trigger(
+            HookHandler::FORM_COMPONENT_MODIFIED,
+            ['component' => $this, 'modififications' => $structure]
+        );
         return $this;
     }
 
     /**
-     * @return ObjectManagerInterface
+     * @codeCoverageIgnore
      */
-    protected function getObjectManager()
+    protected function getConfigurationService(): FluxService
     {
-        return GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var FluxService $fluxService */
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        return $fluxService;
     }
 
     /**
-     * @return FluxService
+     * @param \SplObjectStorage|FormInterface[]|array $children
      */
-    protected function getConfigurationService()
-    {
-        return $this->getObjectManager()->get(FluxService::class);
-    }
-
-    /**
-     * @param \SplObjectStorage|array $children
-     * @return array
-     */
-    protected function buildChildren($children)
+    protected function buildChildren(iterable $children): array
     {
         $structure = [];
         foreach ($children as $child) {
-            if (true === (boolean) $child->getEnabled()) {
+            if ($child->getEnabled()) {
                 $name = $child->getName();
                 $structure[$name] = $child->build();
             }

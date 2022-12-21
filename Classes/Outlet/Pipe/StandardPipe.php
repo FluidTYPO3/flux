@@ -16,5 +16,4 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  */
 class StandardPipe extends AbstractPipe implements PipeInterface
 {
-
 }

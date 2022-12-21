@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -13,15 +14,12 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -32,7 +30,13 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
             'trim'
         );
         $this->registerArgument('size', 'integer', 'Size of the selector box', false, 1);
-        $this->registerArgument('multiple', 'boolean', 'If TRUE, allows selecting the same value multiple times', false, false);
+        $this->registerArgument(
+            'multiple',
+            'boolean',
+            'If TRUE, allows selecting the same value multiple times',
+            false,
+            false
+        );
         $this->registerArgument('minItems', 'integer', 'Minimum required number of items to be selected', false, 0);
         $this->registerArgument('maxItems', 'integer', 'Maxium allowed number of items to be selected', false, 1);
         $this->registerArgument('itemListStyle', 'string', 'Overrides the default list style when maxItems > 1');
@@ -69,14 +73,17 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
     }
 
     /**
-     * @param string $type
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return MultiValueFieldInterface
+     * @template T
+     * @param class-string<T> $type
+     * @return T&MultiValueFieldInterface
      */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
-    {
-        /** @var MultiValueFieldInterface $component */
+    protected static function getPreparedComponent(
+        $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): MultiValueFieldInterface {
+        /** @var array $arguments */
+        /** @var T&MultiValueFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setItems($arguments['items']);
         $component->setItemsProcFunc($arguments['itemsProcFunc']);

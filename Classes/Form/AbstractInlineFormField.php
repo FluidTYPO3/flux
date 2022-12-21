@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Form;
  */
 abstract class AbstractInlineFormField extends AbstractRelationFormField implements InlineRelationFieldInterface
 {
-
     /**
      * If true, all child records are shown as collapsed.
      *
@@ -128,24 +127,20 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     protected $levelLinksPosition = null;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $foreignSelectorFieldTcaOverride;
+    protected $overrideChildTca;
 
     /**
      * @var array
      */
     protected $foreignTypes = null;
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    public function prepareConfiguration($type)
+    public function prepareConfiguration(string $type): array
     {
         $configuration = parent::prepareConfiguration($type);
         $configuration['foreign_match_fields'] = $this->getForeignMatchFields();
-        $configuration['foreign_selector_fieldTcaOverride'] = $this->getForeignSelectorFieldTcaOverride();
+        $configuration['overrideChildTca'] = $this->getOverrideChildTca();
         $configuration['foreign_types'] = $this->getForeignTypes();
         $configuration['appearance'] = [
             'collapseAll' => $this->getCollapseAll(),
@@ -415,7 +410,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @return array
+     * @return string|null
      */
     public function getLevelLinksPosition()
     {
@@ -423,30 +418,58 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @param string $foreignSelectorFieldTcaOverride
+     * @param array $foreignSelectorFieldTcaOverride
      * @return RelationFieldInterface
+     * @deprecated Please switch to overrideChildTca
+     * @codeCoverageIgnore
      */
     public function setForeignSelectorFieldTcaOverride($foreignSelectorFieldTcaOverride)
     {
-        $this->foreignSelectorFieldTcaOverride = $foreignSelectorFieldTcaOverride;
+        $this->overrideChildTca = [
+            'columns' => [
+                'uid_local' => $foreignSelectorFieldTcaOverride
+            ]
+        ];
         return $this;
     }
 
     /**
-     * @return string
+     * @return array
+     * @deprecated Please switch to overrideChildTca
+     * @codeCoverageIgnore
      */
     public function getForeignSelectorFieldTcaOverride()
     {
-        return $this->foreignSelectorFieldTcaOverride;
+        return isset($this->overrideChildTca['columns']['uid_local'])
+            ? $this->overrideChildTca['columns']['uid_local']
+            : null;
     }
 
     /**
-     * @param array $foreignTypes
+     * @param array $overrideChildTca
+     * @return RelationFieldInterface
+     */
+    public function setOverrideChildTca($overrideChildTca)
+    {
+        $this->overrideChildTca = $overrideChildTca;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOverrideChildTca()
+    {
+        return $this->overrideChildTca;
+    }
+
+    /**
+     * @param array|null $foreignTypes
      * @return RelationFieldInterface
      */
     public function setForeignTypes($foreignTypes)
     {
-        $this->foreignTypes = true === is_array($foreignTypes) ? $foreignTypes : null;
+        $this->foreignTypes = $foreignTypes ?? [];
         return $this;
     }
 

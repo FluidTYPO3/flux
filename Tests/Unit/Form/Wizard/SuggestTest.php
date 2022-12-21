@@ -11,12 +11,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 use FluidTYPO3\Flux\Form\Wizard\Suggest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * SuggestTest
- */
 class SuggestTest extends AbstractWizardTest
 {
-
     /**
      * @test
      */

@@ -14,18 +14,16 @@ use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
-use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
-/**
- * Grid
- */
 class Grid extends AbstractFormContainer implements ContainerInterface
 {
-
     /**
-     * @return array
+     * @var Row[]|\SplObjectStorage
      */
-    public function build()
+    protected iterable $children;
+
+    public function build(): array
     {
         $structure = [
             'name' => $this->getName(),
@@ -38,7 +36,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
     public function buildColumnPositionValues(array $record): array
     {
         $columnPositionValues = [];
-        $parentRecordUid = $record['l18n_parent'] ?: $record['uid'];
+        $parentRecordUid = ($record['l18n_parent'] ?? 0) ?: ($record['uid'] ?? 0);
         foreach ($this->getRows() as $row) {
             foreach ($row->getColumns() as $column) {
                 $columnPositionValues[] = ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
@@ -50,10 +48,6 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         return $columnPositionValues;
     }
 
-    /**
-     * @param int $parentRecordUid
-     * @return array
-     */
     public function buildBackendLayoutArray(int $parentRecordUid): array
     {
         $config = [
@@ -104,7 +98,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             $colCount = 0;
             $columns = [];
             foreach ($row['columns.'] as $column) {
-                $colPos = (string)$column['colPos'];
+                $colPos = (int)$column['colPos'];
                 $key = ($index + 1) . '.';
                 $columns[$key] = $column;
                 $colPosList[$colPos] = $colPos;
@@ -114,6 +108,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
                     $column['icon']
                 ];
                 $colCount += $column['colspan'] ? $column['colspan'] : 1;
+                $backendLayout['usedColumns'][$colPos] = $column['name'];
                 ++ $index;
             }
             ++ $rowIndex;
@@ -123,7 +118,9 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             // We are creating a grid for the page level backend layout. Add colPos item values from TCA if they were
             // not defined as grid columns and are above ColumnNumberCalculator::MULTIPLIER.
             foreach ($GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] as $columnSelectionOption) {
-                if ($columnSelectionOption[1] > ColumnNumberUtility::MULTIPLIER && !in_array($columnSelectionOption, $items, true)) {
+                if ($columnSelectionOption[1] > ColumnNumberUtility::MULTIPLIER
+                    && !in_array($columnSelectionOption, $items, true)
+                ) {
                     // This is in all likelihood a virtual column; include it.
                     $items[] = $columnSelectionOption;
                 }
@@ -137,33 +134,65 @@ class Grid extends AbstractFormContainer implements ContainerInterface
         return $backendLayout;
     }
 
-    /**
-     * @param int $parentRecordUid
-     * @return BackendLayout
-     */
     public function buildBackendLayout(int $parentRecordUid): BackendLayout
     {
         $configuration = $this->buildBackendLayoutArray($parentRecordUid);
         $configuration = $this->ensureDottedKeys($configuration);
-        $typoScriptParser = new ExtendedTemplateService();
-        $typoScriptParser->flattenSetup($configuration, 'backend_layout.', false);
+
         $typoScriptString = '';
-        foreach ($typoScriptParser->flatSetup as $name => $value) {
-            $typoScriptString .= $name . ' = ' . $value . LF;
+        $root = $this->getRoot();
+        $label = (string) $root->getLabel();
+        foreach ($this->flattenSetup($configuration, 'backend_layout.') as $name => $value) {
+            $typoScriptString .= $name . ' = ' . $value . PHP_EOL;
         }
-        return new BackendLayout($this->getRoot()->getName(), $this->getRoot()->getExtensionName(), $typoScriptString);
+        return $this->createBackendLayout(
+            (string) $this->getRoot()->getName(),
+            $label,
+            $typoScriptString
+        );
     }
 
     /**
-     * @param array $configuration
-     * @return array
+     * This flattens a hierarchical TypoScript array to $this->flatSetup
+     *
+     * @see generateConfig()
      */
+    protected function flattenSetup(iterable $setupArray, string $prefix): array
+    {
+        $setup = [];
+        foreach ($setupArray as $key => $val) {
+            if (is_array($val)) {
+                $setup = array_merge(
+                    $setup,
+                    $this->flattenSetup($val, $prefix . $key)
+                );
+            } else {
+                $setup[$prefix . $key] = $val;
+            }
+        }
+        return $setup;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function createBackendLayout(string $name, string $label, string $configuration): BackendLayout
+    {
+        return new BackendLayout(
+            $name,
+            (string) LocalizationUtility::translate($label)
+                ? $label
+                : 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
+            $configuration
+        );
+    }
+
     protected function ensureDottedKeys(array $configuration): array
     {
         $converted = [];
         foreach ($configuration as $key => $value) {
             if (true === is_array($value)) {
-                $key = rtrim($key, '.') . '.';
+                $key = rtrim((string) $key, '.') . '.';
                 $value = $this->ensureDottedKeys($value);
             }
             $converted[$key] = $value;
@@ -174,8 +203,8 @@ class Grid extends AbstractFormContainer implements ContainerInterface
     /**
      * @return Row[]
      */
-    public function getRows()
+    public function getRows(): iterable
     {
-        return (array) iterator_to_array($this->children);
+        return iterator_to_array($this->children);
     }
 }

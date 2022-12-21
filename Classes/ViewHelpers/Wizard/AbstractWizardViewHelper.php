@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -14,20 +15,14 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for Field Wizard style ViewHelpers
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
 {
+    protected ?string $label = null;
 
-    /**
-     * @var string
-     */
-    protected $label = null;
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('label', 'string', 'Optional title of this Wizard', false, $this->label);
         $this->registerArgument('hideParent', 'boolean', 'If TRUE, hides the parent field', false, false);
@@ -47,22 +42,22 @@ abstract class AbstractWizardViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param string $type
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return WizardInterface
-     */
-    protected static function getPreparedComponent($type, RenderingContextInterface $renderingContext, array $arguments)
-    {
+    protected static function getPreparedComponent(
+        string $type,
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): WizardInterface {
+        /** @var class-string $type */
+        /** @var array $arguments */
         $name = (true === isset($arguments['name']) ? $arguments['name'] : 'wizard');
+        /** @var WizardInterface $component */
         $component = static::getContainerFromRenderingContext($renderingContext)->createWizard($type, $name);
         $component->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
-        $component->setHideParent($arguments['hideParent']);
-        $component->setLabel($arguments['label']);
-        $component->setVariables($arguments['variables']);
+        $component->setHideParent($arguments['hideParent'] ?? false);
+        $component->setLabel($arguments['label'] ?? null);
+        $component->setVariables($arguments['variables'] ?? []);
         return $component;
     }
 }

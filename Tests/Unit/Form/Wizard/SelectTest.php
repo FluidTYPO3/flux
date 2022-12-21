@@ -10,21 +10,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 
 use FluidTYPO3\Flux\Form\WizardInterface;
 
-/**
- * SelectTest
- */
 class SelectTest extends AbstractWizardTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'hideParent' => false,
         'mode' => 'append',
-        'items' => array('dummy' => 'Value', 'dummy2' => 'Value 2')
-    );
+        'items' => ['dummy' => 'Value', 'dummy2' => 'Value 2'],
+    ];
 
     /**
      * @test
@@ -34,10 +27,10 @@ class SelectTest extends AbstractWizardTest
         /** @var WizardInterface $instance */
         $instance = $this->createInstance();
         $instance->setName('suffix');
-        $this->assertNotContains('prefix', $instance->getName());
+        $this->assertStringNotContainsString('prefix', $instance->getName());
         $field = $instance->createField('Input', 'prefix');
         $field->add($instance);
-        $this->assertContains('prefix', $instance->getName());
+        $this->assertStringContainsString('prefix', $instance->getName());
     }
 
     /**

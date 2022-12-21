@@ -11,32 +11,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
 use FluidTYPO3\Flux\Form\WizardInterface;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
-/**
- * AbstractWizardTest
- */
 abstract class AbstractWizardTest extends AbstractFormTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'hideParent' => false);
-
-    /**
-     * @return void
-     */
-    public function canAutoWriteLabel()
-    {
-
-    }
-
-    /**
-     * @return void
-     */
-    public function canGetLabel()
-    {
-
-    }
+    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'hideParent' => false);
 
     /**
      * @test
@@ -82,12 +59,12 @@ abstract class AbstractWizardTest extends AbstractFormTest
         $this->assertSame($added, $field);
         $fetched = $field->get($instance->getName());
         $bad = $field->get('bad');
-        $this->assertFalse($bad);
+        $this->assertNull($bad);
         $this->assertSame($fetched, $instance);
         $removed = $field->remove($instance->getName());
         $this->assertSame($removed, $instance);
         $bad = $field->remove('bad');
-        $this->assertTrue(false === $bad);
+        $this->assertNull($bad);
         $field->add($instance);
         $built = $this->performTestBuild($instance);
         $this->assertIsArray($built);

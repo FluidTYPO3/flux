@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Outlet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
@@ -22,36 +23,32 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 abstract class AbstractOutlet implements OutletInterface
 {
-
-    /**
-     * @var boolean
-     */
-    protected $enabled = true;
+    protected bool $enabled = true;
 
     /**
      * @var mixed
      */
-    protected $data;
+    protected $data = [];
+
+    /**
+     * @var PipeInterface[]
+     */
+    protected array $pipesIn = [];
+
+    /**
+     * @var PipeInterface[]
+     */
+    protected array $pipesOut = [];
+
+    /**
+     * @var OutletArgument[]
+     */
+    protected array $arguments = [];
 
     /**
      * @var ViewInterface
      */
     protected $view;
-
-    /**
-     * @var PipeInterface[]
-     */
-    protected $pipesIn = [];
-
-    /**
-     * @var PipeInterface[]
-     */
-    protected $pipesOut = [];
-
-    /**
-     * @var OutletArgument[]
-     */
-    protected $arguments = [];
 
     /**
      * The validation results. This can be asked if the argument has errors.
@@ -60,21 +57,26 @@ abstract class AbstractOutlet implements OutletInterface
      */
     protected $validationResults;
 
-    /**
-     * @param array $settings
-     * @return OutletInterface
-     */
-    public static function create(array $settings)
+    public static function create(array $settings): OutletInterface
     {
-        $instance = new static();
+        /** @var self $instance */
+        $instance = GeneralUtility::makeInstance(static::class);
         if (isset($settings['pipesIn'])) {
             foreach ($settings['pipesIn'] as $pipeSettings) {
-                $instance->addPipeIn($pipeSettings['type']::create($pipeSettings));
+                /** @var class-string $pipeClassName */
+                $pipeClassName = $pipeSettings['type'];
+                /** @var PipeInterface $pipeIn */
+                $pipeIn = static::createPipeInstance($pipeClassName, $pipeSettings);
+                $instance->addPipeIn($pipeIn);
             }
         }
         if (isset($settings['pipesOut'])) {
             foreach ($settings['pipesOut'] as $pipeSettings) {
-                $instance->addPipeOut($pipeSettings['type']::create($pipeSettings));
+                /** @var class-string $pipeClassName */
+                $pipeClassName = $pipeSettings['type'];
+                /** @var PipeInterface $pipeOut */
+                $pipeOut = static::createPipeInstance($pipeClassName, $pipeSettings);
+                $instance->addPipeOut($pipeOut);
             }
         }
         return HookHandler::trigger(
@@ -86,40 +88,51 @@ abstract class AbstractOutlet implements OutletInterface
     }
 
     /**
-     * @param string $class
-     * @param array $settings
-     * @return PipeInterface
+     * @template T
+     * @param class-string<T> $class
+     * @return T&PipeInterface
      */
-    protected static function createPipeInstance($class, array $settings)
+    protected static function createPipeInstance(string $class, array $settings): PipeInterface
     {
-        return $class::create($settings);
+        /** @var class-string $class */
+        /** @var T&PipeInterface $pipe */
+        $pipe = GeneralUtility::makeInstance($class);
+        foreach ($settings as $property => $value) {
+            $setterMethod = 'set' . ucfirst($property);
+            if (method_exists($pipe, $setterMethod)) {
+                $pipe->{$setterMethod}($value);
+            }
+        }
+        return $pipe;
     }
 
-    /**
-     * @param boolean $enabled
-     * @return OutletInterface
-     */
-    public function setEnabled($enabled)
+    public function getView(): ViewInterface
+    {
+        return $this->view;
+    }
+
+    public function setView(ViewInterface $view): self
+    {
+        $this->view = $view;
+        return $this;
+    }
+
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
 
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getEnabled()
+    public function getEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
      * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
      */
-    public function setPipesIn(array $pipes)
+    public function setPipesIn(array $pipes): self
     {
         $this->pipesIn = [];
         foreach ($pipes as $pipe) {
@@ -132,17 +145,15 @@ abstract class AbstractOutlet implements OutletInterface
     /**
      * @return PipeInterface[]
      */
-    public function getPipesIn()
+    public function getPipesIn(): array
     {
         return $this->pipesIn;
     }
 
     /**
      * @param PipeInterface[] $pipes
-     * @return OutletInterface
-     * @return void
      */
-    public function setPipesOut(array $pipes)
+    public function setPipesOut(array $pipes): self
     {
         $this->pipesOut = [];
         foreach ($pipes as $pipe) {
@@ -155,16 +166,15 @@ abstract class AbstractOutlet implements OutletInterface
     /**
      * @return PipeInterface[]
      */
-    public function getPipesOut()
+    public function getPipesOut(): array
     {
         return $this->pipesOut;
     }
 
     /**
      * @param PipeInterface $pipe
-     * @return OutletInterface
      */
-    public function addPipeIn(PipeInterface $pipe)
+    public function addPipeIn(PipeInterface $pipe): self
     {
         if (false === in_array($pipe, $this->pipesIn)) {
             array_push($this->pipesIn, $pipe);
@@ -175,9 +185,8 @@ abstract class AbstractOutlet implements OutletInterface
 
     /**
      * @param PipeInterface $pipe
-     * @return OutletInterface
      */
-    public function addPipeOut(PipeInterface $pipe)
+    public function addPipeOut(PipeInterface $pipe): self
     {
         if (false === in_array($pipe, $this->pipesOut)) {
             array_push($this->pipesOut, $pipe);
@@ -186,16 +195,12 @@ abstract class AbstractOutlet implements OutletInterface
         return $this;
     }
 
-    /**
-     * @param mixed $data
-     * @return OutletInterface
-     */
-    public function fill($data)
+    public function fill(array $data): self
     {
         $this->validate($data);
         foreach ($this->pipesIn as $pipe) {
             if ($pipe instanceof ViewAwarePipeInterface) {
-                $pipe->setView($this->view);
+                $pipe->setView($this->getView());
             }
             $data = $pipe->conduct($data);
         }
@@ -204,10 +209,7 @@ abstract class AbstractOutlet implements OutletInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function produce()
+    public function produce(): array
     {
         $data = $this->data;
         foreach ($this->pipesOut as $pipe) {
@@ -227,60 +229,32 @@ abstract class AbstractOutlet implements OutletInterface
     }
 
     /**
-     * @return ViewInterface
-     */
-    public function getView()
-    {
-        return $this->view;
-    }
-
-    /**
-     * @param ViewInterface $view
-     * @return OutletInterface
-     */
-    public function setView($view)
-    {
-        $this->view = $view;
-
-        return $this;
-    }
-
-    /**
      * @return OutletArgument[]
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
 
     /**
      * @param OutletArgument[] $arguments
-     * @return void
      */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments): self
     {
         $this->arguments = $arguments;
+        return $this;
     }
 
-    /**
-     * @param OutletArgument $argument
-     * @return void
-     */
-    public function addArgument(OutletArgument $argument)
+    public function addArgument(OutletArgument $argument): self
     {
         $this->arguments[] = $argument;
+        return $this;
     }
 
-    /**
-     * Validate given $data based on configured argument validations
-     *
-     * @param array $data
-     * @return Result
-     */
-    public function validate(array $data)
+    public function validate(array $data): Result
     {
         $this->validationResults = new Result();
-        foreach ($this->arguments as $argument) {
+        foreach ($this->getArguments() as $argument) {
             $argumentName = $argument->getName();
             $argument->setValue(isset($data[$argumentName]) ? $data[$argumentName] : null);
             $propertyName = $argument->getName();
@@ -290,7 +264,8 @@ abstract class AbstractOutlet implements OutletInterface
                         HookHandler::OUTLET_INPUT_INVALID,
                         [
                             'property' => $propertyName,
-                            'argument' => $argument
+                            'argument' => $argument,
+                            'validationResults' => $argument->getValidationResults(),
                         ]
                     )['validationResults']
                 );
@@ -300,10 +275,7 @@ abstract class AbstractOutlet implements OutletInterface
         return $this->validationResults;
     }
 
-    /**
-     * @return bool
-     */
-    public function isValid()
+    public function isValid(): bool
     {
         if ($this->validationResults === null) {
             return true;
@@ -312,10 +284,7 @@ abstract class AbstractOutlet implements OutletInterface
         return !$this->validationResults->hasErrors();
     }
 
-    /**
-     * @return Result Validation errors which have occurred.
-     */
-    public function getValidationResults()
+    public function getValidationResults(): Result
     {
         return $this->validationResults;
     }

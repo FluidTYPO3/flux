@@ -8,9 +8,15 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Result;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\VisibilityAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -20,7 +26,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordService implements SingletonInterface
 {
-
     /**
      * @param string $table
      * @param string $fields
@@ -29,7 +34,7 @@ class RecordService implements SingletonInterface
      * @param string $orderBy
      * @param integer $limit
      * @param integer $offset
-     * @return array|NULL
+     * @return array|null
      */
     public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0, $offset = 0)
     {
@@ -57,8 +62,8 @@ class RecordService implements SingletonInterface
     /**
      * @param string $table
      * @param string $fields
-     * @param string $uid
-     * @return array|NULL
+     * @param integer $uid
+     * @return array|null
      */
     public function getSingle($table, $fields, $uid)
     {
@@ -71,13 +76,14 @@ class RecordService implements SingletonInterface
             ->where(sprintf('uid = %d', $uid))
             ->execute()
             ->fetchAll() ?: [];
-        return reset($results);
+        $firstResult = reset($results);
+        return $firstResult ? (array) $firstResult : null;
     }
 
     /**
      * @param string $table
      * @param array $record
-     * @return boolean
+     * @return boolean|Statement|ResultStatement|Result|int
      */
     public function update($table, array $record)
     {
@@ -109,16 +115,46 @@ class RecordService implements SingletonInterface
      */
     public function preparedGet($table, $fields, $condition, $values = [])
     {
-        return $this->getQueryBuilder($table)->select(...explode(',', $fields))->from($table)->where($condition)->setParameters($values)->execute()->fetchAll();
+        return $this->getQueryBuilder($table)
+            ->select(...explode(',', $fields))
+            ->from($table)
+            ->where($condition)
+            ->setParameters($values)
+            ->execute()
+            ->fetchAll();
     }
 
     /**
-     * @param $table
+     * @param string $table
      * @return QueryBuilder
      */
     protected function getQueryBuilder($table)
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $this->setContextDependentRestrictionsForQueryBuilder($queryBuilder);
+        return $queryBuilder;
     }
 
+    /**
+     * @codeCoverageIgnore
+     * @param QueryBuilder $queryBuilder
+     * @return void
+     */
+    protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
+    {
+        if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {
+            if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
+                $context = new Context();
+                $visibility = new VisibilityAspect(true, true);
+                $context->setAspect('visibility', $visibility);
+                /** @var FrontendRestrictionContainer $frontendRestrictions */
+                $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
+                $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
+            }
+        } else {
+            $queryBuilder->getRestrictions()->removeAll();
+        }
+    }
 }

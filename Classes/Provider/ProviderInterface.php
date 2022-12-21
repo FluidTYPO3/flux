@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -8,6 +9,7 @@ namespace FluidTYPO3\Flux\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\CommandProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\ContentTypeProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
@@ -23,53 +25,16 @@ use FluidTYPO3\Flux\View\ViewContext;
 /**
  * ProviderInterface
  */
-interface ProviderInterface
-extends
+interface ProviderInterface extends
+    BasicProviderInterface,
     FormProviderInterface,
     GridProviderInterface,
     FluidProviderInterface,
     ControllerProviderInterface,
     RecordProviderInterface,
     DataStructureProviderInterface,
-    CommandProviderInterface,
     ContentTypeProviderInterface,
     PluginProviderInterface,
     PreviewProviderInterface
 {
-    /**
-     * @param array $settings
-     * @return void
-     */
-    public function loadSettings(array $settings);
-
-    /**
-     * Return the extension key this processor belongs to
-     *
-     * @param array $row The record which triggered the processing
-     * @return string
-     */
-    public function getExtensionKey(array $row);
-
-    /**
-     * @param string $extensionKey
-     * @return ProviderInterface
-     */
-    public function setExtensionKey($extensionKey);
-
-    /**
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * @param string $name
-     */
-    public function setName($name);
-
-    /**
-     * @abstract
-     * @param array $row The record data. Changing fields' values changes the record's values before display
-     * @return integer
-     */
-    public function getPriority(array $row);
 }

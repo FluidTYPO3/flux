@@ -10,12 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
-/**
- * ControllerViewHelperTest
- */
 class ControllerViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @dataProvider getTestArguments
      * @param array $arguments
@@ -23,7 +19,7 @@ class ControllerViewHelperTest extends AbstractViewHelperTestCase
     public function testWithArguments(array $arguments)
     {
         $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
-        $this->assertNull($result);
+        $this->assertSame('', $result);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -16,35 +17,26 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by arguments.
+ *
+ * DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
+ * @deprecated Will be removed in Flux 10.0
  */
 class SliderViewHelper extends AbstractWizardViewHelper
 {
+    protected ?string $label = 'Slider';
 
-    /**
-     * @var string
-     */
-    protected $label = 'Slider';
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('step', 'integer', 'Increment slider values by this much for each step', false, 1);
         $this->registerArgument('width', 'integer', 'Width of the popup window', false, 32);
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Slider
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Slider
     {
+        /** @var array $arguments */
         /** @var Slider $component */
-        $component = static::getPreparedComponent('Slider', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Slider::class, $renderingContext, $arguments);
         $component->setWidth($arguments['width']);
         $component->setStep($arguments['step']);
         return $component;

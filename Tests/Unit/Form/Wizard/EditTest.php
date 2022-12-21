@@ -8,16 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Wizard;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * EditTest
- */
 class EditTest extends AbstractWizardTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = array(
         'name' => 'test',
         'label' => 'Test field',
         'hideParent' => false,

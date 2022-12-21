@@ -9,36 +9,36 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Integration\HookSubscribers\Preview;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 
-/**
- * PreviewTest
- */
 class PreviewTest extends AbstractTestCase
 {
-
-    /**
-     * Setup
-     */
-    public function setUp()
+    public function setUp(): void
     {
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->getMock();
-        $fluxService = $this->objectManager->get(FluxService::class);
-        $fluxService->injectConfigurationManager($configurationManager);
-        $tempFiles = (array) glob(GeneralUtility::getFileAbsFileName('typo3temp/flux-preview-*.tmp'));
+        $fluxService = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->singletonInstances[FluxService::class] = $fluxService;
+
+        $tempFiles = (array) glob('typo3temp/flux-preview-*.tmp');
         foreach ($tempFiles as $tempFile) {
             if (true === file_exists($tempFile)) {
                 unlink($tempFile);
             }
         }
+
+        parent::setUp();
     }
 
     /**
@@ -58,18 +58,44 @@ class PreviewTest extends AbstractTestCase
         Core::unregisterConfigurationProvider(DummyConfigurationProvider::class);
     }
 
-    /**
-     * @test
-     */
-    public function testAttachAssets()
+    public function testAttachAssets(): void
     {
-        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['addRequireJsConfiguration', 'loadRequireJsModule'])->getMock();
-        $pageRenderer->expects($this->atLeastOnce())->method('addRequireJsConfiguration');
+        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['loadRequireJsModule'])->disableOriginalConstructor()->getMock();
         $pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
-        $document = $this->getMockBuilder(ModuleTemplate::class)->setMethods(['getPageRenderer'])->getMock();
-        $document->expects($this->once())->method('getPageRenderer')->willReturn($pageRenderer);
-        GeneralUtility::addInstance(ModuleTemplate::class, $document);
+        $instances = GeneralUtility::getSingletonInstances();
+        GeneralUtility::setSingletonInstance(PageRenderer::class, $pageRenderer);
         $subject = $this->createInstance();
         $this->callInaccessibleMethod($subject, 'attachAssets');
+        GeneralUtility::resetSingletonInstances($instances);
+    }
+
+    public function testPreProcess(): void
+    {
+        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+        $provider->method('getPreview')->willReturn(['header', 'content', false]);
+
+        $configurationService = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $configurationService->method('resolveConfigurationProviders')->willReturn([$provider]);
+
+        $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock();
+        $drawItem = true;
+        $headerContent = '';
+        $itemContent = '';
+        $record = ['uid' => 123];
+
+        $subject = $this->getMockBuilder(Preview::class)
+            ->setMethods(['getConfigurationService'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject->method('getConfigurationService')->willReturn($configurationService);
+
+        $subject->preProcess($pageLayoutView, $drawItem, $headerContent, $itemContent, $record);
+
+        self::assertFalse($drawItem);
+        self::assertSame('header', $headerContent);
+        self::assertSame('<a name="c123"></a>content', $itemContent);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -11,28 +12,35 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 /**
- * Section
+ * TCEForms Section object representation
+ *
+ * Must be used as container around section objects. In TYPO3 these
+ * become sections where the different types of objects you define,
+ * as children inside the container.
+ *
+ * Section objects from Flux also combine the normal TYPO3 TCEForms
+ * behavior with the ability to flag section objects as "content
+ * containers" which means they automatically produce nested content
+ * columns as a Grid. A flag on this object then determins if the
+ * section objects that become grid containers, should be rendered
+ * as rows or columns.
  */
 class Section extends AbstractFormContainer implements ContainerInterface
 {
+    const GRID_MODE_ROWS = 'rows';
+    const GRID_MODE_COLUMNS = 'columns';
 
-    /**
-     * @param array $settings
-     * @return Section
-     */
-    public static function create(array $settings = [])
+    protected string $gridMode = self::GRID_MODE_ROWS;
+
+    public static function create(array $settings = []): self
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var Section */
-        $section = $objectManager->get(Section::class);
+        $section = GeneralUtility::makeInstance(Section::class);
         foreach ($settings as $settingName => $settingValue) {
-            $setterMethodName = ObjectAccess::buildSetterMethodName($settingName);
+            $setterMethodName = 'set' . ucfirst($settingName);
             if (true === method_exists($section, $setterMethodName)) {
                 ObjectAccess::setProperty($section, $settingName, $settingValue);
             }
@@ -49,10 +57,28 @@ class Section extends AbstractFormContainer implements ContainerInterface
         return $section;
     }
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function getGridMode(): string
+    {
+        return $this->gridMode;
+    }
+
+    public function setGridMode(string $gridMode): self
+    {
+        $this->gridMode = $gridMode;
+        return $this;
+    }
+
+    public function getContentContainer(): ?SectionObject
+    {
+        foreach ($this->children as $child) {
+            if ($child instanceof SectionObject && $child->isContentContainer()) {
+                return $child;
+            }
+        }
+        return null;
+    }
+
+    public function build(): array
     {
         $structureArray = [
             'type' => 'array',

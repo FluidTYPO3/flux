@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -9,10 +10,8 @@ namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\FlashMessagePipe;
-use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -22,11 +21,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FlashMessageViewHelper extends AbstractPipeViewHelper
 {
-
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('message', 'string', 'FlashMessage message body', true);
@@ -41,22 +36,17 @@ class FlashMessageViewHelper extends AbstractPipeViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
-        array $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
+        iterable $arguments,
+        ?\Closure $renderChildrenClosure = null
+    ): FlashMessagePipe {
+        /** @var array $arguments */
         /** @var FlashMessagePipe $pipe */
-        $pipe = GeneralUtility::makeInstance(ObjectManager::class)->get(FlashMessagePipe::class);
-        $pipe->setTitle($arguments['title']);
-        $pipe->setMessage($arguments['message']);
-        $pipe->setSeverity($arguments['severity']);
+        $pipe = GeneralUtility::makeInstance(FlashMessagePipe::class);
+        $pipe->setTitle((string) $arguments['title']);
+        $pipe->setMessage((string) $arguments['message']);
+        $pipe->setSeverity((int) $arguments['severity']);
         $pipe->setStoreInSession((boolean) $arguments['storeInSession']);
         return $pipe;
     }

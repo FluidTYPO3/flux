@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Wizard;
 
 /*
@@ -22,20 +23,15 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by arguments.
+ *
+ * DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
+ * @deprecated Will be removed in Flux 10.0
  */
 class LinkViewHelper extends AbstractWizardViewHelper
 {
+    protected ?string $label = 'Select link';
 
-    /**
-     * @var string
-     */
-    protected $label = 'Select link';
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('activeTab', 'string', 'Active tab of the link popup', false, 'file');
@@ -52,15 +48,11 @@ class LinkViewHelper extends AbstractWizardViewHelper
         $this->registerArgument('blindLinkFields', 'string', 'Blind link fields', false, '');
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Link
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Link
     {
+        /** @var array $arguments */
         /** @var Link $component */
-        $component = static::getPreparedComponent('Link', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Link::class, $renderingContext, $arguments);
         $component->setActiveTab($arguments['activeTab']);
         $component->setWidth($arguments['width']);
         $component->setHeight($arguments['height']);

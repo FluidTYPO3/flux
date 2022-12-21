@@ -8,17 +8,45 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 
 class WizardItemsTest extends AbstractTestCase
 {
+    protected function setUp(): void
+    {
+        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+            ->setMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->singletonInstances[WorkspacesAwareRecordService::class] = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->setMethods(['getSingle'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        parent::setUp();
+    }
+
+    public function testCreatesInstancesInConstructor(): void
+    {
+        $subject = new WizardItems();
+        self::assertInstanceOf(
+            FluxService::class,
+            $this->getInaccessiblePropertyValue($subject, 'configurationService')
+        );
+        self::assertInstanceOf(
+            RecordService::class,
+            $this->getInaccessiblePropertyValue($subject, 'recordService')
+        );
+    }
 
     /**
      * @dataProvider getTestElementsWhiteAndBlackListsAndExpectedList
@@ -30,9 +58,7 @@ class WizardItemsTest extends AbstractTestCase
      */
     public function processesWizardItems($items, $whitelist, $blacklist, $expectedList)
     {
-        $instance = $this->getMockBuilder(WizardItems::class)
-            ->setMethods(['dummy'])
-            ->getMock();
+        $instance = new WizardItems();
         $emulatedPageAndContentRecord = ['uid' => 1, 'tx_flux_column' => 'area'];
 
         $controller = $this->getMockBuilder(NewContentElementController::class)
@@ -52,28 +78,29 @@ class WizardItemsTest extends AbstractTestCase
         $row->add($column);
         $grid->add($row);
 
-        $provider1 = $this->objectManager->get(Provider::class);
+        $provider1 = $this->getMockBuilder(Provider::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider1->setTemplatePaths([]);
         $provider1->setTemplateVariables([]);
         $provider1->setGrid($grid);
+        $provider1->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
-        $provider2 = $this->getMockBuilder(Provider::class)->setMethods(['getGrid'])->getMock();
-        $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(null));
-
-        $configurationService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolveConfigurationProviders'])
+        $provider2 = $this->getMockBuilder(Provider::class)
+            ->setMethods(['getGrid'])
+            ->disableOriginalConstructor()
             ->getMock();
+        $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(Grid::create()));
 
-        $configurationService->expects($this->once())->method('resolveConfigurationProviders')
+        $this->singletonInstances[FluxService::class]->expects($this->once())
+            ->method('resolveConfigurationProviders')
             ->will($this->returnValue([$provider1, $provider2]));
 
-        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
-            ->setMethods(['getSingle'])
-            ->getMock();
+        $this->singletonInstances[WorkspacesAwareRecordService::class]->expects($this->once())
+            ->method('getSingle')
+            ->willReturn($emulatedPageAndContentRecord);
 
-        $recordService->expects($this->once())->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
-        $instance->injectConfigurationService($configurationService);
-        $instance->injectRecordService($recordService);
         $instance->manipulateWizardItems($items, $controller);
 
         $this->assertEquals($expectedList, $items);
@@ -142,7 +169,7 @@ class WizardItemsTest extends AbstractTestCase
                     'applyWhitelist', 'applyBlacklist', 'trimItems'
                 ]
             )
-            ->getMock();
+            ->disableOriginalConstructor()->getMock();
 
         $GLOBALS['TYPO3_DB'] = $this->getMockBuilder(DatabaseConnection::class)
             ->setMethods(['exec_SELECTgetSingleRow'])

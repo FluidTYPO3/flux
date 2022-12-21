@@ -12,100 +12,77 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
-/**
- * Class ContentIconHookSubscriber
- */
 class ContentIcon
 {
-    /**
-     * @var array
-     */
-    protected $templates = [
-        'gridToggle' => '</div><div class="fluidcontent-toggler">
+    protected array $templates = [
+        'gridToggle' => '<div class="fluidcontent-toggler col-auto">
                             <div class="btn-group btn-group-sm" role="group">
                             <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
-                        </div></div><div>'
+                        </div></div>',
+        'legacyGridToggle' => '</div><div class="fluidcontent-toggler">
+                            <div class="btn-group btn-group-sm" role="group">
+                            <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a>
+                        </div></div><div>',
     ];
 
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    protected FluxService $fluxService;
+    protected IconFactory $iconFactory;
+    protected FrontendInterface $cache;
 
-    /**
-     * @var FluxService
-     */
-    protected $fluxService;
-
-    /**
-     * @var VariableFrontend
-     */
-    protected $cache;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @param FluxService $fluxService
-     * @return void
-     */
-    public function injectFluxService(FluxService $fluxService)
-    {
-        $this->fluxService = $fluxService;
-    }
-
-    /**
-     * Construct
-     */
     public function __construct()
     {
-        $this->injectObjectManager(GeneralUtility::makeInstance(ObjectManager::class));
-        $this->injectFluxService($this->objectManager->get(FluxService::class));
-        $this->cache = $this->objectManager->get(CacheManager::class, $this->objectManager)->getCache('flux');
+        /** @var FluxService $fluxService */
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        $this->fluxService = $fluxService;
+
+        /** @var IconFactory $iconFactory */
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $this->iconFactory = $iconFactory;
+
+        /** @var CacheManager $cacheManager */
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        $this->cache = $cacheManager->getCache('flux');
     }
 
     /**
-     * @param array $parameters
-     * @param PageLayoutView|DatabaseRecordList $caller
-     * @return string
+     * @param PageLayoutView|GridColumnItem|DatabaseRecordList $caller
      */
-    public function addSubIcon(array $parameters, $caller = null)
+    public function addSubIcon(array $parameters, $caller = null): string
     {
-        if (!$caller instanceof PageLayoutView) {
+        if (!($caller instanceof PageLayoutView || $caller instanceof GridColumnItem)) {
             return '';
         }
-        list ($table, $uid, $record) = $parameters;
+        [$table, $uid, $record] = $parameters;
         if ($table !== 'tt_content') {
             return '';
         }
 
-        $this->attachAssets();
-
         $provider = null;
         $icon = '';
         $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
-        $cacheIdentity = $table . $uid . sha1(serialize($record)) . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
+        $cacheIdentity = $table
+            . $uid
+            . sha1(serialize($record))
+            . ($this->isRowCollapsed($record) ? 'collapsed' : 'expanded');
         // filter 1: icon must not already be cached and both record and caller must be provided.
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
+        /** @var string|null $cachedIconIdentifier */
         $cachedIconIdentifier = $this->cache->get($cacheIdentity);
         if ($cachedIconIdentifier !== null) {
+            // both empty string and non-empty value means icon was generated and cached, we return
+            // the result directly in both such cases, to prevent attempts to re-resolve provider etc.
+            /** @var string $cachedIconIdentifier */
             return $cachedIconIdentifier;
         } elseif ($record) {
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
@@ -116,7 +93,7 @@ class ContentIcon
                     $field,
                     $record,
                     null,
-                    GridProviderInterface::class
+                    [GridProviderInterface::class]
                 );
                 // filter 3: a Provider must be resolved for the record.
                 if ($provider && $provider->getGrid($record)->hasChildren()) {
@@ -129,22 +106,24 @@ class ContentIcon
         return $icon;
     }
 
-    /**
-     * @param array $row
-     *
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    protected function drawGridToggle(array $row)
+    protected function drawGridToggle(array $row): string
     {
-        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-
-        $collapseIcon = $iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
-        $expandIcon = $iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
+        $collapseIcon = $this->iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
+        $expandIcon = $this->iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
         $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
         $icon = $collapseIcon . $expandIcon;
 
-        $rendered = sprintf($this->templates['gridToggle'], $this->isRowCollapsed($row)?  'toggler-expand' : 'toggler-collapse', $label, $row['uid'], $icon);
+        $template = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11', '<')
+            ? $this->templates['legacyGridToggle']
+            : $this->templates['gridToggle'];
+
+        $rendered = sprintf(
+            $template,
+            $this->isRowCollapsed($row) ?  'toggler-expand' : 'toggler-collapse',
+            $label,
+            $row['uid'],
+            $icon
+        );
 
         return HookHandler::trigger(
             HookHandler::PREVIEW_GRID_TOGGLE_RENDERED,
@@ -157,15 +136,11 @@ class ContentIcon
         )['rendered'];
     }
 
-    /**
-     * @param array $row
-     * @return string
-     */
-    protected function isRowCollapsed(array $row)
+    protected function isRowCollapsed(array $row): string
     {
         $collapsed = false;
         $cookie = $this->getCookie();
-        if (null !== $_COOKIE) {
+        if (null !== $cookie) {
             $cookie = json_decode(urldecode($cookie));
             $collapsed = in_array($row['uid'], (array) $cookie);
         }
@@ -179,20 +154,7 @@ class ContentIcon
         )['collapsed'];
     }
 
-    /**
-     * @return string|NULL
-     */
-    protected function getCookie()
-    {
-        return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
-    }
-
-    /**
-     * @param string $table
-     * @param array $fields
-     * @return string
-     */
-    protected function detectFirstFlexTypeFieldInTableFromPossibilities($table, $fields)
+    protected function detectFirstFlexTypeFieldInTableFromPossibilities(string $table, array $fields): ?string
     {
         foreach ($fields as $fieldName) {
             if (($GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type'] ?? null) === 'flex') {
@@ -203,10 +165,10 @@ class ContentIcon
     }
 
     /**
-     * @return void
+     * @codeCoverageIgnore
      */
-    protected function attachAssets()
+    protected function getCookie(): ?string
     {
-        $GLOBALS['TBE_STYLES']['stylesheet'] = 'EXT:flux/Resources/Public/css/flux.css';
+        return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -39,15 +40,13 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * ### Links
  *
  * * [TCA Reference: type "select"](https://docs.typo3.org/typo3cms/TCAReference/stable/Reference/Columns/Select/)
+ *
+ * DEPRECATED - use flux:field instead
+ * @deprecated Will be removed in Flux 10.0
  */
 class SelectViewHelper extends AbstractMultiValueFieldViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->overrideArgument(
@@ -72,15 +71,11 @@ class SelectViewHelper extends AbstractMultiValueFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Select
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Select
     {
+        /** @var array $arguments */
         /** @var Select $component */
-        $component = static::getPreparedComponent('Select', $renderingContext, $arguments);
+        $component = static::getPreparedComponent(Select::class, $renderingContext, $arguments);
         $component->setRenderType($arguments['renderType']);
         $component->setShowIconTable($arguments['showIconTable']);
         return $component;

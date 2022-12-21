@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Outlet;
  */
 
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Mvc\Controller\Argument as ControllerArgument;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Property\PropertyMapper;
 use TYPO3\CMS\Extbase\Utility\TypeHandlingUtility;
@@ -112,7 +111,10 @@ class OutletArgument
     public function __construct($name, $dataType)
     {
         if (!is_string($name)) {
-            throw new \InvalidArgumentException('$name must be of type string, ' . gettype($name) . ' given.', 1187951688);
+            throw new \InvalidArgumentException(
+                '$name must be of type string, ' . gettype($name) . ' given.',
+                1187951688
+            );
         }
         if (empty($name)) {
             throw new \InvalidArgumentException('$name must be a non-empty string.', 1232551853);
@@ -145,7 +147,7 @@ class OutletArgument
      * Sets custom validators which are used supplementary to the base validation
      *
      * @param ValidatorInterface[] $validators The actual validator object
-     * @return ControllerArgument Returns $this (used for fluent interface)
+     * @return $this
      */
     public function setValidators(array $validators)
     {
@@ -167,6 +169,7 @@ class OutletArgument
     /**
      * @param string $type
      * @param array $options
+     * @return void
      * @throws NoSuchValidatorException
      */
     public function addValidator($type, array $options = [])
@@ -183,7 +186,7 @@ class OutletArgument
      *
      * @param mixed $rawValue The value of this argument
      *
-     * @return OutletArgument
+     * @return $this
      */
     public function setValue($rawValue)
     {
@@ -212,7 +215,8 @@ class OutletArgument
     }
 
     /**
-     * Return the Property Mapping Configuration used for this argument; can be used by the initialize*action to modify the Property Mapping.
+     * Return the Property Mapping Configuration used for this argument; can be used by the
+     * initialize*action to modify the Property Mapping.
      *
      * @return MvcPropertyMappingConfiguration
      */

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -36,12 +37,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ContainerViewHelper extends AbstractFieldViewHelper
 {
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', true);
         $this->registerArgument(
@@ -68,16 +64,12 @@ class ContainerViewHelper extends AbstractFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Container
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, array $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Container
     {
+        /** @var array $arguments */
         /** @var Container $container */
-        $container = static::getFormFromRenderingContext($renderingContext)
-            ->createContainer('Container', $arguments['name'], $arguments['label']);
+        $container = static::getContainerFromRenderingContext($renderingContext)
+            ->createContainer(Container::class, $arguments['name'], $arguments['label']);
         $container->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );

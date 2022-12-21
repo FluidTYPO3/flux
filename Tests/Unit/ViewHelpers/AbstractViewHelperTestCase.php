@@ -8,34 +8,41 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyViewHelperNode;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
-use TYPO3\CMS\Extbase\Mvc\Web\Response;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
-use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\NodeInterface;
-use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
+use TYPO3\CMS\Extbase\Web\Request;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
-use TYPO3\CMS\Fluid\Core\Variables\CmsVariableProvider;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
-use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolver;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\ErrorHandler\ErrorHandlerInterface;
+use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\NodeInterface;
+use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode;
+use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
+use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
+use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInvoker;
+use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 
-/**
- * AbstractViewHelperTestCase
- */
 abstract class AbstractViewHelperTestCase extends AbstractTestCase
 {
-
-    /**
-     * @var RenderingContext
-     */
-    protected $renderingContext;
+    protected ?RenderingContext $renderingContext;
+    protected ?ViewHelperResolver $viewHelperResolver;
+    protected ?ViewHelperInvoker $viewHelperInvoker;
+    protected ?ViewHelperVariableContainer $viewHelperVariableContainer;
+    protected ?StandardVariableProvider $templateVariableContainer;
+    protected ?ControllerContext $controllerContext;
+    protected ?ErrorHandlerInterface $errorHandler;
+    protected ?TemplateParser $templateParser;
+    protected array $templateProcessors = [];
+    protected array $expressionTypes = [];
 
     /**
      * @var array
@@ -47,10 +54,52 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->renderingContext = new RenderingContext();
+
+        if (class_exists(Request::class)) {
+            $requestClassName = Request::class;
+        } else {
+            $requestClassName = \TYPO3\CMS\Extbase\Mvc\Request::class;
+        }
+
+        $this->viewHelperResolver = $this->getMockBuilder(ViewHelperResolver::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->viewHelperVariableContainer = $this->getMockBuilder(ViewHelperVariableContainer::class)
+            ->setMethods(['dummy'])
+            ->getMock();
+        $this->templateVariableContainer = $this->getMockBuilder(StandardVariableProvider::class)
+            ->setMethods(['dummy'])
+            ->getMock();
+        $this->controllerContext = $this->getMockBuilder(ControllerContext::class)
+            ->setMethods(['getRequest', 'getUriBuilder'])
+            ->getMock();
+        $this->controllerContext->method('getRequest')->willReturn(new $requestClassName());
+        $this->viewHelperInvoker = $this->getMockBuilder(ViewHelperInvoker::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->renderingContext = $this->getMockBuilder(RenderingContext::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)->getMockForAbstractClass();
+        $this->templateParser = new TemplateParser();
+        $this->templateParser->setRenderingContext($this->renderingContext);
+        $this->errorHandler->method('handleViewHelperError')->willThrowException(new Exception('dummy'));
+        $this->renderingContext->method('getViewHelperResolver')->willReturn($this->viewHelperResolver);
+        $this->renderingContext->method('getControllerContext')->willReturn($this->controllerContext);
+        $this->renderingContext->method('getViewHelperVariableContainer')->willReturn(
+            $this->viewHelperVariableContainer
+        );
+        $this->renderingContext->method('getVariableProvider')->willReturn($this->templateVariableContainer);
+        $this->renderingContext->method('getViewHelperInvoker')->willReturn($this->viewHelperInvoker);
+        $this->renderingContext->method('getErrorHandler')->willReturn($this->errorHandler);
+        $this->renderingContext->method('getTemplateParser')->willReturn($this->templateParser);
+        $this->renderingContext->method('getTemplateProcessors')->willReturn($this->templateProcessors);
+        $this->renderingContext->method('getExpressionNodeTypes')->willReturn($this->expressionTypes);
     }
 
     /**
@@ -69,7 +118,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     {
         $instance = $this->createInstance();
         $arguments = $instance->prepareArguments();
-        $this->assertThat($arguments, new \PHPUnit_Framework_Constraint_IsType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY));
+        $this->assertIsArray($arguments);
     }
 
     /**
@@ -107,81 +156,50 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     {
         $className = $this->getViewHelperClassName();
         /** @var AbstractViewHelper $instance */
-        $instance = $this->objectManager->get($className);
+        $instance = new $className();
         if (true === method_exists($instance, 'injectConfigurationManager')) {
-            $cObject = new ContentObjectRenderer();
+            $cObject = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->getMock();
             $cObject->start(Records::$contentRecordWithoutParentAndWithoutChildren, 'tt_content');
             /** @var ConfigurationManagerInterface $configurationManager */
-            $configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
-            $configurationManager->setContentObject($cObject);
+            $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
+            $configurationManager->method('getContentObject')->willReturn($cObject);
             $instance->injectConfigurationManager($configurationManager);
         }
-        $instance->setRenderingContext($this->objectManager->get(RenderingContext::class));
-        $instance->initialize();
+        $instance->setRenderingContext($this->renderingContext);
         return $instance;
     }
 
     /**
      * @param array $arguments
      * @param array $variables
-     * @param NodeInterface $childNode
-     * @param string $extensionName
-     * @param string $pluginName
+     * @param NodeInterface|null $childNode
+     * @param string|null $extensionName
+     * @param string|null $pluginName
      * @return AbstractViewHelper
      */
     protected function buildViewHelperInstance($arguments = [], $variables = [], $childNode = null, $extensionName = null, $pluginName = null)
     {
         $instance = $this->createInstance();
-        $node = $this->createViewHelperNode($instance, $arguments);
-        if (class_exists(CmsVariableProvider::class)) {
-            $this->renderingContext->getVariableProvider()->setSource($variables);
-        } else {
-            /** @var TemplateVariableContainer $container */
-            $container = $this->objectManager->get(TemplateVariableContainer::class);
-            if (0 < count($variables)) {
-                ObjectAccess::setProperty($container, 'variables', $variables, true);
-            }
-            ObjectAccess::setProperty($this->renderingContext, 'templateVariableContainer', $container, true);
-        }
+        $arguments = $this->buildViewHelperArguments($instance, $arguments);
+        $node = $this->createViewHelperNode($instance, $arguments, $childNode instanceof NodeInterface ? [$childNode] : []);
 
-        /** @var ViewHelperVariableContainer $viewHelperContainer */
-        $viewHelperContainer = $this->objectManager->get(ViewHelperVariableContainer::class);
-        /** @var UriBuilder $uriBuilder */
-        $uriBuilder = $this->objectManager->get(UriBuilder::class);
-        /** @var Request $request */
-        $request = $this->objectManager->get(Request::class);
-        if (null !== $extensionName) {
-            $request->setControllerExtensionName($extensionName);
-        }
-        if (null !== $pluginName) {
-            $request->setPluginName($pluginName);
-        }
-        /** @var Response $response */
-        $response = $this->objectManager->get(Response::class);
-        /** @var ControllerContext $controllerContext */
-        $controllerContext = $this->objectManager->get(ControllerContext::class);
-        $controllerContext->setRequest($request);
-        $controllerContext->setResponse($response);
-        $controllerContext->setUriBuilder($uriBuilder);
-
-        ObjectAccess::setProperty($this->renderingContext, 'viewHelperVariableContainer', $viewHelperContainer, true);
-        $this->renderingContext->setControllerContext($controllerContext);
-        $instance->setRenderingContext($this->renderingContext);
-        $instance->setRenderChildrenClosure(function() { return null; });
         $instance->setViewHelperNode($node);
         $instance->setArguments($arguments);
-        $renderingContext = $this->renderingContext;
-        if ($childNode) {
-            $node->addChildNode($childNode);
-            if (method_exists($instance, 'setChildNodes')) {
-                $instance->setChildNodes([$childNode]);
-            }
-            $instance->setRenderChildrenClosure(function() use ($renderingContext, $childNode) { return $childNode->evaluate($renderingContext); });
-        }
+
         if (method_exists($instance, 'injectReflectionService')) {
-            $instance->injectReflectionService($this->objectManager->get(ReflectionService::class));
+            $instance->injectReflectionService(new ReflectionService());
         }
         return $instance;
+    }
+
+    protected function buildViewHelperArguments(ViewHelperInterface $viewHelper, array $arguments): array
+    {
+        foreach ($viewHelper->prepareArguments() as $argumentName => $argumentDefinition) {
+            if (!array_key_exists($argumentName, $arguments)) {
+                $arguments[$argumentName] = $argumentDefinition->getDefaultValue();
+            }
+        }
+        return $arguments;
     }
 
     /**
@@ -195,7 +213,8 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     protected function executeViewHelper($arguments = [], $variables = [], $childNode = null, $extensionName = null, $pluginName = null)
     {
         $instance = $this->buildViewHelperInstance($arguments, $variables, $childNode, $extensionName, $pluginName);
-        return $instance->initializeArgumentsAndRender();
+        $this->renderingContext->getVariableProvider()->setSource($variables);
+        return $this->renderingContext->getViewHelperInvoker()->invoke($instance, $arguments, $this->renderingContext);
     }
 
     /**
@@ -208,59 +227,39 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      */
     protected function executeViewHelperUsingTagContent($nodeValue, $arguments = [], $variables = [], $extensionName = null, $pluginName = null)
     {
-        $context = $this->renderingContext;
-        $instance = $this->buildViewHelperInstance($arguments, $variables, null, $extensionName, $pluginName);
-        $instance->setRenderChildrenClosure(function() use ($instance, $nodeValue, $context) {
-            if (method_exists($instance, 'setChildNodes')
-                && (
-                    $nodeValue instanceof \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode
-                    || $nodeValue instanceof \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode
-                    || $nodeValue instanceof \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\NodeInterface
-                    || $nodeValue instanceof \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\NodeInterface
-                )
-            ) {
-                $instance->setChildNodes([$nodeValue]);
-                return $nodeValue->evaluate($context);
-            }
-            return $nodeValue;
-        });
-        return $instance->initializeArgumentsAndRender();
+        $node = $this->getMockBuilder(NodeInterface::class)->getMockForAbstractClass();
+        $node->method('evaluate')->willReturn($nodeValue);
+        $instance = $this->buildViewHelperInstance($arguments, $variables, $node, $extensionName, $pluginName);
+        return $this->renderingContext->getViewHelperInvoker()->invoke($instance, $arguments, $this->renderingContext);
     }
 
     /**
      * @param ViewHelperInterface $instance
      * @param array $arguments
-     * @return \PHPUnit_Framework_MockObject_MockObject|ViewHelperNode
+     * @param NodeInterface[] $childNNodes
+     * @return MockObject|ViewHelperNode
      */
-    protected function createViewHelperNode($instance, array $arguments)
+    protected function createViewHelperNode($instance, array $arguments, array $childNNodes = [])
     {
-        if (version_compare(TYPO3_version, 8.0, '>=')) {
-            $resolver = $this->getMockBuilder(\TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolver::class)
-                ->setMethods(['getUninitializedViewHelper'])
-                ->getMock();
-            $this->renderingContext->setViewHelperResolver($resolver);
-            $node = $this->getMockBuilder(\TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-        } else {
-            $node = $this->getMockBuilder(ViewHelperNode::class)
-                ->setMethods(['getUninitializedViewHelper'])
-                ->setConstructorArgs([$instance, $arguments])
-                ->getMock();
+        $node = new DummyViewHelperNode($instance);
+
+        foreach ($childNNodes as $childNNode) {
+            $node->addChildNode($childNNode);
         }
-        $node->expects($this->any())->method('getUninitializedViewHelper')->willReturn($instance);
+
+        $instance->setChildNodes($childNNodes);
+        $instance->setViewHelperNode($node);
+
         return $node;
     }
 
     /**
      * @param string $accessor
-     * @return \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode|\TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode
+     * @return ObjectAccessorNode
      */
-    protected function createObjectAccessorNode($accessor) {
-        if (version_compare(TYPO3_version, 8.0, '>=')) {
-            return new \TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode($accessor);
-        }
-        return new \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode($accessor);
+    protected function createObjectAccessorNode($accessor)
+    {
+        return new ObjectAccessorNode($accessor);
     }
 
     /**
@@ -269,10 +268,6 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
      */
     protected function expectViewHelperException($message = null, $code = null)
     {
-        if (version_compare(TYPO3_version, 8.0, '>=')) {
-            $this->setExpectedException(\TYPO3Fluid\Fluid\Core\ViewHelper\Exception::class, $message, $code);
-        } else {
-            $this->setExpectedException(\TYPO3\CMS\Fluid\Core\ViewHelper\Exception::class, $message, $code);
-        }
+        $this->expectException(\TYPO3Fluid\Fluid\Core\ViewHelper\Exception::class, $message, $code);
     }
 }

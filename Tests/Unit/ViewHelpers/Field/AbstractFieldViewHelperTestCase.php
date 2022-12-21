@@ -8,23 +8,22 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * AbstractFieldViewHelperTestCase
- */
 abstract class AbstractFieldViewHelperTestCase extends AbstractFormViewHelperTestCase
 {
-
     /**
      * @test
      */
     public function createsValidFieldInterfaceComponents()
     {
         $instance = $this->buildViewHelperInstance($this->defaultArguments);
-        $component = $instance->getComponent(ObjectAccess::getProperty($instance, 'renderingContext', true), $this->defaultArguments, function () {
-        });
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form\FieldInterface', $component);
+        $component = $instance->getComponent(
+            $this->renderingContext,
+            $this->buildViewHelperArguments($instance, $this->defaultArguments),
+            $this->callInaccessibleMethod($instance, 'buildRenderChildrenClosure')
+        );
+        $this->assertInstanceOf(FieldInterface::class, $component);
     }
 }

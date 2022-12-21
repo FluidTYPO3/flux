@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field\Inline;
 
 /*
@@ -11,12 +12,8 @@ namespace FluidTYPO3\Flux\Form\Field\Inline;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 
-/**
- * Fal
- */
 class Fal extends AbstractInlineFormField
 {
-
     const DEFAULT_TABLE = 'sys_file_reference';
     const DEFAULT_FOREIGN_FIELD = 'uid_foreign';
     const DEFAULT_FOREIGN_TABLE_FIELD = 'tablenames';
@@ -150,17 +147,32 @@ class Fal extends AbstractInlineFormField
     protected $createNewRelationLinkTitle = self::DEFAULT_CREATE_NEW_RELATION_LINK_TITLE;
 
     /**
-     * @var null|string
+     * Crop variants for uploaded images
+     *
+     * @var array
      */
-    protected $renderType = null;
+    protected $cropVariants = [];
 
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    protected ?string $renderType = null;
+
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('inline');
         $configuration['appearance']['createNewRelationLinkTitle'] = $this->getCreateNewRelationLinkTitle();
+
+        if (!isset($configuration['overrideChildTca'])) {
+            $configuration['overrideChildTca'] = ['columns' => []];
+        }
+        $configuration['overrideChildTca']['columns'] = $configuration['overrideChildTca']['columns'] ?? [];
+        $configuration['overrideChildTca']['types'] = $configuration['foreign_types'];
+        if (!empty($this->cropVariants)) {
+            $configuration['overrideChildTca']['columns']['crop'] = [
+                'config' => [
+                    'cropVariants' => $this->cropVariants
+                ]
+            ];
+        }
+
         return $configuration;
     }
 
@@ -179,6 +191,24 @@ class Fal extends AbstractInlineFormField
     public function setCreateNewRelationLinkTitle($createNewRelationLinkTitle)
     {
         $this->createNewRelationLinkTitle = $createNewRelationLinkTitle;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCropVariants()
+    {
+        return $this->cropVariants;
+    }
+
+    /**
+     * @param array $cropVariants
+     * @return Fal
+     */
+    public function setCropVariants(array $cropVariants)
+    {
+        $this->cropVariants = $cropVariants;
         return $this;
     }
 }

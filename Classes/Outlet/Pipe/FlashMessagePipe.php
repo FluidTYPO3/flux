@@ -8,10 +8,6 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Form\Field\Select;
-use FluidTYPO3\Flux\Form\Field\Text;
-use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 
@@ -22,28 +18,12 @@ use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
  */
 class FlashMessagePipe extends AbstractPipe implements PipeInterface
 {
-
     const FLASHMESSAGE_QUEUE = 'extbase.flashmessages.flux';
 
-    /**
-     * @var integer
-     */
-    protected $severity = FlashMessage::OK;
-
-    /**
-     * @var boolean
-     */
-    protected $storeInSession = true;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var string
-     */
-    protected $message;
+    protected int $severity = FlashMessage::OK;
+    protected bool $storeInSession = true;
+    protected string $title = '';
+    protected string $message = '';
 
     /**
      * @param array $data
@@ -51,7 +31,7 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
      */
     public function conduct($data)
     {
-        $queue = new FlashMessageQueue(static::FLASHMESSAGE_QUEUE);
+        $queue = $this->getFlashMessageQueue();
         $flashMessage = new FlashMessage(
             (string) $this->getMessage(),
             (string) $this->getTitle(),
@@ -62,98 +42,55 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
         return $data;
     }
 
-    /**
-     * @return FieldInterface[]
-     */
-    public function getFormFields()
-    {
-        $severities = [
-            FlashMessage::OK => 'OK',
-            FlashMessage::ERROR => 'ERROR',
-            FlashMessage::NOTICE => 'NOTICE',
-            FlashMessage::WARNING => 'WARNING'
-        ];
-        $fields = parent::getFormFields();
-        $fields['message'] = Text::create(['type' => 'Text'])->setName('message');
-        $fields['title'] = Input::create(['type' => 'Input'])->setName('title');
-        /** @var Select $severity */
-        $severity = Select::create(['type' => 'Select']);
-        $severity->setName('severity');
-        $severity->setItems($severities);
-        $severity->setDefault(FlashMessage::OK);
-        $fields['severity'] = $severity;
-        return $fields;
-    }
-
-    /**
-     * @param integer $severity
-     * @return FlashMessagePipe
-     */
-    public function setSeverity($severity)
+    public function setSeverity(int $severity): self
     {
         $this->severity = $severity;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getSeverity()
+    public function getSeverity(): int
     {
         return $this->severity;
     }
 
-    /**
-     * @param boolean $storeInSession
-     * @return FlashMessagePipe
-     */
-    public function setStoreInSession($storeInSession)
+    public function setStoreInSession(bool $storeInSession): self
     {
         $this->storeInSession = $storeInSession;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getStoreInSession()
+    public function getStoreInSession(): bool
     {
         return $this->storeInSession;
     }
 
-    /**
-     * @param string $title
-     * @return FlashMessagePipe
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $message
-     * @return FlashMessagePipe
-     */
-    public function setMessage($message)
+    public function setMessage(string $message): self
     {
         $this->message = $message;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getFlashMessageQueue(): FlashMessageQueue
+    {
+        return new FlashMessageQueue(static::FLASHMESSAGE_QUEUE);
     }
 }

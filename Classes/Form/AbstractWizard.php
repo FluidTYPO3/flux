@@ -8,43 +8,18 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\Wizard\Add;
-
 /**
  * AbstractWizard
  */
 abstract class AbstractWizard extends AbstractFormComponent implements WizardInterface
 {
+    protected bool $hideParent = false;
+    protected ?string $name = null;
+    protected ?string $type = null;
+    protected ?string $icon = null;
+    protected array $module = [];
 
-    /**
-     * @var boolean
-     */
-    protected $hideParent = false;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var string
-     */
-    protected $icon;
-
-    /**
-     * @var array
-     */
-    protected $module;
-
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $structure = [
             'type' => $this->type,
@@ -58,28 +33,18 @@ abstract class AbstractWizard extends AbstractFormComponent implements WizardInt
         return $structure;
     }
 
-    /**
-     * @param boolean $hideParent
-     * @return Add
-     */
-    public function setHideParent($hideParent)
+    public function setHideParent(bool $hideParent): self
     {
         $this->hideParent = $hideParent;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getHideParent()
+    public function getHideParent(): bool
     {
         return $this->hideParent;
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasChildren()
+    public function hasChildren(): bool
     {
         return false;
     }

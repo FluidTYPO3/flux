@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Wizard;
 
 /*
@@ -15,44 +16,19 @@ use FluidTYPO3\Flux\Form\AbstractWizard;
  *
  * See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
  * for details about the behaviors that are controlled by properties.
+ *
+ * @deprecated Will be removed in Flux 10.0
  */
 class Slider extends AbstractWizard
 {
+    protected ?string $name = 'slider';
+    protected ?string $type = 'slider';
+    protected ?string $icon = null;
+    protected array $module = [];
+    protected int $width = 400;
+    protected int $step = 1;
 
-    /**
-     * @var string
-     */
-    protected $name = 'slider';
-
-    /**
-     * @var string
-     */
-    protected $type = 'slider';
-
-    /**
-     * @var string
-     */
-    protected $icon = null;
-
-    /**
-     * @var array
-     */
-    protected $module = null;
-
-    /**
-     * @var integer
-     */
-    protected $width = 400;
-
-    /**
-     * @var integer
-     */
-    protected $step;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = [
             'width' => $this->getWidth(),

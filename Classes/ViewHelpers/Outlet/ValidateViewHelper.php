@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Outlet;
 
 /*
@@ -41,32 +42,24 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ValidateViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('type', 'string', 'validator to apply', true);
         $this->registerArgument('options', 'array', 'additional validator arguments');
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
 
         $validators = (array) $viewHelperVariableContainer->get(ValidateViewHelper::class, 'validators');
         $validators[] = $arguments;
         $viewHelperVariableContainer->addOrUpdate(ValidateViewHelper::class, 'validators', $validators);
+
+        return '';
     }
 }

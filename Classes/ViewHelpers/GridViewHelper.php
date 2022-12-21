@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -14,34 +15,16 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * Grid container ViewHelper.
  *
  * Use `<flux:grid.row>` with nested `<flux:grid.column>` tags
- * to define a tablular layout.
+ * to define a tabular layout.
  *
  * The grid is then rendered automatically in the preview section
  * of the content element, or as page columns if used in page templates.
  *
  * For frontend rendering, use `flux:content.render`.
  *
- * ### Content elements
+ * ### Define Page and Content elements
  *
- * Use the `name` and `area` attributes.
- *
- * #### Grid for a two-column container element
- *
- *     <flux:grid>
- *         <flux:grid.row>
- *             <flux:grid.column name="left" />
- *             <flux:grid.column name="right" />
- *         </flux:grid.row>
- *     </flux:grid>
- *
- * #### Container element frontend rendering
- *
- *     <flux:content.render area="left" />
- *     <flux:content.render area="right" />
- *
- * ### Pages
- *
- * Use the `colPos` and `column` attributes.
+ * Name is used to identify columns and fetch e.g. translations from XLF files.
  *
  *     <flux:grid>
  *         <flux:grid.row>
@@ -50,19 +33,14 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *         </flux:grid.row>
  *     </flux:grid>
  *
- * #### Page rendering
+ * #### Rendering
  *
  *     <v:content.render column="0" />
  *     <v:content.render column="1" />
  */
 class GridViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('name', 'string', 'Optional name of this grid - defaults to "grid"', false, 'grid');
         $this->registerArgument(
@@ -86,24 +64,55 @@ class GridViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
+    protected function callRenderMethod(): string
+    {
+        $container = static::getContainerFromRenderingContext($this->renderingContext);
+        $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
+        $extensionName = self::resolveExtensionName($this->renderingContext, $this->arguments);
+
+        $grid = static::getGridFromRenderingContext($this->renderingContext, $this->arguments['name']);
+        $grid->setLabel($this->arguments['label'] ?? null);
+        $grid->setVariables($this->arguments['variables']);
+        $grid->setExtensionName($extensionName);
+
+        $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
+        static::setContainerInRenderingContext($this->renderingContext, $grid);
+
+        $this->renderChildren();
+
+        $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
+        static::setContainerInRenderingContext($this->renderingContext, $container);
+        return '';
+    }
+
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $container = static::getContainerFromRenderingContext($renderingContext);
+        $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+        $extensionName = self::resolveExtensionName($renderingContext, $arguments);
+
         $grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
-        $grid->setLabel($arguments['label']);
+        $grid->setLabel($arguments['label'] ?? null);
         $grid->setVariables($arguments['variables']);
-        $grid->setExtensionName(static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments));
+        $grid->setExtensionName($extensionName);
+
+        $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
         static::setContainerInRenderingContext($renderingContext, $grid);
+
         $renderChildrenClosure();
+
+        $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         static::setContainerInRenderingContext($renderingContext, $container);
+        return '';
+    }
+
+    private static function resolveExtensionName(RenderingContextInterface $renderingContext, array $arguments): string
+    {
+        $container = static::getContainerFromRenderingContext($renderingContext);
+        return $container->getExtensionName()
+            ?? static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
     }
 }

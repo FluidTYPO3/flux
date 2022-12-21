@@ -9,14 +9,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  */
 
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
-use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
+use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
 
-/**
- * CustomViewHelperTest
- */
 class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-
     /**
      * @test
      */
@@ -37,21 +33,14 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
         $this->assertSame($container->get('parameters'), $arguments['parameters']);
     }
 
-    /**
-     * @param array $templateVariableContainerArguments
-     * @return TemplateVariableContainer
-     */
-    protected function executeViewHelperClosure($templateVariableContainerArguments = array())
+    protected function executeViewHelperClosure(array $templateVariableContainerArguments = array()): StandardVariableProvider
     {
-        $instance = $this->objectManager->get('FluidTYPO3\Flux\ViewHelpers\Field\CustomViewHelper');
-        $renderingContext = $this->objectManager->get('TYPO3\CMS\Fluid\Core\Rendering\RenderingContext');
-        $container = $renderingContext->getVariableProvider();
+        $instance = $this->buildViewHelperInstance();
+        $renderingContext = $this->renderingContext;
         $arguments = array(
             'name' => 'custom'
         );
-        foreach ($templateVariableContainerArguments as $name => $value) {
-            $container->add($name, $value);
-        }
+        $this->templateVariableContainer->setSource($templateVariableContainerArguments);
         $node = $this->createViewHelperNode($instance, $arguments);
         $childNode = $this->createNode('Text', 'Hello world!');
         $node->addChildNode($childNode);
@@ -73,6 +62,6 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
         $output = $closure($parameters);
         $this->assertNotEmpty($output);
         $this->assertSame('Hello world!', $output);
-        return $container;
+        return $this->templateVariableContainer;
     }
 }

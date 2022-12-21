@@ -8,54 +8,41 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Container\Column;
+use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Web\Request;
-use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3\CMS\Extbase\Mvc\Request;
 
-/**
- * ContentViewHelperTest
- */
 class ContentViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @test
      */
     public function createsGridIfNotSet()
     {
-        /** @var ViewHelperVariableContainer $viewHelperContainer */
-        $viewHelperContainer = $this->objectManager->get('TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperVariableContainer');
-        /** @var Request $request */
-        $request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Web\Request');
-        /** @var ControllerContext $controllerContext */
-        $controllerContext = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext');
-        $controllerContext->setRequest($request);
-        $column = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Column')->setMethods(array('setName', 'setLabel'))->getMock();
+        $request = new Request();
+        $this->controllerContext->setRequest($request);
+
+        $column = $this->getMockBuilder(Column::class)->setMethods(['setName', 'setLabel'])->getMock();
         $column->expects($this->once())->method('setName');
         $column->expects($this->once())->method('setLabel');
-        $row = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Row')->setMethods(array('createContainer'))->getMock();
-        $grid = $this->getMockBuilder('FluidTYPO3\\Flux\\Form\\Container\\Grid')->setMethods(array('createContainer'))->getMock();
+        $row = $this->getMockBuilder(Row::class)->setMethods(['createContainer'])->getMock();
+        $grid = $this->getMockBuilder(Grid::class)->setMethods(['createContainer'])->getMock();
         $grid->expects($this->once())->method('createContainer')->will($this->returnValue($row));
         $row->expects($this->once())->method('createContainer')->will($this->returnValue($column));
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
-        $viewHelperContainer->addOrUpdate(
+
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['dummy'])->getMock();
+
+        $this->viewHelperVariableContainer->addOrUpdate(
             AbstractFormViewHelper::SCOPE,
             AbstractFormViewHelper::SCOPE_VARIABLE_GRIDS,
-            array('grid' => $grid)
+            ['grid' => $grid]
         );
-        $renderingcontext = $this->getMockBuilder(
-            'TYPO3\CMS\Fluid\Core\Rendering\RenderingContext'
-        )->setMethods(
-            array(
-                'getTemplateVariableContainer', 'getViewHelperVariableContainer', 'getControllerContext'
-            )
-        )->getMock();
-        $renderingcontext->expects($this->atLeastOnce())->method('getViewHelperVariableContainer')->willReturn($viewHelperContainer);
-        $renderingcontext->expects($this->any())->method('getControllerContext')->willReturn($controllerContext);
-        $mock->setRenderingContext($renderingcontext);
-        $mock->setArguments(array());
-        $mock::getComponent($renderingcontext, array());
+
+        $mock->setRenderingContext($this->renderingContext);
+        $mock->setArguments([]);
+        $mock::getComponent($this->renderingContext, $this->buildViewHelperArguments($mock, []));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -13,7 +14,7 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Provider Resolver
@@ -22,88 +23,59 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class ProviderResolver implements SingletonInterface
 {
-    /**
-     * @var array
-     */
-    protected $providers = null;
+    protected array $providers = [];
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
+    protected FluxService $configurationService;
 
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
+    public function __construct()
     {
+        /** @var FluxService $configurationService */
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $configurationService;
-    }
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
-    {
-        $this->objectManager = $objectManager;
     }
 
     /**
      * ResolveUtility the top-priority ConfigurationPrivider which can provide
      * a working FlexForm configuration baed on the given parameters.
      *
-     * @param string $table
-     * @param string $fieldName
-     * @param array $row
-     * @param string $extensionKey
-     * @param string|array $interfaces One or more specific interfaces the Provider must implement.
-     * @return ProviderInterface|NULL
+     * @template T
+     * @param class-string<T>[] $interfaces
+     * @return T|null
      */
     public function resolvePrimaryConfigurationProvider(
-        $table,
-        $fieldName,
+        ?string $table,
+        ?string $fieldName,
         array $row = null,
-        $extensionKey = null,
-        $interfaces = null
+        ?string $extensionKey = null,
+        array $interfaces = [ProviderInterface::class]
     ) {
         $providers = $this->resolveConfigurationProviders($table, $fieldName, $row, $extensionKey, $interfaces);
-        return end($providers) ?: null;
+        return reset($providers) ?: null;
     }
 
     /**
      * Resolves a ConfigurationProvider which can provide a working FlexForm
      * configuration based on the given parameters.
      *
-     * @param string $table Table the Provider must match.
-     * @param string $fieldName Field in the table the Provider must match.
-     * @param array|null $row The record from table which the Provider must handle, or null if any record.
-     * @param string|null $extensionKey The extension key the Provider must match, or null if any extension key.
-     * @param string|array $interfaces One or more specific interfaces the Provider must implement.
-     * @throws \RuntimeException
-     * @return ProviderInterface[]
+     * @template T
+     * @param class-string<T>[] $interfaces
+     * @return T[]
      */
     public function resolveConfigurationProviders(
-        $table,
-        $fieldName,
+        ?string $table,
+        ?string $fieldName,
         array $row = null,
-        $extensionKey = null,
-        $interfaces = null
+        ?string $extensionKey = null,
+        array $interfaces = [ProviderInterface::class]
     ) {
         $row = false === is_array($row) ? [] : $row;
         $providers = $this->getAllRegisteredProviderInstances();
         if ($interfaces) {
             $providers = array_filter(
                 $providers,
-                function (ProviderInterface $provider) use ($interfaces) {
+                function ($provider) use ($interfaces) {
                     foreach ((array) $interfaces as $interface) {
-                        if (!$provider instanceof $interface) {
+                        if (!is_a($provider, $interface, true)) {
                             return false;
                         }
                     }
@@ -114,12 +86,7 @@ class ProviderResolver implements SingletonInterface
         usort(
             $providers,
             function (ProviderInterface $a, ProviderInterface $b) use ($row) {
-                $priorityA = $a->getPriority($row);
-                $priorityB = $b->getPriority($row);
-                if ($priorityA === $priorityB) {
-                    return 0;
-                }
-                return $priorityA < $priorityB ? -1 : 1;
+                return $b->getPriority($row) <=> $a->getPriority($row);
             }
         );
         // RecordProviderInterface being missing will automatically include the Provider. Those that do
@@ -127,7 +94,8 @@ class ProviderResolver implements SingletonInterface
         $providers = array_filter(
             $providers,
             function (ProviderInterface $provider) use ($row, $table, $fieldName, $extensionKey) {
-                return !$provider instanceof RecordProviderInterface || $provider->trigger($row, $table, $fieldName, $extensionKey);
+                return !$provider instanceof RecordProviderInterface
+                    || $provider->trigger($row, $table, $fieldName, $extensionKey);
             }
         );
         return HookHandler::trigger(
@@ -146,8 +114,9 @@ class ProviderResolver implements SingletonInterface
     /**
      * @return ProviderInterface[]
      */
-    public function loadTypoScriptConfigurationProviderInstances()
+    public function loadTypoScriptConfigurationProviderInstances(): array
     {
+        /** @var array[] $providerConfigurations */
         $providerConfigurations = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_flux.providers');
         $providers = [];
         foreach ($providerConfigurations as $name => $providerSettings) {
@@ -156,7 +125,7 @@ class ProviderResolver implements SingletonInterface
                 $className = $providerSettings['className'];
             }
             /** @var ProviderInterface $provider */
-            $provider = $this->objectManager->get($className);
+            $provider = GeneralUtility::makeInstance($className);
             $provider->setName($name);
             $provider->loadSettings($providerSettings);
             $providers[$name] = $provider;
@@ -167,9 +136,9 @@ class ProviderResolver implements SingletonInterface
     /**
      * @return ProviderInterface[]
      */
-    protected function getAllRegisteredProviderInstances()
+    protected function getAllRegisteredProviderInstances(): array
     {
-        if (null === $this->providers) {
+        if (empty($this->providers)) {
             $providers = $this->loadCoreRegisteredProviders();
             $typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
             $providers = array_merge($providers, $typoScriptConfigurationProviders);
@@ -179,11 +148,9 @@ class ProviderResolver implements SingletonInterface
     }
 
     /**
-     * @param array $providers
      * @return ProviderInterface[]
-     * @throws \RuntimeException
      */
-    protected function validateAndInstantiateProviders(array $providers)
+    protected function validateAndInstantiateProviders(array $providers): array
     {
         $instances = [];
         foreach ($providers as $classNameOrInstance) {
@@ -195,19 +162,18 @@ class ProviderResolver implements SingletonInterface
                 );
             }
             if (true === is_object($classNameOrInstance)) {
+                /** @var ProviderInterface $provider */
                 $provider = $classNameOrInstance;
             } else {
-                $provider = $this->objectManager->get($classNameOrInstance);
+                /** @var ProviderInterface $provider */
+                $provider = GeneralUtility::makeInstance($classNameOrInstance);
             }
             $instances[] = $provider;
         }
         return $instances;
     }
 
-    /**
-     * @return array
-     */
-    protected function loadCoreRegisteredProviders()
+    protected function loadCoreRegisteredProviders(): array
     {
         return Core::getRegisteredFlexFormProviders();
     }

@@ -8,38 +8,22 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Controller\AbstractFluxController;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
-use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use FluidTYPO3\Flux\Controller\ContentController;
 
-/**
- * ContentControllerTest
- */
 class ContentControllerTest extends AbstractFluxControllerTestCase
 {
-
-    /**
-     * @test
-     */
-    public function canRegisterCustomControllerForContent()
+    public function testCanRegisterCustomControllerForContent(): void
     {
         $this->performDummyRegistration();
     }
 
-    /**
-     * @return AbstractFluxController
-     */
-    protected function createAndTestDummyControllerInstance()
+    protected function createAndTestDummyControllerInstance(): ContentController
     {
-        $record = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $record['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
-        $record['tx_fed_fcefile'] = 'Flux:Default.html';
         $this->performDummyRegistration();
-        $controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
-        /** @var AbstractFluxController $instance */
-        $instance = $this->objectManager->get($controllerClassName);
-        ObjectAccess::setProperty($instance, 'extensionName', 'Flux', true);
+        $controllerClassName = ContentController::class;
+        /** @var ContentController $instance */
+        $instance = new $controllerClassName();
+        $this->setInaccessiblePropertyValue($instance, 'extensionName', 'Flux');
         return $instance;
     }
 }

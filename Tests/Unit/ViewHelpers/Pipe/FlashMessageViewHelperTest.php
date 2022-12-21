@@ -10,26 +10,19 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Pipe;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
-/**
- * FlashMessageViewHelperTest
- */
 class FlashMessageViewHelperTest extends AbstractViewHelperTestCase
 {
 
     /**
      * @dataProvider getTestArguments
-     * @param array $arguments
      */
-    public function testWithArguments(array $arguments)
+    public function testWithArguments(array $arguments): void
     {
-        $result = $this->executeViewHelper($arguments, array(), null, null, 'FakePlugin');
-        $this->assertNull($result);
+        $result = $this->executeViewHelper($arguments, [], null, null, 'FakePlugin');
+        $this->assertSame('', $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getTestArguments()
+    public function getTestArguments(): array
     {
         return array(
             array(array()),

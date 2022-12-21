@@ -1,25 +1,27 @@
-<phpunit bootstrap="Tests/bootstrap.php"
-	backupGlobals="false"
-        backupStaticAttributes="false"
-        colors="false"
-        convertErrorsToExceptions="true"
-        convertWarningsToExceptions="true"
-        forceCoversAnnotation="false"
-        processIsolation="false"
-        stopOnError="false"
-        stopOnFailure="false"
-        stopOnIncomplete="false"
-        stopOnSkipped="false"
-        verbose="false">
-
-        <testsuites>
-                <testsuite name="EXT:flux">
-                        <directory>Tests/</directory>
-                </testsuite>
-        </testsuites>
-		<filter>
-				<whitelist>
-						<directory>Classes/</directory>
-				</whitelist>
-		</filter>
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="vendor/autoload.php"
+         backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertWarningsToExceptions="true"
+         forceCoversAnnotation="false"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         verbose="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage>
+    <include>
+      <directory>Classes/</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="EXT:flux">
+      <directory>Tests/</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>

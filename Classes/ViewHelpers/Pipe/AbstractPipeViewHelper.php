@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Pipe;
 
 /*
@@ -12,7 +13,6 @@ use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\StandardPipe;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
@@ -26,10 +26,7 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
     const DIRECTION_IN = 'in';
     const DIRECTION_OUT = 'out';
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'direction',
@@ -40,37 +37,29 @@ abstract class AbstractPipeViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $form = static::getFormFromRenderingContext($renderingContext);
-        $sheet = true === $form->has('pipes') ? $form->get('pipes') : $form->createContainer('Sheet', 'pipes');
-        $pipe = static::preparePipeInstance($renderingContext, $arguments);
-        foreach ($pipe->getFormFields() as $formField) {
-            $sheet->add($formField);
+        $pipe = static::preparePipeInstance($renderingContext, $arguments, $renderChildrenClosure);
+        if ($arguments['direction'] === static::DIRECTION_IN) {
+            $form->getOutlet()->addPipeIn($pipe);
+        } else {
+            $form->getOutlet()->addPipeOut($pipe);
         }
-        $form->getOutlet()->addPipeOut($pipe);
+        return '';
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @return PipeInterface
-     */
     protected static function preparePipeInstance(
         RenderingContextInterface $renderingContext,
-        array $arguments,
-        \Closure $renderChildrenClosure = null
-    ) {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(StandardPipe::class);
+        iterable $arguments,
+        ?\Closure $renderChildrenClosure = null
+    ): PipeInterface {
+        /** @var StandardPipe $pipe */
+        $pipe = GeneralUtility::makeInstance(StandardPipe::class);
+
+        return $pipe;
     }
 }

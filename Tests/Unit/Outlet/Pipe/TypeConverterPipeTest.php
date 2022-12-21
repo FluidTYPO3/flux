@@ -8,18 +8,21 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter;
+use TYPO3\CMS\Extbase\Property\TypeConverter\FloatConverter;
+use TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter;
+
 /**
  * TypeConverterPipeTest
  */
 class TypeConverterPipeTest extends AbstractPipeTestCase
 {
-
     /**
      * @var array
      */
-    protected $defaultData = array(
+    protected $defaultData = [
         'targetType' => 'float',
-    );
+    ];
 
     /**
      * @test
@@ -27,8 +30,8 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     public function canConductData()
     {
         $instance = $this->createInstance();
-        $converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter';
-        $converter = $this->objectManager->get($converterClass);
+        $converterClass = StringConverter::class;
+        $converter = new $converterClass();
         $instance->setTypeConverter($converter);
         $instance->setTargetType('string');
         $output = $instance->conduct('test');
@@ -38,11 +41,41 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     /**
      * @test
      */
+    public function canConductDataWithPropertyName()
+    {
+        $instance = $this->createInstance();
+        $converterClass = StringConverter::class;
+        $converter = new $converterClass();
+        $instance->setPropertyName('prop');
+        $instance->setTypeConverter($converter);
+        $instance->setTargetType('string');
+        $output = $instance->conduct(['prop' => 'test']);
+        $this->assertEquals(['prop' => 'test'], $output);
+    }
+
+    /**
+     * @test
+     */
+    public function canConductDataWithPropertyNameWithDottedPath()
+    {
+        $instance = $this->createInstance();
+        $converterClass = StringConverter::class;
+        $converter = new $converterClass();
+        $instance->setPropertyName('prop.sub');
+        $instance->setTypeConverter($converter);
+        $instance->setTargetType('string');
+        $output = $instance->conduct(['prop' => ['sub' => 'test']]);
+        $this->assertEquals(['prop' => ['sub' => 'test']], $output);
+    }
+
+    /**
+     * @test
+     */
     public function conductingDataThrowsExceptionWhenTypeConverterCannotConvertToTargetType()
     {
         $instance = $this->createInstance();
-        $converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter';
-        $converter = $this->objectManager->get($converterClass);
+        $converterClass = DateTimeConverter::class;
+        $converter = new $converterClass();
         $instance->setTypeConverter($converter);
         $instance->setTargetType('TYPO3\CMS\Domain\Model\FrontendUser');
         $this->expectExceptionCode(1386292424);
@@ -55,13 +88,11 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     public function conductingDataThrowsPipeExceptionWhenTypeConverterReturnsError()
     {
         $instance = $this->createInstance();
-        $converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\FloatConverter';
-        $converter = $this->objectManager->get($converterClass);
+        $converterClass = FloatConverter::class;
+        $converter = new $converterClass();
         $instance->setTypeConverter($converter);
         $instance->setTargetType('float');
-        if ('6.0' !== substr(TYPO3_version, 0, 3)) {
-            $this->setExpectedException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
-        }
+        $this->expectException('FluidTYPO3\Flux\Outlet\Pipe\Exception');
         $instance->conduct('test');
     }
 
@@ -71,12 +102,12 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     public function conductingDataPassesThroughExceptionWhenTypeConverterFails()
     {
         $instance = $this->createInstance();
-        $converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter';
-        $converter = $this->objectManager->get($converterClass);
+        $converterClass = DateTimeConverter::class;
+        $converter = new $converterClass();
         $instance->setTypeConverter($converter);
         $instance->setTargetType('DateTime');
         $this->expectExceptionCode(1308003914);
-        $instance->conduct(array());
+        $instance->conduct([]);
     }
 
     /**
@@ -90,10 +121,18 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     /**
      * @test
      */
+    public function canGetAndSetPropertyName()
+    {
+        $this->assertGetterAndSetterWorks('propertyName', 'string', 'string', true);
+    }
+
+    /**
+     * @test
+     */
     public function canGetAndSetTypeConverter()
     {
-        $converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter';
-        $converter = $this->objectManager->get($converterClass);
+        $converterClass = StringConverter::class;
+        $converter = new $converterClass();
         $this->assertGetterAndSetterWorks('typeConverter', $converter, $converter, true);
     }
 
@@ -102,8 +141,8 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
      */
     public function canGetAndSetTypeConverterAndCreatesInstanceIfClassName()
     {
-        $converterClass = 'TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter';
-        $converter = $this->objectManager->get($converterClass);
+        $converterClass = StringConverter::class;
+        $converter = new $converterClass();
         $this->assertGetterAndSetterWorks('typeConverter', $converterClass, $converter, true);
     }
 }

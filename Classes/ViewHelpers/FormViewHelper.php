@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -9,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
@@ -16,12 +18,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FormViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'id',
@@ -43,14 +40,6 @@ class FormViewHelper extends AbstractFormViewHelper
             'feature using the form.',
             false,
             true
-        );
-        $this->registerArgument(
-            'compact',
-            'boolean',
-            'If TRUE, disables sheet usage in the form. WARNING! AVOID DYNAMIC VALUES AT ALL COSTS! Toggling this ' .
-            'option is DESTRUCTIVE to variables currently saved in the database!',
-            false,
-            false
         );
         $this->registerArgument(
             'variables',
@@ -81,35 +70,29 @@ class FormViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Form
+    {
+        return Form::create();
+    }
+
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
-        $formClassName = Form::class;
-        $form = call_user_func_array([$formClassName, 'create'], []);
+        $form = static::getComponent($renderingContext, $arguments);
         // configure Form instance
-        $form->setId($arguments['id']);
-        $form->setName($arguments['id']);
+        $form->setId($arguments['id'] ?? 'form');
+        $form->setName($arguments['id'] ?? 'form');
         $form->setLabel($arguments['label']);
         $form->setDescription($arguments['description']);
-        $form->setEnabled($arguments['enabled']);
-        $form->setCompact($arguments['compact']);
+        $form->setEnabled((boolean) $arguments['enabled']);
         $form->setExtensionName($extensionName);
-        $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
+        $form->setLocalLanguageFileRelativePath((string) $arguments['localLanguageFileRelativePath']);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
-        if (false === $form->hasOption(Form::OPTION_ICON) && isset($arguments['icon'])) {
-            $form->setOption(Form::OPTION_ICON, $arguments['icon']);
-        }
 
         // rendering child nodes with Form's last sheet as active container
         $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_FORM, $form);
@@ -120,5 +103,7 @@ class FormViewHelper extends AbstractFormViewHelper
 
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME);
         $viewHelperVariableContainer->remove(static::SCOPE, static::SCOPE_VARIABLE_CONTAINER);
+
+        return '';
     }
 }
