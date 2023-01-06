@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Integration\ViewBuilder;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -673,10 +674,15 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $view->method('getPreview')->willReturn('preview');
-        $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
-            ->setMethods(['getViewForRecord'])
-            ->getMockForAbstractClass();
-        $instance->method('getViewForRecord')->willReturn($view);
+        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->setMethods(['buildPreviewView'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $viewBuilder->method('buildPreviewView')->willReturn($view);
+
+        GeneralUtility::addInstance(ViewBuilder::class, $viewBuilder);
+
+        $instance = $subject = $this->getMockBuilder(AbstractProvider::class)->getMockForAbstractClass();
         $output = $instance->getPreview(['uid' => 123]);
         self::assertSame([null, 'preview', false], $output);
     }
@@ -819,6 +825,19 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->getMock();
         $templateView->method('getRenderingContext')->willReturn($renderingContext);
 
+        $previewView = $this->getMockBuilder(PreviewView::class)
+            ->setMethods(['render', 'renderSection', 'assignMultiple', 'getRenderingContext'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $templateView->method('getRenderingContext')->willReturn($renderingContext);
+
+        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->setMethods(['buildTemplateView', 'buildPreviewView'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $viewBuilder->method('buildTemplateView')->willReturn($templateView);
+        $viewBuilder->method('buildPreviewView')->willReturn($previewView);
+
         GeneralUtility::addInstance(
             Request::class,
             $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()
@@ -829,7 +848,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         );
         GeneralUtility::addInstance(RenderingContext::class, $renderingContext);
         GeneralUtility::addInstance(ControllerContext::class, $controllerContext);
-        GeneralUtility::addInstance(TemplateView::class, $templateView);
+        GeneralUtility::addInstance(ViewBuilder::class, $viewBuilder);
 
         return $templateView;
     }

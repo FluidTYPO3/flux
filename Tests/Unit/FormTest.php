@@ -12,6 +12,9 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Request;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateProcessor\NamespaceDetectionTemplateProcessor;
@@ -56,8 +59,13 @@ class FormTest extends AbstractTestCase
                 'layoutRootPaths' => ['Tests/Fixtures/Layouts/'],
             ]
         );
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getControllerExtensionName'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->method('getControllerExtensionName')->willReturn('Flux');
 
-        $renderingContext = $this->getMockBuilder(\TYPO3\CMS\Fluid\Core\Rendering\RenderingContext::class)->setMethods(
+        $renderingContext = $this->getMockBuilder(RenderingContext::class)->setMethods(
             [
                 'getTemplatePaths',
                 'getViewHelperVariableContainer',
@@ -70,6 +78,7 @@ class FormTest extends AbstractTestCase
                 'getExpressionNodeTypes',
                 'getControllerName',
                 'getControllerAction',
+                'getControllerContext',
             ]
         )->disableOriginalConstructor()->getMock();
         $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
@@ -83,6 +92,11 @@ class FormTest extends AbstractTestCase
         $renderingContext->method('getExpressionNodeTypes')->willReturn([]);
         $renderingContext->method('getControllerName')->willReturn('Content');
         $renderingContext->method('getControllerAction')->willReturn(basename($template, '.html'));
+        if (class_exists(ControllerContext::class)) {
+            $controllerContext = new ControllerContext();
+            $controllerContext->setRequest($request);
+            $renderingContext->method('getControllerContext')->willReturn($controllerContext);
+        }
 
         $namespaceDetectionTemplateProcessor->setRenderingContext($renderingContext);
 

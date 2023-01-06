@@ -35,13 +35,6 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
         parent::setUp();
     }
 
-    protected function tearDown(): void
-    {
-        AccessibleExtensionManagementUtility::setPackageManager(null);
-
-        parent::tearDown();
-    }
-
     public function testReturnsEmptySetOfDefinitionsOnTableNotExists(): void
     {
         $queryBuilder = $this->createQueryBuilderMock();

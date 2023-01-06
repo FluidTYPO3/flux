@@ -71,20 +71,6 @@ class TypeConverterPipeTest extends AbstractPipeTestCase
     /**
      * @test
      */
-    public function conductingDataThrowsExceptionWhenTypeConverterCannotConvertToTargetType()
-    {
-        $instance = $this->createInstance();
-        $converterClass = DateTimeConverter::class;
-        $converter = new $converterClass();
-        $instance->setTypeConverter($converter);
-        $instance->setTargetType('TYPO3\CMS\Domain\Model\FrontendUser');
-        $this->expectExceptionCode(1386292424);
-        $instance->conduct($this->defaultData);
-    }
-
-    /**
-     * @test
-     */
     public function conductingDataThrowsPipeExceptionWhenTypeConverterReturnsError()
     {
         $instance = $this->createInstance();

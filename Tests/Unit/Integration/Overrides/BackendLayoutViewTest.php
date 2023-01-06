@@ -34,7 +34,7 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     public function testCanSetProvider()
     {
-        $instance = new BackendLayoutView();
+        $instance = $this->getMockBuilder(BackendLayoutView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $instance->setProvider($provider);
         $this->assertSame($provider, $this->getInaccessiblePropertyValue($instance, 'provider'));
@@ -42,7 +42,7 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     public function testCanSetRecord()
     {
-        $instance = new BackendLayoutView();
+        $instance = $this->getMockBuilder(BackendLayoutView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $record = ['foo' => 'bar'];
         $instance->setRecord($record);
         $this->assertSame($record, $this->getInaccessiblePropertyValue($instance, 'record'));

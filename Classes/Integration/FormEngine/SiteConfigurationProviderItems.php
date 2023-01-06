@@ -34,9 +34,9 @@ class SiteConfigurationProviderItems
                 if ($templateFilename === null) {
                     continue;
                 }
-                $label = (string) $form->getLabel();
+                $label = $form->getLabel();
                 $identity = $extensionName . '->' . lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
-                $label = $this->translate((string) $label) ?? $identity;
+                $label = $this->translate((string) $label, $extensionName) ?? $label ?? $identity;
                 $tca['items'][] = [$label, $identity];
             }
         }
@@ -46,8 +46,8 @@ class SiteConfigurationProviderItems
     /**
      * @codeCoverageIgnore
      */
-    protected function translate(string $label): ?string
+    protected function translate(string $label, string $extensionName): ?string
     {
-        return LocalizationUtility::translate($label);
+        return LocalizationUtility::translate($label, $extensionName);
     }
 }

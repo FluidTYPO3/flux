@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content;
  */
 
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
@@ -58,6 +59,8 @@ class ContentTypeManager implements SingletonInterface
                 );
                 $this->typeNames = array_merge($this->typeNames, array_keys($types));
             } catch (DBALException $error) {
+                // Suppress schema- or connection-related issues
+            } catch (Exception $error) {
                 // Suppress schema- or connection-related issues
             } catch (NoSuchCacheException $error) {
                 // Suppress caches not yet initialized errors
@@ -147,7 +150,7 @@ class ContentTypeManager implements SingletonInterface
             try {
                 $cache = $cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('cache_runtime');
+                $cache = $cacheManager->getCache('runtime');
             }
         }
         return $cache;

@@ -542,7 +542,8 @@ class DataHandlerSubscriber
         if (!$primaryProvider) {
             return [
                 $originalRecord,
-                []
+                [],
+                [],
             ];
         }
 
@@ -552,7 +553,8 @@ class DataHandlerSubscriber
         if (empty($childColPosValues)) {
             return [
                 $originalRecord,
-                []
+                [],
+                [],
             ];
         }
 

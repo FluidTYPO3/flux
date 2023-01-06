@@ -50,7 +50,6 @@ class ContentTypeBuilderTest extends AbstractTestCase
         unset($GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig']);
 
         CompatibilityRegistry::register(ContentTypeBuilder::DEFAULT_SHOWITEM, []);
-        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
     public function testAddBoilerplateTableConfiguration(): void

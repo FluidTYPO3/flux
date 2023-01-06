@@ -21,7 +21,11 @@ class PagePreviewRenderer
         $pageProvider = $this->getPageProvider();
         $previewContent = '';
 
-        $row = $this->getRecord($pageLayoutController->id);
+        $idProperty = new \ReflectionProperty($pageLayoutController, 'id');
+        $idProperty->setAccessible(true);
+        $id = $idProperty->getValue($pageLayoutController);
+
+        $row = $this->getRecord(is_scalar($id) ? (integer) $id : 0);
         if (!$row) {
             return '';
         }
@@ -34,7 +38,7 @@ class PagePreviewRenderer
                 PreviewView::OPTION_MODE => PreviewView::MODE_NONE
             ]);
 
-            list(, $previewContent, ) = $pageProvider->getPreview($row);
+            [, $previewContent, ] = $pageProvider->getPreview($row);
         }
 
         return $previewContent;

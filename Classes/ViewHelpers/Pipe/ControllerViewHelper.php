@@ -49,12 +49,19 @@ class ControllerViewHelper extends AbstractPipeViewHelper
         /** @var array $arguments */
         $extensionName = $arguments['extensionName'];
         $controller = $arguments['controller'];
-        $controllerContext = $renderingContext->getControllerContext();
+        $request = null;
+        if (method_exists($renderingContext, 'getControllerContext')) {
+            $controllerContext = $renderingContext->getControllerContext();
+            $request = $controllerContext->getRequest();
+        } elseif (method_exists($renderingContext, 'getRequest')) {
+            $request = $renderingContext->getRequest();
+        }
+
         if (empty($extensionName)) {
-            $extensionName = $controllerContext->getRequest()->getControllerExtensionName();
+            $extensionName = $request->getControllerExtensionName();
         }
         if (empty($controller)) {
-            $controller = $controllerContext->getRequest()->getControllerObjectName();
+            $controller = $request->getControllerObjectName();
         }
         /** @var ControllerPipe $pipe */
         $pipe = GeneralUtility::makeInstance(ControllerPipe::class);

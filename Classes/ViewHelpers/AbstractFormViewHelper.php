@@ -93,8 +93,17 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         if ($extensionName = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
             return is_scalar($extensionName) ? (string) $extensionName : 'FluidTYPO3.Flux';
         }
-        $controllerContext = $renderingContext->getControllerContext();
-        if ($controllerContext && $controllerContext->getRequest()) {
+        $request = null;
+        $controllerContext = null;
+        if (method_exists($renderingContext, 'getControllerContext')) {
+            $controllerContext = $renderingContext->getControllerContext();
+            if ($controllerContext && $controllerContext->getRequest()) {
+                $request = $controllerContext->getRequest();
+            }
+        } elseif (method_exists($renderingContext, 'getRequest')) {
+            $request = $renderingContext->getRequest();
+        }
+        if (!$request && $controllerContext) {
             $request = $controllerContext->getRequest();
             /** @var string|null $controllerExtensionName */
             $controllerExtensionName = $request->getControllerExtensionName();

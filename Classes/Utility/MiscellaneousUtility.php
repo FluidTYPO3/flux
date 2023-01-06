@@ -131,7 +131,7 @@ class MiscellaneousUtility
         foreach ($dom->getElementsByTagName('el') as $containerNode) {
             /** @var DOMElement $containerNode */
             $hasIdNode = false;
-            if ($containerNode->attributes instanceof \DOMNamedNodeMap && 0 < $containerNode->attributes->length) {
+            if ($containerNode->attributes instanceof \DOMNamedNodeMap && 0 < count($containerNode->attributes)) {
                 // skip <el> tags reserved for other purposes by attributes; only allow pure <el> tags.
                 continue;
             }

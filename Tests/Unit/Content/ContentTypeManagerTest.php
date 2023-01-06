@@ -34,6 +34,12 @@ class ContentTypeManagerTest extends AbstractTestCase
 
     public function testFetchContentTypesSuppressesSpecificExceptionTypes(): void
     {
+        if (class_exists(DBALException::class)) {
+            $exception = new DBALException('some error');
+        } else {
+            $exception = new \Doctrine\DBAL\Driver\PDO\Exception('some error');
+        }
+
         $subject = $this->getMockBuilder(ContentTypeManager::class)
             ->setMethods(
                 [
@@ -44,7 +50,7 @@ class ContentTypeManagerTest extends AbstractTestCase
             )
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->method('fetchDropInContentTypes')->willThrowException(new DBALException('some error'));
+        $subject->method('fetchDropInContentTypes')->willThrowException($exception);
         $subject->method('fetchFileBasedContentTypes')->willThrowException(new NoSuchCacheException('some error'));
         self::assertSame([], $subject->fetchContentTypes());
     }

@@ -17,6 +17,8 @@ use TYPO3\CMS\Core\Context\VisibilityAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
+use TYPO3\CMS\Core\Http\ApplicationType;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -67,7 +69,7 @@ class RecordService implements SingletonInterface
      */
     public function getSingle($table, $fields, $uid)
     {
-        if (TYPO3_MODE === 'BE') {
+        if ($this->isBackendContext()) {
             return BackendUtility::getRecord($table, $uid, $fields);
         }
         $results = $this->getQueryBuilder($table)
@@ -144,7 +146,9 @@ class RecordService implements SingletonInterface
      */
     protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
     {
-        if (TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE) {
+        if ($this->isBackendContext()) {
+            $queryBuilder->getRestrictions()->removeAll();
+        } else {
             if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
                 $context = new Context();
                 $visibility = new VisibilityAspect(true, true);
@@ -153,8 +157,16 @@ class RecordService implements SingletonInterface
                 $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
                 $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
             }
-        } else {
-            $queryBuilder->getRestrictions()->removeAll();
         }
+    }
+
+    protected function isBackendContext(): bool
+    {
+        if (defined('TYPO3_MODE')) {
+            return TYPO3_MODE !== 'FE';
+        }
+        /** @var ServerRequest $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        return ApplicationType::fromRequest($request)->isFrontend();
     }
 }

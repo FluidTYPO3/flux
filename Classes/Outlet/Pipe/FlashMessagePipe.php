@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
 
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
  * Pipe: Flash Message
@@ -31,11 +32,16 @@ class FlashMessagePipe extends AbstractPipe implements PipeInterface
      */
     public function conduct($data)
     {
+        if (class_exists(ContextualFeedbackSeverity::class)) {
+            $severity = ContextualFeedbackSeverity::from($this->getSeverity());
+        } else {
+            $severity = (integer) $this->getSeverity();
+        }
         $queue = $this->getFlashMessageQueue();
         $flashMessage = new FlashMessage(
             (string) $this->getMessage(),
             (string) $this->getTitle(),
-            (integer) $this->getSeverity(),
+            $severity,
             (boolean) $this->getStoreInSession()
         );
         $queue->enqueue($flashMessage);

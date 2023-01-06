@@ -7,6 +7,24 @@ services:
   FluidTYPO3\Flux\:
     resource: '../Classes/*'
 
+  FluidTYPO3\Flux\Integration\BackendLayoutRenderer:
+    public: true
+    autowire: false
+  TYPO3\CMS\Backend\View\BackendViewFactory:
+    public: true
+
+  FluidTYPO3\Flux\Integration\Event\PageContentPreviewRenderingEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-boot-completed'
+        method: 'renderPreview'
+        event: TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent
+  FluidTYPO3\Flux\Integration\Event\BootCompletedEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-boot-completed'
+        method: 'spoolQueuedTcaOperations'
+        event: TYPO3\CMS\Core\Core\Event\BootCompletedEvent
   FluidTYPO3\Flux\Integration\Event\AfterLocalizationControllerColumnsEventListener:
     tags:
       - name: event.listener
@@ -19,3 +37,15 @@ services:
         identifier: 'flux-requireColumnPositionJavaScript'
         method: 'requireColumnPositionJavaScript'
         event: TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent
+  FluidTYPO3\Flux\Integration\Event\BeforeFlexFormDataStructureIdentifierInitializedEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-beforeFlexFormDataStructureIdentifierInitializedEvent'
+        method: 'applyFluxFlexFormIdentifier'
+        event: TYPO3\CMS\Core\Configuration\Event\BeforeFlexFormDataStructureIdentifierInitializedEvent
+  FluidTYPO3\Flux\Integration\Event\BeforeFlexFormDataStructureParsedEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-beforeFlexFormDataStructureParsedEvent'
+        method: 'applyFluxFlexFormDataStructure'
+        event: TYPO3\CMS\Core\Configuration\Event\BeforeFlexFormDataStructureParsedEvent

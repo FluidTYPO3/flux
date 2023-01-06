@@ -22,24 +22,11 @@ use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * MiscellaneousUtilityTest
- */
 class MiscellaneousUtilityTest extends AbstractTestCase
 {
-    /**
-     * @var PackageManager|null
-     */
-    protected $packageManagerBackup;
-
-    /**
-     * Setup
-     */
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->packageManagerBackup = AccessibleExtensionManagementUtility::getPackageManager();
 
         // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
         // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
@@ -52,7 +39,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
             ]
         ]);
         GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryMock);
-        $router = GeneralUtility::makeInstance(Router::class);
+        $router = $this->getMockBuilder(Router::class)->disableOriginalConstructor()->getMock();
         try {
             $router->match('tce_db');
         } catch (ResourceNotFoundException $error) {
@@ -62,7 +49,6 @@ class MiscellaneousUtilityTest extends AbstractTestCase
 
     protected function tearDown(): void
     {
-        AccessibleExtensionManagementUtility::setPackageManager($this->packageManagerBackup);
         GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
     }
 

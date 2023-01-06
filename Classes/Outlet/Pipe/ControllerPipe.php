@@ -9,9 +9,9 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  */
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\RequestBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
-use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Extbase\Mvc\Response;
 
@@ -68,12 +68,15 @@ class ControllerPipe extends AbstractPipe implements PipeInterface
         $extensionName = $this->getExtensionName();
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
 
-        /** @var Request $request */
-        $request = GeneralUtility::makeInstance(Request::class);
-        $request->setControllerName($this->getController());
-        $request->setControllerActionName($this->getAction());
-        $request->setControllerExtensionName($extensionName);
-        $request->setArguments($data);
+        /** @var RequestBuilder $requestBuilder */
+        $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
+        $request = $requestBuilder->buildRequestFor(
+            $extensionName,
+            $this->getController(),
+            $this->getAction(),
+            '',
+            $data
+        );
 
         /** @var Response $response */
         $response = GeneralUtility::makeInstance(Response::class);

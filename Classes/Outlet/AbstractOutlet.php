@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * ### Outlet Definition
@@ -46,7 +46,7 @@ abstract class AbstractOutlet implements OutletInterface
     protected array $arguments = [];
 
     /**
-     * @var ViewInterface
+     * @var ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface
      */
     protected $view;
 
@@ -106,12 +106,18 @@ abstract class AbstractOutlet implements OutletInterface
         return $pipe;
     }
 
-    public function getView(): ViewInterface
+    /**
+     * @return ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface
+     */
+    public function getView()
     {
         return $this->view;
     }
 
-    public function setView(ViewInterface $view): self
+    /**
+     * @param ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
+     */
+    public function setView($view): self
     {
         $this->view = $view;
         return $this;

@@ -8,12 +8,20 @@ namespace FluidTYPO3\Flux\Outlet\Pipe;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Interface for Pipes which process data for Outlets.
  */
 interface ViewAwarePipeInterface extends PipeInterface
 {
-    public function setView(ViewInterface $view): self;
+    /**
+     * @param ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
+     */
+    public function setView($view): self;
+
+    /**
+     * @return ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface
+     */
+    public function getView();
 }

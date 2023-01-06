@@ -27,6 +27,10 @@ class FormDataTransformerTest extends AbstractTestCase
 
     protected function setUp(): void
     {
+        if (!class_exists(FrontendUser::class)) {
+            $this->markTestSkipped('Skipping test with FrontendUser dependency');
+        }
+
         parent::setUp();
 
         $this->frontendUser = $this->getMockBuilder(FrontendUser::class)

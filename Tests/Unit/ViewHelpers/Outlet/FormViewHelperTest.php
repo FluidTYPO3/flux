@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\Outlet\FormViewHelper;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -77,6 +78,8 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         $uriBuilder->method('uriFor')->willReturn('url');
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
 
+        GeneralUtility::addInstance(UriBuilder::class, $uriBuilder);
+
         $tagBuilder = $this->getMockBuilder(TagBuilder::class)->setMethods(['render'])->getMock();
         $tagBuilder->method('render')->willReturn('rendered');
 
@@ -84,12 +87,20 @@ class FormViewHelperTest extends AbstractViewHelperTestCase
         $this->viewHelperVariableContainer->add(FormViewHelper::class, 'provider', $provider);
 
         $subject = $this->getMockBuilder(FormViewHelper::class)
-            ->setMethods(['renderChildren', 'renderHiddenReferrerFields', 'renderTrustedPropertiesField'])
+            ->setMethods(
+                [
+                    'renderChildren',
+                    'renderHiddenReferrerFields',
+                    'renderTrustedPropertiesField',
+                    'getDefaultFieldNamePrefix'
+                ]
+            )
             ->disableOriginalConstructor()
             ->getMock();
         $subject->setRenderingContext($this->renderingContext);
         $subject->method('renderHiddenReferrerFields')->willReturn('');
         $subject->method('renderTrustedPropertiesField')->willReturn('');
+        $subject->method('getDefaultFieldNamePrefix')->willReturn('prefix');
 
         $this->setInaccessiblePropertyValue($subject, 'tag', $tagBuilder);
 

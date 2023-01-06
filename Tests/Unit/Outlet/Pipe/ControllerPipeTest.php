@@ -9,7 +9,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
  */
 
 use FluidTYPO3\Flux\Outlet\Pipe\ControllerPipe;
+use FluidTYPO3\Flux\Utility\RequestBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Dispatcher;
 use TYPO3\CMS\Extbase\Mvc\Request;
@@ -37,11 +39,24 @@ class ControllerPipeTest extends AbstractPipeTestCase
     protected function setUp(): void
     {
         $this->response = $this->getMockBuilder(Response::class)->setMethods(['getContent'])->getMock();
-        $this->singletonInstances[Dispatcher::class] = $this->getMockBuilder(Dispatcher::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        GeneralUtility::addInstance(Request::class, new Request());
+        $dispatcher = $this->getMockBuilder(Dispatcher::class)->disableOriginalConstructor()->getMock();
+        if (is_a(Dispatcher::class, SingletonInterface::class, true)) {
+            $this->singletonInstances[Dispatcher::class] = $dispatcher;
+        } else {
+            GeneralUtility::addInstance(Dispatcher::class, $dispatcher);
+        }
+        GeneralUtility::addInstance(
+            Request::class,
+            $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()
+        );
         GeneralUtility::addInstance(Response::class, $this->response);
+
+        $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
+            ->setMethods(['getEnvironmentVariable'])
+            ->getMock();
+        $requestBuilder->method('getEnvironmentVariable')->willReturn('env');
+
+        GeneralUtility::addInstance(RequestBuilder::class, $requestBuilder);
 
         parent::setUp();
     }

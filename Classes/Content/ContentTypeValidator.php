@@ -11,14 +11,12 @@ namespace FluidTYPO3\Flux\Content;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Integration\ViewBuilder;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
 
@@ -36,16 +34,9 @@ class ContentTypeValidator
 {
     public function validateContentTypeRecord(array $parameters): string
     {
-        /** @var Request $request */
-        $request = GeneralUtility::makeInstance(Request::class);
-        /** @var ControllerContext $context */
-        $context = GeneralUtility::makeInstance(ControllerContext::class);
-        $context->setRequest($request);
-        /** @var TemplateView $view */
-        $view = GeneralUtility::makeInstance(TemplateView::class);
-        $view->getRenderingContext()->setControllerContext($context);
-        $view->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName('flux');
-        $view->getRenderingContext()->setControllerName('Content');
+        /** @var ViewBuilder $viewBuilder */
+        $viewBuilder = GeneralUtility::makeInstance(ViewBuilder::class);
+        $view = $viewBuilder->buildTemplateView('FluidTYPO3.Flux', 'Content', 'validation');
 
         $record = $parameters['row'];
         $recordIsNew = strncmp((string)$record['uid'], 'NEW', 3) === 0;
@@ -53,7 +44,7 @@ class ContentTypeValidator
         $view->assign('recordIsNew', $recordIsNew);
 
         if ($recordIsNew) {
-            return $view->render('validation');
+            return $view->render();
         }
 
         /** @var ContentTypeManager $contentTypeManager */
@@ -61,7 +52,7 @@ class ContentTypeValidator
         $contentType = $contentTypeManager->determineContentTypeForTypeString($record['content_type']);
         if (!$contentType) {
             $view->assign('recordIsNew', true);
-            return $view->render('validation');
+            return $view->render();
         }
 
         $usesTemplateFile = true;
@@ -85,7 +76,7 @@ class ContentTypeValidator
             ],
         ]);
 
-        return $view->render('validation');
+        return $view->render();
     }
 
     protected function validateContextMatchesSignature(ContentTypeDefinitionInterface $definition): bool

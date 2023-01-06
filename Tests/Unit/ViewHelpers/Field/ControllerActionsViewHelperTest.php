@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Controller\ContentController;
+use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
@@ -124,9 +126,18 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
             'separator' => ' :: '
         );
         $instance = $this->buildViewHelperInstance($arguments);
-        $request = new Request();
-        $request->setControllerExtensionName('Flux');
-        if (method_exists($request, 'setcontrollerVendorName')) {
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getExtbaseAttribute'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        if (class_exists(ExtbaseRequestParameters::class)) {
+            $parameters = new ExtbaseRequestParameters(ContentController::class);
+            $parameters->setControllerExtensionName('Flux');
+            $request->method('getExtbaseAttribute')->willReturn($parameters);
+        } else {
+            $request->setControllerExtensionName('Flux');
+        }
+        if (method_exists($request, 'setControllerVendorName')) {
             $request->setControllerVendorName('FluidTYPO3');
             $expected = $expected = 'FluidTYPO3.Flux';
         } else {

@@ -49,8 +49,6 @@ class DropInContentTypeDefinitionTest extends AbstractTestCase
         parent::tearDown();
 
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = [];
-
-        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
 

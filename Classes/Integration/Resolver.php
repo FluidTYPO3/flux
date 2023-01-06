@@ -63,4 +63,11 @@ class Resolver
         }
         return $potentialClassName;
     }
+
+    public function resolveControllerNameFromControllerClassName(string $controllerClassName): string
+    {
+        $parts = explode('\\', $controllerClassName);
+        $className = array_pop($parts);
+        return substr($className, 0, -10);
+    }
 }

@@ -20,6 +20,7 @@ use TYPO3\CMS\Extbase\Property\PropertyMapper;
 use TYPO3\CMS\Extbase\Validation\Error;
 use TYPO3\CMS\Extbase\Validation\Exception\NoSuchValidatorException;
 use TYPO3\CMS\Extbase\Validation\Validator\NotEmptyValidator;
+use TYPO3\CMS\Extbase\Validation\Validator\ValidatorInterface;
 use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
 
 /**
@@ -141,7 +142,7 @@ class OutletArgumentTest extends AbstractTestCase
      */
     public function testSetValueValidatesUsingValidator()
     {
-        $validator = $this->getMockBuilder(NotEmptyValidator::class)->setMethods(['validate'])->getMock();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)->setMethods(['validate'])->getMockForAbstractClass();
         $validator->expects($this->once())->method('validate')->with('stringvalue')->willReturn(new Result());
         $argument = new OutletArgument('foobar', 'string');
         $argument->injectPropertyMapper($this->propertyMapper);
@@ -164,7 +165,7 @@ class OutletArgumentTest extends AbstractTestCase
      */
     public function testGetValidationResultsReturnsResultsAfterSetValue()
     {
-        $validator = $this->getMockBuilder(NotEmptyValidator::class)->setMethods(['validate'])->getMock();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)->setMethods(['validate'])->getMockForAbstractClass();
         $validator->expects($this->once())->method('validate')->with('stringvalue')->willReturn(new Result());
         $argument = new OutletArgument('foobar', 'string');
         $argument->injectPropertyMapper($this->propertyMapper);
@@ -189,7 +190,7 @@ class OutletArgumentTest extends AbstractTestCase
     {
         $result = new Result();
         $result->addError(new Error('Some error', 123));
-        $validator = $this->getMockBuilder(NotEmptyValidator::class)->setMethods(['validate'])->getMock();
+        $validator = $this->getMockBuilder(ValidatorInterface::class)->setMethods(['validate'])->getMockForAbstractClass();
         $validator->expects($this->once())->method('validate')->with('stringvalue')->willReturn($result);
         $argument = new OutletArgument('foobar', 'string');
         $argument->injectPropertyMapper($this->propertyMapper);

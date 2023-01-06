@@ -12,7 +12,7 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Integration\ViewBuilder;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -24,14 +24,8 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Request as WebRequest;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
-use TYPO3\CMS\Fluid\View\TemplateView;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
@@ -77,6 +71,7 @@ class AbstractProvider implements ProviderInterface
 
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
+    protected ViewBuilder $viewBuilder;
 
     public function __construct()
     {
@@ -87,6 +82,10 @@ class AbstractProvider implements ProviderInterface
         /** @var WorkspacesAwareRecordService $recordService */
         $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->recordService = $recordService;
+
+        /** @var ViewBuilder $viewBuilder */
+        $viewBuilder = GeneralUtility::makeInstance(ViewBuilder::class);
+        $this->viewBuilder = $viewBuilder;
     }
 
     public function loadSettings(array $settings): void
@@ -290,6 +289,11 @@ class AbstractProvider implements ProviderInterface
         $configurationSectionName = $this->getConfigurationSectionName($row);
         $viewVariables = $this->getViewVariables($row);
         $view = $this->getViewForRecord($row);
+        $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
+            FormViewHelper::class,
+            FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
+            $this->getExtensionKey($row)
+        );
 
         try {
             if ($configurationSectionName) {
@@ -468,6 +472,17 @@ class AbstractProvider implements ProviderInterface
         return $this->name;
     }
 
+    public function getPluginName(): string
+    {
+        return $this->pluginName;
+    }
+
+    public function setPluginName(string $pluginName): self
+    {
+        $this->pluginName = $pluginName;
+        return $this;
+    }
+
     /**
      * Pre-process record data for the table that this ConfigurationProvider
      * is attached to.
@@ -618,51 +633,14 @@ class AbstractProvider implements ProviderInterface
         return $configuration;
     }
 
-    /**
-     * @template T
-     * @param array $row
-     * @param class-string<T> $viewClassName
-     * @return T&ViewInterface
-     */
-    public function getViewForRecord(array $row, string $viewClassName = TemplateView::class): ViewInterface
+    public function getViewForRecord(array $row): ViewInterface
     {
-        /** @var class-string $viewClassName */
-
-        $controllerExtensionKey = $this->getControllerExtensionKeyFromRecord($row);
-
-        /** @var WebRequest $request */
-        $request = GeneralUtility::makeInstance(WebRequest::class);
-        if (method_exists($request, 'setRequestUri')) {
-            $request->setRequestUri($this->getEnvironmentVariable('TYPO3_REQUEST_URL'));
-        }
-        if (method_exists($request, 'setBaseUri')) {
-            $request->setBaseUri($this->getEnvironmentVariable('TYPO3_SITE_URL'));
-        }
-        $request->setControllerExtensionName(ExtensionNamingUtility::getExtensionName($controllerExtensionKey));
-        $request->setControllerActionName($this->getControllerActionFromRecord($row));
-        $request->setControllerName($this->getControllerNameFromRecord($row));
-        /** @var UriBuilder $uriBuilder */
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $uriBuilder->setRequest($request);
-        /** @var ControllerContext $controllerContext */
-        $controllerContext = GeneralUtility::makeInstance(ControllerContext::class);
-        $controllerContext->setRequest($request);
-        $controllerContext->setUriBuilder($uriBuilder);
-        /** @var RenderingContextInterface $renderingContext */
-        $renderingContext = GeneralUtility::makeInstance(RenderingContext::class);
-        $renderingContext->setControllerContext($controllerContext);
-        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
-            ExtensionNamingUtility::getExtensionKey($controllerExtensionKey)
+        return $this->viewBuilder->buildTemplateView(
+            $this->getControllerExtensionKeyFromRecord($row),
+            $this->getControllerNameFromRecord($row),
+            $this->getControllerActionFromRecord($row),
+            $this->getTemplatePathAndFilename($row)
         );
-        $renderingContext->getTemplatePaths()->setTemplatePathAndFilename(
-            (string) $this->getTemplatePathAndFilename($row)
-        );
-        $renderingContext->setControllerName($this->getControllerNameFromRecord($row));
-        $renderingContext->setControllerAction($this->getControllerActionFromRecord($row));
-        /** @var T&ViewInterface $view */
-        $view = GeneralUtility::makeInstance($viewClassName);
-        $view->setRenderingContext($renderingContext);
-        return $view;
     }
 
     /**
@@ -679,10 +657,12 @@ class AbstractProvider implements ProviderInterface
      */
     public function getPreview(array $row): array
     {
-        $previewContent = $this->getViewForRecord($row, PreviewView::class)->getPreview(
-            $this,
-            $row
-        );
+        $previewContent = $this->viewBuilder->buildPreviewView(
+            $this->getControllerExtensionKeyFromRecord($row),
+            $this->getControllerNameFromRecord($row),
+            $this->getControllerActionFromRecord($row),
+            $this->getTemplatePathAndFilename($row)
+        )->getPreview($this, $row);
         return [null, $previewContent, empty($previewContent)];
     }
 
@@ -701,16 +681,6 @@ class AbstractProvider implements ProviderInterface
                 $variable
             ]
         );
-    }
-    public function getPluginName(): string
-    {
-        return $this->pluginName;
-    }
-
-    public function setPluginName(string $pluginName): self
-    {
-        $this->pluginName = $pluginName;
-        return $this;
     }
 
     /**
@@ -871,17 +841,5 @@ class AbstractProvider implements ProviderInterface
         /** @var TemplatePaths $paths */
         $paths = GeneralUtility::makeInstance(TemplatePaths::class, $extensionKeyOrConfiguration);
         return $paths;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getEnvironmentVariable(string $name): string
-    {
-        $returnValue = GeneralUtility::getIndpEnv($name);
-        if (!is_scalar($returnValue)) {
-            return '';
-        }
-        return $returnValue ? (string) $returnValue : '';
     }
 }

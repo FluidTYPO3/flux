@@ -252,7 +252,7 @@ class PageService implements SingletonInterface
     {
         /** @var CacheManager $cacheManager */
         $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-        return $cacheManager->getCache('cache_runtime');
+        return $cacheManager->getCache('runtime');
     }
 
     /**

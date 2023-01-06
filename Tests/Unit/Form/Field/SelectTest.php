@@ -104,6 +104,10 @@ class SelectTest extends AbstractFieldTest
      */
     public function canConsumeQueryObjectItems()
     {
+        if (!class_exists(FrontendUser::class)) {
+            $this->markTestSkipped('Skipping test with FrontendUser dependency');
+        }
+
         $GLOBALS['TCA']['foobar']['ctrl']['label'] = 'username';
 
         $fluxService = $this->getMockBuilder(FluxService::class)
