@@ -30,9 +30,11 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
             ->getMock();
         $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getRecords'])
+            ->setMethods(['getRecords', 'cObjGetSingle'])
             ->getMock();
         $GLOBALS['TSFE']->cObj->method('getRecords')->willReturn([]);
+        $GLOBALS['TSFE']->cObj->method('cObjGetSingle')->willReturn('object');
+
         $GLOBALS['TCA']['tt_content']['ctrl'] = [];
 
         $grid = Grid::create(

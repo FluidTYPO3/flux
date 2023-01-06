@@ -17,7 +17,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer;
+use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Features;
@@ -25,13 +25,12 @@ use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
-/**
- * PreviewView
- */
 class PreviewView extends TemplateView
 {
     const OPTION_PREVIEW = 'preview';
@@ -52,18 +51,20 @@ class PreviewView extends TemplateView
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $workspacesAwareRecordService;
 
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
+    public function __construct(RenderingContextInterface $context = null)
     {
+        parent::__construct($context);
+
+        /** @var ConfigurationManagerInterface $configurationManager */
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
         $this->configurationManager = $configurationManager;
-    }
 
-    public function injectConfigurationService(FluxService $configurationService): void
-    {
+        /** @var FluxService $configurationService */
+        $configurationService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $configurationService;
-    }
 
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService): void
-    {
+        /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
+        $workspacesAwareRecordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->workspacesAwareRecordService = $workspacesAwareRecordService;
     }
 
@@ -190,7 +191,11 @@ class PreviewView extends TemplateView
             }
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
             if ($pageLayoutView instanceof BackendLayoutRenderer) {
-                $content .= $pageLayoutView->drawContent(false);
+                if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+                    $content .= $pageLayoutView->drawContent($GLOBALS['TYPO3_REQUEST'], $pageLayoutView->getContext());
+                } else {
+                    $content .= $pageLayoutView->drawContent(false);
+                }
             } elseif (method_exists($pageLayoutView, 'start') && method_exists($pageLayoutView, 'generateList')) {
                 $pageLayoutView->start($pageUid, 'tt_content', 0);
                 $pageLayoutView->generateList();
@@ -260,8 +265,10 @@ class PreviewView extends TemplateView
                 $configuration->setSelectedLanguageId($language->getLanguageId());
             }
 
-            /** @var BackendLayoutRenderer $backendLayoutRenderer */
-            $backendLayoutRenderer = GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
+            $backendLayoutRenderer = $this->createBackendLayoutRenderer($context);
+
+            $backendLayoutRenderer->setContext($context);
+
             return $backendLayoutRenderer;
         }
 
@@ -314,6 +321,26 @@ class PreviewView extends TemplateView
         }
 
         return $view;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function createBackendLayoutRenderer(PageLayoutContext $context): BackendLayoutRenderer
+    {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+            /** @var BackendViewFactory $backendViewFactory */
+            $backendViewFactory = GeneralUtility::getContainer()->get(BackendViewFactory::class);
+            /** @var BackendLayoutRenderer $backendLayoutRenderer */
+            $backendLayoutRenderer = GeneralUtility::makeInstance(
+                BackendLayoutRenderer::class,
+                $backendViewFactory
+            );
+        } else {
+            /** @var BackendLayoutRenderer $backendLayoutRenderer */
+            $backendLayoutRenderer = GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
+        }
+        return $backendLayoutRenderer;
     }
 
     /**

@@ -24,8 +24,6 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
@@ -335,18 +333,8 @@ class FluxServiceTest extends AbstractTestCase
             $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass()
         );
 
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)
-            ->setMethods(array('getConfiguration'))
-            ->disableOriginalConstructor()
-            ->getMock();
-        $configurationManager->expects($this->once())->method('getConfiguration')
-            ->with(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT)
-            ->willReturn(array('plugin.' => array('tx_test.' => array('settings.' => array('test_var' => 'test_val')))));
-
-        $this->setInaccessiblePropertyValue($service, 'configurationManager', $configurationManager);
-
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
-        $this->assertEquals(array('test_var' => 'test_val'), $result);
+        $this->assertEquals([], $result);
     }
 
     /**
@@ -363,16 +351,8 @@ class FluxServiceTest extends AbstractTestCase
             ->getMock();
         $service->method('getRuntimeCache')->willReturn($cache);
 
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)
-            ->setMethods(array('getConfiguration'))
-            ->disableOriginalConstructor()
-            ->getMock();
-        $configurationManager->expects($this->never())->method('getConfiguration');
-
-        $this->setInaccessiblePropertyValue($service, 'configurationManager', $configurationManager);
-
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
-        $this->assertEquals(array('test_var' => 'test_val'), $result);
+        $this->assertEquals(['test_var' => 'test_val'], $result);
     }
 
     /**

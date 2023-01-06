@@ -139,7 +139,7 @@ class EmailPipe extends AbstractPipe implements PipeInterface, ViewAwarePipeInte
         $body = $this->getBody();
         if (empty($body)) {
             if ($this->getBodySection() !== null && method_exists($this->view, 'renderSection')) {
-                $body = $this->view->renderSection($this->getBodySection(), $data, true);
+                $body = $this->view->renderSection($this->getBodySection(), (array) $data, true);
             } else {
                 $this->view->assignMultiple((array) $data);
                 $body = $this->view->render();

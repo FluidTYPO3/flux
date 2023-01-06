@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\Outlet;
 
 use FluidTYPO3\Flux\Outlet\Pipe\PipeInterface;
 use TYPO3\CMS\Extbase\Error\Result;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Outlet Interface
@@ -26,8 +26,16 @@ interface OutletInterface
     public function produce(): array;
     public function setPipesIn(array $pipes): self;
     public function fill(array $data): self;
-    public function getView(): ViewInterface;
-    public function setView(ViewInterface $view): self;
+
+    /**
+     * @return ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface
+     */
+    public function getView();
+
+    /**
+     * @param ViewInterface|\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
+     */
+    public function setView($view): self;
 
     /**
      * @return PipeInterface[]

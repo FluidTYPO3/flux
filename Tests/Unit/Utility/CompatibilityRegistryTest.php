@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class CompatibilityRegistryTest
@@ -26,6 +28,12 @@ class CompatibilityRegistryTest extends AbstractTestCase
      */
     public function testRegisterAndRetieve(array $versionedValues, $version, $default, $expected)
     {
+        $versionClass = $this->getMockBuilder(Typo3Version::class)
+            ->setMethods(['getVersion'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $versionClass->method('getVersion')->willReturn($version);
+        GeneralUtility::addInstance(Typo3Version::class, $versionClass);
         CompatibilityRegistry::register('foo', $versionedValues);
         $this->assertEquals($expected, CompatibilityRegistry::get('foo', $version, $default));
     }
@@ -85,6 +93,12 @@ class CompatibilityRegistryTest extends AbstractTestCase
      */
     public function testRegisterAndRetrieveFeatureFlag(array $versionedValues, $version, $flag, $expected)
     {
+        $versionClass = $this->getMockBuilder(Typo3Version::class)
+            ->setMethods(['getVersion'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $versionClass->method('getVersion')->willReturn($version);
+        GeneralUtility::addInstance(Typo3Version::class, $versionClass);
         CompatibilityRegistry::registerFeatureFlags('xyz', $versionedValues);
         $this->assertEquals($expected, CompatibilityRegistry::hasFeatureFlag('xyz', $flag, $version));
     }

@@ -1,6 +1,4 @@
 <?php
-defined('TYPO3_MODE') or die('Access denied.');
-
 if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
     $GLOBALS['SiteConfiguration']['site']['columns']['flux_page_templates'] = [
         'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:siteConfiguration.pageTemplates',

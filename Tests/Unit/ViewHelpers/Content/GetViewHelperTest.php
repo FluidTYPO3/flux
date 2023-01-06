@@ -16,6 +16,8 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageRepository;
@@ -34,9 +36,10 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             ->getMock();
         $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getRecords'])
+            ->setMethods(['getRecords', 'cObjGetSingle'])
             ->getMock();
         $GLOBALS['TSFE']->cObj->method('getRecords')->willReturn([]);
+        $GLOBALS['TSFE']->cObj->method('cObjGetSingle')->willReturn('object');
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)
             ->disableOriginalConstructor()
             ->setMethods(['enableFields'])
@@ -66,6 +69,11 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
 
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'provider', $provider);
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
+
+        $contentObjectFactory = $this->getMockBuilder(ContentObjectFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::addInstance(ContentObjectFactory::class, $contentObjectFactory);
     }
 
     /**

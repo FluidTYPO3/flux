@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\ViewAwarePipeTrait;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * ViewAwarePipeTraitTest

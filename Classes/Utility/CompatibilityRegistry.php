@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+
 /**
  * Compatibility Registry
  * ----------------------
@@ -204,7 +206,7 @@ abstract class CompatibilityRegistry
      */
     protected static function resolveVersionedValue(array &$versionedValues, string $version)
     {
-        $version = static::resolveVersion($version);
+        $version = VersionNumberUtility::getCurrentTypo3Version();
         krsort($versionedValues);
         foreach ($versionedValues as $valueVersion => $value) {
             if (version_compare($version, $valueVersion, '>=')) {

@@ -349,8 +349,6 @@ SOURCE;
         $file = $subject->getTemplatePathAndFilename();
 
         self::assertSame('./Resources/Private/Templates/Content/Proxy.html', $file);
-
-        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
     public function testGetFormReturnsExpectedFormComposition(): void

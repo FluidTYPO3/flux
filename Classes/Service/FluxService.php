@@ -28,9 +28,9 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -41,16 +41,11 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
  */
 class FluxService implements SingletonInterface
 {
-    protected ConfigurationManagerInterface $configurationManager;
     protected WorkspacesAwareRecordService $recordService;
     protected ResourceFactory $resourceFactory;
 
     public function __construct()
     {
-        /** @var ConfigurationManagerInterface $configurationManager */
-        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
-        $this->configurationManager = $configurationManager;
-
         /** @var WorkspacesAwareRecordService $recordService */
         $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->recordService = $recordService;
@@ -95,9 +90,17 @@ class FluxService implements SingletonInterface
         if ($fromCache) {
             return $fromCache;
         }
-        $all = (array) $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
-        );
+        $pageId = (integer) ($GLOBALS['TSFE']->id ?? 0);
+        if ($pageId === 0) {
+            return [];
+        }
+        /** @var RootlineUtility $rootLineUtility */
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageId);
+        $rootLine = $rootLineUtility->get();
+        /** @var TemplateService $templateService */
+        $templateService = GeneralUtility::makeInstance(TemplateService::class);
+        $templateService->start($rootLine);
+        $all = $templateService->setup;
         $value = &$all;
         foreach (explode('.', $path) as $segment) {
             $value = ($value[$segment . '.'] ?? $value[$segment] ?? null);
@@ -352,7 +355,7 @@ class FluxService implements SingletonInterface
         if (!$cache) {
             /** @var CacheManager $cacheManager */
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-            $cache = $cacheManager->getCache('cache_runtime');
+            $cache = $cacheManager->getCache('runtime');
         }
         return $cache;
     }
@@ -369,7 +372,7 @@ class FluxService implements SingletonInterface
             try {
                 $cache = $cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('cache_runtime');
+                $cache = $cacheManager->getCache('runtime');
             }
         }
         return $cache;

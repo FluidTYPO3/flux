@@ -39,8 +39,6 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
     {
         parent::tearDown();
 
-        AccessibleExtensionManagementUtility::setPackageManager(null);
-
         unset($GLOBALS['BE_USER']);
     }
 

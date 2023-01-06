@@ -101,8 +101,6 @@ class CoreTest extends AbstractTestCase
         AccessibleCore::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
         $registered = AccessibleCore::getRegisteredProviderExtensionKeys($fakeControllerName);
         $this->assertContains($fakeExtensionKey, $registered);
-
-        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
     /**

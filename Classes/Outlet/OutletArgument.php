@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Outlet;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use TYPO3\CMS\Extbase\Property\PropertyMapper;
@@ -194,7 +195,11 @@ class OutletArgument
 
         $this->validationResults = $this->propertyMapper->getMessages();
         if (count($this->validators) > 0) {
-            $conjunctionValidator = new ConjunctionValidator();
+            /** @var ConjunctionValidator $conjunctionValidator */
+            $conjunctionValidator = GeneralUtility::makeInstance(ConjunctionValidator::class);
+            if (method_exists($conjunctionValidator, 'setOptions')) {
+                $conjunctionValidator->setOptions([]);
+            }
             foreach ($this->validators as $validator) {
                 $conjunctionValidator->addValidator($validator);
             }

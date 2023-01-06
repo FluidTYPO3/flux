@@ -35,7 +35,9 @@ class ImplementationRegistry
     {
         $implementations = [];
         foreach (static::$implementations as $implementationData) {
+            /** @var class-string<ImplementationInterface> $registeredClassName */
             [$registeredClassName, $registeredSettings] = $implementationData;
+
             /** @var ImplementationInterface $instance */
             $instance = GeneralUtility::makeInstance($registeredClassName, $registeredSettings);
             if ($instance->appliesToTableField($table, $field) && $instance->appliesToRecord($record)) {

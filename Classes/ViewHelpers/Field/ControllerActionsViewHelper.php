@@ -170,18 +170,22 @@ class ControllerActionsViewHelper extends SelectViewHelper
         $actions = $arguments['actions'];
         $controllerName = $arguments['controllerName'];
         $separator = $arguments['separator'];
-        $controllerContext = $renderingContext->getControllerContext();
+
         if ($actions instanceof \Traversable) {
             $actions = iterator_to_array($actions);
         }
-        if ($controllerContext) {
-            if (empty($extensionName)) {
-                $request = $controllerContext->getRequest();
-                $extensionName = static::getFullExtensionNameFromRequest($request);
-            }
-            if (empty($pluginName)) {
-                $pluginName = $controllerContext->getRequest()->getPluginName();
-            }
+        $request = null;
+        if (method_exists($renderingContext, 'getControllerContext')) {
+            $controllerContext = $renderingContext->getControllerContext();
+            $request = $controllerContext->getRequest();
+        } elseif (method_exists($renderingContext, 'getRequest')) {
+            $request = $renderingContext->getRequest();
+        }
+        if (empty($extensionName)) {
+            $extensionName = static::getFullExtensionNameFromRequest($request);
+        }
+        if (empty($pluginName)) {
+            $pluginName = $request->getPluginName();
         }
         if (empty($extensionName) && empty($pluginName) && count($actions) < 1) {
             throw new \RuntimeException(
@@ -196,7 +200,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
         $component->setItems($arguments['items']);
-        $component->setControllerExtensionName($extensionName ?? 'FluidTYPO3.Flux');
+        $component->setControllerExtensionName($extensionName);
         $component->setPluginName($pluginName);
         $component->setControllerName($controllerName);
         $component->setActions($actions);

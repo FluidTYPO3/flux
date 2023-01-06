@@ -2,10 +2,10 @@
 
 namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 
+use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
-use FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor;
 
-class AccessibleTableConfigurationPostProcessor extends TableConfigurationPostProcessor
+class AccessibleSpooledConfigurationApplicator extends SpooledConfigurationApplicator
 {
     public static function setContentTypeBuilder(?ContentTypeBuilder $contentTypeBuilder): void
     {

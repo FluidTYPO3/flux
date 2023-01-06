@@ -34,7 +34,7 @@ class PagePreviewRendererTest extends AbstractTestCase
         $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $pageLayoutController->id = 123;
+        $this->setInaccessiblePropertyValue($pageLayoutController, 'id', 123);
 
         $result = $subject->render([], $pageLayoutController);
         self::assertSame('', $result);
@@ -54,7 +54,7 @@ class PagePreviewRendererTest extends AbstractTestCase
         $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $pageLayoutController->id = 123;
+        $this->setInaccessiblePropertyValue($pageLayoutController, 'id', 123);
         $result = $subject->render([], $pageLayoutController);
         $this->assertSame($expected, $result);
     }

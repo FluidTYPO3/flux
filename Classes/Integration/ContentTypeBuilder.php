@@ -350,7 +350,7 @@ class ContentTypeBuilder
     {
         /** @var CacheManager $cacheManager */
         $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-        return $cacheManager->getCache('cache_runtime');
+        return $cacheManager->getCache('runtime');
     }
 
     /**
@@ -363,7 +363,7 @@ class ContentTypeBuilder
         try {
             return $cacheManager->getCache('flux');
         } catch (NoSuchCacheException $error) {
-            return $cacheManager->getCache('cache_runtime');
+            return $cacheManager->getCache('runtime');
         }
     }
 

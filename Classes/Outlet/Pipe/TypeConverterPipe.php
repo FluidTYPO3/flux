@@ -87,17 +87,6 @@ class TypeConverterPipe extends AbstractPipe implements PipeInterface
         }
         $targetType = $this->getTargetType();
         $typeConverter = $this->getTypeConverter();
-        if (!$typeConverter->canConvertFrom($subject, $targetType)) {
-            throw new Exception(
-                sprintf(
-                    'TypeConverter %s cannot convert %s to %s',
-                    get_class($typeConverter),
-                    gettype($subject),
-                    $targetType
-                ),
-                1386292424
-            );
-        }
         $subject = $this->getTypeConverter()->convertFrom($subject, $targetType);
         if ($output instanceof Error) {
             throw new Exception(

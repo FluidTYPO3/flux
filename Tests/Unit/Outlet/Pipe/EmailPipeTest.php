@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Outlet\Pipe;
 
 use FluidTYPO3\Flux\Outlet\Pipe\EmailPipe;
 use FluidTYPO3\Flux\Outlet\Pipe\Exception;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * EmailPipeTest
@@ -77,7 +77,7 @@ class EmailPipeTest extends AbstractPipeTestCase
 
     public function testRendersBodyFromViewWithBodySection(): void
     {
-        $view = $this->getMockBuilder(ViewInterface::class)->addMethods(['renderSection'])->getMockForAbstractClass();
+        $view = $this->getMockBuilder(ViewInterface::class)->setMethods(['renderSection'])->getMockForAbstractClass();
         $view->expects(self::once())->method('renderSection')->willReturn('rendered');
 
         $instance = $this->createInstance();

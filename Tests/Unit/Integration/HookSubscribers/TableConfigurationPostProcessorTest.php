@@ -12,14 +12,15 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleTableConfigurationPostProcessor;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleSpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Core\ApplicationContext;
-use TYPO3\CMS\Core\TypoScript\TemplateService;
+use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Lang\LanguageService;
 use TYPO3Fluid\Fluid\Exception;
@@ -33,6 +34,9 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
 
     protected function setUp(): void
     {
+        if (!class_exists(TableConfigurationPostProcessingHookInterface::class)) {
+            $this->markTestSkipped('Skipping test with TableConfigurationPostProcessingHookInterface dependency');
+        }
         parent::setUp();
 
         $this->contentTypeBuilder = $this->getMockBuilder(ContentTypeBuilder::class)
@@ -44,7 +48,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
                 ]
             )
             ->getMock();
-        AccessibleTableConfigurationPostProcessor::setContentTypeBuilder($this->contentTypeBuilder);
+        AccessibleSpooledConfigurationApplicator::setContentTypeBuilder($this->contentTypeBuilder);
         $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)
             ->setMethods(['sL'])
             ->disableOriginalConstructor()
@@ -56,41 +60,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
         parent::tearDown();
 
         Core::clearQueuedContentTypeRegistrations();
-        AccessibleTableConfigurationPostProcessor::setContentTypeBuilder(null);
-    }
-
-    public function testIncludeStaticTypoScriptHook(): void
-    {
-        $subject = $this->getMockBuilder(TableConfigurationPostProcessor::class)
-            ->setMethods(['processData'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->expects(self::once())->method('processData');
-        $templateService = $this->getMockBuilder(TemplateService::class)
-            ->setMethods(['dummy'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->includeStaticTypoScriptHook([], $templateService);
-    }
-
-    public function testSpoolQueuedContentTypeTableConfigurations(): void
-    {
-        $singletons = GeneralUtility::getSingletonInstances();
-
-        $queue = [
-            [
-                'FluidTYPO3.Flux',
-                'Tests/Fixtures/Templates/Content/Default.html',
-                null,
-                null,
-            ],
-        ];
-
-        $this->contentTypeBuilder->expects(self::once())
-            ->method('addBoilerplateTableConfiguration')
-            ->with('flux_default');
-
-        TableConfigurationPostProcessor::spoolQueuedContentTypeTableConfigurations($queue);
+        AccessibleSpooledConfigurationApplicator::setContentTypeBuilder(null);
     }
 
     public function testProcessData(?Exception $exception1 = null, ?Exception $exception2 = null): void
@@ -108,7 +78,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
             ->getMock();
         $contentType1->method('getExtensionIdentity')->willReturn('FluidTYPO3.Flux');
         $contentType1->method('getTemplatePathAndFilename')
-            ->willReturn('Tests/Fixtures/Templates/Content/Default.html');
+            ->willReturn(__DIR__ . '/../../Fixtures/Templates/Content/Default.html');
         $contentType1->method('getContentTypeName')->willReturn('flux_default');
         $contentType1->method('getProviderClassName')->willReturn(Provider::class);
 
@@ -159,13 +129,15 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
             $this->contentTypeBuilder->expects(self::exactly(3))->method('registerContentType');
         }
 
-        $subject = $this->getMockBuilder(TableConfigurationPostProcessor::class)
+        $applicator = $this->getMockBuilder(SpooledConfigurationApplicator::class)
             ->setMethods(['getContentTypeManager', 'getApplicationContext'])
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->method('getContentTypeManager')->willReturn($contentTypeManager);
-        $subject->method('getApplicationContext')->willReturn(new ApplicationContext('Development'));
+        $applicator->method('getContentTypeManager')->willReturn($contentTypeManager);
+        $applicator->method('getApplicationContext')->willReturn(new ApplicationContext('Development'));
+        GeneralUtility::addInstance(SpooledConfigurationApplicator::class, $applicator);
 
+        $subject = new TableConfigurationPostProcessor();
         $subject->processData();
     }
 
@@ -177,21 +149,5 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
     public function testProcessDataWithExeptionInLoop2(): void
     {
         $this->testProcessData(null, new Exception('test'));
-    }
-
-    /**
-     * @test
-     */
-    public function canLoadProcessorAsUserObject()
-    {
-        $manager = $this->getMockBuilder(ContentTypeManager::class)->setMethods(['fetchContentTypes'])->getMock();
-        $manager->expects($this->atLeastOnce())->method('fetchContentTypes')->willReturn([]);
-        $object = $this->getMockBuilder(TableConfigurationPostProcessor::class)
-            ->setMethods(['getContentTypeManager', 'getApplicationContext'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $object->expects($this->atLeastOnce())->method('getContentTypeManager')->willReturn($manager);
-        $object->method('getApplicationContext')->willReturn(new ApplicationContext('Development'));
-        $object->processData();
     }
 }

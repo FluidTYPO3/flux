@@ -9,20 +9,18 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Integration\PreviewRenderer;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Fluid Template preview renderer
+ *
+ * @codeCoverageIgnore
  */
 class Preview implements PageLayoutViewDrawItemHookInterface
 {
-    protected static bool $assetsIncluded = false;
-
     /**
      * @param PageLayoutView $parentObject
      * @param boolean $drawItem
@@ -38,47 +36,20 @@ class Preview implements PageLayoutViewDrawItemHookInterface
         &$itemContent,
         array &$row
     ): void {
-        $fieldName = null;
-        $itemContent = '<a name="c' . $row['uid'] . '"></a>' . $itemContent;
-        $providers = $this->getConfigurationService()->resolveConfigurationProviders('tt_content', $fieldName, $row);
-        foreach ($providers as $provider) {
-            /** @var ProviderInterface $provider */
-            [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);
-            if (false === empty($previewHeader)) {
-                $headerContent = $previewHeader . (!empty($headerContent) ? ': ' . $headerContent : '');
-                $drawItem = false;
-            }
-            if (false === empty($previewContent)) {
-                $itemContent .= $previewContent;
-                $drawItem = false;
-            }
-            if (false === $continueDrawing) {
-                break;
-            }
+        /** @var PreviewRenderer $renderer */
+        $renderer = GeneralUtility::makeInstance(PreviewRenderer::class);
+        $preview = $renderer->renderPreview($row);
+        if (empty($preview)) {
+            return;
         }
-        $this->attachAssets();
+        [$header, $content, $continue] = $preview;
+        if (!empty($content)) {
+            $itemContent = (string) $content;
+        }
+        if (!empty($header)) {
+            $headerContent = (string) $header;
+        }
+        $drawItem = (string) $continue;
         unset($parentObject);
-    }
-
-    protected function attachAssets(): void
-    {
-        if (false === static::$assetsIncluded) {
-            /** @var PageRenderer $pageRenderer */
-            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-            $pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
-            $pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
-
-            static::$assetsIncluded = true;
-        }
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getConfigurationService(): FluxService
-    {
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
-        return $fluxService;
     }
 }

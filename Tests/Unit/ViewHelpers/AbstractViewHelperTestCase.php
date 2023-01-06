@@ -20,6 +20,7 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolver;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ErrorHandler\ErrorHandlerInterface;
+use TYPO3Fluid\Fluid\Core\Parser\Configuration;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\NodeInterface;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ObjectAccessorNode;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
@@ -64,6 +65,8 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
             $requestClassName = \TYPO3\CMS\Extbase\Mvc\Request::class;
         }
 
+        $request = $this->getMockBuilder($requestClassName)->disableOriginalConstructor()->getMock();
+
         $this->viewHelperResolver = $this->getMockBuilder(ViewHelperResolver::class)
             ->setMethods(['dummy'])
             ->disableOriginalConstructor()
@@ -77,7 +80,6 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
         $this->controllerContext = $this->getMockBuilder(ControllerContext::class)
             ->setMethods(['getRequest', 'getUriBuilder'])
             ->getMock();
-        $this->controllerContext->method('getRequest')->willReturn(new $requestClassName());
         $this->viewHelperInvoker = $this->getMockBuilder(ViewHelperInvoker::class)
             ->setMethods(['dummy'])
             ->disableOriginalConstructor()
@@ -85,12 +87,19 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
         $this->renderingContext = $this->getMockBuilder(RenderingContext::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)->getMockForAbstractClass();
         $this->templateParser = new TemplateParser();
-        $this->templateParser->setRenderingContext($this->renderingContext);
+        $this->errorHandler = $this->getMockBuilder(ErrorHandlerInterface::class)->getMockForAbstractClass();
         $this->errorHandler->method('handleViewHelperError')->willThrowException(new Exception('dummy'));
+
+        $this->renderingContext->method('buildParserConfiguration')->willReturn(new Configuration());
         $this->renderingContext->method('getViewHelperResolver')->willReturn($this->viewHelperResolver);
-        $this->renderingContext->method('getControllerContext')->willReturn($this->controllerContext);
+        if (method_exists($this->renderingContext, 'getControllerContext')) {
+            $this->renderingContext->method('getControllerContext')->willReturn($this->controllerContext);
+            $this->controllerContext->method('getRequest')->willReturn($request);
+        } else {
+            $this->renderingContext->method('getRequest')->willReturn($request);
+        }
+
         $this->renderingContext->method('getViewHelperVariableContainer')->willReturn(
             $this->viewHelperVariableContainer
         );
@@ -100,6 +109,8 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
         $this->renderingContext->method('getTemplateParser')->willReturn($this->templateParser);
         $this->renderingContext->method('getTemplateProcessors')->willReturn($this->templateProcessors);
         $this->renderingContext->method('getExpressionNodeTypes')->willReturn($this->expressionTypes);
+
+        $this->templateParser->setRenderingContext($this->renderingContext);
     }
 
     /**
