@@ -233,7 +233,7 @@ class AbstractProvider implements ProviderInterface
                             'column' . $object['colPos'],
                             $object['label'] ?? 'Column ' . $object['colPos']
                         );
-                        $gridColumn->setColumnPosition($object['colPos']);
+                        $gridColumn->setColumnPosition((int) $object['colPos']);
                     }
                 } elseif ($container->getGridMode() === Form\Container\Section::GRID_MODE_COLUMNS) {
                     $gridRow = $grid->createContainer(Form\Container\Row::class, 'row');
@@ -243,8 +243,8 @@ class AbstractProvider implements ProviderInterface
                             'column' . $object['colPos'],
                             $object['label'] ?? 'Column ' . $object['colPos']
                         );
-                        $gridColumn->setColumnPosition($object['colPos']);
-                        $gridColumn->setColSpan($object['colspan'] ?? 1);
+                        $gridColumn->setColumnPosition((int) $object['colPos']);
+                        $gridColumn->setColSpan((int) ($object['colspan'] ?? 1));
                     }
                 }
                 return $grid;
