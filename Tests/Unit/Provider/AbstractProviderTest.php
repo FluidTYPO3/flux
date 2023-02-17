@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\CustomForm;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -240,6 +241,39 @@ abstract class AbstractProviderTest extends AbstractTestCase
                 'field1',
                 'ext1'
             ],
+        ];
+    }
+
+    public function testCreateCustomFormInstanceWithNotFoundForm(): void
+    {
+        $subject = $this->getMockBuilder(AbstractProvider::class)->getMockForAbstractClass();
+        $result = $this->callInaccessibleMethod($subject, 'createCustomFormInstance', ['uid' => 123]);
+        self::assertNull($result);
+    }
+
+    /**
+     * @dataProvider getCreateCustomFormInstanceTestValues
+     */
+    public function testCreateCustomFormInstanceWithFoundForm(string $expectedId, ?string $table, ?string $field): void
+    {
+        $subject = $this->getMockBuilder(AbstractProvider::class)
+            ->setMethods(['resolveFormClassName', 'getTableName', 'getFieldName'])
+            ->getMockForAbstractClass();
+        $subject->method('resolveFormClassName')->willReturn(CustomForm::class);
+        $subject->method('getTableName')->willReturn($table);
+        $subject->method('getFieldName')->willReturn($field);
+        $result = $this->callInaccessibleMethod($subject, 'createCustomFormInstance', ['uid' => 123]);
+        self::assertInstanceOf(CustomForm::class, $result);
+        self::assertSame($expectedId, $result->getId());
+    }
+
+    public function getCreateCustomFormInstanceTestValues(): array
+    {
+        return [
+            'with table and field name' => ['table_field', 'table', 'field'],
+            'with table without field name' => ['table', 'table', null],
+            'without table and field name' => ['row_123', null, null],
+            'without table with field name' => ['row_123_field', null, 'field'],
         ];
     }
 

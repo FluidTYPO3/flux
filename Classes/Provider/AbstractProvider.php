@@ -202,7 +202,16 @@ class AbstractProvider implements ProviderInterface
     {
         $formClassName = $this->resolveFormClassName($row);
         if ($formClassName !== null && class_exists($formClassName)) {
-            return $formClassName::create(['row']);
+            $tableName = $this->getTableName($row);
+            $fieldName = $this->getFieldName($row);
+            $id = 'row_' . $row['uid'];
+            if ($tableName) {
+                $id = $tableName;
+            }
+            if ($fieldName) {
+                $id .= '_' . $fieldName;
+            }
+            return $formClassName::create(['id' => $id]);
         }
         return null;
     }
