@@ -44,21 +44,15 @@ class WizardItems implements NewContentElementWizardHookInterface
     {
         $enabledContentTypes = [];
         $fluidContentTypeNames = [];
-        /** @var int $pageUid */
-        $pageUid = 0;
 
         $defaultValues = (array) GeneralUtility::_GET('defVals');
         /** @var array $dataArray */
         $dataArray = $defaultValues['tt_content'] ?? [];
         $pageUidFromUrl = GeneralUtility::_GET('id');
-        $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : 0;
-        $pageUidFromDataArray = (int) key($dataArray);
+        $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : null;
+        $pageUidFromDataArray = key($dataArray) ?: null;
 
-        if ($pageUidFromDataArray > 0) {
-            $pageUid = $pageUidFromDataArray;
-        } elseif ($pageUidFromUrl > 0) {
-            $pageUid = $pageUidFromUrl;
-        }
+        $pageUid = (int) ($pageUidFromDataArray ?? $pageUidFromUrl ?? 0);
 
         if ($pageUid === 0) {
             $reflectionProperty = new \ReflectionProperty($parentObject, 'id');
@@ -112,7 +106,7 @@ class WizardItems implements NewContentElementWizardHookInterface
             $colPosFromParentObject = $reflectionProperty->getValue($parentObject);
             $colPos = is_scalar($colPosFromParentObject) ? (int) $colPosFromParentObject : 0;
         }
-        list ($whitelist, $blacklist) = $this->getWhiteAndBlackListsFromPageAndContentColumn(
+        [$whitelist, $blacklist] = $this->getWhiteAndBlackListsFromPageAndContentColumn(
             $pageUid,
             (int) $colPos
         );
@@ -209,7 +203,7 @@ class WizardItems implements NewContentElementWizardHookInterface
             foreach ($grid->getRows() as $row) {
                 foreach ($row->getColumns() as $column) {
                     if ($column->getColumnPosition() === $columnPosition) {
-                        list ($whitelist, $blacklist) = $this->appendToWhiteAndBlacklistFromComponent(
+                        [$whitelist, $blacklist] = $this->appendToWhiteAndBlacklistFromComponent(
                             $column,
                             $whitelist,
                             $blacklist
@@ -226,7 +220,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         foreach ($items as $name => $item) {
             if (false !== strpos($name, '_')) {
                 $parts = explode('_', $name);
-                array_push($preserveHeaders, reset($parts));
+                $preserveHeaders[] = reset($parts);
             }
         }
         foreach ($items as $name => $item) {
