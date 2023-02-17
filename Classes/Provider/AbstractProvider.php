@@ -398,31 +398,6 @@ class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Gets the current language name as string, in a format that is
-     * compatible with language pointers in a flexform. Usually this
-     * implies values like "en", "de" etc.
-     *
-     * Return NULL when language is site default language.
-     */
-    protected function getCurrentLanguageName(): ?string
-    {
-        $language = $GLOBALS['TSFE']->lang;
-        if (true === empty($language) || 'default' === $language) {
-            $language = null;
-        }
-        return $language;
-    }
-
-    /**
-     * Gets the pointer name to use whne retrieving values from a
-     * flexform source. Return NULL when pointer is default.
-     */
-    protected function getCurrentValuePointerName(): ?string
-    {
-        return $this->getCurrentLanguageName();
-    }
-
-    /**
      * Returns the page record with localisation applied, if any
      * exists in database. Maintains uid and pid of the original
      * page if localisation is applied.
