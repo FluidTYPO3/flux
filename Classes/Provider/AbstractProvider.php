@@ -130,14 +130,18 @@ class AbstractProvider implements ProviderInterface
         $pluginTypeFromRecord = $row['list_type'] ?? null;
 
         $rowContainsPlugin = $contentTypeFromRecord === static::CONTENT_OBJECT_TYPE_LIST;
+        $isContentRecord = $table === 'tt_content';
         $rowIsEmpty = (0 === count($row));
         $matchesContentType = $contentTypeFromRecord === $contentObjectType;
         $matchesPluginType = $rowContainsPlugin && $pluginTypeFromRecord === $listType;
         $matchesTableName = ($providerTableName === $table || !$table);
         $matchesFieldName = ($providerFieldName === $field || !$field);
         $matchesExtensionKey = ($providerExtensionKey === $extensionKey || !$extensionKey);
+
+        // Requirements: must always match ext-key, table and field. If record is a content record, must additionally
+        // match either Ctype and list_type, or must match CType in record that does not have a list_type.
         $isFullMatch = $matchesExtensionKey && $matchesTableName && $matchesFieldName
-            && ($matchesContentType || ($rowContainsPlugin && $matchesPluginType));
+            && (!$isContentRecord || ($matchesContentType && ((!$rowContainsPlugin) || $matchesPluginType)));
         $isFallbackMatch = ($matchesTableName && $matchesFieldName && $rowIsEmpty);
         return ($isFullMatch || $isFallbackMatch);
     }
