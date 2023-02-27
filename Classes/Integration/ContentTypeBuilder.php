@@ -62,8 +62,8 @@ class ContentTypeBuilder
             // Determine which plugin name and controller action to emulate with this CType, base on file name.
             $controllerActionName = lcfirst(pathinfo($templateFilename, PATHINFO_FILENAME));
             if ($contentType) {
-                $pluginNamePart = $this->getPluginNamePartFromContentType($contentType);
-                if (strtolower($pluginNamePart) !== strtolower($controllerActionName)) {
+                $pluginNamePart = $this->getPluginNamePartFromContentType($contentType) ?? $contentType;
+                if ($pluginNamePart !== null && strtolower($pluginNamePart) !== strtolower($controllerActionName)) {
                     $controllerActionName = lcfirst($pluginNamePart);
                 }
             }
@@ -311,7 +311,7 @@ class ContentTypeBuilder
 
         ExtensionUtility::registerPlugin(
             $this->getExtensionIdentityForPluginRegistration($extensionName),
-            $this->getPluginNamePartFromContentType($contentType),
+            $this->getPluginNamePartFromContentType($contentType) ?? $contentType,
             (string) $form->getLabel(),
             MiscellaneousUtility::getIconForTemplate($form),
             $extensionName
@@ -391,8 +391,12 @@ class ContentTypeBuilder
         return $controllerClassName;
     }
 
-    private function getPluginNamePartFromContentType(string $contentType): string
+    private function getPluginNamePartFromContentType(string $contentType): ?string
     {
+        $underscorePosition = strpos($contentType, '_');
+        if ($underscorePosition === false) {
+            return null;
+        }
         return GeneralUtility::underscoredToUpperCamelCase(substr($contentType, strpos($contentType, '_') + 1));
     }
 }
