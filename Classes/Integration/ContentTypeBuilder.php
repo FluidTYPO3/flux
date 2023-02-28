@@ -85,7 +85,12 @@ class ContentTypeBuilder
         if (!$this->validateContentController($localControllerClassName)) {
             class_alias($controllerClassName, $localControllerClassName);
         }
-        $this->configureContentTypeForController($providerExtensionName, $controllerClassName, $controllerActionName);
+        $this->configureContentTypeForController(
+            $providerExtensionName,
+            $controllerClassName,
+            $controllerActionName,
+            $contentType
+        );
 
         /** @var BasicProviderInterface $provider */
         $provider = GeneralUtility::makeInstance($providerClassName);
@@ -137,10 +142,12 @@ class ContentTypeBuilder
     protected function configureContentTypeForController(
         string $providerExtensionName,
         string $controllerClassName,
-        string $controllerAction
+        string $controllerAction,
+        ?string $contentType
     ): void {
         $emulatedPluginName = ucfirst(strtolower($controllerAction));
         $controllerName = $this->getControllerNameForPluginRegistration($controllerClassName);
+        $extensionIdentity = $this->getExtensionIdentityForPluginRegistration($providerExtensionName);
 
         // Sanity check: if controller does not implement a custom action method matching template, default to "render"
         if (!method_exists($controllerClassName, $controllerAction . 'Action')) {
@@ -151,12 +158,37 @@ class ContentTypeBuilder
         // and View can be inherited from Flux/Fluidcontent as to reduce the amount of boilerplate that will be
         // required, and to allow using Flux forms in the template file.
         ExtensionUtility::configurePlugin(
-            $this->getExtensionIdentityForPluginRegistration($providerExtensionName),
+            $extensionIdentity,
             $emulatedPluginName,
             [$controllerName => $controllerAction . ',outlet,error'],
             [$controllerName => 'outlet'],
             ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
         );
+
+        if ($contentType !== null && $this->getPluginNamePartFromContentType($contentType) === null) {
+            // Content type is registered as a root content type (not scoped within a specific extension). We need to
+            // relocate the TypoScript that was registered for the pseudo-plugin, to make sure it gets assigned in the
+            // right place (e.g. tt_content.text, instead of tt_content.myext_text). We do this by copying the
+            // TypoScript that ExtensionUtility::configurePlugin adds with a plugin name prefix, into a non-prefixed
+            // location - and finally clearing the TypoScript object that ExtensionUtility::configurePlugin created.
+            // This allows a content type registered with \FluidTYPO3\Flux\Core::registerTemplateAsContentType in an
+            // ext_localconf.php file to correctly override TYPO3's core content types if a core content type name was
+            // used in the registration.
+            $targetContentTypeName = GeneralUtility::camelCaseToLowerCaseUnderscored($contentType);
+            $sourceContentTypeName = strtolower(
+                strtolower($extensionIdentity) .
+                '_' .
+                str_replace('_', '', $contentType)
+            );
+            ExtensionManagementUtility::addTypoScript(
+                $emulatedPluginName . '_' . $controllerName . '_' . $controllerAction,
+                'setup',
+                'tt_content.' . $targetContentTypeName . ' < tt_content.' . $sourceContentTypeName .
+                PHP_EOL .
+                'tt_content.' . $sourceContentTypeName . ' >',
+                'defaultContentRendering'
+            );
+        }
     }
 
     protected function validateContentController(string $controllerClassName): bool
