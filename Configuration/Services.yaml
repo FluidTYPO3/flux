@@ -16,7 +16,7 @@ services:
   FluidTYPO3\Flux\Integration\Event\PageContentPreviewRenderingEventListener:
     tags:
       - name: event.listener
-        identifier: 'flux-boot-completed'
+        identifier: 'flux-page-content-preview'
         method: 'renderPreview'
         event: TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent
   FluidTYPO3\Flux\Integration\Event\BootCompletedEventListener:
