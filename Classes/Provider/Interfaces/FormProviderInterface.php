@@ -19,6 +19,6 @@ use FluidTYPO3\Flux\Form;
  */
 interface FormProviderInterface
 {
-    public function getForm(array $row): ?Form;
+    public function getForm(array $row, ?string $forField = null): ?Form;
     public function setForm(Form $form): self;
 }

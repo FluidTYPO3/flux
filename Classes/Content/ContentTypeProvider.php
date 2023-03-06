@@ -43,7 +43,7 @@ class ContentTypeProvider extends AbstractProvider implements
         return $table === $this->tableName && ($field === $this->fieldName || $field === null);
     }
 
-    public function getForm(array $row): ?Form
+    public function getForm(array $row, ?string $forField = null): ?Form
     {
         $contentType = $this->resolveContentTypeDefinition($row);
         /** @var ContentTypeForm $form */

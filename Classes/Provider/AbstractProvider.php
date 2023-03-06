@@ -164,7 +164,7 @@ class AbstractProvider implements ProviderInterface
         return class_exists($expectedClassName) ? $expectedClassName : null;
     }
 
-    protected function getViewVariables(array $row): array
+    protected function getViewVariables(array $row, ?string $forField = null): array
     {
         $extensionKey = (string) $this->getExtensionKey($row);
         $fieldName = $this->getFieldName($row);
@@ -187,23 +187,23 @@ class AbstractProvider implements ProviderInterface
         return $variables;
     }
 
-    public function getForm(array $row): ?Form
+    public function getForm(array $row, ?string $forField = null): ?Form
     {
         /** @var Form $form */
         $form = $this->form
-            ?? $this->createCustomFormInstance($row)
-            ?? $this->extractConfiguration($row, 'form')
+            ?? $this->createCustomFormInstance($row, $forField)
+            ?? $this->extractConfiguration($row, 'form', $forField)
             ?? Form::create();
         $form->setOption(Form::OPTION_RECORD, $row);
         return $form;
     }
 
-    protected function createCustomFormInstance(array $row): ?Form
+    protected function createCustomFormInstance(array $row, ?string $forField = null): ?Form
     {
         $formClassName = $this->resolveFormClassName($row);
         if ($formClassName !== null && class_exists($formClassName)) {
             $tableName = $this->getTableName($row);
-            $fieldName = $this->getFieldName($row);
+            $fieldName = $forField ?? $this->getFieldName($row);
             $id = 'row_' . $row['uid'];
             if ($tableName) {
                 $id = $tableName;
@@ -290,7 +290,7 @@ class AbstractProvider implements ProviderInterface
     /**
      * @return mixed|null
      */
-    protected function extractConfiguration(array $row, ?string $name = null)
+    protected function extractConfiguration(array $row, ?string $name = null, ?string $forField = null)
     {
         $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all');
         /** @var array $allCached */
@@ -299,8 +299,8 @@ class AbstractProvider implements ProviderInterface
         if ($fromCache) {
             return $fromCache;
         }
-        $configurationSectionName = $this->getConfigurationSectionName($row);
-        $viewVariables = $this->getViewVariables($row);
+        $configurationSectionName = $this->getConfigurationSectionName($row, $forField);
+        $viewVariables = $this->getViewVariables($row, $forField);
         $view = $this->getViewForRecord($row);
         $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
             FormViewHelper::class,
@@ -403,9 +403,9 @@ class AbstractProvider implements ProviderInterface
      * at the same time running through the inheritance tree generated
      * by getInheritanceTree() in order to apply inherited values.
      */
-    public function getFlexFormValues(array $row): array
+    public function getFlexFormValues(array $row, ?string $forField = null): array
     {
-        $fieldName = $this->getFieldName($row);
+        $fieldName = $forField ?? $this->getFieldName($row);
         $form = $this->getForm($row);
         return $this->configurationService->convertFlexFormContentToArray($row[$fieldName] ?? '', $form);
     }
@@ -437,9 +437,9 @@ class AbstractProvider implements ProviderInterface
         return $variables;
     }
 
-    public function getConfigurationSectionName(array $row): ?string
+    public function getConfigurationSectionName(array $row, ?string $forField = null): ?string
     {
-        unset($row);
+        unset($row, $forField);
         return $this->configurationSectionName;
     }
 
@@ -599,7 +599,7 @@ class AbstractProvider implements ProviderInterface
      */
     public function postProcessDataStructure(array &$row, ?array &$dataStructure, array $conf): void
     {
-        $form = $this->getForm($row);
+        $form = $this->getForm($row, $conf['fieldName'] ?? null);
         if ($dataStructure !== null && $form !== null) {
             $dataStructure = array_replace_recursive($dataStructure, $form->build());
         }

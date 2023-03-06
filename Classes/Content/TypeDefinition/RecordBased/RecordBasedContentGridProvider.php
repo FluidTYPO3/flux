@@ -55,7 +55,7 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
         parent::postProcessDataStructure($row, $dataStructure, $conf);
     }
 
-    public function getForm(array $row): Form
+    public function getForm(array $row, ?string $forField = null): Form
     {
         /** @var ContentGridForm $contentGridForm */
         $contentGridForm = GeneralUtility::makeInstance(ContentGridForm::class);

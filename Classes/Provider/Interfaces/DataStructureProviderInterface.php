@@ -42,5 +42,5 @@ interface DataStructureProviderInterface
      * at the same time running through the inheritance tree generated
      * by getInheritanceTree() in order to apply inherited values.
      */
-    public function getFlexFormValues(array $row): array;
+    public function getFlexFormValues(array $row, ?string $forField = null): array;
 }

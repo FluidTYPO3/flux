@@ -56,7 +56,7 @@ class MisconfiguredControllerProvider implements ControllerProviderInterface, Fo
         return '';
     }
 
-    public function getForm(array $row): ?Form
+    public function getForm(array $row, ?string $forField = null): ?Form
     {
         return null;
     }

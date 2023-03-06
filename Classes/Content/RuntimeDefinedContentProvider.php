@@ -87,7 +87,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
         return $this->getContentTypeDefinition($row)->getGrid() ?? parent::getGrid($row);
     }
 
-    public function getForm(array $row): Form
+    public function getForm(array $row, ?string $forField = null): Form
     {
         return $this->getContentTypeDefinition($row)->getForm();
     }

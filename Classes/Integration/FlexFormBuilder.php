@@ -108,7 +108,7 @@ class FlexFormBuilder
             return [];
         }
 
-        $form = $provider->getForm($record);
+        $form = $provider->getForm($record, $fieldName);
         $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
         if ($form && $form->getOption(Form::OPTION_STATIC)) {
             // This provider has requested static DS caching; stop attempting

@@ -29,12 +29,12 @@ class DummyPageProvider extends SubPageProvider
         return $this;
     }
 
-    public function getFlexFormValues(array $row): array
+    public function getFlexFormValues(array $row, ?string $forField = null): array
     {
         return [];
     }
 
-    public function getForm(array $row): ?Form
+    public function getForm(array $row, ?string $forField = null): ?Form
     {
         return $this->form;
     }

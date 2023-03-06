@@ -68,12 +68,12 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return (true === $isRightTable && true === $isRightField);
     }
 
-    public function getForm(array $row): ?Form
+    public function getForm(array $row, ?string $forField = null): ?Form
     {
         if ($row['deleted'] ?? false) {
             return null;
         }
-        $form = parent::getForm($row);
+        $form = parent::getForm($row, $forField);
         if ($form) {
             $form->setOption(PreviewView::OPTION_PREVIEW, [PreviewView::OPTION_MODE => 'none']);
             $form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
@@ -144,7 +144,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return 'flux->default';
     }
 
-    public function getFlexFormValues(array $row): array
+    public function getFlexFormValues(array $row, ?string $forField = null): array
     {
         $immediateConfiguration = $this->getFlexFormValuesSingle($row);
         $inheritedConfiguration = $this->getInheritedConfiguration($row);
