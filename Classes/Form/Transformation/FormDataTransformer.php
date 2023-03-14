@@ -47,7 +47,7 @@ class FormDataTransformer
                             ]
                         )['value'];
                         if ($value === $originalValue) {
-                            $value = $this->transformValueToType($value, $transformType);
+                            $value = $this->transformValueToType($value, $transformType, $prefix . $index, $form);
                         }
                         $value = HookHandler::trigger(
                             HookHandler::VALUE_AFTER_TRANSFORM,
@@ -94,7 +94,7 @@ class FormDataTransformer
      *
      * @return mixed
      */
-    protected function transformValueToType(string $value, string $dataType)
+    protected function transformValueToType(string $value, string $dataType, string $fieldName, Form $form)
     {
         if ('int' === $dataType || 'integer' === $dataType) {
             return intval($value);
@@ -109,7 +109,7 @@ class FormDataTransformer
             [$class, $function] = explode('->', $dataType);
             /** @var object $object */
             $object = GeneralUtility::makeInstance($class);
-            return $object->{$function}($value);
+            return $object->{$function}($value, $fieldName, $form);
         } else {
             return $this->getObjectOfType($dataType, $value);
         }
