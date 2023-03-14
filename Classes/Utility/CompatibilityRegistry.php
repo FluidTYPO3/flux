@@ -179,11 +179,7 @@ abstract class CompatibilityRegistry
      */
     public static function get(string $scope, string $version = self::VERSION_DEFAULT, $default = null)
     {
-        $value = static::cache(static::$registry, 'registry', $scope, $version);
-        if (null === $value && $default !== $value) {
-            return $default;
-        }
-        return $value;
+        return static::cache(static::$registry, 'registry', $scope, $version) ?? $default;
     }
 
     public static function hasFeatureFlag(string $scope, string $flag, string $version = self::VERSION_DEFAULT): bool
@@ -206,10 +202,12 @@ abstract class CompatibilityRegistry
      */
     protected static function resolveVersionedValue(array &$versionedValues, string $version)
     {
-        $version = VersionNumberUtility::getCurrentTypo3Version();
+        if ($version === self::VERSION_DEFAULT) {
+            $version = VersionNumberUtility::getCurrentTypo3Version();
+        }
         krsort($versionedValues);
         foreach ($versionedValues as $valueVersion => $value) {
-            if (version_compare($version, $valueVersion, '>=')) {
+            if (version_compare((string) $version, (string) $valueVersion, '>=')) {
                 return $value;
             }
         }
