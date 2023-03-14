@@ -192,11 +192,6 @@ abstract class CompatibilityRegistry
         return (array) static::cache(static::$featureFlags, 'featureFlags', $scope, $version);
     }
 
-    protected static function resolveVersion(string $version): string
-    {
-        return static::VERSION_DEFAULT === $version ? TYPO3_version : $version;
-    }
-
     /**
      * @return mixed
      */
