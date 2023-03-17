@@ -45,7 +45,9 @@ class Field extends AbstractFormField
         $field = GeneralUtility::makeInstance(static::class);
         foreach ($settings as $propertyName => $value) {
             $setterMethodName = 'set' . ucfirst($propertyName);
-            $field->$setterMethodName($value);
+            if (method_exists($field, $setterMethodName)) {
+                $field->$setterMethodName($value);
+            }
         }
         return $field;
     }
