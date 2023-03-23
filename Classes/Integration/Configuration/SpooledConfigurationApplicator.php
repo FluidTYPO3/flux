@@ -122,7 +122,7 @@ class SpooledConfigurationApplicator
         // plugin on requests that don't already have a cached version of Flux forms / contains dynamic Flux forms.
         $GLOBALS['TYPO3_REQUEST'] = $GLOBALS['TYPO3_REQUEST'] ?? (new ServerRequest())->withAttribute(
             'applicationType',
-            SystemEnvironmentBuilder::REQUESTTYPE_FE
+            defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
         );
 
         uasort(
