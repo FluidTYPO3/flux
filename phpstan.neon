@@ -4,6 +4,7 @@ includes:
 parameters:
     level: 9
     reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
     checkGenericClassInNonGenericObjectType: false
     ignoreErrors:
         - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:getControllerContext\\(\\)\\.$#"
@@ -26,6 +27,7 @@ parameters:
         - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutView not found\\.$#"
+        - "#^Class TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection not found\\.#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder#"
         - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Information\\\\Typo3Version#"
         - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request#"

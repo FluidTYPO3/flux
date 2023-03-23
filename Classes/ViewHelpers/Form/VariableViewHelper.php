@@ -34,8 +34,10 @@ class VariableViewHelper extends AbstractFormViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ): string {
+        /** @var string $variableName */
+        $variableName = $arguments['name'];
         static::getContainerFromRenderingContext($renderingContext)
-            ->setVariable($arguments['name'], $arguments['value']);
+            ->setVariable($variableName, $arguments['value'] ?? $renderChildrenClosure());
         return '';
     }
 }

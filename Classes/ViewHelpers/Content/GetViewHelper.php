@@ -99,9 +99,10 @@ class GetViewHelper extends AbstractViewHelper
     ) {
         $contentObjectRenderer = static::getContentObjectRenderer();
 
+        $registerVariables = (array) $arguments['loadRegister'];
         $loadRegister = false;
-        if (empty($arguments['loadRegister']) === false) {
-            $contentObjectRenderer->cObjGetSingle('LOAD_REGISTER', $arguments['loadRegister']);
+        if (!empty($registerVariables)) {
+            $contentObjectRenderer->cObjGetSingle('LOAD_REGISTER', $registerVariables);
             $loadRegister = true;
         }
         $templateVariableContainer = $renderingContext->getVariableProvider();
@@ -134,18 +135,19 @@ class GetViewHelper extends AbstractViewHelper
         $rows = static::getContentRecords($arguments, $record, $grid);
 
         $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
-        if (true === empty($arguments['as'])) {
+        if (empty($arguments['as'])) {
             $content = $elements;
         } else {
+            /** @var string $as */
             $as = $arguments['as'];
-            if (true === $templateVariableContainer->exists($as)) {
+            if ($templateVariableContainer->exists($as)) {
                 $backup = $templateVariableContainer->get($as);
                 $templateVariableContainer->remove($as);
             }
             $templateVariableContainer->add($as, $elements);
             $content = $renderChildrenClosure();
             $templateVariableContainer->remove($as);
-            if (true === isset($backup)) {
+            if (isset($backup)) {
                 $templateVariableContainer->add($as, $backup);
             }
         }

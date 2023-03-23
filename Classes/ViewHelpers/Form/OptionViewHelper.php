@@ -34,6 +34,7 @@ class OptionViewHelper extends AbstractFormViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ): string {
+        /** @var string $option */
         $option = $arguments['name'] ?? static::$option;
         $container = static::getContainerFromRenderingContext($renderingContext);
         $value = $renderChildrenClosure();

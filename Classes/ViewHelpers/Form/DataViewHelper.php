@@ -74,21 +74,26 @@ class DataViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext
     ) {
         $templateVariableContainer = $renderingContext->getVariableProvider();
+        /** @var string|null $as */
         $as = $arguments['as'];
-        $record = $arguments['record'];
+        /** @var array|null $record */
+        $record = $arguments['record'] ?? null;
+        /** @var int|null $uid */
         $uid = $arguments['uid'] ?? null;
-        $field = $arguments['field'] ?? null;
-        $table = $arguments['table'] ?? null;
+        /** @var string $field */
+        $field = $arguments['field'];
+        /** @var string $table */
+        $table = $arguments['table'];
 
         if (!$record && !$as) {
             $record = $renderChildrenClosure();
         }
-        if (!$uid && $record && isset($record['uid'])) {
+        if (!$uid && is_array($record) && isset($record['uid'])) {
             $uid = $record['uid'];
         }
         if (isset($GLOBALS['TCA'][$table]) && isset($GLOBALS['TCA'][$table]['columns'][$field])) {
             if (!$record) {
-                $record = static::getRecordService()->getSingle($table, 'uid,' . $field, $uid);
+                $record = static::getRecordService()->getSingle($table, 'uid,' . $field, (integer) $uid);
             }
             if (!$record) {
                 throw new Exception(

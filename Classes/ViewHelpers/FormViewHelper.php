@@ -16,7 +16,8 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * FlexForm configuration container ViewHelper
  */
-class FormViewHelper extends AbstractFormViewHelper
+class
+FormViewHelper extends AbstractFormViewHelper
 {
     public function initializeArguments(): void
     {
@@ -84,13 +85,21 @@ class FormViewHelper extends AbstractFormViewHelper
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
         $form = static::getComponent($renderingContext, $arguments);
         // configure Form instance
-        $form->setId($arguments['id'] ?? 'form');
-        $form->setName($arguments['id'] ?? 'form');
-        $form->setLabel($arguments['label']);
-        $form->setDescription($arguments['description']);
+        /** @var string $formId */
+        $formId = $arguments['id'] ?? 'form';
+        /** @var string|null $formLabel */
+        $formLabel = $arguments['label'];
+        /** @var string|null $formDescription */
+        $formDescription = $arguments['description'];
+        /** @var string $languageFileRelativePath */
+        $languageFileRelativePath = $arguments['localLanguageFileRelativePath'];
+        $form->setId($formId);
+        $form->setName($formId);
+        $form->setLabel($formLabel);
+        $form->setDescription($formDescription);
         $form->setEnabled((boolean) $arguments['enabled']);
         $form->setExtensionName($extensionName);
-        $form->setLocalLanguageFileRelativePath((string) $arguments['localLanguageFileRelativePath']);
+        $form->setLocalLanguageFileRelativePath($languageFileRelativePath);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
 

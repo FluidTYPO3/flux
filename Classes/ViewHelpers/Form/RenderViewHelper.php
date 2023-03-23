@@ -40,9 +40,13 @@ class RenderViewHelper extends AbstractViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ): string {
+        /** @var Form $form */
         $form = $arguments['form'];
+        /** @var array $record */
         $record = $form->getOption(Form::OPTION_RECORD);
+        /** @var string $table */
         $table = $form->getOption(Form::OPTION_RECORD_TABLE);
+        /** @var string $field */
         $field = $form->getOption(Form::OPTION_RECORD_FIELD);
         $node = static::getNodeFactory()->create([
             'type' => 'flex',

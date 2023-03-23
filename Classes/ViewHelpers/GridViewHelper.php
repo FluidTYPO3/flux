@@ -70,9 +70,15 @@ class GridViewHelper extends AbstractFormViewHelper
         $viewHelperVariableContainer = $this->renderingContext->getViewHelperVariableContainer();
         $extensionName = self::resolveExtensionName($this->renderingContext, $this->arguments);
 
-        $grid = static::getGridFromRenderingContext($this->renderingContext, $this->arguments['name']);
-        $grid->setLabel($this->arguments['label'] ?? null);
-        $grid->setVariables($this->arguments['variables']);
+        /** @var string $gridName */
+        $gridName = $this->arguments['name'];
+        /** @var string|null $gridLabel */
+        $gridLabel = $this->arguments['label'] ?? null;
+        $gridVariables = (array) $this->arguments['variables'];
+
+        $grid = static::getGridFromRenderingContext($this->renderingContext, $gridName);
+        $grid->setLabel($gridLabel);
+        $grid->setVariables($gridVariables);
         $grid->setExtensionName($extensionName);
 
         $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
@@ -94,9 +100,15 @@ class GridViewHelper extends AbstractFormViewHelper
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = self::resolveExtensionName($renderingContext, $arguments);
 
-        $grid = static::getGridFromRenderingContext($renderingContext, $arguments['name']);
-        $grid->setLabel($arguments['label'] ?? null);
-        $grid->setVariables($arguments['variables']);
+        /** @var string $gridName */
+        $gridName = $arguments['name'];
+        /** @var string|null $gridLabel */
+        $gridLabel = $arguments['label'] ?? null;
+        $gridVariables = (array) $arguments['variables'];
+
+        $grid = static::getGridFromRenderingContext($renderingContext, $gridName);
+        $grid->setLabel($gridLabel);
+        $grid->setVariables($gridVariables);
         $grid->setExtensionName($extensionName);
 
         $viewHelperVariableContainer->addOrUpdate(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME, $extensionName);
