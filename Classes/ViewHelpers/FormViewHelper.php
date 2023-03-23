@@ -16,8 +16,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 /**
  * FlexForm configuration container ViewHelper
  */
-class
-FormViewHelper extends AbstractFormViewHelper
+class FormViewHelper extends AbstractFormViewHelper
 {
     public function initializeArguments(): void
     {
