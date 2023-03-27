@@ -62,7 +62,7 @@ class AbstractProvider implements ProviderInterface
     protected ?array $templatePaths = null;
     protected ?string $configurationSectionName = 'Configuration';
     protected string $extensionKey = 'FluidTYPO3.Flux';
-    protected string $pluginName = '';
+    protected ?string $pluginName = null;
     protected ?string $controllerName = null;
     protected string $controllerAction = 'default';
     protected int $priority = 50;
@@ -460,12 +460,12 @@ class AbstractProvider implements ProviderInterface
         return $this->name;
     }
 
-    public function getPluginName(): string
+    public function getPluginName(): ?string
     {
         return $this->pluginName;
     }
 
-    public function setPluginName(string $pluginName): self
+    public function setPluginName(?string $pluginName): self
     {
         $this->pluginName = $pluginName;
         return $this;

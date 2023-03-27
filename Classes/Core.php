@@ -156,12 +156,16 @@ class Core
         ?array $paths = null,
         string $fieldName = 'pi_flexform'
     ): ProviderInterface {
+        $splitSignature = explode('_', $pluginSignature, 2);
+        $pluginName = GeneralUtility::underscoredToUpperCamelCase(end($splitSignature));
+
         /** @var ProviderInterface $provider */
         $provider = GeneralUtility::makeInstance(Provider::class);
         $provider->setTableName('tt_content');
         $provider->setFieldName($fieldName);
         $provider->setExtensionKey($extensionKey);
         $provider->setListType($pluginSignature);
+        $provider->setPluginName($pluginName);
         $provider->setTemplatePathAndFilename($templateFilename);
         $provider->setTemplateVariables($variables);
         $provider->setTemplatePaths($paths);
@@ -249,14 +253,12 @@ class Core
      * @param string $templateFilename Absolute path to template file containing Flux definition, EXT:... allowed
      * @param string|null $contentTypeName Optional override for the CType value this template will use
      * @param string|null $providerClassName Optional custom class implementing ProviderInterface from Flux
-     * @param string|null $pluginName Optional plugin name used when registering the Extbase plugin for the template
      */
     public static function registerTemplateAsContentType(
         string $providerExtensionName,
         string $templateFilename,
         ?string $contentTypeName = null,
-        ?string $providerClassName = Provider::class,
-        ?string $pluginName = null
+        ?string $providerClassName = Provider::class
     ): void {
         if (!PathUtility::isAbsolutePath($templateFilename)) {
             $templateFilename = static::getAbsolutePathForFilename($templateFilename);
@@ -267,7 +269,7 @@ class Core
             $templateFilename,
             $providerClassName,
             $contentTypeName,
-            $pluginName,
+            null,
             null
         ];
     }

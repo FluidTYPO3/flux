@@ -14,21 +14,24 @@ use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 
 class MisconfiguredControllerProvider implements ControllerProviderInterface, FormProviderInterface
 {
-    public function setPluginName(string $pluginName): ControllerProviderInterface
+    public function setPluginName(?string $pluginName): ControllerProviderInterface
     {
+        return $this;
     }
 
-    public function getPluginName(): string
+    public function getPluginName(): ?string
     {
         return '';
     }
 
     public function setControllerName(string $controllerName): ControllerProviderInterface
     {
+        return $this;
     }
 
     public function setControllerAction(string $controllerAction): ControllerProviderInterface
     {
+        return $this;
     }
 
     public function getControllerExtensionKeyFromRecord(array $row): string
@@ -63,5 +66,6 @@ class MisconfiguredControllerProvider implements ControllerProviderInterface, Fo
 
     public function setForm(Form $form): FormProviderInterface
     {
+        return $this;
     }
 }

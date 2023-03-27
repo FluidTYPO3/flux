@@ -98,9 +98,6 @@ class SpooledConfigurationApplicator
                     $controllerActionName
                 );
 
-                $splitContentType = explode('_', $contentType, 2);
-                $pluginName = GeneralUtility::underscoredToUpperCamelCase(end($splitContentType));
-
                 $provider->setPluginName($pluginName);
 
                 Core::registerConfigurationProvider($provider);
@@ -138,10 +135,9 @@ class SpooledConfigurationApplicator
             $contentType = $provider->getContentObjectType();
             $virtualRecord = ['CType' => $contentType];
             $providerExtensionName = $provider->getExtensionKey($virtualRecord);
-            $pluginName = $provider->getPluginName();
 
             try {
-                $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider, $pluginName);
+                $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider);
             } catch (Exception $error) {
                 if (!$applicationContext->isProduction()) {
                     throw $error;

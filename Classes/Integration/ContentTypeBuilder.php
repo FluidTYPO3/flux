@@ -199,10 +199,9 @@ class ContentTypeBuilder
     public function registerContentType(
         string $providerExtensionName,
         string $contentType,
-        ProviderInterface $provider,
-        string $pluginName
+        ProviderInterface $provider
     ): void {
-        $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName . '__' . $pluginName);
+        $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName);
         $cache = $this->getCache();
         /** @var Form|null $form */
         $form = $cache->get($cacheId);
@@ -230,7 +229,6 @@ class ContentTypeBuilder
             }
         }
 
-        $this->registerExtbasePluginForForm($providerExtensionName, $contentType, $form);
         $this->addPageTsConfig($form, $contentType);
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
@@ -323,31 +321,6 @@ class ContentTypeBuilder
         $replaced = (string) preg_replace($pattern, '_', $string);
         $replaced = trim($replaced, '_');
         return empty($replaced) ? md5($string) : $replaced;
-    }
-
-    /**
-     * @param string $extensionName
-     * @param string $contentType
-     * @param Form $form
-     * @return void
-     */
-    protected function registerExtbasePluginForForm(string $extensionName, string $contentType, Form $form): void
-    {
-        if (!isset($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'])) {
-            // For whatever reason, TCA is not loaded or is loaded in an incomplete state. Attempting to register a
-            // plugin would fail when this is the case, so we return and avoid manipulating TCA of tt_content until
-            // a fully initialized TCA context exists.
-            // @see \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin
-            return;
-        }
-
-        ExtensionUtility::registerPlugin(
-            $this->getExtensionIdentityForPluginRegistration($extensionName),
-            $this->getPluginNamePartFromContentType($contentType) ?? $contentType,
-            (string) $form->getLabel(),
-            MiscellaneousUtility::getIconForTemplate($form),
-            $extensionName
-        );
     }
 
     protected function initializeNewContentWizardGroup(string $groupName, string $groupLabel): void

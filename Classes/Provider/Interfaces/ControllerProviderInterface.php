@@ -17,8 +17,8 @@ namespace FluidTYPO3\Flux\Provider\Interfaces;
  */
 interface ControllerProviderInterface
 {
-    public function setPluginName(string $pluginName): self;
-    public function getPluginName(): string;
+    public function setPluginName(?string $pluginName): self;
+    public function getPluginName(): ?string;
     public function setControllerName(string $controllerName): self;
     public function setControllerAction(string $controllerAction): self;
     public function getControllerExtensionKeyFromRecord(array $row): string;
