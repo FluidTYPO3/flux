@@ -41,6 +41,9 @@ class FlexFormBuilder
         // In the latter case we sacrifice some performance (having to reload the record by UID) in order
         // to pass an identifier small enough to be part of GET parameters. This class will then "thaw" the
         // record identified by UID to ensure that for all existing records, Providers receive the FULL data.
+        if (($originalIdentifier['dataStructureKey'] ?? 'default') !== 'default') {
+            return [];
+        }
         if ((integer) ($record['uid'] ?? 0) > 0) {
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
