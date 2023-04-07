@@ -292,7 +292,7 @@ class AbstractProvider implements ProviderInterface
      */
     protected function extractConfiguration(array $row, ?string $name = null, ?string $forField = null)
     {
-        $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all');
+        $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all') . '_' . $forField;
         /** @var array $allCached */
         $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
         $fromCache = $allCached[$name] ?? null;
