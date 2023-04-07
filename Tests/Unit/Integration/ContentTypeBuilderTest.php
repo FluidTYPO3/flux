@@ -61,6 +61,8 @@ class ContentTypeBuilderTest extends AbstractTestCase
 
     public function testRegisterContentType(): void
     {
+        $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] = [];
+
         $subject = $this->getMockBuilder(ContentTypeBuilder::class)->setMethods(['getCache', 'getRuntimeCache', 'createIcon'])->getMock();
         $subject->method('getCache')->willReturn($this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass());
         $subject->method('getRuntimeCache')->willReturn($this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass());

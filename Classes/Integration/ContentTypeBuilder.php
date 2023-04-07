@@ -229,7 +229,18 @@ class ContentTypeBuilder
             }
         }
 
-        $this->addPageTsConfig($form, $contentType);
+        $icon = $this->addIcon($form, $contentType);
+        $this->addPageTsConfig($form, $contentType, $icon);
+
+        ExtensionManagementUtility::addPlugin(
+            [
+                $form->getLabel(),
+                $contentType,
+                $icon,
+            ],
+            'CType',
+            $providerExtensionName
+        );
 
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
         // all TypoScript is finally loaded.
@@ -268,7 +279,7 @@ class ContentTypeBuilder
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
     }
 
-    protected function addPageTsConfig(Form $form, string $contentType): void
+    protected function addPageTsConfig(Form $form, string $contentType, string $icon): void
     {
         // Icons required solely for use in the "new content element" wizard
         $formId = $form->getId() ?: $contentType;
@@ -305,7 +316,7 @@ class ContentTypeBuilder
                 mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
                 $groupName,
                 $formId,
-                $this->addIcon($form, $contentType),
+                $icon,
                 $form->getLabel(),
                 $form->getDescription(),
                 $contentType,
