@@ -273,6 +273,9 @@ class ContentTypeBuilder
      */
     public function addBoilerplateTableConfiguration(string $contentType): void
     {
+        if (isset($GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'])) {
+            return;
+        }
         // use CompatibilityRegistry for correct DefaultData class
         $showItem = CompatibilityRegistry::get(static::DEFAULT_SHOWITEM);
         $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
