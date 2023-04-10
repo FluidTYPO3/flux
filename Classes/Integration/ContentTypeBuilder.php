@@ -273,12 +273,10 @@ class ContentTypeBuilder
      */
     public function addBoilerplateTableConfiguration(string $contentType): void
     {
-        if (isset($GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'])) {
-            return;
+        if (!isset($GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'])) {
+            $showItem = CompatibilityRegistry::get(static::DEFAULT_SHOWITEM);
+            $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
         }
-        // use CompatibilityRegistry for correct DefaultData class
-        $showItem = CompatibilityRegistry::get(static::DEFAULT_SHOWITEM);
-        $GLOBALS['TCA']['tt_content']['types'][$contentType]['showitem'] = $showItem;
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
     }
 
