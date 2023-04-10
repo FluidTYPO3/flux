@@ -167,7 +167,7 @@ class AbstractProvider implements ProviderInterface
     protected function getViewVariables(array $row, ?string $forField = null): array
     {
         $extensionKey = (string) $this->getExtensionKey($row);
-        $fieldName = $this->getFieldName($row);
+        $fieldName = $forField ?? $this->getFieldName($row);
         $variables = [
             'record' => $row,
             'settings' => $this->configurationService->getSettingsForExtensionName($extensionKey)
