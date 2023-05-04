@@ -18,8 +18,8 @@ interface FieldInterface extends FormInterface
     public function getClearable(): bool;
     public function setRequired(bool $required): self;
     public function getRequired(): bool;
-    public function setDisplayCondition(string $displayCondition): self;
-    public function getDisplayCondition(): ?string;
+    public function setDisplayCondition($displayCondition = null): self;
+    public function getDisplayCondition();
     public function setRequestUpdate(bool $requestUpdate): self;
     public function getRequestUpdate(): bool;
     public function setExclude(bool $exclude): self;
