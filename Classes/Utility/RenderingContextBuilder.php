@@ -113,7 +113,9 @@ class RenderingContextBuilder
                 $uriBuilder->injectConfigurationManager($configurationManager);
             }
 
-            $uriBuilder->initializeObject();
+            if (method_exists($uriBuilder, 'initializeObject')) {
+                $uriBuilder->initializeObject();
+            }
 
             /** @var ControllerContext $controllerContext */
             $controllerContext = GeneralUtility::makeInstance(ControllerContext::class);
