@@ -58,9 +58,7 @@ abstract class AbstractTestCase extends TestCase
         $GLOBALS['EXEC_TIME'] = time();
         $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [
-            Escape::class
-        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fluid_template'] = [
             'frontend' => VariableFrontend::class,
             'backend' => TransientMemoryBackend::class,
