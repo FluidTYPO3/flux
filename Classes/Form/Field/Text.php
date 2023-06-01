@@ -131,9 +131,7 @@ class Text extends Input implements FieldInterface
             /** @var array|null $record */
             $record = $root->getOption('record');
             if ($record !== null) {
-                if (isset($record['pid'])) {
-                    $pageUid = (integer) $record['pid'] ?? 0;
-                }
+                $pageUid = (integer) ($record['pid'] ?? 0);
             }
         }
 
