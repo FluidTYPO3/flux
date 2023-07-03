@@ -238,3 +238,8 @@ parameters:
             message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
             count: 1
             path: Classes/ViewHelpers/InlineViewHelper.php
+
+        -
+            message: "#^Call to an undefined method object\\:\\:setSetupArray\\(\\)\\.$#"
+            count: 1
+            path: Classes/Utility/RequestBuilder.php
