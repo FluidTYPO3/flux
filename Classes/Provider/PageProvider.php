@@ -93,12 +93,11 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     public function getTemplatePathAndFilename(array $row): ?string
     {
         $templatePathAndFilename = $this->templatePathAndFilename;
-        $action = $this->getControllerActionReferenceFromRecord($row);
+        $action = $this->getControllerActionFromRecord($row);
         if (false === empty($action)) {
             $pathsOrExtensionKey = $this->templatePaths
                 ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
             $templatePaths = $this->createTemplatePaths($pathsOrExtensionKey);
-            $action = $this->getControllerActionFromRecord($row);
             $action = ucfirst($action);
             $templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat(
                 $this->getControllerNameFromRecord($row),
