@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Integration\Overrides\BackendLayoutView;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -295,7 +296,10 @@ class BackendLayoutViewTest extends AbstractTestCase
         $this->setInaccessiblePropertyValue($subject, 'addingItemsForContent', true);
 
         $output = $this->callInaccessibleMethod($subject, 'addColPosListLayoutItems', 123, []);
-        self::assertSame([['Label', '--div--']], $output);
+        self::assertSame(
+            [(new SelectOption('Label', '--div--'))->toArray()],
+            $output
+        );
     }
 
     public function testAddColPosListLayoutItemsWithoutPageRecord(): void

@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
@@ -128,10 +129,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
                     $items = array_merge(
                         $items,
                         [
-                            [
-                                $label,
-                                '--div--'
-                            ]
+                            (new SelectOption($label, '--div--'))->toArray()
                         ],
                         $provider->getGrid($parentRecord)->buildExtendedBackendLayoutArray($parentRecordUid)['__items']
                     );

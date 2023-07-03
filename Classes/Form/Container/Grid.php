@@ -12,6 +12,7 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -102,11 +103,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
                 $key = ($index + 1) . '.';
                 $columns[$key] = $column;
                 $colPosList[$colPos] = $colPos;
-                $items[] = [
-                    $columns[$key]['name'],
-                    $colPos,
-                    $column['icon']
-                ];
+                $items[] = (new SelectOption($columns[$key]['name'], $colPos, $column['icon']))->toArray();
                 $colCount += $column['colspan'] ? $column['colspan'] : 1;
                 $backendLayout['usedColumns'][$colPos] = $column['name'];
                 ++ $index;
@@ -118,7 +115,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
             // We are creating a grid for the page level backend layout. Add colPos item values from TCA if they were
             // not defined as grid columns and are above ColumnNumberCalculator::MULTIPLIER.
             foreach ($GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] as $columnSelectionOption) {
-                if ($columnSelectionOption[1] > ColumnNumberUtility::MULTIPLIER
+                if (($columnSelectionOption['value'] ?? $columnSelectionOption[1]) > ColumnNumberUtility::MULTIPLIER
                     && !in_array($columnSelectionOption, $items, true)
                 ) {
                     // This is in all likelihood a virtual column; include it.
