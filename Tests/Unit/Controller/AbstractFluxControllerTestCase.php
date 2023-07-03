@@ -25,11 +25,9 @@ use FluidTYPO3\Flux\Utility\RequestBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Http\ResponseFactory;
-use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Extbase\Mvc\Response;
@@ -67,16 +65,6 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $renderingContextBuilder->method('buildRenderingContextFor')->willReturn($renderingContext);
 
         GeneralUtility::addInstance(RenderingContextBuilder::class, $renderingContextBuilder);
-
-        $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequest::class)
-            ->setMethods(['getAttribute'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        if (class_exists(ExtbaseRequestParameters::class)) {
-            $GLOBALS['TYPO3_REQUEST']->method('getAttribute')
-                ->with('extbase')
-                ->willReturn(new ExtbaseRequestParameters($this->createInstanceClassName()));
-        }
 
         $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
             ->setMethods(['getEnvironmentVariable'])

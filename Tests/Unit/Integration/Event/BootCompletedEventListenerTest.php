@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Event;
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Integration\Event\BootCompletedEventListener;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Configuration\Event\BeforeFlexFormDataStructureParsedEvent;
 use TYPO3\CMS\Core\Core\Event\BootCompletedEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

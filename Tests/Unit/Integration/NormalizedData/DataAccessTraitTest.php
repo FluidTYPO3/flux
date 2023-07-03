@@ -20,10 +20,8 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
-use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class DataAccessTraitTest extends AbstractTestCase
@@ -45,17 +43,6 @@ class DataAccessTraitTest extends AbstractTestCase
         $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequest::class)
-            ->setMethods(['getAttribute'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        if (class_exists(ExtbaseRequestParameters::class)) {
-            $GLOBALS['TYPO3_REQUEST']->method('getAttribute')
-                ->with('extbase')
-                ->willReturn(new ExtbaseRequestParameters($this->createInstanceClassName()));
-        }
-
         $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
             ->setMethods(['getEnvironmentVariable'])
             ->getMock();

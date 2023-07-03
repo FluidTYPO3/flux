@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Event;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\Event\BeforeFlexFormDataStructureIdentifierInitializedEventListener;
 use FluidTYPO3\Flux\Integration\Event\BeforeFlexFormDataStructureParsedEventListener;
 use FluidTYPO3\Flux\Integration\FlexFormBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;

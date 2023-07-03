@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Integration\PreviewRenderer;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
-use TYPO3\CMS\Core\Core\Event\BootCompletedEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PageContentPreviewRenderingEventListenerTest extends AbstractTestCase

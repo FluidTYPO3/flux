@@ -9,7 +9,10 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
+use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
@@ -24,7 +27,6 @@ class RequestBuilder
         string $pluginName,
         array $arguments = []
     ): RequestInterface {
-        /** @var ServerRequest $serverRequest */
         $serverRequest = $this->getServerRequest();
 
         $controllerExtensionName = ExtensionNamingUtility::getExtensionName($extensionIdentity);
@@ -71,10 +73,23 @@ class RequestBuilder
         return $request;
     }
 
-    private function getServerRequest(): ?ServerRequest
+    public function getServerRequest(): ServerRequest
     {
         /** @var ServerRequest|null $request */
-        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? (new ServerRequest())->withAttribute(
+            'applicationType',
+            defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
+        );
+
+        if (class_exists(FrontendTypoScript::class) && !$request->getAttribute('frontend.typoscript')) {
+            $frontendTypoScript = GeneralUtility::makeInstance(
+                FrontendTypoScript::class,
+                GeneralUtility::makeInstance(RootNode::class),
+                []
+            );
+            $frontendTypoScript->setSetupArray([]);
+            $request = $request->withAttribute('frontend.typoscript', $frontendTypoScript);
+        }
         return $request;
     }
 

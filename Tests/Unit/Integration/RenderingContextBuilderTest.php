@@ -11,18 +11,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
-use Psr\Container\ContainerInterface;
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
-use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolver;
-use TYPO3\CMS\Fluid\Core\ViewHelper\ViewHelperResolverFactoryInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
-use TYPO3Fluid\Fluid\Core\Cache\FluidCacheInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 class RenderingContextBuilderTest extends AbstractTestCase
