@@ -75,7 +75,7 @@ class RequestBuilder
 
     public function getServerRequest(): ServerRequest
     {
-        /** @var ServerRequest|null $request */
+        /** @var ServerRequest $request */
         $request = $GLOBALS['TYPO3_REQUEST'] ?? (new ServerRequest())->withAttribute(
             'applicationType',
             defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
