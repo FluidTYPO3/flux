@@ -27,8 +27,11 @@ use TYPO3Fluid\Fluid\View\TemplatePaths;
 
 class RenderingContextBuilder
 {
-    public function __construct(private ConfigurationContext $context)
+    private ConfigurationContext $context;
+
+    public function __construct(ConfigurationContext $context)
     {
+        $this->context = $context;
     }
 
     public function buildRenderingContextFor(

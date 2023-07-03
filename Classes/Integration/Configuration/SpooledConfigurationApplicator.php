@@ -24,8 +24,11 @@ use TYPO3Fluid\Fluid\Exception;
 
 class SpooledConfigurationApplicator
 {
-    public function __construct(private ConfigurationContext $context)
+    private ConfigurationContext $context;
+
+    public function __construct(ConfigurationContext $context)
     {
+        $this->context = $context;
     }
 
     protected static ?ContentTypeBuilder $contentTypeBuilder = null;
