@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
@@ -68,7 +69,7 @@ class RenderingContextBuilderTest extends AbstractTestCase
 
         GeneralUtility::addInstance(RenderingContext::class, $renderingContext);
 
-        $subject = new RenderingContextBuilder();
+        $subject = new RenderingContextBuilder(new ConfigurationContext());
         $output = $subject->buildRenderingContextFor(
             'FluidTYPO3.Flux',
             'Default',
