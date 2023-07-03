@@ -77,6 +77,7 @@ class RenderingContextBuilder
                 TemplatePaths::CONFIG_PARTIALROOTPATHS => [$resources . 'Partials/'],
                 TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$resources . 'Layouts/'],
             ];
+            /** @var TemplatePaths $templatePaths */
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $paths);
             $templatePaths->fillDefaultsByPackageName($extensionKey);
             $renderingContext->setTemplatePaths($templatePaths);
