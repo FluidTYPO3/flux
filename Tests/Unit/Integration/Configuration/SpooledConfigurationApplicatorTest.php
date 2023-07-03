@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Integration\ViewBuilder;
@@ -95,8 +96,11 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
         $this->contentTypeManager->method('fetchContentTypes')
             ->willReturn([$this->contentTypeDefinition, $this->contentTypeDefinition2]);
 
+        $configurationContext = new ConfigurationContext();
+
         $this->subject = $this->getMockBuilder(SpooledConfigurationApplicator::class)
             ->setMethods(['getApplicationContext', 'getContentTypeManager'])
+            ->setConstructorArgs([$configurationContext])
             ->getMock();
         $this->subject->method('getContentTypeManager')->willReturn($this->contentTypeManager);
 

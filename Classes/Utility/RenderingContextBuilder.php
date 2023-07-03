@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -21,9 +23,14 @@ use TYPO3\CMS\Extbase\Service\ExtensionService;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\View\TemplatePaths;
 
 class RenderingContextBuilder
 {
+    public function __construct(private ConfigurationContext $context)
+    {
+    }
+
     public function buildRenderingContextFor(
         string $extensionIdentity,
         string $controllerName,
@@ -58,8 +65,20 @@ class RenderingContextBuilder
             $renderingContext->setRequest($request);
         }
 
-        $templatePaths = $renderingContext->getTemplatePaths();
-        $templatePaths->fillDefaultsByPackageName($extensionKey);
+        if (!$this->context->isBootMode()) {
+            $templatePaths = $renderingContext->getTemplatePaths();
+        } else {
+            $resources = ExtensionManagementUtility::extPath($extensionKey) . 'Resources/Private/';
+            $paths = [
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$resources . 'Templates/'],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => [$resources . 'Partials/'],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$resources . 'Layouts/'],
+            ];
+            $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $paths);
+            $templatePaths->fillDefaultsByPackageName($extensionKey);
+            $renderingContext->setTemplatePaths($templatePaths);
+        }
+
 
         if ($templatePathAndFilename) {
             $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);

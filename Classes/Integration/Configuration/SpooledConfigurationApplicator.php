@@ -15,19 +15,25 @@ use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\RequestBuilder;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
-use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3Fluid\Fluid\Exception;
 
 class SpooledConfigurationApplicator
 {
+    public function __construct(private ConfigurationContext $context)
+    {
+    }
+
     protected static ?ContentTypeBuilder $contentTypeBuilder = null;
 
     public function processData(): void
     {
+        $this->context->setBootMode(true);
+
         // Initialize the TCA needed by "template as CType" integrations
         static::spoolQueuedContentTypeTableConfigurations(
             Core::getQueuedContentTypeRegistrations()
@@ -47,6 +53,8 @@ class SpooledConfigurationApplicator
 
         $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
         Core::clearQueuedContentTypeRegistrations();
+
+        $this->context->setBootMode(false);
     }
 
     public static function spoolQueuedContentTypeTableConfigurations(array $queue): void
@@ -112,15 +120,13 @@ class SpooledConfigurationApplicator
 
         $self = $this;
 
-        // We have to fake a ServerRequest here, since internally Extbase's ConfigurationManager will otherwise always
-        // instance BackendConfigurationManager and hold on to that instance, which means that any subsequent code that
-        // injects ConfigurationManager will contain a BackendConfigurationManager even in frontend context.
-        // This results in various issues such as inability to correctly resolve the correct controller for an Extbase
-        // plugin on requests that don't already have a cached version of Flux forms / contains dynamic Flux forms.
-        $GLOBALS['TYPO3_REQUEST'] = $GLOBALS['TYPO3_REQUEST'] ?? (new ServerRequest())->withAttribute(
-            'applicationType',
-            defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
-        );
+        $backup = $GLOBALS['TYPO3_REQUEST'] ?? null;
+
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.3', '<')) {
+            /** @var RequestBuilder $requestBuilder */
+            $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
+            $GLOBALS['TYPO3_REQUEST'] = $requestBuilder->getServerRequest();
+        }
 
         uasort(
             $providers,
@@ -144,6 +150,8 @@ class SpooledConfigurationApplicator
                 }
             }
         }
+
+        $GLOBALS['TYPO3_REQUEST'] = $backup;
     }
 
     private function resolveSortingValue(?Form $form): int
@@ -169,7 +177,7 @@ class SpooledConfigurationApplicator
     protected static function getContentTypeBuilder(): ContentTypeBuilder
     {
         /** @var ContentTypeBuilder $contentTypeBuilder */
-        $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class);
+        $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class, true);
         return $contentTypeBuilder;
     }
 

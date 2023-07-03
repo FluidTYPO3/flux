@@ -12,6 +12,10 @@ services:
     autowire: false
   TYPO3\CMS\Backend\View\BackendViewFactory:
     public: true
+  FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator:
+    public: true
+  FluidTYPO3\Flux\Utility\RenderingContextBuilder:
+    public: true
 
   FluidTYPO3\Flux\Integration\Event\PageContentPreviewRenderingEventListener:
     tags:
