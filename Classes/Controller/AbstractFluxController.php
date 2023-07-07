@@ -360,6 +360,11 @@ abstract class AbstractFluxController extends ActionController
                     $this->request->setControllerExtensionName($vendorLessExtensionName);
                 }
 
+                if (method_exists($this->request, 'withControllerExtensionName')) {
+                    $this->request = $this->request->withControllerExtensionName($vendorLessExtensionName);
+                    $view->getRenderingContext()->setRequest($this->request);
+                }
+
                 $this->configurationManager->setConfiguration(
                     array_merge(
                         (array) $this->configurationManager->getConfiguration(
