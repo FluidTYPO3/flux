@@ -131,16 +131,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     if (class_exists(\FluidTYPO3\Flux\Core::class)) {
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
-
-        // native Outlets, replaceable by short name in subsequent registerOutlet() calls by adding second argument (string, name of type)
-        \FluidTYPO3\Flux\Core::registerOutlet('standard');
-
-        // native Pipes, replaceable by short name in subsequent registerPipe() calls by adding second argument (string, name of type)
-        \FluidTYPO3\Flux\Core::registerPipe('standard');
-        \FluidTYPO3\Flux\Core::registerPipe('controller');
-        \FluidTYPO3\Flux\Core::registerPipe('email');
-        \FluidTYPO3\Flux\Core::registerPipe('flashMessage');
-        \FluidTYPO3\Flux\Core::registerPipe('typeConverter');
     }
 
     if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
