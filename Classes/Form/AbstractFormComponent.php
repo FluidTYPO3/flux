@@ -27,7 +27,6 @@ abstract class AbstractFormComponent implements FormInterface
 {
     const NAMESPACE_FIELD = 'FluidTYPO3\\Flux\\Form\\Field';
     const NAMESPACE_CONTAINER = 'FluidTYPO3\\Flux\\Form\\Container';
-    const NAMESPACE_WIZARD = 'FluidTYPO3\\Flux\\Form\\Wizard';
 
     protected ?string $name = null;
     protected bool $enabled = true;
@@ -95,18 +94,6 @@ abstract class AbstractFormComponent implements FormInterface
     {
         /** @var T&ContainerInterface $component */
         $component = $this->createComponent(static::NAMESPACE_CONTAINER, $type, $name, $label);
-        return $component;
-    }
-
-    /**
-     * @template T
-     * @param class-string<T> $type
-     * @return T&WizardInterface
-     */
-    public function createWizard(string $type, string $name, string $label = null): WizardInterface
-    {
-        /** @var T&WizardInterface $component */
-        $component = $this->createComponent(static::NAMESPACE_WIZARD, $type, $name, $label);
         return $component;
     }
 

@@ -32,7 +32,7 @@ interface FormInterface
     public function setExtensionName(?string $extensionName): self;
     public function getExtensionName(): ?string;
     public function isChildOfType(string $type): bool;
-    public function hasChildren(): bool;
+
     public function setInherit(bool $inherit): self;
     public function getInherit(): bool;
     public function setInheritEmpty(bool $inheritEmpty): self;
@@ -68,13 +68,6 @@ interface FormInterface
      * @return T&ContainerInterface
      */
     public function createContainer(string $type, string $name, ?string $label = null): ContainerInterface;
-
-    /**
-     * @template T
-     * @param class-string<T> $type
-     * @return T&WizardInterface
-     */
-    public function createWizard(string $type, string $name, ?string $label = null): WizardInterface;
 
     /**
      * Modifies the current Form Component by changing any properties

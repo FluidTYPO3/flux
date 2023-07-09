@@ -308,19 +308,6 @@ class FormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canCreateAndAddWizard()
-    {
-        $form = $this->getEmptyDummyForm();
-        $field = $form->createField('Input', 'input');
-        $wizard = $form->createWizard('Add', 'add');
-        $field->add($wizard);
-        $form->add($field);
-        $this->assertIsValidAndWorkingFormObject($form);
-    }
-
-    /**
-     * @test
-     */
     public function supportsFormComponentsPlacedInPartialTemplates()
     {
         $template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);

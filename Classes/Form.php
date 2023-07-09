@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux;
  */
 
 use FluidTYPO3\Flux\Form\Container\Sheet;
+use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
@@ -59,6 +60,11 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     protected ?string $description = null;
     protected array $options = [];
 
+    /**
+     * @var Sheet[]|\SplObjectStorage
+     */
+    protected iterable $children;
+
     public function __construct()
     {
         parent::__construct();
@@ -85,15 +91,15 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
     public function add(Form\FormInterface $child): self
     {
-        if (false === $child instanceof Form\Container\Sheet) {
-            /** @var Form\Container\Sheet $last */
+        if (false === $child instanceof Sheet) {
+            /** @var Sheet $last */
             $last = $this->last();
             $last->add($child);
         } else {
             $this->children->rewind();
             /** @var FormInterface|null $firstChild */
             $firstChild = $this->children->count() > 0 ? $this->children->current() : null;
-            if ($firstChild instanceof FormInterface
+            if ($firstChild instanceof Sheet
                 && $this->children->count() === 1
                 && $firstChild->getName() === 'options'
                 && !$firstChild->hasChildren()
@@ -136,7 +142,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @return Sheet[]|FormInterface[]
+     * @return Sheet[]
      */
     public function getSheets(bool $includeEmpty = false): iterable
     {
@@ -152,7 +158,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     }
 
     /**
-     * @return Form\FieldInterface[]
+     * @return FieldInterface[]
      */
     public function getFields(): iterable
     {
