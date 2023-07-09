@@ -15,11 +15,6 @@ use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * AbstractFormField
- *
- * @deprecated Will be removed in Flux 10.0
- */
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface
 {
     protected bool $required = false;
