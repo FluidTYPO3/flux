@@ -20,6 +20,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -425,9 +426,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)
-            ->setMethods(['getRecord', 'performSubRendering'])
+            ->setMethods(['getRecord', 'performSubRendering', 'getServerRequest'])
             ->disableOriginalConstructor()
             ->getMock();
+        $instance->method('getServerRequest')->willReturn(
+            $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
+        );
         $instance->expects($this->once())->method('getRecord')->willReturn($row);
         $instance->expects($this->once())
             ->method('performSubRendering')
@@ -480,8 +484,19 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)
-            ->setMethods(['processRequest', 'initializeViewHelperVariableContainer', 'createHtmlResponse'])
+            ->setMethods(
+                [
+                    'processRequest',
+                    'initializeViewHelperVariableContainer',
+                    'createHtmlResponse',
+                    'getServerRequest',
+                ]
+            )
             ->getMock();
+
+        $instance->method('getServerRequest')->willReturn(
+            $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
+        );
 
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
 

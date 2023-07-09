@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
@@ -24,6 +25,7 @@ class WizardItems implements NewContentElementWizardHookInterface
 {
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
+    protected array $requestArguments;
 
     public function __construct()
     {
@@ -34,6 +36,10 @@ class WizardItems implements NewContentElementWizardHookInterface
         /** @var WorkspacesAwareRecordService $recordService */
         $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->recordService = $recordService;
+
+        /** @var ServerRequestInterface $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        $this->requestArguments = $request->getQueryParams() ?? [];
     }
 
     /**
@@ -45,10 +51,11 @@ class WizardItems implements NewContentElementWizardHookInterface
         $enabledContentTypes = [];
         $fluidContentTypeNames = [];
 
-        $defaultValues = (array) GeneralUtility::_GET('defVals');
+        $defaultValues = $this->requestArguments['defVals'] ?? [];
+
         /** @var array $dataArray */
         $dataArray = $defaultValues['tt_content'] ?? [];
-        $pageUidFromUrl = GeneralUtility::_GET('id');
+        $pageUidFromUrl = $this->requestArguments['id'] ?? null;
         $pageUidFromUrl = is_scalar($pageUidFromUrl) ? (int) $pageUidFromUrl : null;
         $pageUidFromDataArray = key($dataArray) ?: null;
 
@@ -99,7 +106,7 @@ class WizardItems implements NewContentElementWizardHookInterface
         int $pageUid
     ): array {
         /** @var int|null $colPos */
-        $colPos = GeneralUtility::_GET('colPos');
+        $colPos = $this->requestArguments['colPos'] ?? null;
         if ($colPos === null) {
             $reflectionProperty = new \ReflectionProperty($parentObject, 'colPos');
             $reflectionProperty->setAccessible(true);
