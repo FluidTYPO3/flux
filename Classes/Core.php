@@ -27,8 +27,6 @@ class Core
     const CONTROLLER_ALL = '_all';
 
     protected static array $providers = [];
-    protected static array $pipes = [];
-    protected static array $outlets = [];
     private static array $forms = [
         'tables' => [],
     ];
@@ -284,34 +282,6 @@ class Core
         }
     }
 
-    public static function registerPipe(string $typeOrClassName, ?string $insteadOfNativeType = null): void
-    {
-        $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
-        self::$pipes[$key] = $typeOrClassName;
-    }
-
-    public static function unregisterPipe(string $typeOrClassName): void
-    {
-        if (true === in_array($typeOrClassName, self::$pipes)) {
-            $index = array_search($typeOrClassName, self::$pipes);
-            unset(self::$pipes[$index]);
-        }
-    }
-
-    public static function registerOutlet(string $typeOrClassName, ?string $insteadOfNativeType = null): void
-    {
-        $key = null === $insteadOfNativeType ? $typeOrClassName : $insteadOfNativeType;
-        self::$outlets[$key] = $typeOrClassName;
-    }
-
-    public static function unregisterOutlet(string $typeOrClassName): void
-    {
-        if (true === in_array($typeOrClassName, self::$outlets)) {
-            $index = array_search($typeOrClassName, self::$outlets);
-            unset(self::$outlets[$index]);
-        }
-    }
-
     /**
      * Gets the defined FlexForms configuration providers based on parameters
      * @return ProviderInterface[]
@@ -336,16 +306,6 @@ class Core
             return self::$forms['tables'][$table];
         }
         return null;
-    }
-
-    public static function getPipes(): array
-    {
-        return array_values(self::$pipes);
-    }
-
-    public static function getOutlets(): array
-    {
-        return array_values(self::$outlets);
     }
 
     protected static function getAbsolutePathForFilename(string $filename): string

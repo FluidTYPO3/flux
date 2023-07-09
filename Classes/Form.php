@@ -58,7 +58,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
 
     protected ?string $description = null;
     protected array $options = [];
-    protected OutletInterface $outlet;
 
     public function __construct()
     {
@@ -73,9 +72,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         $defaultSheet->setName('options');
         $defaultSheet->setLabel('LLL:EXT:flux' . $this->localLanguageFileRelativePath . ':tt_content.tx_flux_options');
         $this->add($defaultSheet);
-        /** @var StandardOutlet $outlet */
-        $outlet = GeneralUtility::makeInstance(StandardOutlet::class);
-        $this->outlet = $outlet;
     }
 
     public static function create(array $settings = []): self
@@ -264,17 +260,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
         return false;
     }
 
-    public function setOutlet(OutletInterface $outlet): self
-    {
-        $this->outlet = $outlet;
-        return $this;
-    }
-
-    public function getOutlet(): OutletInterface
-    {
-        return $this->outlet;
-    }
-
     public function modify(array $structure): self
     {
         if (isset($structure['options']) && is_array($structure['options'])) {
@@ -298,12 +283,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 $sheet->modify($sheetData);
             }
             unset($structure['sheets'], $structure['children']);
-        }
-        if (isset($structure['outlet'])) {
-            // @TODO: enable modify() on outlet instead of only allowing creation
-            $outlet = StandardOutlet::create($structure['outlet']);
-            $this->setOutlet($outlet);
-            unset($structure['outlet']);
         }
 
         /** @var self $fromParentMethodCall */

@@ -218,30 +218,6 @@ class CoreTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canAddAndRetrieveOutlets()
-    {
-        $fakeClass = 'MyFakeClass';
-        AccessibleCore::registerOutlet($fakeClass);
-        $this->assertContains($fakeClass, AccessibleCore::getOutlets());
-        AccessibleCore::unregisterOutlet($fakeClass);
-        $this->assertNotContains($fakeClass, AccessibleCore::getOutlets());
-    }
-
-    /**
-     * @test
-     */
-    public function canAddAndRetrievePipes()
-    {
-        $fakeClass = 'MyFakeClass';
-        AccessibleCore::registerPipe($fakeClass);
-        $this->assertContains($fakeClass, AccessibleCore::getPipes());
-        AccessibleCore::unregisterPipe($fakeClass);
-        $this->assertNotContains($fakeClass, AccessibleCore::getPipes());
-    }
-
-    /**
-     * @test
-     */
     public function canUnregisterNotCurrentlyRegisteredProviders()
     {
         $fakeClass = 'MyFakeClass';

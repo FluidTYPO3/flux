@@ -160,8 +160,8 @@ class ContentTypeBuilder
         ExtensionUtility::configurePlugin(
             $extensionIdentity,
             $emulatedPluginName,
-            [$controllerName => $controllerAction . ',outlet,error'],
-            [$controllerName => 'outlet'],
+            [$controllerName => $controllerAction . ',error'],
+            [],
             ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
         );
 
