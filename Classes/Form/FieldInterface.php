@@ -28,8 +28,6 @@ interface FieldInterface extends FormInterface
     public function getValidate(): ?string;
     public function getConfig(): array;
     public function setConfig(array $config): self;
-    public function add(WizardInterface $wizard): self;
-    public function remove(string $wizardName): ?WizardInterface;
 
     /**
      * @param mixed $default

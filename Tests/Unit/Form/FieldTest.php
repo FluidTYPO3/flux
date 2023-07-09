@@ -69,11 +69,4 @@ class FieldTest extends AbstractTestCase
     {
         $this->assertGetterAndSetterWorks('onChange', 'someonchange', null, true);
     }
-
-    public function testHasChildWithInstance(): void
-    {
-        $field = Field::create(['type' => 'input']);
-        $wizard = $field->createWizard(Add::class, 'add');
-        self::assertTrue($field->has($wizard));
-    }
 }
