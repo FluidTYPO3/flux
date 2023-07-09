@@ -3525,7 +3525,7 @@ DEPRECATED - use flux:field instead
       </xsd:sequence>
       <xsd:attribute type="xsd:string" name="id" default="NULL" use="required">
         <xsd:annotation>
-          <xsd:documentation><![CDATA[Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed]]></xsd:documentation>
+          <xsd:documentation><![CDATA[Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:string" name="label" default="NULL">
