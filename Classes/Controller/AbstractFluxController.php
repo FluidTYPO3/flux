@@ -21,6 +21,7 @@ use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -325,10 +326,7 @@ abstract class AbstractFluxController extends ActionController
 
     protected function resolveOverriddenFluxControllerActionNameFromRequestParameters(string $pluginSignature): ?string
     {
-        /** @var string[] $requestParameters */
-        $requestParameters = (array) GeneralUtility::_GET($pluginSignature);
-        $overriddenControllerActionName = isset($requestParameters['action']) ? $requestParameters['action'] : null;
-        return $overriddenControllerActionName;
+        return $this->getServerRequest()->getQueryParams()[$pluginSignature]['action'] ?? null;
     }
 
     /**
@@ -439,8 +437,7 @@ abstract class AbstractFluxController extends ActionController
         string $pluginName,
         string $pluginSignature
     ): string {
-        $post = GeneralUtility::_POST($pluginSignature);
-        $arguments = (array) (true === is_array($post) ? $post : GeneralUtility::_GET($pluginSignature));
+        $arguments = $this->getServerRequest()->getQueryParams()[$pluginSignature] ?? [];
         /** @var RequestBuilder $requestBuilder */
         $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
         $request = $requestBuilder->buildRequestFor(
@@ -534,5 +531,12 @@ abstract class AbstractFluxController extends ActionController
             );
         }
         return $contentObject->data;
+    }
+
+    protected function getServerRequest(): ServerRequestInterface
+    {
+        /** @var ServerRequestInterface $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        return $request;
     }
 }
