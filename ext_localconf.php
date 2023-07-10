@@ -80,30 +80,36 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     }
 
     // Various hooks needed to operate Flux
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] =
-        \FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm::class;
+
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class . '->clearCacheCommand';
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] =
-        \FluidTYPO3\Flux\Integration\HookSubscribers\Preview::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems::class;
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] =
-        \FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon::class . '->addSubIcon';
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['record_is_used']['flux'] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\ContentUsedDecision::class . '->isContentElementUsed';
 
-    // The following is a dual registration of the same TCA-manipulating hook; the reason for registering it twice for two
-    // different hooks is that extTablesInclusion-PostProcessing does not get executed in FE, resulting in errors due to
-    // features provided by this hook subscriber not being loaded.
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] =
-        \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class;
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources'][] =
-        \FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion::class . '->includeStaticTypoScriptHook';
+    if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '12', '<')) {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] =
+            \FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm::class;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] =
+            \FluidTYPO3\Flux\Integration\HookSubscribers\Preview::class;
+    }
+
+    if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11', '<')) {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] =
+            \FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon::class . '->addSubIcon';
+        // The following is a dual registration of the same TCA-manipulating hook; the reason for registering it twice for two
+        // different hooks is that extTablesInclusion-PostProcessing does not get executed in FE, resulting in errors due to
+        // features provided by this hook subscriber not being loaded.
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing']['flux'] =
+            \FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor::class;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tstemplate.php']['includeStaticTypoScriptSources'][] =
+            \FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion::class . '->includeStaticTypoScriptHook';
+    }
 
     \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
         \FluidTYPO3\Flux\Integration\ContentTypeBuilder::DEFAULT_SHOWITEM,
