@@ -258,7 +258,8 @@ class WizardItems implements NewContentElementWizardHookInterface
         $whitelist = array_unique($whitelist);
         if (0 < count($whitelist)) {
             foreach ($items as $name => $item) {
-                if (false !== strpos($name, '_') && !in_array($item['tt_content_defValues']['CType'], $whitelist)) {
+                $contentType = $item['tt_content_defValues']['CType'] ?? '';
+                if (false !== strpos($name, '_') && !in_array($contentType, $whitelist)) {
                     unset($items[$name]);
                 }
             }
