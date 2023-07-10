@@ -27,4 +27,6 @@ interface ContainerInterface extends FormInterface
      * @param FormInterface|string $childOrChildName
      */
     public function has($childOrChildName): bool;
+
+    public function hasChildren(): bool;
 }

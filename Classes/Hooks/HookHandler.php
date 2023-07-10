@@ -45,9 +45,6 @@ class HookHandler
     const PROVIDER_EXTENSION_REGISTERED = 'providerExtensionRegistered';
     const NESTED_CONTENT_FETCHED = 'nestedContentFetched';
     const NESTED_CONTENT_RENDERED = 'nestedContentRendered';
-    const OUTLET_CREATED = 'outletCreated';
-    const OUTLET_EXECUTED = 'outletExecuted';
-    const OUTLET_INPUT_INVALID = 'outletInputInvalid';
     const ALLOWED_CONTENT_RULES_FETCHED = 'allowedContentRulesFetched';
     const ALLOWED_CONTENT_FILTERED = 'allowedContentFiltered';
     const CONTENT_TYPE_CONFIGURED = 'contentTypeConfigured';

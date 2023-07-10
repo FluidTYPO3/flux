@@ -4,8 +4,8 @@
 fluidtypo3/flux
 ===============
 
-* 5 ViewHelpers documented
-* 7 Sub namespaces
+* 4 ViewHelpers documented
+* 4 Sub namespaces
 
 .. toctree::
    :titlesonly:
@@ -16,5 +16,4 @@ fluidtypo3/flux
    Form
    Grid
    Inline
-   Outlet
 

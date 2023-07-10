@@ -53,7 +53,7 @@ name
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of the attribute, FlexForm XML-valid tag name string
 
@@ -363,7 +363,7 @@ items
    mixed
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Items for the selector; array / CSV / Traversable / Query supported
 

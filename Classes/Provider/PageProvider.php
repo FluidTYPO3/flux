@@ -327,7 +327,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             return [];
         }
         /** @var RootlineUtility $rootLineUtility */
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid'] ?? null);
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, (integer) ($record['uid'] ?? 0));
         return array_reverse(array_slice($rootLineUtility->get(), 1));
     }
 }

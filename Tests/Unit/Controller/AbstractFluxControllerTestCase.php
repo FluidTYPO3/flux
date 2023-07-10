@@ -11,18 +11,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Core;
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
-use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\MisconfiguredControllerProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -37,7 +35,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
-use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Test case for Flux-enabled controllers
@@ -429,9 +426,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)
-            ->setMethods(['getRecord', 'performSubRendering'])
+            ->setMethods(['getRecord', 'performSubRendering', 'getServerRequest'])
             ->disableOriginalConstructor()
             ->getMock();
+        $instance->method('getServerRequest')->willReturn(
+            $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
+        );
         $instance->expects($this->once())->method('getRecord')->willReturn($row);
         $instance->expects($this->once())
             ->method('performSubRendering')
@@ -484,8 +484,19 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = $this->getMockBuilder($controllerClassName)
-            ->setMethods(['processRequest', 'initializeViewHelperVariableContainer', 'createHtmlResponse'])
+            ->setMethods(
+                [
+                    'processRequest',
+                    'initializeViewHelperVariableContainer',
+                    'createHtmlResponse',
+                    'getServerRequest',
+                ]
+            )
             ->getMock();
+
+        $instance->method('getServerRequest')->willReturn(
+            $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
+        );
 
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
 
@@ -624,130 +635,6 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->getMock();
         $this->expectExceptionCode(1672082347);
         $subject->renderAction();
-    }
-
-    public function testOutletActionThrowsExceptionIfProviderIsNotFormProviderInterface(): void
-    {
-        $this->expectExceptionCode(1669488830);
-        $subject = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(['getRecord'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->setInaccessiblePropertyValue(
-            $subject,
-            'provider',
-            $this->getMockBuilder(ControllerProviderInterface::class)->getMockForAbstractClass()
-        );
-        $subject->outletAction();
-    }
-
-    public function testOutletActionThrowsExceptionIfProviderIsNotRecordProviderInterface(): void
-    {
-        $this->expectExceptionCode(1669488830);
-        $subject = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(['getRecord'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->setInaccessiblePropertyValue(
-            $subject,
-            'provider',
-            $this->getMockBuilder(MisconfiguredControllerProvider::class)
-                ->getMockForAbstractClass()
-        );
-        $subject->outletAction();
-    }
-
-    public function testOutletActionForwardsUnmatchedConfigurationToRenderAction(): void
-    {
-        $arguments = ['table' => 'xyz', 'uid' => 321];
-        $request = GeneralUtility::makeInstance(RequestBuilder::class)->buildRequestFor(
-            'Flux',
-            'Dummy',
-            'dummy',
-            '',
-            [
-                '__outlet' => $arguments
-            ]
-        );
-        #$request->method('getArgument')->with('__outlet')->willReturn($arguments);
-
-        $subject = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(['renderAction', 'getRecord'])
-            ->getMock();
-        $subject->expects($this->once())->method('renderAction');
-        $subject->expects($this->once())->method('getRecord')->willReturn(['uid' => 123]);
-
-        $provider = $this->getMockBuilder(Provider::class)
-            ->setMethods(['getTableName', 'getForm'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $provider->expects($this->once())->method('getTableName')->willReturn('foobar');
-        $provider->expects($this->once())
-            ->method('getForm')
-            ->willReturn($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
-
-        $this->setInaccessiblePropertyValue($subject, 'request', $request);
-        $this->setInaccessiblePropertyValue($subject, 'provider', $provider);
-        $this->setInaccessiblePropertyValue(
-            $subject,
-            'view',
-            $this->getMockBuilder(ViewInterface::class)->getMockForAbstractClass()
-        );
-
-        $subject->outletAction();
-    }
-
-    /**
-     * @param bool $isValidOutlet
-     * @param bool $throwsException
-     * @param string $expectedSection
-     * @dataProvider getOutletActionTestValues
-     */
-    public function testOutletAction($isValidOutlet, $throwsException, $expectedSection)
-    {
-        $response = $this->getMockBuilder(ResponseInterface::class)->getMockForAbstractClass();
-        $view = $this->getMockBuilder(TemplateView::class)
-            ->setMethods(['render', 'renderSection'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $view->expects($this->once())->method('renderSection')->with($expectedSection)->willReturn('rendered');
-        $subject = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(['getRecord', 'createHtmlResponse', 'renderAction'])
-            ->disableOriginalConstructor()->getMock();
-        $subject->expects($this->once())->method('getRecord')->willReturn([]);
-        $subject->method('createHtmlResponse')->willReturn($response);
-        $subject->method('renderAction')->willReturn($response);
-        $request = $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock();
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $outlet = $this->getMockBuilder(StandardOutlet::class)->setMethods(['produce', 'isValid'])->getMock();
-        $outlet->expects($this->once())->method('isValid')->willReturn($isValidOutlet);
-        if ($throwsException) {
-            $outlet->expects($this->once())->method('produce')->willThrowException(new \RuntimeException());
-        } elseif ($isValidOutlet) {
-            $outlet->expects($this->once())->method('produce')->willReturn([]);
-        } else {
-            $outlet->expects($this->never())->method('produce');
-        }
-        $form->setOutlet($outlet);
-        $provider = $this->getMockBuilder(Provider::class)
-            ->setMethods(['getForm'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $provider->expects($this->once())->method('getForm')->willReturn($form);
-        $this->setInaccessiblePropertyValue($subject, 'request', $request);
-        $this->setInaccessiblePropertyValue($subject, 'provider', $provider);
-        $this->setInaccessiblePropertyValue($subject, 'view', $view);
-        $rendered = $subject->outletAction();
-        $this->assertSame($response, $rendered);
-    }
-
-    public function getOutletActionTestValues(): array
-    {
-        return [
-            'valid outlet without exception' => [true, false, 'OutletSuccess'],
-            'valid outlet with exception' => [true, true, 'OutletError'],
-            'invalid outlet without exception' => [false, false, 'Main'],
-        ];
     }
 
     public function testGetRecordThrowsExceptionIfContentObjectIsEmpty(): void

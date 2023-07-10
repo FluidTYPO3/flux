@@ -23,7 +23,7 @@ class FormViewHelper extends AbstractFormViewHelper
         $this->registerArgument(
             'id',
             'string',
-            'Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed',
+            'Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed.',
             true
         );
         $this->registerArgument(

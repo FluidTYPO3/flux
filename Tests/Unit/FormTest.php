@@ -308,19 +308,6 @@ class FormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canCreateAndAddWizard()
-    {
-        $form = $this->getEmptyDummyForm();
-        $field = $form->createField('Input', 'input');
-        $wizard = $form->createWizard('Add', 'add');
-        $field->add($wizard);
-        $form->add($field);
-        $this->assertIsValidAndWorkingFormObject($form);
-    }
-
-    /**
-     * @test
-     */
     public function supportsFormComponentsPlacedInPartialTemplates()
     {
         $template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);
@@ -401,18 +388,6 @@ class FormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canSetAndGetOutlet()
-    {
-        /** @var StandardOutlet $outlet */
-        $outlet = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\StandardOutlet')->getMock();
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->setOutlet($outlet);
-        $this->assertSame($outlet, $form->getOutlet());
-    }
-
-    /**
-     * @test
-     */
     public function modifySetsProperty()
     {
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
@@ -468,20 +443,6 @@ class FormTest extends AbstractTestCase
         $form->setOption('foo.new', 'new-value');
 
         self::assertSame(['foo' => ['bar' => ['baz' => 'value'], 'new' => 'new-value']], $form->getOptions());
-    }
-
-    public function testModifyCanCreateOutlet(): void
-    {
-        $structure = [
-            'outlet' => [
-                'type' => StandardOutlet::class,
-            ]
-        ];
-
-        $form = new Form();
-        $form->modify($structure);
-
-        self::assertInstanceOf(StandardOutlet::class, $form->getOutlet());
     }
 
     public function testModifyCanModifyExistingSheet(): void

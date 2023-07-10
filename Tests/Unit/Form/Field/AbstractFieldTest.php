@@ -73,35 +73,11 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canUseWizards()
-    {
-        $instance = $this->canChainAllChainableSetters();
-        $wizard = $instance->createWizard('Add', 'add');
-        $added = $instance->add($wizard);
-        $this->assertSame($added, $instance);
-        $fetched = $instance->get('add');
-        $bad = $instance->get('bad');
-        $this->assertNull($bad);
-        $this->assertSame($fetched, $wizard);
-        $removed = $instance->remove('add');
-        $this->assertSame($removed, $wizard);
-        $bad = $instance->remove('bad');
-        $this->assertNull($bad);
-        $instance->add($wizard);
-        $built = $this->performTestBuild($instance);
-        $this->assertIsArray($built);
-        $this->assertTrue($instance->hasChildren());
-    }
-
-    /**
-     * @test
-     */
     public function canCreateFromDefinition()
     {
         $properties = $this->chainProperties;
         $class = $this->getObjectClassName();
         $properties['type'] = implode('/', array_slice(explode('\\', $class), 4, 1));
-        ;
         $instance = call_user_func_array(array($class, 'create'), array($properties));
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
     }
@@ -165,30 +141,6 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $instance = $this->createInstance();
         $instance->setClearable(true);
         $result = $this->performTestBuild($instance);
-        $this->assertNotEmpty($result['config']['wizards']);
-    }
-
-    /**
-     * @test
-     */
-    public function modifyCreatesWizards()
-    {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $field = $form->createField('Input', 'testfield');
-        $this->assertFalse($field->has('add'));
-        $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
-        $this->assertTrue($field->has('add'));
-    }
-
-    /**
-     * @test
-     */
-    public function modifyModifiesWizards()
-    {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $field = $form->createField('Input', 'testfield');
-        $wizard = $field->createWizard('Add', 'add', 'Original label');
-        $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
-        $this->assertEquals('Test', $wizard->getLabel());
+        $this->assertNotEmpty($result['config']);
     }
 }

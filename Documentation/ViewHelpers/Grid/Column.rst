@@ -79,7 +79,7 @@ colPos
    integer
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Column number - between 0 and 99, should be unique.
 

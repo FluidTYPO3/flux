@@ -561,39 +561,6 @@ class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Post-process database operation for the table that this ConfigurationProvider
-     * is attached to.
-     *
-     * @param string $status TYPO3 operation identifier, i.e. "new" etc.
-     * @param integer $id The ID of the current record (which is sometimes now included in $row
-     * @param array $row The record by reference. Changing fields' values changes the record's values just
-     *                   before saving after operation
-     * @param DataHandler $reference A reference to the DataHandler object that is currently performing the operation
-     * @codeCoverageIgnore
-     */
-    public function postProcessDatabaseOperation(string $status, int $id, array &$row, DataHandler $reference): void
-    {
-        // TODO: move function body to single-fire implementation in TceMain (DataHandler)
-        // TODO: remove in Flux 10.0
-        // We dispatch the Outlet associated with the Form, triggering each defined
-        // Pipe inside the Outlet to "conduct" the data.
-        $record = $this->recordService->getSingle((string) $this->getTableName($row), '*', $id);
-        if (null !== $record) {
-            $form = $this->getForm($record);
-            if (true === $form instanceof Form\FormInterface) {
-                $form->getOutlet()->fill([
-                    'command' => $status,
-                    'uid' => $id,
-                    'record' => $row,
-                    'table' => $this->getTableName($record),
-                    'provider' => $this,
-                    'dataHandler' => $reference
-                ]);
-            }
-        }
-    }
-
-    /**
      * Post-process the TCEforms DataStructure for a record associated
      * with this ConfigurationProvider.
      */

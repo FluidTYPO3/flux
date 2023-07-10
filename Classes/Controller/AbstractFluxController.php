@@ -9,14 +9,11 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
-use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
-use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -24,6 +21,7 @@ use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -328,10 +326,7 @@ abstract class AbstractFluxController extends ActionController
 
     protected function resolveOverriddenFluxControllerActionNameFromRequestParameters(string $pluginSignature): ?string
     {
-        /** @var string[] $requestParameters */
-        $requestParameters = (array) GeneralUtility::_GET($pluginSignature);
-        $overriddenControllerActionName = isset($requestParameters['action']) ? $requestParameters['action'] : null;
-        return $overriddenControllerActionName;
+        return $this->getServerRequest()->getQueryParams()[$pluginSignature]['action'] ?? null;
     }
 
     /**
@@ -442,8 +437,7 @@ abstract class AbstractFluxController extends ActionController
         string $pluginName,
         string $pluginSignature
     ): string {
-        $post = GeneralUtility::_POST($pluginSignature);
-        $arguments = (array) (true === is_array($post) ? $post : GeneralUtility::_GET($pluginSignature));
+        $arguments = $this->getServerRequest()->getQueryParams()[$pluginSignature] ?? [];
         /** @var RequestBuilder $requestBuilder */
         $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
         $request = $requestBuilder->buildRequestFor(
@@ -539,74 +533,10 @@ abstract class AbstractFluxController extends ActionController
         return $contentObject->data;
     }
 
-    /**
-     * @return \Psr\Http\Message\ResponseInterface|string|Response
-     */
-    public function outletAction()
+    protected function getServerRequest(): ServerRequestInterface
     {
-        $record = $this->getRecord();
-        if (!$this->provider instanceof FormProviderInterface) {
-            throw new \UnexpectedValueException('Provider must implement ' . FormProviderInterface::class, 1669488830);
-        }
-        if (!$this->provider instanceof RecordProviderInterface) {
-            throw new \UnexpectedValueException(
-                'Provider must implement ' . RecordProviderInterface::class,
-                1669488830
-            );
-        }
-        $form = $this->provider->getForm($record);
-        $input = $this->request->getArguments();
-
-        if (method_exists($this->request, 'getInternalArguments')) {
-            $arguments = $this->request->getInternalArguments();
-        } else {
-            $arguments = $this->request->getArguments();
-        }
-        $targetConfiguration = $arguments['__outlet'] ?? [];
-
-        if ($form === null
-            ||
-            ($this->provider->getTableName($record) !== ($targetConfiguration['table'] ?? '')
-                && ($record['uid'] ?? 0) !== (integer) ($targetConfiguration['recordUid'] ?? 0)
-            )
-        ) {
-            // This instance does not match the instance that rendered the form. Forward the request
-            // to the default "render" action.
-            return $this->renderAction();
-        }
-        $input['settings'] = $this->settings;
-        try {
-            /** @var Form $form */
-            $outlet = $form->getOutlet();
-            $outlet->setView($this->view);
-            $outlet->fill($input);
-            if (!$outlet->isValid()) {
-                $input = array_replace(
-                    $input,
-                    [
-                        'validationResults' => $outlet->getValidationResults()->getFlattenedErrors()
-                    ]
-                );
-
-                $content = $this->view->renderSection('Main', $input, true);
-            } else {
-                // Pipes of Outlet get called in sequence to either return content or perform actions
-                // Outlet receives our local View which is pre-configured with paths. If one was not
-                // passed, a default StandaloneView is created with paths belonging to extension that
-                // contains the Form.
-                $input = array_replace(
-                    $input,
-                    $outlet->produce()
-                );
-
-                $content = $this->view->renderSection('OutletSuccess', $input, true);
-            }
-        } catch (\RuntimeException $error) {
-            $input['error'] = $error;
-
-            $content = $this->view->renderSection('OutletError', $input, true);
-        }
-
-        return $this->createHtmlResponse($content);
+        /** @var ServerRequestInterface $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        return $request;
     }
 }

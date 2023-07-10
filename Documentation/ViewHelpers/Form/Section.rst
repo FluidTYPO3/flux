@@ -44,7 +44,7 @@ name
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of the attribute, FlexForm XML-valid tag name string
 

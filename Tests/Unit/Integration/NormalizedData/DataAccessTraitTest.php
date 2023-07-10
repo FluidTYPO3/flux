@@ -20,6 +20,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\RequestBuilder;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -49,6 +50,8 @@ class DataAccessTraitTest extends AbstractTestCase
         $requestBuilder->method('getEnvironmentVariable')->willReturn('env');
 
         GeneralUtility::addInstance(RequestBuilder::class, $requestBuilder);
+
+        $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequest::class)->getMockForAbstractClass();
 
         parent::setUp();
     }

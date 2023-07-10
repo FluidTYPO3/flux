@@ -45,7 +45,7 @@ table
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of table that contains record with Flux field
 
@@ -58,7 +58,7 @@ field
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of Flux field in table
 

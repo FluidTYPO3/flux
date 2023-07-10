@@ -22,7 +22,7 @@ name
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of the option - valid values and their behaviours depend entirely on the consumer that will handle the Form instance
 
@@ -35,6 +35,6 @@ value
    mixed
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Value of the option

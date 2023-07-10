@@ -46,7 +46,7 @@ area
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name or "colPos" value of the content area to render
 

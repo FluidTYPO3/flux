@@ -15,15 +15,8 @@ use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * AbstractFormField
- *
- * @deprecated Will be removed in Flux 10.0
- */
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface
 {
-    protected bool $required = false;
-
     /**
      * @var mixed
      */
@@ -34,6 +27,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     protected ?string $displayCondition = null;
 
+    protected bool $required = false;
     protected bool $requestUpdate = false;
     protected bool $inherit = true;
     protected bool $inheritEmpty = false;
@@ -41,16 +35,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected bool $exclude = false;
     protected ?string $validate = null;
     protected array $config = [];
-
-    /**
-     * @var \SplObjectStorage|WizardInterface[]
-     */
-    protected iterable $wizards;
-
-    public function __construct()
-    {
-        $this->wizards = new \SplObjectStorage();
-    }
 
     public static function create(array $settings = []): FormInterface
     {
@@ -90,61 +74,6 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     }
 
     /**
-     * @template T
-     * @param class-string<T> $type
-     * @return T&WizardInterface
-     */
-    public function createWizard(string $type, string $name, ?string $label = null): WizardInterface
-    {
-        $wizard = parent::createWizard($type, $name, $label);
-        $this->add($wizard);
-        return $wizard;
-    }
-
-    public function add(WizardInterface $wizard): self
-    {
-        if (false === $this->wizards->contains($wizard)) {
-            $this->wizards->attach($wizard);
-            $wizard->setParent($this);
-        }
-        return $this;
-    }
-
-    public function get(string $wizardName): ?WizardInterface
-    {
-        foreach ($this->wizards as $wizard) {
-            if ($wizardName === $wizard->getName()) {
-                return $wizard;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param string|FormInterface $childOrChildName
-     */
-    public function has($childOrChildName): bool
-    {
-        $name = ($childOrChildName instanceof FormInterface)
-            ? (string) $childOrChildName->getName()
-            : $childOrChildName;
-        return (null !== $this->get($name));
-    }
-
-    public function remove(string $wizardName): ?WizardInterface
-    {
-        foreach ($this->wizards as $wizard) {
-            if ($wizardName === $wizard->getName()) {
-                $this->wizards->detach($wizard);
-                $this->wizards->rewind();
-                $wizard->setParent(null);
-                return $wizard;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Creates a TCEforms configuration array based on the
      * configuration stored in this ViewHelper. Calls the
      * expected-to-be-overridden stub method getConfiguration()
@@ -172,19 +101,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         if (($displayCondition = $this->getDisplayCondition())) {
             $fieldStructureArray['displayCond'] = $displayCondition;
         }
-        $wizards = $this->buildChildren($this->wizards);
-        if ($this->getClearable()) {
-            $wizards[] = [
-                'type' => 'userFunc',
-                'userFunc' => UserFunctions::class . '->renderClearValueWizardField',
-                'params' => [
-                    'itemName' => $this->getName(),
-                ],
-            ];
-        }
-        if (!empty($wizards)) {
-            $fieldStructureArray['config']['wizards'] = $wizards;
-        }
+
         if ($this->getRequestUpdate()) {
             $fieldStructureArray['onChange'] = 'reload';
         }
@@ -303,36 +220,5 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     public function getClearable(): bool
     {
         return $this->clearable;
-    }
-
-    public function hasChildren(): bool
-    {
-        return 0 < $this->wizards->count();
-    }
-
-    public function modify(array $structure): self
-    {
-        if (isset($structure['wizards']) || isset($structure['children'])) {
-            $data = isset($structure['children']) ? $structure['children'] : $structure['wizards'];
-            foreach ((array) $data as $index => $wizardData) {
-                $wizardName = true === isset($wizardData['name']) ? $wizardData['name'] : $index;
-                // check if field already exists - if it does, modify it. If it does not, create it.
-                if ($this->has($wizardName)) {
-                    /** @var WizardInterface $field */
-                    $field = $this->get($wizardName);
-                } else {
-                    /** @var class-string $type */
-                    $type = $wizardData['type'] ?? None::class;
-                    $field = $this->createWizard($type, $wizardName);
-                }
-                $field->modify($wizardData);
-            }
-            unset($structure['children'], $structure['wizards']);
-        }
-
-        /** @var self $fromParentMethodCall */
-        $fromParentMethodCall = parent::modify($structure);
-
-        return $fromParentMethodCall;
     }
 }
