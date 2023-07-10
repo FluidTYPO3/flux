@@ -182,6 +182,11 @@ Defines a single field data structure.
           <xsd:documentation><![CDATA[Label for field]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="exclude" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set to FALSE if field is not an "exclude" field]]></xsd:documentation>
