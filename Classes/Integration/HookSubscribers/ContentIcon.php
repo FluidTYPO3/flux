@@ -22,6 +22,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
+/**
+ * @deprecated Has no substitute functionality in TYPO3v12. To be removed when TYPO3v12 is minimum requirement.
+ */
 class ContentIcon
 {
     protected array $templates = [
@@ -68,7 +71,7 @@ class ContentIcon
         }
 
         $provider = null;
-        $icon = '';
+        $iconMarkup = '';
         $record = null === $record && 0 < $uid ? BackendUtility::getRecord($table, $uid) : $record;
         $cacheIdentity = $table
             . $uid
@@ -77,17 +80,18 @@ class ContentIcon
         // filter 1: icon must not already be cached and both record and caller must be provided.
         // we check the cache here because at this point, the cache key is decidedly
         // unique and we have not yet consulted the (potentially costly) Provider.
-        /** @var string|null $cachedIconIdentifier */
-        $cachedIconIdentifier = $this->cache->get($cacheIdentity);
-        if ($cachedIconIdentifier !== null) {
+        /** @var string|false|null $cachedIconMarkup */
+        $cachedIconMarkup = $this->cache->get($cacheIdentity);
+        if ($cachedIconMarkup) {
             // both empty string and non-empty value means icon was generated and cached, we return
             // the result directly in both such cases, to prevent attempts to re-resolve provider etc.
-            /** @var string $cachedIconIdentifier */
-            return $cachedIconIdentifier;
-        } elseif ($record) {
+            /** @var string $cachedIconMarkup */
+            return $cachedIconMarkup;
+        } elseif ($cachedIconMarkup !== '' && $record) {
             $field = $this->detectFirstFlexTypeFieldInTableFromPossibilities($table, array_keys($record));
             // filter 2: table must have one field defined as "flex" and record must include it.
             if ($field && array_key_exists($field, $record)) {
+                /** @var GridProviderInterface $provider */
                 $provider = $this->fluxService->resolvePrimaryConfigurationProvider(
                     $table,
                     $field,
@@ -97,13 +101,13 @@ class ContentIcon
                 );
                 // filter 3: a Provider must be resolved for the record.
                 if ($provider && $provider->getGrid($record)->hasChildren()) {
-                    $icon = $this->drawGridToggle($record);
+                    $iconMarkup = $this->drawGridToggle($record);
                 }
             }
         }
 
-        $this->cache->set($cacheIdentity, $icon);
-        return $icon;
+        $this->cache->set($cacheIdentity, $iconMarkup);
+        return $iconMarkup;
     }
 
     protected function drawGridToggle(array $row): string
