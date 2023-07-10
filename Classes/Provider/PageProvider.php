@@ -191,8 +191,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                     $sheetName = (string) $parent->getName();
                     $inherit = (boolean) $field->getInherit();
                     $inheritEmpty = (boolean) $field->getInheritEmpty();
-                    if (isset($record[$tableFieldName]['data']) && is_array($record[$tableFieldName]['data'])) {
-                        $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'];
+                    if (is_array($record[$tableFieldName]['data'] ?? null)) {
+                        $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'] ?? null;
                         $inheritedConfiguration = $this->getInheritedConfiguration($record);
                         $inheritedValue = $this->getInheritedPropertyValueByDottedPath(
                             $inheritedConfiguration,
@@ -302,7 +302,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $name = $field->getName();
         $inherit = $field->getInherit();
         $inheritEmpty = $field->getInheritEmpty();
-        $empty = (isset($values[$name]) && empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
+        $value = $values[$name] ?? null;
+        $empty = empty($value) && !in_array($value, [0, '0'], true);
         if (!$inherit || ($inheritEmpty && $empty)) {
             unset($values[$name]);
         }
