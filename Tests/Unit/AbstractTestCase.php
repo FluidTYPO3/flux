@@ -41,9 +41,6 @@ abstract class AbstractTestCase extends TestCase
         if (!defined('LF')) {
             define('LF', PHP_EOL);
         }
-        if (!defined('TYPO3_MODE')) {
-            define('TYPO3_MODE', 'FE');
-        }
         if (!defined('TYPO3_REQUESTTYPE')) {
             define('TYPO3_REQUESTTYPE', 1);
         }

@@ -69,7 +69,7 @@ class RecordService implements SingletonInterface
      */
     public function getSingle($table, $fields, $uid)
     {
-        if ($this->isBackendContext()) {
+        if ($this->isBackendOrPreviewContext()) {
             return BackendUtility::getRecord($table, $uid, $fields);
         }
         $results = $this->getQueryBuilder($table)
@@ -146,7 +146,7 @@ class RecordService implements SingletonInterface
      */
     protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
     {
-        if ($this->isBackendContext()) {
+        if ($this->isBackendOrPreviewContext()) {
             $queryBuilder->getRestrictions()->removeAll();
         } else {
             if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
@@ -160,13 +160,18 @@ class RecordService implements SingletonInterface
         }
     }
 
-    protected function isBackendContext(): bool
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function isBackendOrPreviewContext(): bool
     {
-        if (defined('TYPO3_MODE')) {
-            return TYPO3_MODE !== 'FE';
-        }
         /** @var ServerRequest $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
-        return ApplicationType::fromRequest($request)->isFrontend();
+        if (ApplicationType::fromRequest($request)->isFrontend()) {
+            /** @var Context $context */
+            $context = GeneralUtility::makeInstance(Context::class);
+            return (bool) $context->getPropertyFromAspect('frontend.preview', 'isPreview');
+        }
+        return true;
     }
 }
