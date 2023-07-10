@@ -24,6 +24,8 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     /**
      * Display condition - see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+     *
+     * @var array|string|null
      */
     protected $displayCondition = null;
 
@@ -145,12 +147,18 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         return $this->default;
     }
 
-    public function setDisplayCondition($displayCondition = null): self
+    /**
+     * @param string|array|null $displayCondition
+     */
+    public function setDisplayCondition($displayCondition): self
     {
         $this->displayCondition = $displayCondition;
         return $this;
     }
 
+    /**
+     * @return string|array|null
+     */
     public function getDisplayCondition()
     {
         return $this->displayCondition;
