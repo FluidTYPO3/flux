@@ -28,18 +28,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordService implements SingletonInterface
 {
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param string $clause
-     * @param string $groupBy
-     * @param string $orderBy
-     * @param integer $limit
-     * @param integer $offset
-     * @return array|null
-     */
-    public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0, $offset = 0)
-    {
+    public function get(
+        string $table,
+        string $fields,
+        ?string $clause = null,
+        ?string $groupBy = null,
+        ?string $orderBy = null,
+        int $limit = 0,
+        int $offset = 0
+    ): ?array {
         $statement = $this->getQueryBuilder($table)->from($table)->select(...explode(',', $fields));
 
         if ($groupBy) {
@@ -61,13 +58,7 @@ class RecordService implements SingletonInterface
         return $statement->execute()->fetchAll();
     }
 
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param integer $uid
-     * @return array|null
-     */
-    public function getSingle($table, $fields, $uid)
+    public function getSingle(string $table, string $fields, int $uid): ?array
     {
         if ($this->isBackendOrPreviewContext()) {
             return BackendUtility::getRecord($table, $uid, $fields);
@@ -83,11 +74,9 @@ class RecordService implements SingletonInterface
     }
 
     /**
-     * @param string $table
-     * @param array $record
      * @return boolean|Statement|ResultStatement|Result|int
      */
-    public function update($table, array $record)
+    public function update(string $table, array $record)
     {
         $builder = $this->getQueryBuilder($table)->update($table)->where(sprintf('uid = %d', $record['uid']));
         foreach ($record as $name => $value) {
@@ -97,25 +86,16 @@ class RecordService implements SingletonInterface
     }
 
     /**
-     * @param string $table
-     * @param mixed $recordOrUid
-     * @return boolean
+     * @param int|array $recordOrUid
      */
-    public function delete($table, $recordOrUid)
+    public function delete(string $table, $recordOrUid): bool
     {
         $clauseUid = true === is_array($recordOrUid) ? $recordOrUid['uid'] : $recordOrUid;
         $clause = "uid = '" . intval($clauseUid) . "'";
         return (bool) $this->getQueryBuilder($table)->delete($table)->where($clause)->execute();
     }
 
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param string $condition
-     * @param array $values
-     * @return array
-     */
-    public function preparedGet($table, $fields, $condition, $values = [])
+    public function preparedGet(string $table, string $fields, string $condition, array $values = []): array
     {
         return $this->getQueryBuilder($table)
             ->select(...explode(',', $fields))
@@ -126,11 +106,7 @@ class RecordService implements SingletonInterface
             ->fetchAll();
     }
 
-    /**
-     * @param string $table
-     * @return QueryBuilder
-     */
-    protected function getQueryBuilder($table)
+    protected function getQueryBuilder(string $table): QueryBuilder
     {
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
