@@ -141,22 +141,22 @@ class RecordService implements SingletonInterface
 
     /**
      * @codeCoverageIgnore
-     * @param QueryBuilder $queryBuilder
-     * @return void
      */
-    protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
+    protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder): void
     {
-        if ($this->isBackendOrPreviewContext()) {
-            $queryBuilder->getRestrictions()->removeAll();
+        if (!$this->isBackendOrPreviewContext()) {
+            return;
+        }
+
+        if ($this->isPreviewContext()) {
+            $context = new Context();
+            $visibility = new VisibilityAspect(true, true);
+            $context->setAspect('visibility', $visibility);
+            /** @var FrontendRestrictionContainer $frontendRestrictions */
+            $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
+            $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
         } else {
-            if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
-                $context = new Context();
-                $visibility = new VisibilityAspect(true, true);
-                $context->setAspect('visibility', $visibility);
-                /** @var FrontendRestrictionContainer $frontendRestrictions */
-                $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
-                $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
-            }
+            $queryBuilder->getRestrictions()->removeAll();
         }
     }
 
@@ -167,11 +167,21 @@ class RecordService implements SingletonInterface
     {
         /** @var ServerRequest $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
+        return ApplicationType::fromRequest($request)->isFrontend() || $this->isPreviewContext();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function isPreviewContext(): bool
+    {
+        /** @var ServerRequest $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
         if (ApplicationType::fromRequest($request)->isFrontend()) {
             /** @var Context $context */
             $context = GeneralUtility::makeInstance(Context::class);
             return (bool) $context->getPropertyFromAspect('frontend.preview', 'isPreview');
         }
-        return true;
+        return false;
     }
 }
