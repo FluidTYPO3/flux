@@ -147,6 +147,7 @@ class PageLayoutDataProvider
             $groupTitle = ucfirst($extensionKey);
         } else {
             $emConfigFile = ExtensionManagementUtility::extPath($extensionKey, 'ext_emconf.php');
+            $_EXTKEY = $extensionKey;
             require $emConfigFile;
             $groupTitle = reset($EM_CONF)['title'];
         }

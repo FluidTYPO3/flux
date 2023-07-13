@@ -54,6 +54,19 @@ label
 :aspect:`Description`
    Label for field
 
+.. _field_description:
+
+description
+-----------
+
+:aspect:`DataType`
+   string
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field description
+
 .. _field_exclude:
 
 exclude

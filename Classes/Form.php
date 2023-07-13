@@ -57,7 +57,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
      */
     protected string $id = '';
 
-    protected ?string $description = null;
     protected array $options = [];
 
     /**
@@ -186,12 +185,6 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     public function getId(): string
     {
         return $this->id;
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
-        return $this;
     }
 
     public function getDescription(): ?string

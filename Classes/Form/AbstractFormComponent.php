@@ -31,6 +31,7 @@ abstract class AbstractFormComponent implements FormInterface
     protected ?string $name = null;
     protected bool $enabled = true;
     protected ?string $label = null;
+    protected ?string $description = null;
     protected ?string $extensionName = 'FluidTYPO3.Flux';
     protected ?FormInterface $parent = null;
     protected array $variables = [];
@@ -161,6 +162,17 @@ abstract class AbstractFormComponent implements FormInterface
     public function getExtensionName(): ?string
     {
         return $this->extensionName;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 
     public function setLabel(?string $label): self

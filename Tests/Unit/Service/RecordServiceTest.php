@@ -12,9 +12,13 @@ use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionContainerInterface;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Aspect\PreviewAspect;
 
 /**
  * RecordServiceTest
@@ -32,6 +36,7 @@ class RecordServiceTest extends AbstractTestCase
         if (empty($methods)) {
             $methods[] = 'dummy';
         }
+        $methods[] = 'isBackendOrPreviewContext';
         return $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
     }
 
@@ -60,6 +65,7 @@ class RecordServiceTest extends AbstractTestCase
                     'setParameters',
                     'execute',
                     'set',
+                    'getRestrictions',
                 ]
             )
             ->disableOriginalConstructor()
@@ -75,6 +81,9 @@ class RecordServiceTest extends AbstractTestCase
         $queryBuilder->method('setFirstResult')->willReturnSelf();
         $queryBuilder->method('setParameters')->willReturnSelf();
         $queryBuilder->method('execute')->willReturn($this->statement);
+        $queryBuilder->method('getRestrictions')->willReturn(
+            $this->getMockBuilder(QueryRestrictionContainerInterface::class)->getMockForAbstractClass()
+        );
 
         $prophecy = $this->getMockBuilder(ConnectionPool::class)
             ->setMethods(['getQueryBuilderForTable'])

@@ -49,7 +49,7 @@ class FlexFormBuilder
         } else {
             $fields = GeneralUtility::trimExplode(
                 ',',
-                $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues']
+                $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues'] ?? ''
             );
             if ($GLOBALS['TCA'][$tableName]['ctrl']['type'] ?? false) {
                 $typeField = $GLOBALS['TCA'][$tableName]['ctrl']['type'];

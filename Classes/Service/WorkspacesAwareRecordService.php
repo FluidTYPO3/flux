@@ -19,29 +19,20 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
  */
 class WorkspacesAwareRecordService extends RecordService implements SingletonInterface
 {
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param string $clause
-     * @param string $groupBy
-     * @param string $orderBy
-     * @param integer $limit
-     * @param integer $offset
-     * @return array|null
-     */
-    public function get($table, $fields, $clause = '1=1', $groupBy = '', $orderBy = '', $limit = 0, $offset = 0)
-    {
+    public function get(
+        string $table,
+        string $fields,
+        ?string $clause = null,
+        ?string $groupBy = null,
+        ?string $orderBy = null,
+        int $limit = 0,
+        int $offset = 0
+    ): ?array {
         $records = parent::get($table, $fields, $clause, $groupBy, $orderBy, $limit, $offset);
         return null === $records ? null : $this->overlayRecords($table, $records);
     }
 
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param integer $uid
-     * @return array|null
-     */
-    public function getSingle($table, $fields, $uid)
+    public function getSingle(string $table, string $fields, int $uid): ?array
     {
         $record = parent::getSingle($table, $fields, $uid);
         if ($record) {
@@ -50,27 +41,15 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         return $record;
     }
 
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param string $condition
-     * @param array $values
-     * @return array
-     */
-    public function preparedGet($table, $fields, $condition, $values = [])
+    public function preparedGet(string $table, string $fields, string $condition, array $values = []): array
     {
         $records = parent::preparedGet($table, $fields, $condition, $values);
         return $this->overlayRecords($table, $records);
     }
 
-    /**
-     * @param string $table
-     * @param array $records
-     * @return array
-     */
-    protected function overlayRecords($table, array $records)
+    protected function overlayRecords(string $table, array $records): array
     {
-        if (false === $this->hasWorkspacesSupport($table)) {
+        if (!$this->hasWorkspacesSupport($table)) {
             return $records;
         }
         foreach ($records as $index => $record) {
@@ -84,22 +63,12 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         return $records;
     }
 
-    /**
-     * @param string $table
-     * @param array $record
-     * @return array
-     */
-    protected function overlayRecord($table, array $record)
+    protected function overlayRecord(string $table, array $record): array
     {
         return $this->getWorkspaceVersionOfRecordOrRecordItself($table, $record) ?: $record;
     }
 
-    /**
-     * @param string $table
-     * @param array $record
-     * @return array
-     */
-    protected function getWorkspaceVersionOfRecordOrRecordItself($table, $record)
+    protected function getWorkspaceVersionOfRecordOrRecordItself(string $table, array $record): array
     {
         $copy = false;
         if ($this->hasWorkspacesSupport($table)) {
@@ -109,11 +78,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
         return $copy === false ? $record : $copy;
     }
 
-    /**
-     * @param string $table
-     * @return boolean
-     */
-    protected function hasWorkspacesSupport($table)
+    protected function hasWorkspacesSupport(string $table): bool
     {
         return (
             $GLOBALS['BE_USER'] instanceof BackendUserAuthentication
@@ -123,8 +88,6 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     }
 
     /**
-     * @param string $table
-     * @param array $copy
      * @return array|false
      * @codeCoverageIgnore
      */

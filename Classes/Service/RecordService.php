@@ -28,18 +28,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordService implements SingletonInterface
 {
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param string $clause
-     * @param string $groupBy
-     * @param string $orderBy
-     * @param integer $limit
-     * @param integer $offset
-     * @return array|null
-     */
-    public function get($table, $fields, $clause = null, $groupBy = null, $orderBy = null, $limit = 0, $offset = 0)
-    {
+    public function get(
+        string $table,
+        string $fields,
+        ?string $clause = null,
+        ?string $groupBy = null,
+        ?string $orderBy = null,
+        int $limit = 0,
+        int $offset = 0
+    ): ?array {
         $statement = $this->getQueryBuilder($table)->from($table)->select(...explode(',', $fields));
 
         if ($groupBy) {
@@ -61,15 +58,9 @@ class RecordService implements SingletonInterface
         return $statement->execute()->fetchAll();
     }
 
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param integer $uid
-     * @return array|null
-     */
-    public function getSingle($table, $fields, $uid)
+    public function getSingle(string $table, string $fields, int $uid): ?array
     {
-        if ($this->isBackendContext()) {
+        if ($this->isBackendOrPreviewContext()) {
             return BackendUtility::getRecord($table, $uid, $fields);
         }
         $results = $this->getQueryBuilder($table)
@@ -83,11 +74,9 @@ class RecordService implements SingletonInterface
     }
 
     /**
-     * @param string $table
-     * @param array $record
      * @return boolean|Statement|ResultStatement|Result|int
      */
-    public function update($table, array $record)
+    public function update(string $table, array $record)
     {
         $builder = $this->getQueryBuilder($table)->update($table)->where(sprintf('uid = %d', $record['uid']));
         foreach ($record as $name => $value) {
@@ -97,25 +86,16 @@ class RecordService implements SingletonInterface
     }
 
     /**
-     * @param string $table
-     * @param mixed $recordOrUid
-     * @return boolean
+     * @param int|array $recordOrUid
      */
-    public function delete($table, $recordOrUid)
+    public function delete(string $table, $recordOrUid): bool
     {
         $clauseUid = true === is_array($recordOrUid) ? $recordOrUid['uid'] : $recordOrUid;
         $clause = "uid = '" . intval($clauseUid) . "'";
         return (bool) $this->getQueryBuilder($table)->delete($table)->where($clause)->execute();
     }
 
-    /**
-     * @param string $table
-     * @param string $fields
-     * @param string $condition
-     * @param array $values
-     * @return array
-     */
-    public function preparedGet($table, $fields, $condition, $values = [])
+    public function preparedGet(string $table, string $fields, string $condition, array $values = []): array
     {
         return $this->getQueryBuilder($table)
             ->select(...explode(',', $fields))
@@ -126,11 +106,7 @@ class RecordService implements SingletonInterface
             ->fetchAll();
     }
 
-    /**
-     * @param string $table
-     * @return QueryBuilder
-     */
-    protected function getQueryBuilder($table)
+    protected function getQueryBuilder(string $table): QueryBuilder
     {
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -141,32 +117,47 @@ class RecordService implements SingletonInterface
 
     /**
      * @codeCoverageIgnore
-     * @param QueryBuilder $queryBuilder
-     * @return void
      */
-    protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder)
+    protected function setContextDependentRestrictionsForQueryBuilder(QueryBuilder $queryBuilder): void
     {
-        if ($this->isBackendContext()) {
-            $queryBuilder->getRestrictions()->removeAll();
+        if (!$this->isBackendOrPreviewContext()) {
+            return;
+        }
+
+        if ($this->isPreviewContext()) {
+            $context = new Context();
+            $visibility = new VisibilityAspect(true, true);
+            $context->setAspect('visibility', $visibility);
+            /** @var FrontendRestrictionContainer $frontendRestrictions */
+            $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
+            $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
         } else {
-            if ((bool)($GLOBALS['TSFE']->fePreview ?? false)) {
-                $context = new Context();
-                $visibility = new VisibilityAspect(true, true);
-                $context->setAspect('visibility', $visibility);
-                /** @var FrontendRestrictionContainer $frontendRestrictions */
-                $frontendRestrictions = GeneralUtility::makeInstance(FrontendRestrictionContainer::class, $context);
-                $queryBuilder->getRestrictions()->removeAll()->add($frontendRestrictions);
-            }
+            $queryBuilder->getRestrictions()->removeAll();
         }
     }
 
-    protected function isBackendContext(): bool
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function isBackendOrPreviewContext(): bool
     {
-        if (defined('TYPO3_MODE')) {
-            return TYPO3_MODE !== 'FE';
-        }
         /** @var ServerRequest $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
-        return ApplicationType::fromRequest($request)->isFrontend();
+        return ApplicationType::fromRequest($request)->isFrontend() || $this->isPreviewContext();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function isPreviewContext(): bool
+    {
+        /** @var ServerRequest $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        if (ApplicationType::fromRequest($request)->isFrontend()) {
+            /** @var Context $context */
+            $context = GeneralUtility::makeInstance(Context::class);
+            return (bool) $context->getPropertyFromAspect('frontend.preview', 'isPreview');
+        }
+        return false;
     }
 }
