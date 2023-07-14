@@ -192,7 +192,7 @@ class PreviewView extends TemplateView
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
             if ($pageLayoutView instanceof BackendLayoutRenderer) {
                 if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
-                    $content .= $pageLayoutView->drawContent($GLOBALS['TYPO3_REQUEST'], $pageLayoutView->getContext());
+                    $content .= $pageLayoutView->drawContent($GLOBALS['TYPO3_REQUEST'], $pageLayoutView->getContext(), false);
                 } else {
                     $content .= $pageLayoutView->drawContent(false);
                 }
