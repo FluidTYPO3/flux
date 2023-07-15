@@ -472,7 +472,7 @@ abstract class AbstractFluxController extends ActionController
             );
 
             /** @var Response|null $responseFromCall */
-            $responseFromCall = $potentialControllerInstance->processRequest($request, $response);
+            $responseFromCall = $potentialControllerInstance->processRequest($this->request, $response);
             if ($responseFromCall) {
                 $response = $responseFromCall;
             }
