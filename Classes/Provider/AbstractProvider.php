@@ -195,6 +195,8 @@ class AbstractProvider implements ProviderInterface
             ?? $this->extractConfiguration($row, 'form', $forField)
             ?? Form::create();
         $form->setOption(Form::OPTION_RECORD, $row);
+        $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
+        $form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
         return $form;
     }
 

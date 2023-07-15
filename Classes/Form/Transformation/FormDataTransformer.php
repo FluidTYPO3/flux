@@ -13,12 +13,20 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
 class FormDataTransformer
 {
+    private FileRepository $fileRepository;
+
+    public function __construct(FileRepository $fileRepository)
+    {
+        $this->fileRepository = $fileRepository;
+    }
+
     /**
      * Transforms members on $values recursively according to the provided
      * Flux configuration extracted from a Flux template. Uses "transform"
@@ -96,7 +104,30 @@ class FormDataTransformer
      */
     protected function transformValueToType(string $value, string $dataType, string $fieldName, Form $form)
     {
-        if ('int' === $dataType || 'integer' === $dataType) {
+        if (in_array($dataType, ['file', 'files', 'filereference', 'filereferences'], true)) {
+            /** @var string $table */
+            $table = $form->getOption(Form::OPTION_RECORD_TABLE);
+            /** @var array $record */
+            $record = $form->getOption(Form::OPTION_RECORD);
+            $references = $this->fileRepository->findByRelation($table, $fieldName, $record['uid']);
+            switch ($dataType) {
+                case 'file':
+                    if (!empty($references)) {
+                        return $references[0]->getOriginalFile();
+                    }
+                    return null;
+                case 'files':
+                    $files = [];
+                    foreach ($references as $reference) {
+                        $files[] = $reference->getOriginalFile();
+                    }
+                    return $files;
+                case 'filereference':
+                    return $references[0] ?? null;
+                case 'filereferences':
+                    return $references;
+            }
+        } elseif ('int' === $dataType || 'integer' === $dataType) {
             return intval($value);
         } elseif ('float' === $dataType) {
             return floatval($value);

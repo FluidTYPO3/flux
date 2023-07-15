@@ -16,6 +16,8 @@ services:
     public: true
   FluidTYPO3\Flux\Utility\RenderingContextBuilder:
     public: true
+  FluidTYPO3\Flux\Form\Transformation\FormDataTransformer:
+    public: true
 
   FluidTYPO3\Flux\Integration\Event\PageContentPreviewRenderingEventListener:
     tags:
