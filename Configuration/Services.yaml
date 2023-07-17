@@ -25,6 +25,12 @@ services:
         identifier: 'flux-page-content-preview'
         method: 'renderPreview'
         event: TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent
+  FluidTYPO3\Flux\Integration\Event\IsContentUsedOnPageLayoutEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-page-content-used'
+        method: 'handleEvent'
+        event: TYPO3\CMS\Backend\View\Event\IsContentUsedOnPageLayoutEvent
   FluidTYPO3\Flux\Integration\Event\BootCompletedEventListener:
     tags:
       - name: event.listener
