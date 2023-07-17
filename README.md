@@ -19,6 +19,13 @@ Flux has two main purposes:
 Bonus feature: nested content areas to create content grids.
 
 
+Documentation
+-------------
+
+* [ViewHelper Reference for Flux](https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/)
+* [How to use the Flux APIs](https://fluidtypo3.org/documentation/templating-manual/templating/creating-templates/flux-fields.html)
+
+
 How it works
 ------------
 
@@ -237,6 +244,7 @@ Flux feature highlights
 * Possibility for custom components of your own - with the same API support any other Flux component has.
 * Several Utility-type classes for advanced integrations with Fluid in particular.
 
+
 Known issues
 ------------
 
@@ -244,10 +252,3 @@ Known issues
   sections / objects the number of fields submitted, rises drastically. The `php.ini` configuration setting to think about is
   `max_input_vars`. If this number is too small then the TYPO3 Backend (being PHP) will decline the submission of the
   backend editing form and will exit with an "Invalid CSRF Token" message because of incomplete (truncated) `POST` data.
-
-
-Documentation
--------------
-
-* [ViewHelper Reference for Flux](https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/)
-* [How to use the Flux APIs](https://fluidtypo3.org/documentation/templating-manual/templating/creating-templates/flux-fields.html)
