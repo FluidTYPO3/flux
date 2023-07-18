@@ -85,7 +85,7 @@ class FormViewHelper extends AbstractFormViewHelper
         $form = static::getComponent($renderingContext, $arguments);
         // configure Form instance
         /** @var string $formId */
-        $formId = (string)$arguments['id'] ?? 'form';
+        $formId = (string) ($arguments['id'] ?? 'form');
         /** @var string|null $formLabel */
         $formLabel = $arguments['label'];
         /** @var string|null $formDescription */
