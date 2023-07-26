@@ -1,6 +1,26 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Call to an undefined (static )?method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\(Frontend|Backend)?ConfigurationManager\\:\\:setRequest\\(\\)\\.$#"
+            count: 3
+            path: Classes/Integration/Overrides/AbstractChimeraConfigurationManager.php
+        -
+            message: "#^Instanceof between mixed and TYPO3\\\\CMS\\\\Core\\\\Http\\\\ServerRequest will always evaluate to false\\.$#"
+            count: 1
+            path: Classes/Integration/Overrides/AbstractChimeraConfigurationManager.php
+        -
+            message: "#^Access to an undefined property FluidTYPO3\\\\Flux\\\\Integration\\\\Overrides\\\\LegacyChimeraConfigurationManager\\:\\:\\$objectManager\\.$#"
+            count: 2
+            path: Classes/Integration/Overrides/LegacyChimeraConfigurationManager.php
+        -
+            message: "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\ConfigurationManager\\:\\:__construct\\(\\) invoked with 1 parameter, 2 required\\.$#"
+            count: 1
+            path: Classes/Integration/Overrides/ChimeraConfigurationManager.php
+        -
+            message: "#^Parameter \\#1 \\$objectManager of method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\ConfigurationManager\\:\\:__construct\\(\\) expects TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface, Psr\\\\Container\\\\ContainerInterface given\\.$#"
+            count: 1
+            path: Classes/Integration/Overrides/ChimeraConfigurationManager.php
+        -
             message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\RecordService\\:\\:update\\(\\) has invalid return type Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\.$#"
             count: 1
             path: Classes/Service/RecordService.php
