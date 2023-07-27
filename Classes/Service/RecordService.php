@@ -143,7 +143,7 @@ class RecordService implements SingletonInterface
     {
         /** @var ServerRequest $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
-        return ApplicationType::fromRequest($request)->isFrontend() || $this->isPreviewContext();
+        return !ApplicationType::fromRequest($request)->isFrontend() || $this->isPreviewContext();
     }
 
     /**
