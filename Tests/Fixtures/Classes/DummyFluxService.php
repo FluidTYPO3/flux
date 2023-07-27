@@ -64,9 +64,6 @@ class DummyFluxService extends FluxService
 
     private function createMock(string $className): object
     {
-        return (new Generator())->getMock(
-            type: $className,
-            callOriginalConstructor: false
-        );
+        return (new Generator())->getMock($className, [], [], '', false);
     }
 }
