@@ -10,8 +10,6 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use FluidTYPO3\Flux\Form\Container\Section;
-use FluidTYPO3\Flux\Form\Field\None;
-use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

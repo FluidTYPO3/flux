@@ -12,13 +12,10 @@ use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionContainerInterface;
-use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\Aspect\PreviewAspect;
 
 /**
  * RecordServiceTest

@@ -4,15 +4,8 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Http\ApplicationType;
-use TYPO3\CMS\Core\Http\ServerRequest;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
 use TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager;
-use TYPO3\CMS\Extbase\Service\ExtensionService;
 
 class ChimeraConfigurationManager extends AbstractChimeraConfigurationManager
 {

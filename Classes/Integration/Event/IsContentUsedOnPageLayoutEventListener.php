@@ -8,11 +8,8 @@ namespace FluidTYPO3\Flux\Integration\Event;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\PreviewRenderer;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\Event\IsContentUsedOnPageLayoutEvent;
-use TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class IsContentUsedOnPageLayoutEventListener
 {
