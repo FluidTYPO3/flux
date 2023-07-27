@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyFluxService;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -212,10 +212,7 @@ abstract class AbstractTestCase extends TestCase
         $this->assertIsArray($structure);
     }
 
-    /**
-     * @return string
-     */
-    protected function getShorthandFixtureTemplatePathAndFilename()
+    protected function getShorthandFixtureTemplatePathAndFilename(): string
     {
         return self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
     }
@@ -229,21 +226,16 @@ abstract class AbstractTestCase extends TestCase
         return realpath(str_replace('EXT:flux/', './', $shorthandTemplatePath));
     }
 
-    /**
-     * @param array $methods
-     * @return FluxService
-     */
-    protected function createFluxServiceInstance($methods = array('dummy'))
+    protected function createFluxServiceInstance($methods = ['dummy']): DummyFluxService
     {
-        /** @var FluxService $fluxService */
-        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods($methods)->disableOriginalConstructor()->getMock();
+        /** @var DummyFluxService $fluxService */
+        $fluxService = $this->getMockBuilder(DummyFluxService::class)
+            ->addMethods($methods)
+            ->getMock();
         return $fluxService;
     }
 
-    /**
-     * @return string
-     */
-    protected function createInstanceClassName()
+    protected function createInstanceClassName(): string
     {
         return str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
     }

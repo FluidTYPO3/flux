@@ -19,11 +19,13 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
@@ -39,20 +41,34 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
  *
  * Main API Service for interacting with Flux-based FlexForms
  */
-class FluxService implements SingletonInterface
+class FluxService implements SingletonInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
+    protected ServerRequest $serverRequest;
     protected WorkspacesAwareRecordService $recordService;
     protected ResourceFactory $resourceFactory;
+    protected ProviderResolver $providerResolver;
+    protected CacheManager $cacheManager;
+    protected FormDataTransformer $transformer;
+    protected FlexFormService $flexFormService;
 
-    public function __construct()
-    {
-        /** @var WorkspacesAwareRecordService $recordService */
-        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
+    public function __construct(
+        ServerRequest $serverRequest,
+        WorkspacesAwareRecordService $recordService,
+        ResourceFactory $resourceFactory,
+        ProviderResolver $providerResolver,
+        CacheManager $cacheManager,
+        FormDataTransformer $transformer,
+        FlexFormService $flexFormService
+    ) {
+        $this->serverRequest = $serverRequest;
         $this->recordService = $recordService;
-
-        /** @var ResourceFactory $resourceFactory */
-        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         $this->resourceFactory = $resourceFactory;
+        $this->providerResolver = $providerResolver;
+        $this->cacheManager = $cacheManager;
+        $this->transformer = $transformer;
+        $this->flexFormService = $flexFormService;
     }
 
     public function sortObjectsByProperty(array $objects, string $sortBy, string $sortDirection = 'ASC'): array
@@ -90,7 +106,7 @@ class FluxService implements SingletonInterface
         if ($fromCache) {
             return $fromCache;
         }
-        $pageId = (integer) ($GLOBALS['TSFE']->id ?? 0);
+        $pageId = (integer) ($this->serverRequest->getQueryParams()['id'] ?? 0);
         if ($pageId === 0) {
             return [];
         }
@@ -130,9 +146,7 @@ class FluxService implements SingletonInterface
         ?string $extensionKey = null,
         array $interfaces = [ProviderInterface::class]
     ) {
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
-        return $providerResolver->resolvePrimaryConfigurationProvider(
+        return $this->providerResolver->resolvePrimaryConfigurationProvider(
             $table,
             $fieldName,
             $row,
@@ -156,9 +170,7 @@ class FluxService implements SingletonInterface
         ?string $extensionKey = null,
         array $interfaces = [ProviderInterface::class]
     ): array {
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
-        return $providerResolver->resolveConfigurationProviders(
+        return $this->providerResolver->resolveConfigurationProviders(
             $table,
             $fieldName,
             $row,
@@ -200,11 +212,13 @@ class FluxService implements SingletonInterface
         if (true === empty($valuePointer)) {
             $valuePointer = 'vDEF';
         }
-        $flexFormService = $this->getFlexFormService();
-        $settings = $flexFormService->convertFlexFormContentToArray($flexFormContent, $languagePointer, $valuePointer);
+        $settings = $this->flexFormService->convertFlexFormContentToArray(
+            $flexFormContent,
+            $languagePointer,
+            $valuePointer
+        );
         if (null !== $form && $form->getOption(Form::OPTION_TRANSFORM)) {
-            $transformer = $this->getFormDataTransformer();
-            $settings = $transformer->transformAccordingToConfiguration($settings, $form);
+            $settings = $this->transformer->transformAccordingToConfiguration($settings, $form);
         }
         return $settings;
     }
@@ -263,13 +277,15 @@ class FluxService implements SingletonInterface
             // an empty value that is not null indicates an incorrect caller. Instead
             // of returning ALL paths here, an empty array is the proper return value.
             // However, dispatch a debug message to inform integrators of the problem.
-            $this->getLogger()->log(
-                'notice',
-                'Template paths have been attempted fetched using an empty value that is NOT NULL in ' .
-                get_class($this) . '. This indicates a potential problem with your TypoScript configuration - a ' .
-                'value which is expected to be an array may be defined as a string. This error is not fatal but may ' .
-                'prevent the affected collection (which cannot be identified here) from showing up'
-            );
+            if ($this->logger instanceof LoggerInterface) {
+                $this->logger->log(
+                    'notice',
+                    'Template paths have been attempted fetched using an empty value that is NOT NULL in ' .
+                    get_class($this) . '. This indicates a potential problem with your TypoScript configuration - a ' .
+                    'value which is expected to be an array may be defined as a string. This error is not fatal but ' .
+                    'may prevent the affected collection (which cannot be identified here) from showing up'
+                );
+            }
             return [];
         }
 
@@ -353,9 +369,7 @@ class FluxService implements SingletonInterface
     {
         static $cache;
         if (!$cache) {
-            /** @var CacheManager $cacheManager */
-            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-            $cache = $cacheManager->getCache('runtime');
+            $cache = $this->cacheManager->getCache('runtime');
         }
         return $cache;
     }
@@ -367,12 +381,10 @@ class FluxService implements SingletonInterface
     {
         static $cache;
         if (!$cache) {
-            /** @var CacheManager $cacheManager */
-            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
             try {
-                $cache = $cacheManager->getCache('flux');
+                $cache = $this->cacheManager->getCache('flux');
             } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('runtime');
+                $cache = $this->cacheManager->getCache('runtime');
             }
         }
         return $cache;
@@ -389,36 +401,6 @@ class FluxService implements SingletonInterface
             ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)
         );
         return $templatePaths;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getFormDataTransformer(): FormDataTransformer
-    {
-        /** @var FormDataTransformer $transformer */
-        $transformer = GeneralUtility::makeInstance(FormDataTransformer::class);
-        return $transformer;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getFlexFormService(): FlexFormService
-    {
-        /** @var FlexFormService $flexFormService */
-        $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
-        return $flexFormService;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getLogger(): LoggerInterface
-    {
-        /** @var LogManager $logManager */
-        $logManager = GeneralUtility::makeInstance(LogManager::class);
-        return $logManager->getLogger(__CLASS__);
     }
 
     /**
