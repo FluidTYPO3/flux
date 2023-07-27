@@ -25,15 +25,6 @@ class ProviderResolver implements SingletonInterface
 {
     protected array $providers = [];
 
-    protected FluxService $configurationService;
-
-    public function __construct()
-    {
-        /** @var FluxService $configurationService */
-        $configurationService = GeneralUtility::makeInstance(FluxService::class);
-        $this->configurationService = $configurationService;
-    }
-
     /**
      * ResolveUtility the top-priority ConfigurationPrivider which can provide
      * a working FlexForm configuration baed on the given parameters.
@@ -117,7 +108,7 @@ class ProviderResolver implements SingletonInterface
     public function loadTypoScriptConfigurationProviderInstances(): array
     {
         /** @var array[] $providerConfigurations */
-        $providerConfigurations = (array) $this->configurationService->getTypoScriptByPath('plugin.tx_flux.providers');
+        $providerConfigurations = (array) $this->getFluxService()->getTypoScriptByPath('plugin.tx_flux.providers');
         $providers = [];
         foreach ($providerConfigurations as $name => $providerSettings) {
             $className = Provider::class;
@@ -176,5 +167,12 @@ class ProviderResolver implements SingletonInterface
     protected function loadCoreRegisteredProviders(): array
     {
         return Core::getRegisteredFlexFormProviders();
+    }
+
+    protected function getFluxService(): FluxService
+    {
+        /** @var FluxService $fluxService */
+        $fluxService = GeneralUtility::makeInstance(FluxService::class);
+        return $fluxService;
     }
 }
