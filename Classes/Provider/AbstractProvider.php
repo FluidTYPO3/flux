@@ -428,8 +428,10 @@ class AbstractProvider implements ProviderInterface
 
     public function getTemplateVariables(array $row): array
     {
-        $variables = (array) $this->templateVariables;
-        $variables['record'] = $row;
+        $variables = array_merge(
+            $this->templateVariables,
+            $this->getViewVariables($row)
+        );
         $variables['page'] = $this->getPageValues();
         $variables['user'] = $GLOBALS['TSFE']->fe_user->user ?? [];
         if (file_exists((string) $this->getTemplatePathAndFilename($row))) {

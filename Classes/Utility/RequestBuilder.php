@@ -79,7 +79,7 @@ class RequestBuilder
         $request = $GLOBALS['TYPO3_REQUEST'] ?? (new ServerRequest())->withAttribute(
             'applicationType',
             defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
-        );
+        )->withQueryParams($_GET);
 
         if (class_exists(FrontendTypoScript::class) && !$request->getAttribute('frontend.typoscript')) {
             $frontendTypoScript = GeneralUtility::makeInstance(

@@ -106,7 +106,7 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         if ($fromCache) {
             return $fromCache;
         }
-        $pageId = (integer) ($this->serverRequest->getQueryParams()['id'] ?? 0);
+        $pageId = (integer) ($this->getRequest()->getQueryParams()['id'] ?? 0);
         if ($pageId === 0) {
             return [];
         }
@@ -409,5 +409,10 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
     protected function resolveAbsolutePathForFilename(string $filename): string
     {
         return GeneralUtility::getFileAbsFileName($filename);
+    }
+
+    protected function getRequest(): ServerRequest
+    {
+        return $GLOBALS['TYPO3_REQUEST'] ?? $this->serverRequest;
     }
 }
