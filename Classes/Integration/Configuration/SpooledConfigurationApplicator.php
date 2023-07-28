@@ -162,7 +162,7 @@ class SpooledConfigurationApplicator
         $sortingOptionValue = 0;
         if ($form instanceof Form\FormInterface) {
             if ($form->hasOption(Form::OPTION_SORTING)) {
-                $sortingOptionValue = $form->getOption(Form::OPTION_SORTING);;
+                $sortingOptionValue = $form->getOption(Form::OPTION_SORTING);
             } elseif ($form->hasOption(Form::OPTION_TEMPLATEFILE)) {
                 /** @var string $templateFilename */
                 $templateFilename = $form->getOption(Form::OPTION_TEMPLATEFILE);
