@@ -150,14 +150,6 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
             Fal::DEFAULT_LOCALIZATION_MODE
         );
         $this->overrideArgument(
-            'localizeChildrenAtParentLocalization',
-            'boolean',
-            'Defines whether children should be localized when the localization of the parent gets created.',
-            false,
-            Fal::DEFAULT_LOCALIZE_CHILDREN_AT_PARENT_LOCALIZATION
-        );
-
-        $this->overrideArgument(
             'newRecordLinkAddTitle',
             'boolean',
             "Add the foreign table's title to the 'Add new' link (ie. 'Add new (sometable)')",

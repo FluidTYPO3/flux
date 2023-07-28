@@ -55,7 +55,6 @@ class FlexFormImplementation extends AbstractImplementation implements Implement
                 'behaviour' => [
                     'enableCascadingDelete' => true,
                     'disableMovingChildrenWithParent' => false,
-                    'localizeChildrenAtParentLocalization' => true
                 ],
             ],
         ];

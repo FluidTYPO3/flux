@@ -118,13 +118,6 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
             ''
         );
         $this->registerArgument(
-            'localizeChildrenAtParentLocalization',
-            'boolean',
-            'Defines whether children should be localized when the localization of the parent gets created.',
-            false,
-            false
-        );
-        $this->registerArgument(
             'disableMovingChildrenWithParent',
             'boolean',
             'Disables that child records get moved along with their parent records.',
@@ -189,7 +182,6 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $component->setSymmetricLabel($arguments['symmetricLabel']);
         $component->setSymmetricSortby($arguments['symmetricSortby']);
         $component->setLocalizationMode($arguments['localizationMode']);
-        $component->setLocalizeChildrenAtParentLocalization($arguments['localizeChildrenAtParentLocalization']);
         $component->setDisableMovingChildrenWithParent($arguments['disableMovingChildrenWithParent']);
         $component->setShowThumbnails($arguments['showThumbs']);
         $component->setMatchFields((array) $arguments['matchFields']);

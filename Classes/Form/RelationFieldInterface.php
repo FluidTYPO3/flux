@@ -158,17 +158,6 @@ interface RelationFieldInterface extends MultiValueFieldInterface
     public function getLocalizationMode();
 
     /**
-     * @param boolean $localizeChildrenAtParentLocalization
-     * @return RelationFieldInterface
-     */
-    public function setLocalizeChildrenAtParentLocalization($localizeChildrenAtParentLocalization);
-
-    /**
-     * @return boolean
-     */
-    public function getLocalizeChildrenAtParentLocalization();
-
-    /**
      * @param string $symmetricField
      * @return RelationFieldInterface
      */

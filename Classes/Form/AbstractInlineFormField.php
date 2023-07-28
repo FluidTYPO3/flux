@@ -159,7 +159,6 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
         ];
         $configuration['behaviour'] = [
             'localizationMode' => $this->getLocalizationMode(),
-            'localizeChildrenAtParentLocalization' => $this->getLocalizeChildrenAtParentLocalization(),
             'disableMovingChildrenWithParent' => $this->getDisableMovingChildrenWithParent(),
         ];
         return $configuration;

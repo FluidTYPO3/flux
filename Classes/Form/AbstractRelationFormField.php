@@ -140,14 +140,6 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     protected $localizationMode;
 
     /**
-     * Defines whether children should be localized when the localization of the
-     * parent gets created.
-     *
-     * @var boolean
-     */
-    protected $localizeChildrenAtParentLocalization = false;
-
-    /**
      * Disables that child records get moved along with their parent records.
      *
      * @var boolean
@@ -180,8 +172,6 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
         $configuration['symmetricLabel'] = $this->getSymmetricLabel();
         $configuration['symmetricField'] = $this->getSymmetricField();
         $configuration['localizationMode'] = $this->getLocalizationMode();
-        $configuration['localizeChildrenAtParentLocalization'] =
-            (integer) $this->getLocalizeChildrenAtParentLocalization();
         $configuration['disableMovingChildrenWithParent'] =
             (integer) $this->getDisableMovingChildrenWithParent();
         $configuration['showThumbs'] = intval($this->getShowThumbnails());
@@ -460,24 +450,6 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
     public function getLocalizationMode()
     {
         return $this->localizationMode;
-    }
-
-    /**
-     * @param boolean $localizeChildrenAtParentLocalization
-     * @return RelationFieldInterface
-     */
-    public function setLocalizeChildrenAtParentLocalization($localizeChildrenAtParentLocalization)
-    {
-        $this->localizeChildrenAtParentLocalization = $localizeChildrenAtParentLocalization;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getLocalizeChildrenAtParentLocalization()
-    {
-        return $this->localizeChildrenAtParentLocalization;
     }
 
     /**

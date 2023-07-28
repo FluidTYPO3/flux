@@ -23,7 +23,6 @@ class Fal extends AbstractInlineFormField
     const DEFAULT_USE_SORTABLE = true;
     const DEFAULT_LEVEL_LINKS_POSITION = 'both';
     const DEFAULT_LOCALIZATION_MODE = 'select';
-    const DEFAULT_LOCALIZE_CHILDREN_AT_PARENT_LOCALIZATION = true;
     const DEFAULT_NEW_RECORD_LINK_ADD_TITLE = true;
     const DEFAULT_CREATE_NEW_RELATION_LINK_TITLE = 'LLL:EXT:lang/locallang_core.xlf:cm.createNewRelation';
 
@@ -123,14 +122,6 @@ class Fal extends AbstractInlineFormField
      * @var string
      */
     protected $localizationMode = self::DEFAULT_LOCALIZATION_MODE;
-
-    /**
-     * Defines whether children should be localized when the localization of the
-     * parent gets created.
-     *
-     * @var boolean
-     */
-    protected $localizeChildrenAtParentLocalization = self::DEFAULT_LOCALIZE_CHILDREN_AT_PARENT_LOCALIZATION;
 
     /**
      * Add the foreign table's title to the 'Add new' link (ie. 'Add new (sometable)')
