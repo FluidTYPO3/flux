@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
@@ -52,6 +53,7 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
     protected CacheManager $cacheManager;
     protected FormDataTransformer $transformer;
     protected FlexFormService $flexFormService;
+    protected ConfigurationManagerInterface $configurationManager;
 
     public function __construct(
         ServerRequest $serverRequest,
@@ -60,7 +62,8 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         ProviderResolver $providerResolver,
         CacheManager $cacheManager,
         FormDataTransformer $transformer,
-        FlexFormService $flexFormService
+        FlexFormService $flexFormService,
+        ConfigurationManagerInterface $configurationManager
     ) {
         $this->serverRequest = $serverRequest;
         $this->recordService = $recordService;
@@ -69,6 +72,7 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         $this->cacheManager = $cacheManager;
         $this->transformer = $transformer;
         $this->flexFormService = $flexFormService;
+        $this->configurationManager = $configurationManager;
     }
 
     public function sortObjectsByProperty(array $objects, string $sortBy, string $sortDirection = 'ASC'): array
@@ -101,22 +105,16 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
     public function getTypoScriptByPath(string $path)
     {
         $cache = $this->getRuntimeCache();
-        $cacheId = md5($path);
+        $cacheId = md5('ts_' . $path);
         $fromCache = $cache->get($cacheId);
         if ($fromCache) {
             return $fromCache;
         }
-        $pageId = (integer) ($this->getRequest()->getQueryParams()['id'] ?? 0);
-        if ($pageId === 0) {
-            return [];
-        }
-        /** @var RootlineUtility $rootLineUtility */
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageId);
-        $rootLine = $rootLineUtility->get();
-        /** @var TemplateService $templateService */
-        $templateService = GeneralUtility::makeInstance(TemplateService::class);
-        $templateService->start($rootLine);
-        $all = $templateService->setup;
+
+        $all = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
+        );
+
         $value = &$all;
         foreach (explode('.', $path) as $segment) {
             $value = ($value[$segment . '.'] ?? $value[$segment] ?? null);

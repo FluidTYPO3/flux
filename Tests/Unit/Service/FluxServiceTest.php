@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
@@ -323,17 +324,30 @@ class FluxServiceTest extends AbstractTestCase
     public function testGetTypoScriptByPath()
     {
         $service = $this->getMockBuilder(DummyFluxService::class)
-            ->setMethods(['getRuntimeCache'])
-            ->disableOriginalConstructor()
+            ->onlyMethods(['getRuntimeCache'])
             ->getMock();
         $service->method('getRuntimeCache')->willReturn(
             $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass()
         );
 
+        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
+        $configurationManager->method('getConfiguration')->willReturn(
+            [
+                'plugin' => [
+                    'tx_test' => [
+                        'settings' => [
+                            'foo' => 'bar',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
         $service->setServerRequest(new ServerRequest());
+        $service->setConfigurationManager($configurationManager);
 
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
-        $this->assertEquals([], $result);
+        $this->assertEquals(['foo' => 'bar'], $result);
     }
 
     /**

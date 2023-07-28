@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class DummyFluxService extends FluxService
 {
@@ -25,6 +26,7 @@ class DummyFluxService extends FluxService
         $this->transformer = $this->createMock(FormDataTransformer::class);
         $this->flexFormService = $this->createMock(FlexFormService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
+        $this->configurationManager = $this->createMock(ConfigurationManagerInterface::class);
     }
 
     public function setServerRequest(ServerRequest $serverRequest): void
@@ -60,6 +62,11 @@ class DummyFluxService extends FluxService
     public function setFlexFormService(FlexFormService $flexFormService): void
     {
         $this->flexFormService = $flexFormService;
+    }
+
+    public function setConfigurationManager(ConfigurationManagerInterface $configurationManager): void
+    {
+        $this->configurationManager = $configurationManager;
     }
 
     private function createMock(string $className): object
