@@ -157,13 +157,21 @@ class SpooledConfigurationApplicator
         $GLOBALS['TYPO3_REQUEST'] = $backup;
     }
 
-    private function resolveSortingValue(?Form $form): int
+    private function resolveSortingValue(?Form $form): string
     {
         $sortingOptionValue = 0;
         if ($form instanceof Form\FormInterface) {
-            $sortingOptionValue = $form->getOption(Form::OPTION_SORTING);
+            if ($form->hasOption(Form::OPTION_SORTING)) {
+                $sortingOptionValue = $form->getOption(Form::OPTION_SORTING);;
+            } elseif ($form->hasOption(Form::OPTION_TEMPLATEFILE)) {
+                /** @var string $templateFilename */
+                $templateFilename = $form->getOption(Form::OPTION_TEMPLATEFILE);
+                $sortingOptionValue = basename($templateFilename);
+            } else {
+                $sortingOptionValue = $form->getId();
+            }
         }
-        return !is_scalar($sortingOptionValue) ? 0 : (integer) $sortingOptionValue;
+        return !is_scalar($sortingOptionValue) ? '0' : (string) $sortingOptionValue;
     }
 
     /**

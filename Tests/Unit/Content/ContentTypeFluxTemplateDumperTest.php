@@ -39,6 +39,7 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
             'description' => 'Test form',
             'icon' => 'test',
             'content_type' => 'flux_test',
+            'sorting' => 123,
         ];
         $this->contentTypeDefinition = $this->getMockBuilder(RecordBasedContentTypeDefinition::class)
             ->setMethods(['getContentConfiguration', 'getGridConfiguration', 'getTemplateSource'])

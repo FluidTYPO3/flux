@@ -360,6 +360,7 @@ SOURCE;
             'description' => 'Test description',
             'extension_identity' => 'FluidTYPO3.Flux',
             'template_file' => '',
+            'sorting' => 123,
         ];
 
         $contentConfiguration = $this->dummyContentConfiguration;

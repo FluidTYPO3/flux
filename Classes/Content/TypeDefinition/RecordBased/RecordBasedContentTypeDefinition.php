@@ -97,6 +97,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         $instance->remove('options');
         $instance->setOption(Form::OPTION_ICON, $this->getIconReference());
         $instance->setOption(Form::OPTION_GROUP, 'fluxContent');
+        $instance->setOption(Form::OPTION_SORTING, $this->record['sorting']);
         $instance->setLabel($this->record['title']);
         $instance->setDescription($this->record['description']);
         foreach ($this->getContentConfiguration() as $item) {

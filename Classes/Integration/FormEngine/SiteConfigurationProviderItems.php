@@ -4,6 +4,7 @@ namespace FluidTYPO3\Flux\Integration\FormEngine;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -48,6 +49,6 @@ class SiteConfigurationProviderItems
      */
     protected function translate(string $label, string $extensionName): ?string
     {
-        return LocalizationUtility::translate($label, $extensionName);
+        return LocalizationUtility::translate($label, ExtensionNamingUtility::getExtensionName($extensionName));
     }
 }
