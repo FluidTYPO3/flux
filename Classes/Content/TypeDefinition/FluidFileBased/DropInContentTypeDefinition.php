@@ -83,6 +83,9 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
             return [];
         }
         $basePath = trim((string) $plugAndPlayDirectory, '/.');
+        if (empty($basePath)) {
+            return [];
+        }
         $basePath = static::determineAbsolutePathForFilename($basePath) . '/';
         static::initializeDropInFileSystemStructure($basePath);
 
