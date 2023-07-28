@@ -354,7 +354,8 @@ abstract class AbstractFluxController extends ActionController
                 $vendorLessExtensionName = ExtensionNamingUtility::getExtensionName($extensionName);
                 /** @var TemplateView $view */
                 $view = $this->view;
-                $paths = $view->getRenderingContext()->getTemplatePaths();
+                $renderingContext = $view->getRenderingContext();
+                $paths = $renderingContext->getTemplatePaths();
 
                 if (method_exists($this->request, 'setControllerExtensionName')) {
                     $this->request->setControllerExtensionName($vendorLessExtensionName);
@@ -362,8 +363,8 @@ abstract class AbstractFluxController extends ActionController
 
                 if (method_exists($this->request, 'withControllerExtensionName')) {
                     $this->request = $this->request->withControllerExtensionName($vendorLessExtensionName);
-                    if (method_exists($view->getRenderingContext(), 'setRequest')) {
-                        $view->getRenderingContext()->setRequest($this->request);
+                    if (method_exists($renderingContext, 'setRequest')) {
+                        $renderingContext->setRequest($this->request);
                     }
                 }
 
