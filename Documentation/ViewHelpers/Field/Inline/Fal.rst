@@ -653,22 +653,6 @@ localizationMode
 :aspect:`Description`
    Set whether children can be localizable ('select') or just inherit from default language ('keep').
 
-.. _field.inline.fal_localizechildrenatparentlocalization:
-
-localizeChildrenAtParentLocalization
-------------------------------------
-
-:aspect:`DataType`
-   boolean
-
-:aspect:`Default`
-   true
-
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Defines whether children should be localized when the localization of the parent gets created.
-
 .. _field.inline.fal_disablemovingchildrenwithparent:
 
 disableMovingChildrenWithParent
