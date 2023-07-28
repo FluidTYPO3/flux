@@ -38,18 +38,13 @@ class PageService implements SingletonInterface
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $workspacesAwareRecordService;
 
-    public function __construct()
-    {
-        /** @var ConfigurationManagerInterface $configurationManager */
-        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    public function __construct(
+        ConfigurationManagerInterface $configurationManager,
+        FluxService $configurationService,
+        WorkspacesAwareRecordService $recordService
+    ) {
         $this->configurationManager = $configurationManager;
-
-        /** @var FluxService $configurationService */
-        $configurationService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $configurationService;
-
-        /** @var WorkspacesAwareRecordService $recordService */
-        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->workspacesAwareRecordService = $recordService;
     }
 
