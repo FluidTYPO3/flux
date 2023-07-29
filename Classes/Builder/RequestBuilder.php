@@ -83,6 +83,7 @@ class RequestBuilder
         )->withQueryParams($_GET);
 
         if (class_exists(FrontendTypoScript::class) && !$request->getAttribute('frontend.typoscript')) {
+            /** @var FrontendTypoScript $frontendTypoScript */
             $frontendTypoScript = GeneralUtility::makeInstance(
                 FrontendTypoScript::class,
                 GeneralUtility::makeInstance(RootNode::class),
