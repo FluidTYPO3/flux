@@ -8,11 +8,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\ContentTypeValidator;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
-use FluidTYPO3\Flux\Integration\ViewBuilder;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;

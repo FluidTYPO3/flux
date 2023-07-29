@@ -9,14 +9,16 @@ namespace FluidTYPO3\Flux\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Flux Provider for runtime-defined content types
@@ -37,13 +39,14 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
 
     protected ContentTypeManager $contentTypeDefinitions;
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        /** @var ContentTypeManager $contentTypes */
-        $contentTypes = GeneralUtility::makeInstance(ContentTypeManager::class);
-        $this->contentTypeDefinitions = $contentTypes;
+    public function __construct(
+        FluxService $configurationService,
+        WorkspacesAwareRecordService $recordService,
+        ViewBuilder $viewBuilder,
+        ContentTypeManager $contentTypeManager
+    ) {
+        parent::__construct($configurationService, $recordService, $viewBuilder);
+        $this->contentTypeDefinitions = $contentTypeManager;
     }
 
     public function trigger(array $row, ?string $table, ?string $field, ?string $extensionKey = null): bool

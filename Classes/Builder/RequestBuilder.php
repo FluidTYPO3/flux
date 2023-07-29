@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace FluidTYPO3\Flux\Utility;
+namespace FluidTYPO3\Flux\Builder;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;

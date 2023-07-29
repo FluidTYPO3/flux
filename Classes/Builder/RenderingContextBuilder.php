@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace FluidTYPO3\Flux\Utility;
+namespace FluidTYPO3\Flux\Builder;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;

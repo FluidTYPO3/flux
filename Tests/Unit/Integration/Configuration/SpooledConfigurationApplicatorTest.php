@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Configuration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
@@ -15,7 +16,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
-use FluidTYPO3\Flux\Integration\ViewBuilder;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
@@ -29,22 +29,24 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class SpooledConfigurationApplicatorTest extends AbstractTestCase
 {
-    private ?SpooledConfigurationApplicator $subject;
-    private ?ContentTypeDefinitionInterface $contentTypeDefinition;
-    private ?ContentTypeDefinitionInterface $contentTypeDefinition2;
-    private ?ContentTypeBuilder $contentTypeBuilder;
-    private ?ContentTypeManager $contentTypeManager;
+    private FluxService $fluxService;
+    private CacheManager $cacheManager;
+    private SpooledConfigurationApplicator $subject;
+    private ContentTypeDefinitionInterface $contentTypeDefinition;
+    private ContentTypeDefinitionInterface $contentTypeDefinition2;
+    private ContentTypeBuilder $contentTypeBuilder;
+    private ContentTypeManager $contentTypeManager;
 
     protected function setUp(): void
     {
-        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->singletonInstances[CacheManager::class] = $this->getMockBuilder(CacheManager::class)
-            ->setMethods(['getCache'])
+        $this->cacheManager = $this->getMockBuilder(CacheManager::class)
+            ->onlyMethods(['getCache'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->singletonInstances[CacheManager::class]->method('getCache')
+        $this->cacheManager->method('getCache')
             ->willReturn($this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass());
 
         $form = Form::create();
@@ -54,7 +56,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
         $provider->method('getForm')->willReturn($form);
 
         $this->contentTypeBuilder = $this->getMockBuilder(ContentTypeBuilder::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'configureContentTypeFromTemplateFile',
                     'registerContentType',
@@ -71,12 +73,10 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
         $view = $this->getMockBuilder(ViewInterface::class)->getMockForAbstractClass();
 
         $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
-            ->setMethods(['buildTemplateView'])
+            ->onlyMethods(['buildTemplateView'])
             ->disableOriginalConstructor()
             ->getMock();
         $viewBuilder->method('buildTemplateView')->willReturn($view);
-
-        GeneralUtility::makeInstance(ViewBuilder::class, $viewBuilder);
 
         $this->contentTypeDefinition = $this->getMockBuilder(FluidRenderingContentTypeDefinitionInterface::class)
             ->getMockForAbstractClass();
@@ -90,7 +90,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
         $this->contentTypeDefinition2 = clone $this->contentTypeDefinition;
 
         $this->contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['fetchContentTypes', 'registerTypeDefinition'])
+            ->onlyMethods(['fetchContentTypes', 'registerTypeDefinition'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->contentTypeManager->method('fetchContentTypes')
@@ -99,7 +99,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
         $configurationContext = new ConfigurationContext();
 
         $this->subject = $this->getMockBuilder(SpooledConfigurationApplicator::class)
-            ->setMethods(['getApplicationContext', 'getContentTypeManager'])
+            ->onlyMethods(['getApplicationContext', 'getContentTypeManager'])
             ->setConstructorArgs([$configurationContext])
             ->getMock();
         $this->subject->method('getContentTypeManager')->willReturn($this->contentTypeManager);

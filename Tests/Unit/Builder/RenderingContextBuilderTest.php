@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Unit\Integration;
+namespace FluidTYPO3\Flux\Tests\Unit\Builder;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -8,10 +8,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
+use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
-use FluidTYPO3\Flux\Utility\RequestBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;

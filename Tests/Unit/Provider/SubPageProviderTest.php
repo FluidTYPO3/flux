@@ -8,80 +8,38 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\SubPageProvider;
-use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\PageService;
-use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
-class SubPageProviderTest extends AbstractTestCase
+class SubPageProviderTest extends PageProviderTest
 {
-    protected PageService $pageService;
-
-    protected function setUp(): void
+    public function getControllerActionFromRecordTestValues(): array
     {
-        $this->pageService = $this->getMockBuilder(PageService::class)
-            ->setMethods(['getPageTemplateConfiguration'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->singletonInstances[PageService::class] = $this->pageService;
-        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        parent::setUp();
+        return [
+            [['uid' => 123, 'tx_fed_page_controller_action_sub' => ''], 'tx_fed_page_flexform_sub', 'default'],
+            [['uid' => 123, 'tx_fed_page_controller_action_sub' => 'flux->action'], 'tx_fed_page_flexform_sub', 'action'],
+        ];
     }
 
-    /**
-     * @dataProvider getControllerActionFromRecordTestValues
-     * @param array $record
-     * @param string $fieldName
-     * @param string $expected
-     */
-    public function testGetControllerActionFromRecord(array $record, $fieldName, $expected)
-    {
-        $instance = $this->getMockBuilder(SubPageProvider::class)
-            ->setMethods(['dummy'])
-            ->getMock();
-
-        $this->pageService->method('getPageTemplateConfiguration')->willReturn($record);
-
-        // make sure PageProvider is now using the right field name
-        $instance->trigger($record, null, $fieldName);
-        $result = $instance->getControllerActionFromRecord($record);
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function getControllerActionFromRecordTestValues()
-    {
-        return array(
-            array(array('uid' => 123, 'tx_fed_page_controller_action_sub' => ''), 'tx_fed_page_flexform_sub', 'default'),
-            array(array('uid' => 123, 'tx_fed_page_controller_action_sub' => 'flux->action'), 'tx_fed_page_flexform_sub', 'action'),
-        );
-    }
-
-    public function testGetTemplatePathAndFilename()
+    public function testGetTemplatePathAndFilename(): void
     {
         $expected = 'Tests/Fixtures/Templates/Page/Dummy.html';
         $dataFieldName = 'tx_fed_page_flexform_sub';
         $fieldName = 'tx_fed_page_controller_action_sub';
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)
-            ->setMethods(['resolveTemplateFileForControllerAndActionAndFormat'])
+            ->onlyMethods(['resolveTemplateFileForControllerAndActionAndFormat'])
             ->disableOriginalConstructor()
             ->getMock();
         $templatePaths->method('resolveTemplateFileForControllerAndActionAndFormat')->willReturn($expected);
-        $instance = $this->getMockBuilder(SubPageProvider::class)
-            ->setMethods(['createTemplatePaths'])
+        $instance = $this->getMockBuilder($this->createInstanceClassName())
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->onlyMethods(['createTemplatePaths'])
             ->getMock();
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
 
-        $record = array(
+        $record = [
             'uid' => 123,
             $fieldName => 'Flux->dummy',
-        );
+        ];
         $instance->trigger($record, null, $dataFieldName);
         $result = $instance->getTemplatePathAndFilename($record);
         $this->assertEquals($expected, $result);

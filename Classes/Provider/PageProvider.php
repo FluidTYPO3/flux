@@ -9,9 +9,12 @@ namespace FluidTYPO3\Flux\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -45,12 +48,13 @@ class PageProvider extends AbstractProvider implements ProviderInterface
 
     protected PageService $pageService;
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        /** @var PageService $pageService */
-        $pageService = GeneralUtility::makeInstance(PageService::class);
+    public function __construct(
+        FluxService $configurationService,
+        WorkspacesAwareRecordService $recordService,
+        ViewBuilder $viewBuilder,
+        PageService $pageService
+    ) {
+        parent::__construct($configurationService, $recordService, $viewBuilder);
         $this->pageService = $pageService;
     }
 

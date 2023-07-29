@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace FluidTYPO3\Flux\Integration;
+namespace FluidTYPO3\Flux\Builder;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Utility\RenderingContextBuilder;
+use FluidTYPO3\Flux\Integration\PreviewView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -17,6 +17,13 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class ViewBuilder
 {
+    protected RenderingContextBuilder $renderingContextBuilder;
+
+    public function __construct(RenderingContextBuilder $renderingContextBuilder)
+    {
+        $this->renderingContextBuilder = $renderingContextBuilder;
+    }
+
     public function buildPreviewView(
         string $extensionIdentity,
         string $controllerName,
@@ -67,9 +74,7 @@ class ViewBuilder
         string $controllerAction,
         ?string $templatePathAndFilename
     ): RenderingContextInterface {
-        /** @var RenderingContextBuilder $renderingContextBuilder */
-        $renderingContextBuilder = GeneralUtility::makeInstance(RenderingContextBuilder::class);
-        return $renderingContextBuilder->buildRenderingContextFor(
+        return $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionIdentity,
             $controllerName,
             $controllerAction,

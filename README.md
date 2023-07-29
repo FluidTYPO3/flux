@@ -245,10 +245,14 @@ Flux feature highlights
 * Several Utility-type classes for advanced integrations with Fluid in particular.
 
 
-Known issues
-------------
+Caveats
+-------
 
 * Keep In mind to have your PHP/HTTP configured correctly to accept a fairly large number of input fields. When nesting
   sections / objects the number of fields submitted, rises drastically. The `php.ini` configuration setting to think about is
   `max_input_vars`. If this number is too small then the TYPO3 Backend (being PHP) will decline the submission of the
   backend editing form and will exit with an "Invalid CSRF Token" message because of incomplete (truncated) `POST` data.
+* When working with custom Provider classes: 1) make sure you declare each Provider class as `public: true` in Service
+  config of your extension. And 2) if the Provider needs to be used for more than one specific page/content/record type,
+  make sure you also declare the Provider as `shared: false`. You can find an example of such configuration in the
+  `Configuration/Services.yaml` file in Flux.

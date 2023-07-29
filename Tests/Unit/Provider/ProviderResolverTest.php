@@ -94,7 +94,7 @@ class ProviderResolverTest extends AbstractTestCase
         /** @var \FluidTYPO3\Flux\Provider\ProviderResolver $instance */
         $instance = new ProviderResolver();
 
-        $dummyProvider = new DummyConfigurationProvider();
+        $dummyProvider = $this->getMockBuilder(DummyConfigurationProvider::class)->disableOriginalConstructor()->getMock();
         GeneralUtility::addInstance(DummyConfigurationProvider::class, $dummyProvider);
 
         $providers = $instance->loadTypoScriptConfigurationProviderInstances();

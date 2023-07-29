@@ -9,10 +9,10 @@ namespace FluidTYPO3\Flux\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use FluidTYPO3\Flux\Integration\ViewBuilder;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -73,18 +73,13 @@ class AbstractProvider implements ProviderInterface
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
 
-    public function __construct()
-    {
-        /** @var FluxService $configurationService */
-        $configurationService = GeneralUtility::makeInstance(FluxService::class);
+    public function __construct(
+        FluxService $configurationService,
+        WorkspacesAwareRecordService $recordService,
+        ViewBuilder $viewBuilder
+    ) {
         $this->configurationService = $configurationService;
-
-        /** @var WorkspacesAwareRecordService $recordService */
-        $recordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
         $this->recordService = $recordService;
-
-        /** @var ViewBuilder $viewBuilder */
-        $viewBuilder = GeneralUtility::makeInstance(ViewBuilder::class);
         $this->viewBuilder = $viewBuilder;
     }
 

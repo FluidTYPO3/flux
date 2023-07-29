@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentGridForm;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
@@ -16,6 +17,8 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -34,12 +37,13 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
 
     protected ContentTypeManager $contentTypeDefinitions;
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
+    public function __construct(
+        FluxService $configurationService,
+        WorkspacesAwareRecordService $recordService,
+        ViewBuilder $viewBuilder,
+        ContentTypeManager $contentTypeManager
+    ) {
+        parent::__construct($configurationService, $recordService, $viewBuilder);
         $this->contentTypeDefinitions = $contentTypeManager;
     }
 

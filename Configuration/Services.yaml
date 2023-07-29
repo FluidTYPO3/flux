@@ -14,7 +14,30 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator:
     public: true
-  FluidTYPO3\Flux\Utility\RenderingContextBuilder:
+  FluidTYPO3\Flux\Builder\RenderingContextBuilder:
+    public: true
+  FluidTYPO3\Flux\Builder\ViewBuilder:
+    public: true
+  FluidTYPO3\Flux\Provider\Provider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Provider\ContentProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Provider\PageProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Provider\SubPageProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Content\ContentTypeProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider:
+    shared: false
     public: true
   FluidTYPO3\Flux\Form\Transformation\FormDataTransformer:
     public: true

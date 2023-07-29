@@ -8,39 +8,69 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeForm;
 use FluidTYPO3\Flux\Content\ContentTypeProvider;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class ContentTypeProviderTest extends AbstractTestCase
 {
+    protected FluxService $fluxService;
+    protected WorkspacesAwareRecordService $recordService;
+    protected ViewBuilder $viewBuilder;
+
     protected function setUp(): void
     {
-        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->onlyMethods(
+                [
+                    'getFromCaches',
+                    'setInCaches',
+                    'getSettingsForExtensionName',
+                    'convertFlexFormContentToArray',
+                ]
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->onlyMethods(['getSingle', 'update'])
+            ->getMock();
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
             ->disableOriginalConstructor()
             ->getMock();
 
         parent::setUp();
     }
 
+    protected function getConstructorArguments(): array
+    {
+        return [
+            $this->fluxService,
+            $this->recordService,
+            $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+        ];
+    }
+
     public function testTriggersOnMatchedTableAndFieldWithAnyRowAndAnyExtension(): void
     {
-        $subject = new ContentTypeProvider();
+        $subject = new ContentTypeProvider(...$this->getConstructorArguments());
         self::assertTrue($subject->trigger([], 'content_types', 'content_configuration', 'anything'));
     }
 
     public function testDoesNotTriggerOnUnmatchedTableWithAnyRowAndAnyExtension(): void
     {
-        $subject = new ContentTypeProvider();
+        $subject = new ContentTypeProvider(...$this->getConstructorArguments());
         self::assertFalse($subject->trigger([], 'not_matched', 'content_configuration', 'anything'));
     }
 
     public function testDoesNotTriggerOnUnmatchedFieldWithAnyRowAndAnyExtension(): void
     {
-        $subject = new ContentTypeProvider();
+        $subject = new ContentTypeProvider(...$this->getConstructorArguments());
         self::assertFalse($subject->trigger([], 'content_tyoes', 'not_matched', 'anything'));
     }
 
@@ -50,12 +80,13 @@ class ContentTypeProviderTest extends AbstractTestCase
             'content_type' => 'test_foobar',
         ];
         $contentTypeDefinition = $this->getMockBuilder(RecordBasedContentTypeDefinition::class)
-            ->setMethods(['getSheetNamesAndLabels'])
+            ->onlyMethods(['getSheetNamesAndLabels'])
             ->disableOriginalConstructor()
             ->getMock();
         $contentTypeDefinition->method('getSheetNamesAndLabels')->willReturn($this->sheetAndLabelNameGenerator());
         $subject = $this->getMockBuilder(ContentTypeProvider::class)
-            ->setMethods(['resolveContentTypeDefinition'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->onlyMethods(['resolveContentTypeDefinition'])
             ->getMock();
         $subject->method('resolveContentTypeDefinition')
             ->with($record)

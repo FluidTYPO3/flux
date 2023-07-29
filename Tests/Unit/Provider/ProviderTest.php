@@ -8,14 +8,22 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
+use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
-class ProviderTest extends AbstractProviderTest
+class ProviderTest extends AbstractTestCase
 {
+    protected FluxService $fluxService;
+    protected WorkspacesAwareRecordService $recordService;
+    protected ViewBuilder $viewBuilder;
     protected array $definition = array(
         'name' => 'test',
         'label' => 'Test provider',
@@ -59,12 +67,45 @@ class ProviderTest extends AbstractProviderTest
         )
     );
 
+    protected function setUp(): void
+    {
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->onlyMethods(
+                [
+                    'getFromCaches',
+                    'setInCaches',
+                    'getSettingsForExtensionName',
+                    'convertFlexFormContentToArray',
+                ]
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->onlyMethods(['getSingle', 'update'])
+            ->getMock();
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        parent::setUp();
+    }
+
+    protected function getConstructorArguments(): array
+    {
+        return [
+            $this->fluxService,
+            $this->recordService,
+            $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+        ];
+    }
+
     /**
      * @test
      */
     public function canGetName()
     {
-        $provider = $this->getConfigurationProviderInstance();
+        $provider = new Provider(...$this->getConstructorArguments());
         $provider->loadSettings($this->definition);
         $this->assertSame($provider->getName(), $this->definition['name']);
     }
@@ -76,7 +117,7 @@ class ProviderTest extends AbstractProviderTest
     {
         $definition = $this->definition;
         $definition['listType'] = 'felogin_pi1';
-        $provider = $this->getConfigurationProviderInstance();
+        $provider = new Provider(...$this->getConstructorArguments());
         $provider->loadSettings($definition);
         $this->assertSame($provider->getName(), $definition['name']);
         $this->assertSame($provider->getListType(), $definition['listType']);
@@ -89,10 +130,10 @@ class ProviderTest extends AbstractProviderTest
     {
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $service = $this->createFluxServiceInstance();
-        $provider = new Provider();
+        $provider = new Provider(...$this->getConstructorArguments());
         $provider->setExtensionKey('test');
         $resolver = $this->getMockBuilder(ProviderResolver::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
+            ->onlyMethods(['resolvePrimaryConfigurationProvider'])
             ->getMock();
         $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
@@ -110,12 +151,10 @@ class ProviderTest extends AbstractProviderTest
      */
     public function canCreateFormFromDefinitionWithAllSupportedNodes()
     {
-        /** @var ProviderInterface $instance */
-        $provider = $this->getConfigurationProviderInstance();
-        $record = $this->getBasicRecord();
+        $provider = new Provider(...$this->getConstructorArguments());
         $provider->loadSettings($this->definition);
-        $form = $provider->getForm($record);
-        $this->assertInstanceOf('FluidTYPO3\Flux\Form', $form);
+        $form = $provider->getForm([]);
+        $this->assertInstanceOf(Form::class, $form);
     }
 
     /**
@@ -123,11 +162,59 @@ class ProviderTest extends AbstractProviderTest
      */
     public function canCreateGridFromDefinitionWithAllSupportedNodes()
     {
-        /** @var ProviderInterface $instance */
-        $provider = $this->getConfigurationProviderInstance();
-        $record = $this->getBasicRecord();
+        $provider = new Provider(...$this->getConstructorArguments());
         $provider->loadSettings($this->definition);
-        $grid = $provider->getGrid($record);
+        $grid = $provider->getGrid([]);
         $this->assertInstanceOf(Grid::class, $grid);
+    }
+
+    /**
+     * @test
+     */
+    public function canSetTableName()
+    {
+        $provider = new Provider(...$this->getConstructorArguments());
+        $provider->setTableName('test');
+        $this->assertSame('test', $provider->getTableName([]));
+    }
+
+    /**
+     * @test
+     */
+    public function canSetFieldName()
+    {
+        $provider = new Provider(...$this->getConstructorArguments());
+        $provider->setFieldName('test');
+        $this->assertSame('test', $provider->getFieldName([]));
+    }
+
+    /**
+     * @test
+     */
+    public function canSetExtensionKey()
+    {
+        $provider = new Provider(...$this->getConstructorArguments());
+        $provider->setExtensionKey('test');
+        $this->assertSame('test', $provider->getExtensionKey([]));
+    }
+
+    /**
+     * @test
+     */
+    public function canSetPluginName()
+    {
+        $provider = new Provider(...$this->getConstructorArguments());
+        $provider->setPluginName('test');
+        $this->assertSame('test', $provider->getPluginName());
+    }
+
+    /**
+     * @test
+     */
+    public function canSetControllerAction()
+    {
+        $provider = new Provider(...$this->getConstructorArguments());
+        $provider->setControllerAction('test');
+        $this->assertSame('test', $provider->getControllerActionFromRecord([]));
     }
 }

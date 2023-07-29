@@ -8,43 +8,67 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content\TypeDefinition\RecordBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class RecordBasedContentGridProviderTest extends AbstractTestCase
 {
+    protected FluxService $fluxService;
+    protected WorkspacesAwareRecordService $recordService;
+    protected ViewBuilder $viewBuilder;
+    protected ContentTypeManager $contentTypeManager;
+
     protected function setUp(): void
     {
-        $this->singletonInstances[ContentTypeManager::class] = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['determineContentTypeForRecord'])
+        $this->contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
+            ->onlyMethods(['determineContentTypeForRecord'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
             ->disableOriginalConstructor()
             ->getMock();
 
         parent::setUp();
     }
 
+    protected function getConstructorArguments(): array
+    {
+        return [
+            $this->fluxService,
+            $this->recordService,
+            $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+            $this->contentTypeManager,
+        ];
+    }
+
     public function testTriggerReturnsTrueOnMatchedTableAndField(): void
     {
-        $subject = new RecordBasedContentGridProvider();
+        $subject = new RecordBasedContentGridProvider(...$this->getConstructorArguments());
         self::assertTrue($subject->trigger([], 'content_types', 'grid'));
     }
 
     public function testTriggerReturnsFalseOnUnmatchedTable(): void
     {
-        $subject = new RecordBasedContentGridProvider();
+        $subject = new RecordBasedContentGridProvider(...$this->getConstructorArguments());
         self::assertFalse($subject->trigger([], 'not_matched', 'grid'));
     }
 
     public function testTriggerReturnsFalseOnUnmatchedField(): void
     {
-        $subject = new RecordBasedContentGridProvider();
+        $subject = new RecordBasedContentGridProvider(...$this->getConstructorArguments());
         self::assertFalse($subject->trigger([], 'content_types', 'not_matched'));
     }
 
@@ -116,7 +140,7 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
         ];
         $dataStructure = [];
         $row = [];
-        $subject = new RecordBasedContentGridProvider();
+        $subject = new RecordBasedContentGridProvider(...$this->getConstructorArguments());
         $subject->postProcessDataStructure($row, $dataStructure, []);
 
         self::assertSame($expected, $dataStructure);
@@ -130,10 +154,9 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
             ->getMockForAbstractClass();
         $contentTypeDefinition->method('getGrid')->willReturn($grid);
 
-        $this->singletonInstances[ContentTypeManager::class]->method('determineContentTypeForRecord')
-            ->willReturn($contentTypeDefinition);
+        $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($contentTypeDefinition);
 
-        $subject = new RecordBasedContentGridProvider();
+        $subject = new RecordBasedContentGridProvider(...$this->getConstructorArguments());
 
         self::assertSame($grid, $subject->getGrid([]));
     }
@@ -142,9 +165,9 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
     {
         $grid = Form\Container\Grid::create();
 
-        $this->singletonInstances[ContentTypeManager::class]->method('determineContentTypeForRecord')->willReturn(null);
+        $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn(null);
 
-        $subject = new RecordBasedContentGridProvider();
+        $subject = new RecordBasedContentGridProvider(...$this->getConstructorArguments());
         $subject->setGrid($grid);
 
         self::assertSame($grid, $subject->getGrid([]));
