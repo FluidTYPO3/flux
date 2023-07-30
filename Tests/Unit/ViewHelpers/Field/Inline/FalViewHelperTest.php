@@ -18,10 +18,10 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase
      */
     public function createsExpectedComponent()
     {
-        $arguments = array(
+        $arguments = [
             'name' => 'test'
-        );
-        $instance = $this->buildViewHelperInstance($arguments, array());
+        ];
+        $instance = $this->buildViewHelperInstance($arguments, []);
         $component = $instance->getComponent(
             $this->renderingContext,
             $this->buildViewHelperArguments($instance, $arguments)
@@ -34,11 +34,11 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase
      */
     public function supportsHeaderThumbnail()
     {
-        $arguments = array(
+        $arguments = [
             'name' => 'test',
-            'headerThumbnail' => array('test' => 'test')
-        );
-        $instance = $this->buildViewHelperInstance($arguments, array());
+            'headerThumbnail' => ['test' => 'test']
+        ];
+        $instance = $this->buildViewHelperInstance($arguments, []);
         $component = $instance->getComponent(
             $this->renderingContext,
             $this->buildViewHelperArguments($instance, $arguments)
@@ -51,11 +51,11 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase
      */
     public function supportsForeignMatchFields()
     {
-        $arguments = array(
+        $arguments = [
             'name' => 'test',
-            'foreignMatchFields' => array('test' => 'test')
-        );
-        $instance = $this->buildViewHelperInstance($arguments, array());
+            'foreignMatchFields' => ['test' => 'test']
+        ];
+        $instance = $this->buildViewHelperInstance($arguments, []);
         $component = $instance->getComponent(
             $this->renderingContext,
             $this->buildViewHelperArguments($instance, $arguments)
@@ -68,11 +68,11 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase
      */
     public function supportsCropVariants()
     {
-        $arguments = array(
+        $arguments = [
             'name' => 'test',
-            'cropVariants' => array('test' => 'test')
-        );
-        $instance = $this->buildViewHelperInstance($arguments, array());
+            'cropVariants' => ['test' => 'test']
+        ];
+        $instance = $this->buildViewHelperInstance($arguments, []);
         $component = $instance->getComponent(
             $this->renderingContext,
             $this->buildViewHelperArguments($instance, $arguments)

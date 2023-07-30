@@ -192,7 +192,7 @@ class PreviewViewTest extends AbstractTestCase
     public function testGetOptionModeReturnsDefaultIfNoValidOptionsFound(): void
     {
         $instance = $this->createInstance();
-        $options = array(PreviewView::OPTION_MODE => 'someinvalidvalue');
+        $options = [PreviewView::OPTION_MODE => 'someinvalidvalue'];
         $result = $this->callInaccessibleMethod($instance, 'getOptionMode', $options);
         $this->assertEquals(PreviewView::MODE_APPEND, $result);
     }
@@ -451,10 +451,10 @@ class PreviewViewTest extends AbstractTestCase
     {
         $instance = $this->createInstance();
         $result = $this->callInaccessibleMethod($instance, 'getPreviewOptions');
-        $this->assertEquals(array(
+        $this->assertEquals([
             PreviewView::OPTION_MODE => PreviewView::MODE_APPEND,
             PreviewView::OPTION_TOGGLE => true,
-        ), $result);
+        ], $result);
     }
 
     /**
@@ -463,15 +463,15 @@ class PreviewViewTest extends AbstractTestCase
     public function avoidsRenderPreviewSectionIfTemplateFileDoesNotExist()
     {
         $provider = $this->getMockBuilder(Provider::class)
-            ->setMethods(array('getTemplatePathAndFilename'))
+            ->setMethods(['getTemplatePathAndFilename'])
             ->disableOriginalConstructor()
             ->getMock();
         $provider->expects($this->atLeastOnce())->method('getTemplatePathAndFilename')->willReturn(null);
         $previewView = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(array('dummy'))
+            ->setMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->callInaccessibleMethod($previewView, 'renderPreviewSection', $provider, array());
+        $this->callInaccessibleMethod($previewView, 'renderPreviewSection', $provider, []);
     }
 
     /**

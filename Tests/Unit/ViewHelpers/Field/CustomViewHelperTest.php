@@ -26,20 +26,20 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
      */
     public function canGenerateAndExecuteClosureWithArgumentCollisionAndBackups()
     {
-        $arguments = array(
+        $arguments = [
             'parameters' => 'Fake parameter'
-        );
+        ];
         $container = $this->executeViewHelperClosure($arguments);
         $this->assertSame($container->get('parameters'), $arguments['parameters']);
     }
 
-    protected function executeViewHelperClosure(array $templateVariableContainerArguments = array()): StandardVariableProvider
+    protected function executeViewHelperClosure(array $templateVariableContainerArguments = []): StandardVariableProvider
     {
         $instance = $this->buildViewHelperInstance();
         $renderingContext = $this->renderingContext;
-        $arguments = array(
+        $arguments = [
             'name' => 'custom'
-        );
+        ];
         $this->templateVariableContainer->setSource($templateVariableContainerArguments);
         $node = $this->createViewHelperNode($instance, $arguments);
         $childNode = $this->createNode('Text', 'Hello world!');
@@ -55,10 +55,10 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
                 return $childNode->evaluate($renderingContext);
             }
         );
-        $parameters = array(
+        $parameters = [
             'itemFormElName' => 'test',
             'itemFormElLabel' => 'Test label',
-        );
+        ];
         $output = $closure($parameters);
         $this->assertNotEmpty($output);
         $this->assertSame('Hello world!', $output);

@@ -48,9 +48,9 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     /**
      * @var array
      */
-    protected $defaultArguments = array(
+    protected $defaultArguments = [
         'name' => 'test'
-    );
+    ];
 
     /**
      * @return void

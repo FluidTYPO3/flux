@@ -21,7 +21,7 @@ class SectionObjectTest extends AbstractContainerTest
      */
     public function getFieldsGetsFields()
     {
-        $container = SectionObject::create(array('name' => 'test'));
+        $container = SectionObject::create(['name' => 'test']);
         $container->createField('Input', 'test');
         $this->assertCount(1, $container->getFields());
     }

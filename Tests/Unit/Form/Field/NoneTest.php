@@ -10,8 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 
 class NoneTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'none',
         'size' => 10
-    );
+    ];
 }

@@ -337,15 +337,15 @@ STRING;
      */
     public function getEnsureDottedKeysTestValues()
     {
-        return array(
-            array(
-                array('foo' => array('bar' => 'bar')),
-                array('foo.' => array('bar' => 'bar'))
-            ),
-            array(
-                array('foo.' => array('bar' => 'bar')),
-                array('foo.' => array('bar' => 'bar'))
-            )
-        );
+        return [
+            [
+                ['foo' => ['bar' => 'bar']],
+                ['foo.' => ['bar' => 'bar']]
+            ],
+            [
+                ['foo.' => ['bar' => 'bar']],
+                ['foo.' => ['bar' => 'bar']]
+            ]
+        ];
     }
 }

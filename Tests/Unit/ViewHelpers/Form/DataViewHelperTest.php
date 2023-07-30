@@ -56,18 +56,18 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public static function setUpBeforeClass(): void
     {
-        $GLOBALS['TCA'] = array(
-            'tt_content' => array(
-                'columns' => array(
+        $GLOBALS['TCA'] = [
+            'tt_content' => [
+                'columns' => [
                     'pi_flexform' => []
-                )
-            ),
-            'be_users' => array(
-                'columns' => array(
+                ]
+            ],
+            'be_users' => [
+                'columns' => [
                     'username' => []
-                )
-            ),
-        );
+                ]
+            ],
+        ];
     }
 
     /**
@@ -83,11 +83,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function failsWithInvalidTable()
     {
-        $arguments = array(
+        $arguments = [
             'table' => 'invalid',
             'field' => 'pi_flexform',
             'uid' => 1
-        );
+        ];
         $viewHelper = $this->buildViewHelperInstance($arguments);
 
         $this->expectViewHelperException(
@@ -102,10 +102,10 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function failsWithMissingArguments()
     {
-        $arguments = array(
+        $arguments = [
             'table' => 'tt_content',
             'field' => 'pi_flexform',
-        );
+        ];
 
         $statement = $this->getMockBuilder(Statement::class)
             ->setMethods(['fetchAll'])
@@ -138,11 +138,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
      */
     public function failsWithInvalidField()
     {
-        $arguments = array(
+        $arguments = [
             'table' => 'tt_content',
             'field' => 'invalid',
             'uid' => 1
-        );
+        ];
         $this->expectViewHelperException('dummy');
         $this->executeViewHelper($arguments);
     }
@@ -176,11 +176,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
         $record = Records::$contentRecordIsParentAndHasChildren;
         $record['pi_flexform'] = '';
-        $arguments = array(
+        $arguments = [
             'table' => 'tt_content',
             'field' => 'pi_flexform',
             'record' => $record
-        );
+        ];
         $result = $this->executeViewHelper($arguments);
         $this->assertIsArray($result);
     }
@@ -191,11 +191,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     public function canUseChildNodeAsRecord()
     {
         $this->fluxService->method('resolveConfigurationProviders')->willReturn([]);
-        $arguments = array(
+        $arguments = [
             'table' => 'tt_content',
             'field' => 'pi_flexform',
             'uid' => 1
-        );
+        ];
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $record['pi_flexform'] = '';
         $content = $this->createNode('Array', $record);
@@ -213,12 +213,12 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         $this->flexFormService->method('convertFlexFormContentToArray')->willReturn([]);
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = $row['test'];
-        $arguments = array(
+        $arguments = [
             'record' => $row,
             'table' => 'tt_content',
             'field' => 'pi_flexform',
             'as' => 'test'
-        );
+        ];
         $output = $this->executeViewHelperUsingTagContent('Some text', $arguments);
         $this->assertEquals($output, 'Some text');
     }
@@ -261,18 +261,18 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     {
         $mock = $this->createInstance();
         $provider1 = $this->getMockBuilder(Provider::class)
-            ->setMethods(array('getFlexFormValues'))
+            ->setMethods(['getFlexFormValues'])
             ->disableOriginalConstructor()
             ->getMock();
-        $provider1->method('getFlexFormValues')->willReturn(array('foo' => array('bar' => 'test')));
+        $provider1->method('getFlexFormValues')->willReturn(['foo' => ['bar' => 'test']]);
         $provider2 = $this->getMockBuilder(Provider::class)
-            ->setMethods(array('getFlexFormValues'))
+            ->setMethods(['getFlexFormValues'])
             ->disableOriginalConstructor()
             ->getMock();
         $provider2->method('getFlexFormValues')->willReturn(
-            array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test')
+            ['foo' => ['bar' => 'test2', 'baz' => 'test'], 'bar' => 'test']
         );
-        $providers = array($provider1, $provider2);
+        $providers = [$provider1, $provider2];
         $record = Records::$contentRecordIsParentAndHasChildren;
         $field = 'pi_flexform';
         $result = $this->callInaccessibleMethod(
@@ -282,6 +282,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             $record,
             $field
         );
-        $this->assertEquals(array('foo' => array('bar' => 'test2', 'baz' => 'test'), 'bar' => 'test'), $result);
+        $this->assertEquals(['foo' => ['bar' => 'test2', 'baz' => 'test'], 'bar' => 'test'], $result);
     }
 }

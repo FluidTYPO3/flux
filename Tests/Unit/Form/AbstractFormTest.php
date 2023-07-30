@@ -16,7 +16,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 abstract class AbstractFormTest extends AbstractTestCase
 {
-    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
+    protected array $chainProperties = ['name' => 'test', 'label' => 'Test field', 'enabled' => true];
 
     /**
      * @return FormInterface
@@ -43,7 +43,7 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canGetAndSetVariables()
     {
-        $variables = array('test' => 'foobar');
+        $variables = ['test' => 'foobar'];
         $this->assertGetterAndSetterWorks('variables', $variables, $variables, true);
     }
 
@@ -96,10 +96,10 @@ abstract class AbstractFormTest extends AbstractTestCase
         } else {
             /** @var Form $form */
             $instance->setName('testFormId');
-            $form = Form::create(array(
+            $form = Form::create([
                 'name' => 'test',
                 'extensionName' => 'flux'
-            ));
+            ]);
             $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
             $form->add($instance);
         }
@@ -132,7 +132,7 @@ abstract class AbstractFormTest extends AbstractTestCase
         $instance = $this->createInstance();
         foreach ($chainPropertiesAndValues as $propertyName => $propertValue) {
             $setterMethodName = 'set' . ucfirst($propertyName);
-            $chained = call_user_func_array(array($instance, $setterMethodName), array($propertValue));
+            $chained = call_user_func_array([$instance, $setterMethodName], [$propertValue]);
             $this->assertSame($instance, $chained, 'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.');
             if ($chained === $instance) {
                 $instance = $chained;
@@ -197,7 +197,7 @@ abstract class AbstractFormTest extends AbstractTestCase
         $class = $this->getObjectClassName();
         $type = implode('/', array_slice(explode('_', substr($class, 13)), 1));
         $properties['type'] = $type;
-        $instance = call_user_func_array(array($class, 'create'), array($properties));
+        $instance = call_user_func_array([$class, 'create'], [$properties]);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
     }
 
@@ -207,7 +207,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     public function canUseShorthandLanguageLabel()
     {
         $className = $this->getObjectClassName();
-        $instance = $this->getMockBuilder($className)->setMethods(array('getExtensionKey', 'getName', 'getRoot'))->getMock();
+        $instance = $this->getMockBuilder($className)->setMethods(['getExtensionKey', 'getName', 'getRoot'])->getMock();
         $instance->expects($this->never())->method('getExtensionKey');
         $instance->expects($this->any())->method('getRoot')->will($this->returnValue(null));
         $instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
@@ -221,8 +221,8 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canModifyProperties()
     {
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
-        $properties = array('enabled' => false);
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['dummy'])->getMock();
+        $properties = ['enabled' => false];
         $mock->modify($properties);
         $result = $mock->getEnabled();
         $this->assertFalse($result);
@@ -233,9 +233,9 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canModifyVariablesSelectively()
     {
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('dummy'))->getMock();
-        $mock->setVariables(array('foo' => 'baz', 'abc' => 'xyz'));
-        $properties = array('options' => array('foo' => 'bar'));
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['dummy'])->getMock();
+        $mock->setVariables(['foo' => 'baz', 'abc' => 'xyz']);
+        $properties = ['options' => ['foo' => 'bar']];
         $mock->modify($properties);
         $this->assertEquals('bar', $mock->getVariable('foo'));
         $this->assertEquals('xyz', $mock->getVariable('abc'));

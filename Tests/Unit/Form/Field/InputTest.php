@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 
 class InputTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'enabled' => true,
@@ -20,7 +20,7 @@ class InputTest extends AbstractFieldTest
         'validate' => 'trim,int',
         'default' => 'test',
         'requestUpdate' => true,
-    );
+    ];
 
     /**
      * @test

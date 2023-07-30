@@ -21,7 +21,7 @@ class ContainerTest extends AbstractContainerTest
      */
     public function getFieldsGetsFields()
     {
-        $container = Container::create(array('name' => 'test'));
+        $container = Container::create(['name' => 'test']);
         $container->createField('Input', 'test');
         $this->assertCount(1, $container->getFields());
     }

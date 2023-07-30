@@ -10,13 +10,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 
 class RelationTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'table' => 'pages',
         'foreignLabel' => 'uid',
-        'filter' => array(
+        'filter' => [
             'test' => 'test'
-        )
-    );
+        ]
+    ];
 }

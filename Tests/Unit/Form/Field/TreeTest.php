@@ -10,10 +10,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 
 class TreeTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'table' => 'pages',
         'parentField' => 'pid',
-    );
+    ];
 }

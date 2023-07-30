@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form\Field\File;
 
 class FileTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'enabled' => true,
@@ -21,7 +21,7 @@ class FileTest extends AbstractFieldTest
         'disallowed' => 'doc,docx',
         'uploadFolder' => '',
         'showThumbnails' => true
-    );
+    ];
 
     public function testBuildWithUseFalRelation(): void
     {

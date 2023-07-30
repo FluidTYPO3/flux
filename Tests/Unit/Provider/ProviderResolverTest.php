@@ -57,10 +57,10 @@ class ProviderResolverTest extends AbstractTestCase
     public function loadTypoScriptProvidersReturnsEmptyArrayEarlyIfSetupNotFound()
     {
         $configurationService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(array('getTypoScriptByPath'))
+            ->setMethods(['getTypoScriptByPath'])
             ->disableOriginalConstructor()
             ->getMock();
-        $configurationService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue(array()));
+        $configurationService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue([]));
         GeneralUtility::setSingletonInstance(FluxService::class, $configurationService);
 
         $instance = new ProviderResolver();
@@ -75,14 +75,14 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function loadTypoScriptProvidersSupportsCustomClassName()
     {
-        $mockedTypoScript = array(
-            'dummy.' => array(
+        $mockedTypoScript = [
+            'dummy.' => [
                 'className' => DummyConfigurationProvider::class,
-            )
-        );
+            ]
+        ];
 
         $configurationService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(array('getTypoScriptByPath'))
+            ->setMethods(['getTypoScriptByPath'])
             ->disableOriginalConstructor()
             ->getMock();
         $configurationService->expects($this->once())
@@ -125,11 +125,11 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function getValidateAndInstantiateProvidersTestValues()
     {
-        return array(
-            array(array()),
-            array(array(Provider::class)),
-            array(array($this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock())),
-        );
+        return [
+            [[]],
+            [[Provider::class]],
+            [[$this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()]],
+        ];
     }
 
     /**
@@ -149,10 +149,10 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function getValidateAndInstantiateProvidersErrorTestValues()
     {
-        return array(
-            array(array(InvalidConfigurationProvider::class)),
-            array(array(new InvalidConfigurationProvider()))
-        );
+        return [
+            [[InvalidConfigurationProvider::class]],
+            [[new InvalidConfigurationProvider()]]
+        ];
     }
 
     /**
@@ -163,7 +163,7 @@ class ProviderResolverTest extends AbstractTestCase
     public function resolveConfigurationProvidersReturnsExpectedProviders(array $providers)
     {
         $instance = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(array('getAllRegisteredProviderInstances'))
+            ->setMethods(['getAllRegisteredProviderInstances'])
             ->disableOriginalConstructor()
             ->getMock();
         $instance->expects($this->once())->method('getAllRegisteredProviderInstances')->willReturn($providers);
@@ -179,7 +179,7 @@ class ProviderResolverTest extends AbstractTestCase
     public function resolvePrimaryConfigurationProvidersReturnsExpectedProvider(array $providers)
     {
         $instance = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(array('getAllRegisteredProviderInstances'))
+            ->setMethods(['getAllRegisteredProviderInstances'])
             ->disableOriginalConstructor()
             ->getMock();
         $instance->expects($this->once())->method('getAllRegisteredProviderInstances')->willReturn($providers);
@@ -193,19 +193,19 @@ class ProviderResolverTest extends AbstractTestCase
     public function getProviderTestValues()
     {
         $priority50 = $this->getMockBuilder(Provider::class)
-            ->setMethods(array('getPriority', 'trigger'))
+            ->setMethods(['getPriority', 'trigger'])
             ->disableOriginalConstructor()
             ->getMock();
         $priority50->expects($this->atLeastOnce())->method('getPriority')->willReturn(50);
         $priority50->expects($this->atLeastOnce())->method('trigger')->willReturn(true);
         $priority40 = $this->getMockBuilder(Provider::class)
-            ->setMethods(array('getPriority', 'trigger'))
+            ->setMethods(['getPriority', 'trigger'])
             ->disableOriginalConstructor()
             ->getMock();
         $priority40->expects($this->atLeastOnce())->method('getPriority')->willReturn(40);
         $priority40->expects($this->atLeastOnce())->method('trigger')->willReturn(true);
-        return array(
-            array(array($priority40, $priority50))
-        );
+        return [
+            [[$priority40, $priority50]]
+        ];
     }
 }

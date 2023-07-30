@@ -140,7 +140,7 @@ class RecordServiceTest extends AbstractTestCase
     {
         $table = 'test';
         $uid = 123;
-        $fields = array('foo' => 'bar', 'uid' => $uid);
+        $fields = ['foo' => 'bar', 'uid' => $uid];
         $mock = $this->getMockServiceInstance();
 
         $this->createAndRegisterMockForQueryBuilder();
@@ -173,7 +173,7 @@ class RecordServiceTest extends AbstractTestCase
     public function deleteMethodCallsExpectedDatabaseMethodWithRecord()
     {
         $table = 'test';
-        $record = array('uid' => 123);
+        $record = ['uid' => 123];
         $mock = $this->getMockServiceInstance();
 
         $this->createAndRegisterMockForQueryBuilder();

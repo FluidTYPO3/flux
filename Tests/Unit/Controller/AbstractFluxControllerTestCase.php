@@ -79,7 +79,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     {
         $className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $instance = new $className();
-        $view = $this->getMockBuilder(TemplateView::class)->setMethods(array('render', 'assign'))->getMock();
+        $view = $this->getMockBuilder(TemplateView::class)->setMethods(['render', 'assign'])->getMock();
         $response = new Response();
         $view->expects($this->once())->method('render')->will($this->returnValue('rendered'));
         $this->setInaccessiblePropertyValue($instance, 'view', $view);
@@ -150,7 +150,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $request->setControllerObjectName(ContentController::class);
         $request->setFormat('html');
         $response = new Response();
-        return array($request, $response);
+        return [$request, $response];
     }
 
     public function testCanGetData(): void
@@ -275,7 +275,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testResolveView(): void
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        $view = $this->getMockBuilder(TemplateView::class)->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
+        $view = $this->getMockBuilder(TemplateView::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $view->setRenderingContext(new RenderingContext());
         $instance = $this->getMockBuilder(
             $controllerClassName
@@ -301,7 +301,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testResolveViewWithTemplateSource(): void
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        $view = $this->getMockBuilder(TemplateView::class)->setMethods(array('setTemplateSource'))->disableOriginalConstructor()->getMock();
+        $view = $this->getMockBuilder(TemplateView::class)->setMethods(['setTemplateSource'])->disableOriginalConstructor()->getMock();
         $view->setRenderingContext(new RenderingContext());
         $instance = $this->getMockBuilder(
             $controllerClassName

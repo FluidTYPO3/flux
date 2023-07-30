@@ -22,12 +22,12 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
      */
     public function testRender()
     {
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'] = array();
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeResolver'] = array();
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'] = [];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeResolver'] = [];
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->setOption(Form::OPTION_RECORD, ['uid' => 123, 'test' => '']);
         $form->setOption(Form::OPTION_RECORD_FIELD, 'test');
-        $nodeFactory = $this->getMockBuilder(NodeFactory::class)->setMethods(array('create'))->getMock();
+        $nodeFactory = $this->getMockBuilder(NodeFactory::class)->setMethods(['create'])->getMock();
         $nodeFactory->expects($this->once())->method('create')->willReturn($this->getMockBuilder(NodeInterface::class)->disableOriginalConstructor()->getMock());
         $instance = new AccessibleFormRenderViewHelper();
         GeneralUtility::addInstance(NodeFactory::class, $nodeFactory);

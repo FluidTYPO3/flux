@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Form\Field\Text;
 
 class TextTest extends InputTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'enabled' => true,
@@ -26,7 +26,7 @@ class TextTest extends InputTest
         'rows' => 8,
         'requestUpdate' => true,
         'format' => 'html',
-    );
+    ];
 
     /**
      * @test

@@ -44,7 +44,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             ->disableOriginalConstructor()
             ->setMethods(['enableFields'])
             ->getMock();
-        $GLOBALS['TCA']['tt_content']['ctrl'] = array();
+        $GLOBALS['TCA']['tt_content']['ctrl'] = [];
 
         $grid = Grid::create(
             [
@@ -81,15 +81,15 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelper()
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'records',
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren,
             'provider' => $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
-        );
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $output = $viewHelper->initializeArgumentsAndRender();
@@ -101,17 +101,17 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithLoadRegister()
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'records',
             'order' => 'sorting',
-            'loadRegister' => array(
+            'loadRegister' => [
                 'maxImageWidth' => 300
-            )
-        );
-        $variables = array(
+            ]
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $output = $viewHelper->initializeArgumentsAndRender();
@@ -123,15 +123,15 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup()
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'nameTaken',
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'nameTaken' => 'taken',
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $content = $viewHelper->initializeArgumentsAndRender();
@@ -143,14 +143,14 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canRenderViewHelperWithNonExistingAsArgument()
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'freevariablename',
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $output = $viewHelper->initializeArgumentsAndRender();
@@ -163,14 +163,14 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     public function canReturnArrayOfUnrenderedContentElements()
     {
         $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'render' => false,
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
@@ -182,14 +182,14 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     public function canReturnArrayOfRenderedContentElements()
     {
         $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'render' => true,
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
@@ -200,12 +200,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canProcessRecords()
     {
-        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\Page\\PageRepository')->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
+        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\Page\\PageRepository')->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $instance = $this->createInstance();
-        $records = array(
-            array('uid' => 0),
-            array('uid' => 99999999999),
-        );
+        $records = [
+            ['uid' => 0],
+            ['uid' => 99999999999],
+        ];
         $output = $this->callInaccessibleMethod($instance, 'getRenderedRecords', $records);
         $this->assertIsArray($output);
     }

@@ -57,10 +57,10 @@ class MiscellaneousUtilityTest extends AbstractTestCase
      */
     protected function getFormOptionsFixture()
     {
-        $formOptionsData = array(
+        $formOptionsData = [
             'extensionName' => 'flux',
             'iconOption' => 'Icons/Mock/Fixture.gif',
-        );
+        ];
         return $formOptionsData;
     }
 
@@ -146,27 +146,27 @@ class MiscellaneousUtilityTest extends AbstractTestCase
      */
     protected function getMockExtension()
     {
-        $structure = array(
-            'flux' => array(
-                'Resources' => array(
-                    'Private' => array(
-                        'Templates' => array(
-                            'Content' => array(
+        $structure = [
+            'flux' => [
+                'Resources' => [
+                    'Private' => [
+                        'Templates' => [
+                            'Content' => [
                                 'TestTrue.html' => 'Test template with Icon available',
                                 'TestFalse.html' => 'Test template with Icon not available'
-                            )
-                        )
-                    ),
-                    'Public' => array(
-                        'Icons' => array(
-                            'Content' => array(
+                            ]
+                        ]
+                    ],
+                    'Public' => [
+                        'Icons' => [
+                            'Content' => [
                                 'TestTrue.png' => 'Test-Icon'
-                            )
-                        )
-                    )
-                ),
-            )
-        );
+                            ]
+                        ]
+                    ]
+                ],
+            ]
+        ];
         vfsStream::setup('ext', null, $structure);
         $vfsUrl = vfsStream::url('ext');
 
@@ -191,18 +191,18 @@ class MiscellaneousUtilityTest extends AbstractTestCase
      */
     public function getCleanFlexFormXmlTestValues()
     {
-        return array(
-            array('<data><fields></fields></data>', array(), ''),
-            array('<data><field index="columns">   <el index="el">   </el>   </field></data>', array(), ''),
-            array('
+        return [
+            ['<data><fields></fields></data>', [], ''],
+            ['<data><field index="columns">   <el index="el">   </el>   </field></data>', [], ''],
+            ['
                 <data>
                     <sheet index="emptySheet1"></sheet>
                     <sheet index="emptySheet2"></sheet>
                     <sheet index="emptySheet3"></sheet>
                 </data>',
-                array(),
+                [],
                 ''
-            ),
-        );
+            ],
+        ];
     }
 }

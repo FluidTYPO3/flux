@@ -89,7 +89,7 @@ class ContentIconTest extends AbstractTestCase
     {
         $cache = $this->getMockBuilder(VariableFrontend::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('get', 'set'))
+            ->setMethods(['get', 'set'])
             ->getMock();
         $cache->expects($this->once())->method('get')->willReturn('icon');
         $instance = $this->getMockBuilder(ContentIcon::class)
@@ -99,10 +99,10 @@ class ContentIconTest extends AbstractTestCase
         $instance->method('drawGridToggle')->willReturn('foobar');
         $this->setInaccessiblePropertyValue($instance, 'cache', $cache);
         $result = $instance->addSubIcon(
-            array(
+            [
                 'tt_content', 123,
                 ['foo' => 'bar']
-            ),
+            ],
             $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock()
         );
         $this->assertEquals('icon', $result);
@@ -111,7 +111,7 @@ class ContentIconTest extends AbstractTestCase
     public function testDrawGridToggle(): void
     {
         $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)
-            ->setMethods(array('sL'))
+            ->setMethods(['sL'])
             ->disableOriginalConstructor()
             ->getMock();
         $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
@@ -133,12 +133,12 @@ class ContentIconTest extends AbstractTestCase
     public function testAddSubIcon(array $parameters, ?ProviderInterface $provider): void
     {
         $GLOBALS['BE_USER'] = $this->getMockBuilder(BackendUserAuthentication::class)
-            ->setMethods(array('calcPerms'))
+            ->setMethods(['calcPerms'])
             ->disableOriginalConstructor()
             ->getMock();
         $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
         $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)
-            ->setMethods(array('sL'))
+            ->setMethods(['sL'])
             ->disableOriginalConstructor()
             ->getMock();
         $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
@@ -162,23 +162,23 @@ class ContentIconTest extends AbstractTestCase
     public function getAddSubIconTestValues(): array
     {
         $formWithoutIcon = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $formWithIcon = Form::create(array('options' => array('icon' => 'icon')));
-        $providerWithoutForm = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(array('getForm', 'getGrid'))->getMock();
+        $formWithIcon = Form::create(['options' => ['icon' => 'icon']]);
+        $providerWithoutForm = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(['getForm', 'getGrid'])->getMock();
         $providerWithoutForm->expects($this->any())->method('getForm')->willReturn(null);
         $providerWithoutForm->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
-        $providerWithFormWithoutIcon = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(array('getForm', 'getGrid'))->getMock();
+        $providerWithFormWithoutIcon = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(['getForm', 'getGrid'])->getMock();
         $providerWithFormWithoutIcon->expects($this->any())->method('getForm')->willReturn($formWithoutIcon);
         $providerWithFormWithoutIcon->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
-        $providerWithFormWithIcon = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(array('getForm', 'getGrid'))->getMock();
+        $providerWithFormWithIcon = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(['getForm', 'getGrid'])->getMock();
         $providerWithFormWithIcon->expects($this->any())->method('getForm')->willReturn($formWithIcon);
         $providerWithFormWithIcon->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
-        return array(
-            'no provider' => array(array('tt_content', 1, array()), null),
-            'provider without form without field' => array(array('tt_content', 1, array()), $providerWithoutForm),
-            'provider without form with field' => array(array('tt_content', 1, array('field' => 'test')), $providerWithoutForm),
-            'provider with form without icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithoutIcon),
-            'provider with form with icon' => array(array('tt_content', 1, array('field' => 'test')), $providerWithFormWithIcon),
-        );
+        return [
+            'no provider' => [['tt_content', 1, []], null],
+            'provider without form without field' => [['tt_content', 1, []], $providerWithoutForm],
+            'provider without form with field' => [['tt_content', 1, ['field' => 'test']], $providerWithoutForm],
+            'provider with form without icon' => [['tt_content', 1, ['field' => 'test']], $providerWithFormWithoutIcon],
+            'provider with form with icon' => [['tt_content', 1, ['field' => 'test']], $providerWithFormWithIcon],
+        ];
     }
 
     public function testReturnsEmptyStringWithInvalidCaller(): void

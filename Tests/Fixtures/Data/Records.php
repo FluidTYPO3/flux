@@ -26,16 +26,16 @@ class Records
     /**
      * @var array
      */
-    public static $sysTemplateRoot = array(
+    public static $sysTemplateRoot = [
         'uid' => self::UID_TEMPLATE_ROOT,
         'root' => 1,
         'include_static_file' => '',
-    );
+    ];
 
     /**
      * @var array
      */
-    public static $contentRecordWithoutParentAndWithoutChildren = array(
+    public static $contentRecordWithoutParentAndWithoutChildren = [
         'uid' => self::UID_CONTENT_NOPARENTNOCHILDREN,
         'header' => 'Has no parent',
         'colPos' => 0,
@@ -54,32 +54,32 @@ class Records
     </data>
 </T3FlexForms>
 '
-    );
+    ];
 
     /**
      * @var array
      */
-    public static $contentRecordIsParentAndHasChildren = array(
+    public static $contentRecordIsParentAndHasChildren = [
         'uid' => self::UID_CONTENT_PARENT,
         'header' => 'Is itself parent, has no parent',
         'colPos' => 0
-    );
+    ];
 
     /**
      * @var array
      */
-    public static $contentRecordWithParentAndWithoutChildren = array(
+    public static $contentRecordWithParentAndWithoutChildren = [
         'uid' => self::UID_CONTENT_CHILD,
         'header' => 'Has parent, is in default content area',
         'colPos' => 103
-    );
+    ];
 
     /**
      * @var array
      */
-    public static $contentRecordWithParentAndChildren = array(
+    public static $contentRecordWithParentAndChildren = [
         'uid' => self::UID_CONTENT_NOPARENTWITHCHILDREN,
         'header' => 'Has parent, is in default content area',
         'colPos' => 102
-    );
+    ];
 }

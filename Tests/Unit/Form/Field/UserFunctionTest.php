@@ -10,10 +10,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
 
 class UserFunctionTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
-        'arguments' => array(1, 2),
-    );
+        'arguments' => [1, 2],
+    ];
 }

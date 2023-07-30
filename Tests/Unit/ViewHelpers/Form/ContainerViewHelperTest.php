@@ -17,10 +17,10 @@ class ContainerViewHelperTest extends AbstractViewHelperTestCase
      */
     public function canExecuteViewHelper()
     {
-        $arguments = array(
+        $arguments = [
             'name' => 'test',
             'label' => 'Test container'
-        );
+        ];
         $result = $this->executeViewHelper($arguments);
         $this->assertEmpty(trim($result));
     }

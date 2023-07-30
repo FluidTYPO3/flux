@@ -309,7 +309,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $provider->setTableName('tt_content');
 
         $tceMain = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
-        $tceMain->datamap['tt_content'][$row['uid']]['pi_flexform']['data'] = array();
+        $tceMain->datamap['tt_content'][$row['uid']]['pi_flexform']['data'] = [];
         $provider->postProcessRecord('update', $row['uid'], $row, $tceMain);
         $this->assertStringNotContainsString('<field index=""></field>', $row['pi_flexform']);
     }
@@ -388,7 +388,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $provider = $this->getMockBuilder($this->createInstanceClassName())
             ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(array('getPageValues'))
+            ->onlyMethods(['getPageValues'])
             ->getMock();
         $record = $this->getBasicRecord();
         $variables = $provider->getTemplateVariables($record);
@@ -403,16 +403,16 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $record = $this->getBasicRecord();
         $provider = $this->getMockBuilder(str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4)))
             ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(array('getForm'))
+            ->onlyMethods(['getForm'])
             ->getMock();
 
-        $this->fluxService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(array('test' => 'test')));
+        $this->fluxService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(['test' => 'test']));
 
         $provider->expects($this->once())->method('getForm')->will($this->returnValue($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock()));
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
         $values = $provider->getFlexformValues($record);
         $this->assertIsArray($values);
-        $this->assertEquals($values, array('test' => 'test'));
+        $this->assertEquals($values, ['test' => 'test']);
     }
 
     /**
@@ -422,12 +422,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $provider = $this->getMockBuilder($this->createInstanceClassName())
             ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(array('getPageValues', 'getGrid', 'getForm'))
+            ->onlyMethods(['getPageValues', 'getGrid', 'getForm'])
             ->getMock();
         $provider->expects($this->once())->method('getPageValues')->willReturn([]);
         $provider->expects($this->once())->method('getForm')->willReturn(null);
         $provider->expects($this->once())->method('getGrid')->willReturn(Grid::create());
-        $this->setInaccessiblePropertyValue($provider, 'templatePaths', array());
+        $this->setInaccessiblePropertyValue($provider, 'templatePaths', []);
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
         $record = $this->getBasicRecord();
         $values = $provider->getTemplateVariables($record);
@@ -550,8 +550,8 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->getMock();
         $provider->expects($this->once())->method('extractConfiguration')->willReturn($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
         $record = $this->getBasicRecord();
-        $dataStructure = array();
-        $config = array();
+        $dataStructure = [];
+        $config = [];
         $result = $provider->postProcessDataStructure($record, $dataStructure, $config);
         $this->assertNull($result);
         $this->assertIsArray($config);
@@ -566,12 +566,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->createField(Form\Field\Input::class, 'dummy');
         $record = $this->getBasicRecord();
-        $dataStructure = array();
-        $config = array();
+        $dataStructure = [];
+        $config = [];
         $provider->setForm($form);
         $provider->postProcessDataStructure($record, $dataStructure, $config);
         $this->assertIsArray($dataStructure);
-        $this->assertNotEquals(array(), $dataStructure);
+        $this->assertNotEquals([], $dataStructure);
         $this->assertNotEmpty($dataStructure);
     }
 
@@ -599,20 +599,20 @@ abstract class AbstractProviderTest extends AbstractTestCase
             $fieldName = 'pi_flexform';
             $provider->setFieldName($fieldName);
         }
-        $record[$fieldName] = array(
-            'data' => array(
-                'options' => array(
-                    'lDEF' => array(
-                        'settings.input' => array(
+        $record[$fieldName] = [
+            'data' => [
+                'options' => [
+                    'lDEF' => [
+                        'settings.input' => [
                             'vDEF' => 'test'
-                        ),
-                        'settings.input_clear' => array(
+                        ],
+                        'settings.input_clear' => [
                             'vDEF' => 1
-                        )
-                    )
-                )
-            )
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
         $parentInstance->datamap[$tableName][$id] = $record;
         $record[$fieldName] = Xml::EXPECTING_FLUX_REMOVALS;
         $provider->postProcessRecord('update', $id, $record, $parentInstance);
@@ -665,17 +665,17 @@ abstract class AbstractProviderTest extends AbstractTestCase
         }
         $GLOBALS['TCA'][$tableName]['columns']['header'] = true;
         $record['header'] = 'old';
-        $record[$fieldName] = array(
-            'data' => array(
-                'options' => array(
-                    'lDEF' => array(
-                        $tableName . '.header' => array(
+        $record[$fieldName] = [
+            'data' => [
+                'options' => [
+                    'lDEF' => [
+                        $tableName . '.header' => [
                             'vDEF' => 'overridden-header'
-                        )
-                    )
-                )
-            )
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
         $id = $record['uid'];
         $provider->preProcessRecord($record, $id, $parentInstance);
         $this->assertSame($record['header'], $record[$fieldName]['data']['options']['lDEF'][$tableName . '.header']['vDEF']);
@@ -686,7 +686,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function canSetForm()
     {
-        $form = Form::create(array('name' => 'test'));
+        $form = Form::create(['name' => 'test']);
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $provider = $this->getConfigurationProviderInstance();
         $provider->setForm($form);
@@ -697,7 +697,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
      */
     public function canSetGrid()
     {
-        $grid = Grid::create(array('name' => 'test'));
+        $grid = Grid::create(['name' => 'test']);
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
         $provider = $this->getConfigurationProviderInstance();
         $provider->setGrid($grid);
@@ -711,12 +711,12 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function canSetExtensionKeyAndPassToFormThroughLoadSettings()
     {
         $provider = $this->getConfigurationProviderInstance();
-        $settings = array(
+        $settings = [
             'extensionKey' => 'my_ext',
-            'form' => array(
+            'form' => [
                 'name' => 'test'
-            )
-        );
+            ]
+        ];
         $provider->loadSettings($settings);
         $record = Records::$contentRecordIsParentAndHasChildren;
         $this->assertSame('my_ext', $provider->getExtensionKey($record));
@@ -730,11 +730,11 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $provider = $this->getMockBuilder($this->createInstanceClassName())
             ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(array('getPageValues'))
+            ->onlyMethods(['getPageValues'])
             ->getMock();
         $provider->expects($this->once())->method('getPageValues')->willReturn([]);
         $record = $this->getBasicRecord();
-        $variables = array('test' => 'test');
+        $variables = ['test' => 'test'];
         $provider->setTemplateVariables($variables);
         $this->assertArrayHasKey('test', $provider->getTemplateVariables($record));
     }

@@ -78,7 +78,7 @@ class PageProviderTest extends AbstractTestCase
             ->onlyMethods(['getControllerExtensionKeyFromRecord'])
             ->getMock();
         $instance->expects($this->once())->method('getControllerExtensionKeyFromRecord')->willReturn('flux');
-        $result = $instance->getExtensionKey(array());
+        $result = $instance->getExtensionKey([]);
         $this->assertEquals('flux', $result);
     }
 
@@ -90,7 +90,7 @@ class PageProviderTest extends AbstractTestCase
             ->onlyMethods(['getControllerExtensionKeyFromRecord'])
             ->getMock();
         $instance->expects($this->once())->method('getControllerExtensionKeyFromRecord')->willReturn('');
-        $result = $instance->getExtensionKey(array());
+        $result = $instance->getExtensionKey([]);
         $this->assertEquals('FluidTYPO3.Flux', $result);
     }
 
@@ -250,7 +250,7 @@ class PageProviderTest extends AbstractTestCase
         $dummyProvider1 = new DummyPageProvider(...$this->getConstructorArguments());
         $dummyProvider2 = new DummyPageProvider(...$this->getConstructorArguments());
         $dummyProvider1->setForm($form);
-        $dummyProvider1->setFlexFormValues(array('foo' => 'bar'));
+        $dummyProvider1->setFlexFormValues(['foo' => 'bar']);
         $form2 = $this->getMockBuilder(Form::class)->getMock();
         $dummyProvider2->setForm($form2);
         /** @var PageProvider|MockObject $provider */

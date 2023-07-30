@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 abstract class AbstractFieldTest extends AbstractFormTest
 {
-    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
+    protected array $chainProperties = ['name' => 'test', 'label' => 'Test field', 'enabled' => true];
 
     /**
      * @test
@@ -78,7 +78,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $properties = $this->chainProperties;
         $class = $this->getObjectClassName();
         $properties['type'] = implode('/', array_slice(explode('\\', $class), 4, 1));
-        $instance = call_user_func_array(array($class, 'create'), array($properties));
+        $instance = call_user_func_array([$class, 'create'], [$properties]);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
     }
 
@@ -90,7 +90,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
         $properties = $this->chainProperties;
         $properties['type'] = 'InvalidType';
         $this->expectExceptionCode(1375373527);
-        call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+        call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
     }
 
     /**
@@ -100,7 +100,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     {
         $properties = $this->chainProperties;
         $properties['type'] = $this->getObjectClassName();
-        $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+        $instance = call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
         $this->assertInstanceOf(Form\FormInterface::class, $instance);
     }
 
@@ -109,11 +109,11 @@ abstract class AbstractFieldTest extends AbstractFormTest
      */
     public function canCreateSectionUsingShortcutMethod()
     {
-        $definition = array(
+        $definition = [
             'name' => 'test',
             'label' => 'Test section',
             'type' => 'Section'
-        );
+        ];
         $section = AbstractFormField::create($definition);
         $this->assertInstanceOf(Form\Container\Section::class, $section);
         $this->assertSame($definition['name'], $section->getName());

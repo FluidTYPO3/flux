@@ -16,7 +16,7 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 
 class SelectTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'itemListStyle' => 'color: red',
@@ -25,7 +25,7 @@ class SelectTest extends AbstractFieldTest
         'minItems' => 1,
         'maxItems' => 3,
         'requestUpdate' => true,
-    );
+    ];
 
     /**
      * @test
@@ -80,7 +80,7 @@ class SelectTest extends AbstractFieldTest
     {
         /** @var Select $instance */
         $instance = $this->createInstance();
-        $instance->setItems(array(1, 2));
+        $instance->setItems([1, 2]);
         $this->assertSame(2, count($instance->getItems()));
     }
 
@@ -91,10 +91,10 @@ class SelectTest extends AbstractFieldTest
     {
         /** @var Select $instance */
         $instance = $this->createInstance();
-        $items = array(
-            array('foo' => 'bar'),
-            array('baz' => 'bay')
-        );
+        $items = [
+            ['foo' => 'bar'],
+            ['baz' => 'bay']
+        ];
         $instance->setItems($items);
         $this->assertSame(2, count($instance->getItems()));
     }
@@ -120,20 +120,20 @@ class SelectTest extends AbstractFieldTest
         $instance = $this->getMockBuilder(Select::class)->setMethods(['getConfigurationService'])->getMock();
         $instance->method('getConfigurationService')->willReturn($fluxService);
         $query = $this->getMockBuilder(Query::class)
-            ->setMethods(array('execute', 'getType'))
+            ->setMethods(['execute', 'getType'])
             ->disableOriginalConstructor()
             ->getMock();
         $query->expects($this->any())->method('getType')->will($this->returnValue('foobar'));
-        $query->expects($this->any())->method('execute')->will($this->returnValue(array(
+        $query->expects($this->any())->method('execute')->will($this->returnValue([
             new FrontendUser('user1'),
             new FrontendUser('user2')
-        )));
+        ]));
         $instance->setItems($query);
         $result = $instance->getItems();
         $this->assertIsArray($result);
-        $this->assertEquals(array(
-            array('user1', null), array('user2', null)
-        ), $result);
+        $this->assertEquals([
+            ['user1', null], ['user2', null]
+        ], $result);
     }
 
     /**
@@ -144,11 +144,11 @@ class SelectTest extends AbstractFieldTest
         $table = 'foo';
         $type = 'bar';
         $service = $this->getMockBuilder(FluxService::class)
-            ->setMethods(array('getTypoScriptByPath'))
+            ->setMethods(['getTypoScriptByPath'])
             ->disableOriginalConstructor()
             ->getMock();
         $service->expects($this->once())->method('getTypoScriptByPath')->willReturn($table . 'suffix');
-        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(array('getConfigurationService'))->getMock();
+        $instance = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['getConfigurationService'])->getMock();
         $instance->expects($this->once())->method('getConfigurationService')->willReturn($service);
         $GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';
         $propertyName = $this->callInaccessibleMethod($instance, 'getLabelPropertyName', $table, $type);
@@ -171,13 +171,13 @@ class SelectTest extends AbstractFieldTest
         $form->add($instance);
 
         $instance->setItems('foo,bar');
-        $this->assertEquals(array(array('foo', 'foo'), array('bar', 'bar')), $instance->getItems());
+        $this->assertEquals([['foo', 'foo'], ['bar', 'bar']], $instance->getItems());
         $instance->setTranslateCsvItems(true);
 
-        $expected = array(
-            array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.foo', 'foo'),
-            array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.bar', 'bar')
-        );
+        $expected = [
+            ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.foo', 'foo'],
+            ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.bar', 'bar']
+        ];
 
         $this->assertEquals($expected, $instance->getItems());
     }

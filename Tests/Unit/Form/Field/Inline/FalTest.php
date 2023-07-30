@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 
 class FalTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'collapseAll' => false,
         'expandSingle' => false,
         'newRecordLinkAddTitle' => false,
@@ -24,7 +24,7 @@ class FalTest extends AbstractFieldTest
         'showRemovedLocalizationRecords' => false,
         'showAllLocalizationLink' => false,
         'showSynchronizationLink' => false,
-        'enabledControls' => array(
+        'enabledControls' => [
             Form::CONTROL_INFO => false,
             Form::CONTROL_NEW => true,
             Form::CONTROL_DRAGDROP => true,
@@ -32,8 +32,8 @@ class FalTest extends AbstractFieldTest
             Form::CONTROL_HIDE => true,
             Form::CONTROL_DELETE => false,
             Form::CONTROL_LOCALISE => false,
-        )
-    );
+        ]
+    ];
 
     public function testBuildConfigurationWithCropVariants(): void
     {

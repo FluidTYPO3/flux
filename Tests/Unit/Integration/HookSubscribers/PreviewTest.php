@@ -56,7 +56,7 @@ class PreviewTest extends AbstractTestCase
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $row['pi_flexform'] = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
         Core::registerConfigurationProvider(DummyConfigurationProvider::class);
-        $instance = $this->getMockBuilder($function)->setMethods(array('attachAssets'))->getMock();
+        $instance = $this->getMockBuilder($function)->setMethods(['attachAssets'])->getMock();
         $instance->preProcess($caller, $drawItem, $headerContent, $itemContent, $row);
         Core::unregisterConfigurationProvider(DummyConfigurationProvider::class);
     }

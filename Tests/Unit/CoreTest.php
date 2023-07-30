@@ -133,8 +133,8 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterStandaloneTemplateForContentObject()
     {
-        $variables = array('test' => 'test');
-        $paths = array('templateRootPaths' => array('Resources/Private/Templates'));
+        $variables = ['test' => 'test'];
+        $paths = ['templateRootPaths' => ['Resources/Private/Templates']];
         $extensionKey = 'fake';
         $contentObjectType = 'void';
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
@@ -156,8 +156,8 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterStandaloneTemplateForPlugin()
     {
-        $variables = array('test' => 'test');
-        $paths = array('templateRootPaths' => array('Resources/Private/Templates'));
+        $variables = ['test' => 'test'];
+        $paths = ['templateRootPaths' => ['Resources/Private/Templates']];
         $extensionKey = 'more_fake';
         $pluginType = 'void';
         $fieldName = null;
@@ -182,8 +182,8 @@ class CoreTest extends AbstractTestCase
      */
     public function canRegisterStandaloneTemplateForTable()
     {
-        $variables = array('test' => 'test');
-        $paths = array('templateRootPaths' => array('Resources/Private/Templates'));
+        $variables = ['test' => 'test'];
+        $paths = ['templateRootPaths' => ['Resources/Private/Templates']];
         $table = 'fake';
         $fieldName = null;
         $relativeTemplatePathAndFilename = self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
@@ -232,7 +232,7 @@ class CoreTest extends AbstractTestCase
     public function registerFormForTableSetsExtensionNameFromExtensionKeyGlobal()
     {
         $GLOBALS['_EXTKEY'] = 'test';
-        $form = $this->getMockBuilder(Form::class)->setMethods(array('setExtensionName', 'getExtensionName'))->getMock();
+        $form = $this->getMockBuilder(Form::class)->setMethods(['setExtensionName', 'getExtensionName'])->getMock();
         $form->method('getExtensionName')->willReturn(null);
         $form->expects($this->once())->method('setExtensionName')->with('Test');
         AccessibleCore::registerFormForTable('foobar', $form);

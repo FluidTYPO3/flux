@@ -24,48 +24,48 @@ class ProviderTest extends AbstractTestCase
     protected FluxService $fluxService;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
-    protected array $definition = array(
+    protected array $definition = [
         'name' => 'test',
         'label' => 'Test provider',
         'tableName' => 'tt_content',
         'fieldName' => 'pi_flexform',
-        'form' => array(
-            'sheets' => array(
-                'foo' => array(
-                    'fields' => array(
-                        'test' => array(
+        'form' => [
+            'sheets' => [
+                'foo' => [
+                    'fields' => [
+                        'test' => [
                             'type' => Input::class,
-                        )
-                    )
-                ),
-                'bar' => array(
-                    'fields' => array(
-                        'test2' => array(
+                        ]
+                    ]
+                ],
+                'bar' => [
+                    'fields' => [
+                        'test2' => [
                             'type' => Input::class,
-                        )
-                    )
-                ),
-            ),
-            'fields' => array(
-                'test3' => array(
+                        ]
+                    ]
+                ],
+            ],
+            'fields' => [
+                'test3' => [
                     'type' => Input::class,
-                )
-            ),
-        ),
-        'grid' => array(
-            'rows' => array(
-                'foo' => array(
-                    'columns' => array(
-                        'bar' => array(
-                            'areas' => array(
+                ]
+            ],
+        ],
+        'grid' => [
+            'rows' => [
+                'foo' => [
+                    'columns' => [
+                        'bar' => [
+                            'areas' => [
 
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    );
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ];
 
     protected function setUp(): void
     {

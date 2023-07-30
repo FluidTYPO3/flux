@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\Form;
 
 class InlineTest extends AbstractFieldTest
 {
-    protected array $chainProperties = array(
+    protected array $chainProperties = [
         'collapseAll' => false,
         'expandSingle' => false,
         'newRecordLinkAddTitle' => false,
@@ -23,7 +23,7 @@ class InlineTest extends AbstractFieldTest
         'showRemovedLocalizationRecords' => false,
         'showAllLocalizationLink' => false,
         'showSynchronizationLink' => false,
-        'enabledControls' => array(
+        'enabledControls' => [
             Form::CONTROL_INFO => false,
             Form::CONTROL_NEW => true,
             Form::CONTROL_DRAGDROP => true,
@@ -31,11 +31,11 @@ class InlineTest extends AbstractFieldTest
             Form::CONTROL_HIDE => true,
             Form::CONTROL_DELETE => false,
             Form::CONTROL_LOCALISE => false,
-        ),
-        'foreignTypes' => array(
-            0 => array(
+        ],
+        'foreignTypes' => [
+            0 => [
                 'showitem' => 'a,b,c'
-            )
-        )
-    );
+            ]
+        ]
+    ];
 }

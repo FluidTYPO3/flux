@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
 abstract class AbstractContainerTest extends AbstractFormTest
 {
-    protected array $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string');
+    protected array $chainProperties = ['name' => 'test', 'label' => 'Test field', 'transform' => 'string'];
 
     /**
      * @return ContainerInterface
@@ -76,15 +76,15 @@ abstract class AbstractContainerTest extends AbstractFormTest
     public function canCreateFromDefinitionContainingFields()
     {
         $properties = $this->chainProperties;
-        $properties['fields'] = array(
-            'foo' => array(
+        $properties['fields'] = [
+            'foo' => [
                 'type' => Input::class,
-            ),
-            'bar' => array(
+            ],
+            'bar' => [
                 'type' => Input::class,
-            ),
-        );
-        $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), [$properties]);
+            ],
+        ];
+        $instance = call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
     }
 }

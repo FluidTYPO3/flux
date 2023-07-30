@@ -91,17 +91,17 @@ class FormDataTransformerTest extends AbstractTestCase
     public function getValuesAndTransformations(): array
     {
         return [
-            array(array('1', '2', '3'), 'integer', array(1, 2, 3)),
-            array('0', 'integer', 0),
-            array('0.12', 'float', 0.12),
-            array('1,2,3', 'array', array(1, 2, 3)),
-            array('123,321', 'InvalidClass', '123'),
-            array(date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))),
-            array('1', 'boolean', true),
-            array('1,2', ObjectStorage::class . '<' . FrontendUser::class . '>', null),
-            array('1,2', ObjectStorage::class . '<\\Invalid>', null),
-            array('bar', self::class . '->fixtureTransformToFooString', 'foo'),
-            array('1', FrontendUser::class, $this->frontendUser),
+            [['1', '2', '3'], 'integer', [1, 2, 3]],
+            ['0', 'integer', 0],
+            ['0.12', 'float', 0.12],
+            ['1,2,3', 'array', [1, 2, 3]],
+            ['123,321', 'InvalidClass', '123'],
+            [date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))],
+            ['1', 'boolean', true],
+            ['1,2', ObjectStorage::class . '<' . FrontendUser::class . '>', null],
+            ['1,2', ObjectStorage::class . '<\\Invalid>', null],
+            ['bar', self::class . '->fixtureTransformToFooString', 'foo'],
+            ['1', FrontendUser::class, $this->frontendUser],
         ];
     }
 
@@ -158,12 +158,12 @@ class FormDataTransformerTest extends AbstractTestCase
     public function testSupportsFindByIdentifiers(): void
     {
         $repository = $this->getMockBuilder(FrontendUserGroupRepository::class)
-            ->setMethods(array('findByUid'))
+            ->setMethods(['findByUid'])
             ->disableOriginalConstructor()
             ->getMock();
         $repository->expects($this->exactly(2))->method('findByUid')->willReturnArgument(0);
 
-        $identifiers = array('foobar', 'foobar2');
+        $identifiers = ['foobar', 'foobar2'];
 
         $result = $this->callInaccessibleMethod(
             new FormDataTransformer($this->fileRepository),
@@ -171,6 +171,6 @@ class FormDataTransformerTest extends AbstractTestCase
             $repository,
             $identifiers
         );
-        $this->assertEquals($result, array('foobar', 'foobar2'));
+        $this->assertEquals($result, ['foobar', 'foobar2']);
     }
 }

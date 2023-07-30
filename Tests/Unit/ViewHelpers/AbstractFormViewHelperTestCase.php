@@ -27,7 +27,7 @@ abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
      * @param array $methods
      * @return object
      */
-    protected function createMockedInstanceForVariableContainerTests($methods = array())
+    protected function createMockedInstanceForVariableContainerTests($methods = [])
     {
         if (true === empty($methods)) {
             $methods[] = 'dummy';
