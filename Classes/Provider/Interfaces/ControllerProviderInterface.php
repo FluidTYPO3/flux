@@ -21,9 +21,9 @@ interface ControllerProviderInterface
     public function getPluginName(): ?string;
     public function setControllerName(string $controllerName): self;
     public function setControllerAction(string $controllerAction): self;
-    public function getControllerExtensionKeyFromRecord(array $row): string;
-    public function getControllerActionFromRecord(array $row): string;
-    public function getControllerActionReferenceFromRecord(array $row): string;
+    public function getControllerExtensionKeyFromRecord(array $row, ?string $forField = null): string;
+    public function getControllerActionFromRecord(array $row, ?string $forField = null): string;
+    public function getControllerActionReferenceFromRecord(array $row, ?string $forField = null): string;
 
     /**
      * Implement to return a controller action name associated with $row.

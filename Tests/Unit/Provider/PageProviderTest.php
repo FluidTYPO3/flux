@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\PageProvider;
-use FluidTYPO3\Flux\Provider\SubPageProvider;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -106,7 +105,7 @@ class PageProviderTest extends AbstractTestCase
             ->getMock();
         $templatePaths->method('resolveTemplateFileForControllerAndActionAndFormat')
             ->willReturn('Tests/Fixtures/Templates/Page/Dummy.html');
-        $instance = $this->getMockBuilder(SubPageProvider::class)
+        $instance = $this->getMockBuilder(PageProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
             ->onlyMethods(['createTemplatePaths'])
             ->getMock();
@@ -187,17 +186,28 @@ class PageProviderTest extends AbstractTestCase
 
         $this->pageService->method('getPageTemplateConfiguration')->willReturn($record);
 
-        // make sure PageProvider is now using the right field name
-        $instance->trigger($record, null, $fieldName);
-        $result = $instance->getControllerActionFromRecord($record);
+        $result = $instance->getControllerActionFromRecord($record, $fieldName);
         $this->assertEquals($expected, $result);
     }
 
     public function getControllerActionFromRecordTestValues(): array
     {
         return [
-            [['tx_fed_page_controller_action' => ''], 'tx_fed_page_flexform', 'default'],
-            [['tx_fed_page_controller_action' => 'flux->action'], 'tx_fed_page_flexform', 'action'],
+            'defaults to flux->default when no actions whatsoever are defined' => [
+                ['tx_fed_page_controller_action' => ''],
+                'tx_fed_page_flexform',
+                'default'
+            ],
+            'When $forField is tx_fed_page_flexform, returns the main configured action if record defines it' => [
+                ['tx_fed_page_controller_action' => 'flux->action'],
+                'tx_fed_page_flexform',
+                'action'
+            ],
+            'When $forField is tx_fed_page_flexform_sub, returns the sub configured action if record defines it' => [
+                ['tx_fed_page_controller_action_sub' => 'flux->action'],
+                'tx_fed_page_flexform_sub',
+                'action'
+            ],
         ];
     }
 

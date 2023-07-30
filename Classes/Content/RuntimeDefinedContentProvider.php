@@ -63,17 +63,17 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
         return $contentTypeName && isset($registeredContentTypes[$contentTypeName]);
     }
 
-    public function getControllerExtensionKeyFromRecord(array $row): string
+    public function getControllerExtensionKeyFromRecord(array $row, ?string $forField = null): string
     {
         return ExtensionNamingUtility::getExtensionKey((string) $this->getExtensionKey($row));
     }
 
-    public function getControllerActionFromRecord(array $row): string
+    public function getControllerActionFromRecord(array $row, ?string $forField = null): string
     {
         return 'proxy';
     }
 
-    public function getExtensionKey(array $row): string
+    public function getExtensionKey(array $row, ?string $forField = null): string
     {
         return $this->getContentTypeDefinition($row)->getExtensionIdentity();
     }
@@ -95,7 +95,7 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
         return $this->getContentTypeDefinition($row)->getForm();
     }
 
-    public function getTemplatePathAndFilename(array $row): string
+    public function getTemplatePathAndFilename(array $row, ?string $forField = null): string
     {
         return $this->getContentTypeDefinition($row)->getTemplatePathAndFilename();
     }

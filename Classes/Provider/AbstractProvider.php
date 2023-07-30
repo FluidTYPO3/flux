@@ -149,19 +149,19 @@ class AbstractProvider implements ProviderInterface
      *
      * @return class-string|null
      */
-    protected function resolveFormClassName(array $row): ?string
+    protected function resolveFormClassName(array $row, ?string $forField = null): ?string
     {
-        $packageName = $this->getControllerPackageNameFromRecord($row);
+        $packageName = $this->getControllerPackageNameFromRecord($row, $forField);
         $packageKey = str_replace('.', '\\', $packageName);
         $controllerName = $this->getControllerNameFromRecord($row);
-        $action = $this->getControllerActionFromRecord($row);
+        $action = $this->getControllerActionFromRecord($row, $forField);
         $expectedClassName = sprintf(static::FORM_CLASS_PATTERN, $packageKey, $controllerName, ucfirst($action));
         return class_exists($expectedClassName) ? $expectedClassName : null;
     }
 
     protected function getViewVariables(array $row, ?string $forField = null): array
     {
-        $extensionKey = (string) $this->getExtensionKey($row);
+        $extensionKey = (string) $this->getExtensionKey($row, $forField);
         $fieldName = $forField ?? $this->getFieldName($row);
         $variables = [
             'record' => $row,
@@ -191,13 +191,13 @@ class AbstractProvider implements ProviderInterface
             ?? Form::create();
         $form->setOption(Form::OPTION_RECORD, $row);
         $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
-        $form->setOption(Form::OPTION_RECORD_FIELD, $this->getFieldName($row));
+        $form->setOption(Form::OPTION_RECORD_FIELD, $forField ?? $this->getFieldName($row));
         return $form;
     }
 
     protected function createCustomFormInstance(array $row, ?string $forField = null): ?Form
     {
-        $formClassName = $this->resolveFormClassName($row);
+        $formClassName = $this->resolveFormClassName($row, $forField);
         if ($formClassName !== null && class_exists($formClassName)) {
             $tableName = $this->getTableName($row);
             $fieldName = $forField ?? $this->getFieldName($row);
@@ -289,7 +289,7 @@ class AbstractProvider implements ProviderInterface
      */
     protected function extractConfiguration(array $row, ?string $name = null, ?string $forField = null)
     {
-        $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all') . '_' . $forField;
+        $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all', $forField) . '_' . $forField;
         /** @var array $allCached */
         $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
         $fromCache = $allCached[$name] ?? null;
@@ -298,11 +298,11 @@ class AbstractProvider implements ProviderInterface
         }
         $configurationSectionName = $this->getConfigurationSectionName($row, $forField);
         $viewVariables = $this->getViewVariables($row, $forField);
-        $view = $this->getViewForRecord($row);
+        $view = $this->getViewForRecord($row, $forField);
         $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
             FormViewHelper::class,
             FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
-            $this->getExtensionKey($row)
+            $this->getExtensionKey($row, $forField)
         );
 
         try {
@@ -319,9 +319,12 @@ class AbstractProvider implements ProviderInterface
 
         $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class, []);
         if (isset($variables['form'])) {
-            $variables['form']->setOption(Form::OPTION_TEMPLATEFILE, $this->getTemplatePathAndFilename($row));
+            $variables['form']->setOption(
+                Form::OPTION_TEMPLATEFILE,
+                $this->getTemplatePathAndFilename($row, $forField)
+            );
             if ($variables['form']->getOption(Form::OPTION_STATIC)) {
-                $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+                //$this->configurationService->setInCaches($variables, true, $cacheKeyAll);
             }
         }
 
@@ -376,7 +379,7 @@ class AbstractProvider implements ProviderInterface
         return $this->tableName;
     }
 
-    public function getTemplatePathAndFilename(array $row): ?string
+    public function getTemplatePathAndFilename(array $row, ?string $forField = null): ?string
     {
         $templatePathAndFilename = (string) $this->templatePathAndFilename;
         if ($templatePathAndFilename !== '' && !PathUtility::isAbsolutePath($templatePathAndFilename)) {
@@ -442,7 +445,7 @@ class AbstractProvider implements ProviderInterface
         return $this->configurationSectionName;
     }
 
-    public function getExtensionKey(array $row): string
+    public function getExtensionKey(array $row, ?string $forField = null): string
     {
         unset($row);
         return $this->extensionKey;
@@ -587,13 +590,13 @@ class AbstractProvider implements ProviderInterface
         return $configuration;
     }
 
-    public function getViewForRecord(array $row): ViewInterface
+    protected function getViewForRecord(array $row, ?string $forField = null): ViewInterface
     {
         return $this->viewBuilder->buildTemplateView(
-            $this->getControllerExtensionKeyFromRecord($row),
+            $this->getControllerExtensionKeyFromRecord($row, $forField),
             $this->getControllerNameFromRecord($row),
-            $this->getControllerActionFromRecord($row),
-            $this->getTemplatePathAndFilename($row)
+            $this->getControllerActionFromRecord($row, $forField),
+            $this->getTemplatePathAndFilename($row, $forField)
         );
     }
 
@@ -620,7 +623,7 @@ class AbstractProvider implements ProviderInterface
         return [null, $previewContent, empty($previewContent)];
     }
 
-    protected function getCacheKeyForStoredVariable(array $row, string $variable): string
+    protected function getCacheKeyForStoredVariable(array $row, string $variable, ?string $forField = null): string
     {
         return implode(
             '-',
@@ -628,10 +631,10 @@ class AbstractProvider implements ProviderInterface
                 'flux',
                 'storedvariable',
                 $this->getTableName($row),
-                $this->getFieldName($row),
+                $forField ?? $this->getFieldName($row),
                 $row['uid'] ?? 0,
-                $this->getControllerExtensionKeyFromRecord($row),
-                $this->getControllerActionFromRecord($row),
+                $this->getControllerExtensionKeyFromRecord($row, $forField),
+                $this->getControllerActionFromRecord($row, $forField),
                 $variable
             ]
         );
@@ -656,7 +659,7 @@ class AbstractProvider implements ProviderInterface
     /**
      * Stub: Get the extension key of the controller associated with $row
      */
-    public function getControllerExtensionKeyFromRecord(array $row): string
+    public function getControllerExtensionKeyFromRecord(array $row, ?string $forField = null): string
     {
         return $this->extensionKey;
     }
@@ -664,9 +667,9 @@ class AbstractProvider implements ProviderInterface
     /**
      * Stub: Get the package name of the controller associated with $row
      */
-    public function getControllerPackageNameFromRecord(array $row): string
+    public function getControllerPackageNameFromRecord(array $row, ?string $forField = null): string
     {
-        $extensionKey = $this->getControllerExtensionKeyFromRecord($row);
+        $extensionKey = $this->getControllerExtensionKeyFromRecord($row, $forField);
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
         $vendor = ExtensionNamingUtility::getVendorName($extensionKey);
         return null !== $vendor ? $vendor . '.' . $extensionName : $extensionName;
@@ -675,7 +678,7 @@ class AbstractProvider implements ProviderInterface
     /**
      * Stub: Get the name of the controller action associated with $row
      */
-    public function getControllerActionFromRecord(array $row): string
+    public function getControllerActionFromRecord(array $row, ?string $forField = null): string
     {
         return $this->controllerAction;
     }
@@ -683,9 +686,9 @@ class AbstractProvider implements ProviderInterface
     /**
      * Stub: Get a compacted controller name + action name string
      */
-    public function getControllerActionReferenceFromRecord(array $row): string
+    public function getControllerActionReferenceFromRecord(array $row, ?string $forField = null): string
     {
-        return $this->getControllerNameFromRecord($row) . '->' . $this->getControllerActionFromRecord($row);
+        return $this->getControllerNameFromRecord($row) . '->' . $this->getControllerActionFromRecord($row, $forField);
     }
 
     public function setTableName(string $tableName): self
