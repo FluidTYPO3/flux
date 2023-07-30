@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
@@ -35,17 +36,15 @@ class PageServiceTest extends AbstractTestCase
 
     /**
      * @dataProvider getPageTemplateConfigurationTestValues
-     * @param array $records
-     * @param array|NULL $expected
      */
-    public function testGetPageTemplateConfiguration(array $records, $expected): void
+    public function testGetPageTemplateConfiguration(array $records, ?array $expected): void
     {
-        $rootLineUtility = $this->getMockBuilder(RootlineUtility::class)->setMethods(['get'])->disableOriginalConstructor()->getMock();
-        $rootLineUtility->expects(self::once())->method('get')->willReturn($records);
         $runtimeCache = new VariableFrontend('runtime', $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass());
-        $instance = $this->getMockBuilder(DummyPageService::class)->setMethods(['getRootLineUtility', 'getRuntimeCache'])->disableOriginalConstructor()->getMock();
-        $instance->method('getRootLineUtility')->willReturn($rootLineUtility);
-        $instance->method('getRuntimeCache')->willReturn($runtimeCache);
+        $instance = $this->getMockBuilder(DummyPageService::class)
+            ->onlyMethods(['getRootLine'])
+            ->getMock();
+        $instance->setRuntimeCache($runtimeCache);
+        $instance->method('getRootLine')->willReturn($records);
         $result = $instance->getPageTemplateConfiguration(1);
         $this->assertEquals($expected, $result);
     }
@@ -54,21 +53,20 @@ class PageServiceTest extends AbstractTestCase
     {
         $m = 'tx_fed_page_controller_action';
         $s = 'tx_fed_page_controller_action_sub';
-        return array(
-            array(array(array()), null),
-            array(array(array($m => '', $s => '')), null),
-            array(array(array($m => 'test1->test1', $s => 'test2->test2')), array($m => 'test1->test1', $s => 'test2->test2')),
-            array(array(array($m => ''), array($s => 'test2->test2')), array($m => 'test2->test2', $s => 'test2->test2'))
-        );
+        return [
+            [[[]], null],
+            [[[$m => '', $s => '']], null],
+            [[[$m => 'test1->test1', $s => 'test2->test2']], [$m => 'test1->test1', $s => 'test2->test2']],
+            [[[$m => ''], [$s => 'test2->test2']], [$m => 'test2->test2', $s => 'test2->test2']]
+        ];
     }
 
     public function testGetPageFlexFormSource(): void
     {
-        $record1 = array('pid' => 2, 'uid' => 1);
-        $record2 = array('pid' => 0, 'uid' => 3, 'tx_fed_page_flexform' => 'test');
+        $record1 = ['pid' => 2, 'uid' => 1];
+        $record2 = ['pid' => 0, 'uid' => 3, 'tx_fed_page_flexform' => 'test'];
         $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
             ->onlyMethods(['getSingle'])
-            ->disableOriginalConstructor()
             ->getMock();
         $recordService->method('getSingle')->willReturnMap(
             [
@@ -89,21 +87,16 @@ class PageServiceTest extends AbstractTestCase
      */
     public function testGetAvailablePageTemplateFiles($typoScript, $expected): void
     {
-        $runtimeCache = new VariableFrontend(
-            'runtime',
-            $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass()
-        );
-
         $renderingContext = new RenderingContext();
 
         $templateView = $this->getMockBuilder(TemplateView::class)
-            ->setMethods(['getRenderingContext'])
+            ->onlyMethods(['getRenderingContext'])
             ->setConstructorArgs([$renderingContext])
             ->getMock();
         $templateView->method('getRenderingContext')->willReturn($renderingContext);
 
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)
-            ->setMethods(['getTemplateRootPaths', 'ensureAbsolutePath'])
+            ->onlyMethods(['getTemplateRootPaths', 'ensureAbsolutePath'])
             ->disableOriginalConstructor()
             ->getMock();
         $templatePaths->method('getTemplateRootPaths')->willReturn([__DIR__ . '/../../Fixtures/Templates']);
@@ -116,12 +109,9 @@ class PageServiceTest extends AbstractTestCase
         $fluxService->method('getPageConfiguration')->willReturn($typoScript);
 
         $instance = $this->getMockBuilder(DummyPageService::class)
-            ->setMethods(['getRuntimeCache', 'getLogger', 'createTemplatePaths'])
+            ->onlyMethods(['createTemplatePaths'])
             ->getMock();
-        $instance->method('getRuntimeCache')->willReturn($runtimeCache);
-        $instance->method('getLogger')->willReturn(
-            $this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass()
-        );
+        $instance->setLogger($this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass());
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
         $instance->setConfigurationService($fluxService);
 
@@ -137,21 +127,21 @@ class PageServiceTest extends AbstractTestCase
 
     public function getAvailablePageTemplateFilesTestValues(): array
     {
-        return array(
-            array(array(), null),
-            array(array('test' => array('enable' => false)), null),
-            array(
-                array('flux' => array('templateRootPaths' => array('Dummy'))),
-                array('flux' => array('Dummy'))
-            ),
-            array(
-                array('flux' => array('templateRootPaths' => array('Invalid'))),
-                array('flux' => null)
-            ),
-            array(
-                array('flux' => array('templateRootPaths' => array('Resources/Private/Templates/'))),
-                array('flux' => null)
-            ),
-        );
+        return [
+            [[], null],
+            [['test' => ['enable' => false]], null],
+            [
+                ['flux' => ['templateRootPaths' => ['Dummy']]],
+                ['flux' => ['Dummy']]
+            ],
+            [
+                ['flux' => ['templateRootPaths' => ['Invalid']]],
+                ['flux' => null]
+            ],
+            [
+                ['flux' => ['templateRootPaths' => ['Resources/Private/Templates/']]],
+                ['flux' => null]
+            ],
+        ];
     }
 }

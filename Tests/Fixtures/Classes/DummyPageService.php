@@ -5,6 +5,8 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use PHPUnit\Framework\MockObject\Generator;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class DummyPageService extends PageService
@@ -14,6 +16,7 @@ class DummyPageService extends PageService
         $this->configurationManager = $this->createMock(ConfigurationManagerInterface::class);
         $this->configurationService = new DummyFluxService();
         $this->workspacesAwareRecordService = $this->createMock(WorkspacesAwareRecordService::class);
+        $this->runtimeCache = $this->createMock(FrontendInterface::class);
     }
 
     public function setConfigurationManager(ConfigurationManagerInterface $configurationManager): void
@@ -29,6 +32,11 @@ class DummyPageService extends PageService
     public function setWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService): void
     {
         $this->workspacesAwareRecordService = $workspacesAwareRecordService;
+    }
+
+    public function setRuntimeCache(FrontendInterface $runtimeCache): void
+    {
+        $this->runtimeCache = $runtimeCache;
     }
 
     private function createMock(string $className): object
