@@ -31,6 +31,12 @@ class RenderingContextBuilderTest extends AbstractTestCase
 
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['expressionNodeTypes'] = [];
+        $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
+
+            ->setMethods(['getEnvironmentVariable'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $requestBuilder->method('getEnvironmentVariable')->willReturn('foobar');
 
         if (class_exists(ControllerContext::class)) {
             $renderingContext = $this->getMockBuilder(RenderingContext::class)
@@ -47,15 +53,10 @@ class RenderingContextBuilderTest extends AbstractTestCase
             $configurationManager = $this->getMockBuilder(ConfigurationManager::class)
                 ->disableOriginalConstructor()
                 ->getMock();
-            $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
-                ->setMethods(['getEnvironmentVariable'])
-                ->disableOriginalConstructor()
-                ->getMock();
-            $requestBuilder->method('getEnvironmentVariable')->willReturn('foobar');
+
 
             GeneralUtility::addInstance(UriBuilder::class, $uriBuilder);
             GeneralUtility::addInstance(ControllerContext::class, $controllerContext);
-            GeneralUtility::setSingletonInstance(RequestBuilder::class, $requestBuilder);
             GeneralUtility::setSingletonInstance(ConfigurationManager::class, $configurationManager);
         } else {
             $renderingContext = $this->getMockBuilder(RenderingContext::class)
@@ -69,7 +70,7 @@ class RenderingContextBuilderTest extends AbstractTestCase
 
         GeneralUtility::addInstance(RenderingContext::class, $renderingContext);
 
-        $subject = new RenderingContextBuilder(new ConfigurationContext());
+        $subject = new RenderingContextBuilder(new ConfigurationContext(), $requestBuilder);
         $output = $subject->buildRenderingContextFor(
             'FluidTYPO3.Flux',
             'Default',
