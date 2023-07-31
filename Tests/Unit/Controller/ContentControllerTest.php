@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Controller\ContentController;
 
 class ContentControllerTest extends AbstractFluxControllerTestCase
