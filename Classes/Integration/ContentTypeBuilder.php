@@ -55,6 +55,34 @@ class ContentTypeBuilder
         string $defaultControllerExtensionName = 'FluidTYPO3.Flux',
         ?string $controllerActionName = null
     ): ProviderInterface {
+        /** @var BasicProviderInterface $provider */
+        $provider = GeneralUtility::makeInstance($providerClassName);
+        if (!$provider instanceof BasicProviderInterface
+            || !$provider instanceof RecordProviderInterface
+            || !$provider instanceof ControllerProviderInterface
+            || !$provider instanceof FluidProviderInterface
+            || !$provider instanceof ContentTypeProviderInterface
+        ) {
+            throw new \RuntimeException(
+                sprintf(
+                    'The Flux Provider class "%s" must implement at least the following interfaces to work as '
+                    . 'content type Provider: %s',
+                    $providerClassName,
+                    implode(
+                        ',',
+                        [
+                            BasicProviderInterface::class,
+                            RecordProviderInterface::class,
+                            ControllerProviderInterface::class,
+                            FluidProviderInterface::class,
+                            ContentTypeProviderInterface::class
+                        ]
+                    )
+                ),
+                1690816678
+            );
+        }
+
         $section = 'Configuration';
         $controllerName = 'Content';
         $pluginName = null;
@@ -92,32 +120,6 @@ class ContentTypeBuilder
             $contentType
         );
 
-        /** @var BasicProviderInterface $provider */
-        $provider = GeneralUtility::makeInstance($providerClassName);
-        if (!$provider instanceof BasicProviderInterface
-            || !$provider instanceof RecordProviderInterface
-            || !$provider instanceof ControllerProviderInterface
-            || !$provider instanceof FluidProviderInterface
-            || !$provider instanceof ContentTypeProviderInterface
-        ) {
-            throw new \RuntimeException(
-                sprintf(
-                    'The Flux Provider class "%s" must implement at least the following interfaces to work as '
-                    . 'content type Provider: %s',
-                    $providerClassName,
-                    implode(
-                        ',',
-                        [
-                            BasicProviderInterface::class,
-                            RecordProviderInterface::class,
-                            ControllerProviderInterface::class,
-                            FluidProviderInterface::class,
-                            ContentTypeProviderInterface::class
-                        ]
-                    )
-                )
-            );
-        }
         $provider->setFieldName('pi_flexform');
         $provider->setTableName('tt_content');
         $provider->setExtensionKey($providerExtensionName);

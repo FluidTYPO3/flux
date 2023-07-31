@@ -90,4 +90,14 @@ class ContentTypeBuilderTest extends AbstractTestCase
         );
         $this->assertInstanceOf(Provider::class, $result);
     }
+
+    public function testThrowsExceptionOnInvalidProviderClass(): void
+    {
+        $this->expectExceptionCode(1690816678);
+        (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
+            'FluidTYPO3.Flux',
+            '/dev/null',
+            \DateTime::class,
+        );
+    }
 }
