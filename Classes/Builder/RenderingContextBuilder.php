@@ -61,9 +61,6 @@ class RenderingContextBuilder implements SingletonInterface
                     'Controller class ' . $request->getControllerObjectName() . ' caused error: ' . $error->getMessage()
                 );
             }
-            $controllerContext = clone $renderingContext->getControllerContext($request);
-            $controllerContext->setRequest($request);
-            $renderingContext->setControllerContext($controllerContext);
         } elseif (method_exists($renderingContext, 'setRequest')) {
             $renderingContext->setRequest($request);
         }
