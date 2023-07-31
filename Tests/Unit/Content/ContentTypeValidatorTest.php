@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDef
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -23,18 +24,13 @@ use TYPO3\CMS\Fluid\View\TemplateView;
 
 class ContentTypeValidatorTest extends AbstractTestCase
 {
-    protected ?PackageManager $packageManager;
-    protected ?ContentTypeManager $contentTypeManager;
-    protected ?TemplateValidationService $templateValidationService;
+    protected PackageManager $packageManager;
+    protected ContentTypeManager $contentTypeManager;
+    protected TemplateValidationService $templateValidationService;
+    protected ContentTypeValidator $subject;
 
     protected function setUp(): void
     {
-        $this->packageManager = $this->getMockBuilder(PackageManager::class)
-            ->setMethods(['isPackageActive'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->packageManager->method('isPackageActive')->willReturn(true);
-
         $contentTypeDefinition = $this->getMockBuilder(RecordBasedContentTypeDefinition::class)
             ->setMethods(
                 [
@@ -97,9 +93,18 @@ class ContentTypeValidatorTest extends AbstractTestCase
         if (class_exists(ControllerContext::class)) {
             GeneralUtility::addInstance(ControllerContext::class, new ControllerContext());
         }
-        GeneralUtility::addInstance(ViewBuilder::class, $viewBuilder);
 
-        AccessibleExtensionManagementUtility::setPackageManager($this->packageManager);
+        $this->subject = $this->getMockBuilder(ContentTypeValidator::class)
+            ->onlyMethods(['validateContextExtensionIsInstalled', 'resolveAbsolutePathForFilename', 'countUsages'])
+            ->setConstructorArgs(
+                [
+                    $viewBuilder,
+                    $this->contentTypeManager,
+                    $this->getMockBuilder(ConnectionPool::class)->disableOriginalConstructor()->getMock(),
+                    $this->templateValidationService
+                ]
+            )
+            ->getMock();
 
         parent::setUp();
     }
@@ -112,8 +117,8 @@ class ContentTypeValidatorTest extends AbstractTestCase
                 'content_type' => 'test_foobar',
             ],
         ];
-        $subject = new ContentTypeValidator();
-        $rendered = $subject->validateContentTypeRecord($parameters);
+
+        $rendered = $this->subject->validateContentTypeRecord($parameters);
         $expected = 'rendered';
         self::assertSame($expected, $rendered);
     }
@@ -126,8 +131,8 @@ class ContentTypeValidatorTest extends AbstractTestCase
                 'content_type' => 'test_foobar',
             ],
         ];
-        $subject = new ContentTypeValidator();
-        $rendered = $subject->validateContentTypeRecord($parameters);
+
+        $rendered = $this->subject->validateContentTypeRecord($parameters);
         $expected = 'rendered';
         self::assertSame($expected, $rendered);
     }
@@ -140,14 +145,11 @@ class ContentTypeValidatorTest extends AbstractTestCase
                 'content_type' => 'test_matched',
             ],
         ];
-        $subject = $this->getMockBuilder(ContentTypeValidator::class)
-            ->setMethods(['resolveAbsolutePathForFilename', 'countUsages'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
-        $subject->method('countUsages')->willReturn(5);
 
-        $rendered = $subject->validateContentTypeRecord($parameters);
+        $this->subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
+        $this->subject->method('countUsages')->willReturn(5);
+
+        $rendered = $this->subject->validateContentTypeRecord($parameters);
         $expected = 'rendered';
         self::assertSame($expected, $rendered);
     }
@@ -160,13 +162,11 @@ class ContentTypeValidatorTest extends AbstractTestCase
                 'content_type' => 'test_notrecordbased',
             ],
         ];
-        $subject = $this->getMockBuilder(ContentTypeValidator::class)
-            ->setMethods(['resolveAbsolutePathForFilename', 'countUsages'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
-        $subject->method('countUsages')->willReturn(5);
-        $rendered = $subject->validateContentTypeRecord($parameters);
+
+        $this->subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
+        $this->subject->method('countUsages')->willReturn(5);
+
+        $rendered = $this->subject->validateContentTypeRecord($parameters);
         $expected = 'rendered';
         self::assertSame($expected, $rendered);
     }
@@ -179,13 +179,11 @@ class ContentTypeValidatorTest extends AbstractTestCase
                 'content_type' => 'test_error',
             ],
         ];
-        $subject = $this->getMockBuilder(ContentTypeValidator::class)
-            ->setMethods(['resolveAbsolutePathForFilename', 'countUsages'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
-        $subject->method('countUsages')->willReturn(5);
-        $rendered = $subject->validateContentTypeRecord($parameters);
+
+        $this->subject->method('resolveAbsolutePathForFilename')->willReturn(__DIR__ . '/../../../ext_tables.sql');
+        $this->subject->method('countUsages')->willReturn(5);
+
+        $rendered = $this->subject->validateContentTypeRecord($parameters);
         $errorMessage = 'Fluid parse error in template , line 1 at character 1. Error: The ViewHelper "<f:invalid>" '
             . 'could not be resolved.'
             . PHP_EOL

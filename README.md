@@ -256,3 +256,5 @@ Caveats
   config of your extension. And 2) if the Provider needs to be used for more than one specific page/content/record type,
   make sure you also declare the Provider as `shared: false`. You can find an example of such configuration in the
   `Configuration/Services.yaml` file in Flux.
+* When working with custom Controller classes, make sure you declare each Controller class as `public: true` in Service
+  config of your extension.

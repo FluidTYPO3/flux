@@ -32,11 +32,26 @@ use TYPO3Fluid\Fluid\Core\Parser\Source;
  */
 class ContentTypeValidator
 {
+    private ViewBuilder $viewBuilder;
+    private ContentTypeManager $contentTypeManager;
+    private ConnectionPool $connectionPool;
+    private TemplateValidationService $templateValidationService;
+
+    public function __construct(
+        ViewBuilder $viewBuilder,
+        ContentTypeManager $contentTypeManager,
+        ConnectionPool $connectionPool,
+        TemplateValidationService $templateValidationService
+    ) {
+        $this->viewBuilder = $viewBuilder;
+        $this->contentTypeManager = $contentTypeManager;
+        $this->connectionPool = $connectionPool;
+        $this->templateValidationService = $templateValidationService;
+    }
+
     public function validateContentTypeRecord(array $parameters): string
     {
-        /** @var ViewBuilder $viewBuilder */
-        $viewBuilder = GeneralUtility::makeInstance(ViewBuilder::class);
-        $view = $viewBuilder->buildTemplateView('FluidTYPO3.Flux', 'Content', 'validation');
+        $view = $this->viewBuilder->buildTemplateView('FluidTYPO3.Flux', 'Content', 'validation');
 
         $record = $parameters['row'];
         $recordIsNew = strncmp((string)$record['uid'], 'NEW', 3) === 0;
@@ -47,9 +62,7 @@ class ContentTypeValidator
             return $view->render();
         }
 
-        /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
-        $contentType = $contentTypeManager->determineContentTypeForTypeString($record['content_type']);
+        $contentType = $this->contentTypeManager->determineContentTypeForTypeString($record['content_type']);
         if (!$contentType) {
             $view->assign('recordIsNew', true);
             return $view->render();
@@ -69,7 +82,7 @@ class ContentTypeValidator
             'validation' => [
                 'extensionInstalled' => $this->validateContextExtensionIsInstalled($contentType),
                 'extensionMatched' => $this->validateContextMatchesSignature($contentType),
-                'templateSource' => $this->getTemplateValidationService()->validateContentDefinition($contentType),
+                'templateSource' => $this->templateValidationService->validateContentDefinition($contentType),
                 'templateFile' => $usesTemplateFile,
                 'icon' => !empty($record['icon'])
                     && file_exists($this->resolveAbsolutePathForFilename($record['icon'])),
@@ -89,6 +102,9 @@ class ContentTypeValidator
         ) === reset($parts);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function validateContextExtensionIsInstalled(ContentTypeDefinitionInterface $definition): bool
     {
         return ExtensionManagementUtility::isLoaded(
@@ -101,9 +117,7 @@ class ContentTypeValidator
      */
     protected function countUsages(ContentTypeDefinitionInterface $definition): int
     {
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
         $queryBuilder->select('uid')
             ->from('tt_content')
             ->where(
@@ -121,15 +135,5 @@ class ContentTypeValidator
     protected function resolveAbsolutePathForFilename(string $filename): string
     {
         return GeneralUtility::getFileAbsFileName($filename);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getTemplateValidationService(): TemplateValidationService
-    {
-        /** @var TemplateValidationService $templateValidationService */
-        $templateValidationService = GeneralUtility::makeInstance(TemplateValidationService::class);
-        return $templateValidationService;
     }
 }

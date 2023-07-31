@@ -11,25 +11,35 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content;
 use Doctrine\DBAL\DBALException;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyContentTypeManager;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 
 class ContentTypeManagerTest extends AbstractTestCase
 {
-    public function testFetchContentTypes(): void
+    private ContentTypeManager $subject;
+
+    protected function setUp(): void
     {
-        $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(
+        parent::setUp();
+
+        $this->subject = $this->getMockBuilder(ContentTypeManager::class)
+            ->onlyMethods(
                 [
                     'fetchDropInContentTypes',
                     'fetchFileBasedContentTypes',
                     'fetchRecordBasedContentTypes',
+                    'getCache',
                 ]
             )
             ->disableOriginalConstructor()
             ->getMock();
-        self::assertSame([], $subject->fetchContentTypes());
+    }
+
+    public function testFetchContentTypes(): void
+    {
+        self::assertSame([], $this->subject->fetchContentTypes());
     }
 
     public function testFetchContentTypesSuppressesSpecificExceptionTypes(): void
@@ -40,41 +50,24 @@ class ContentTypeManagerTest extends AbstractTestCase
             $exception = new \Doctrine\DBAL\Driver\PDO\Exception('some error');
         }
 
-        $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(
-                [
-                    'fetchDropInContentTypes',
-                    'fetchFileBasedContentTypes',
-                    'fetchRecordBasedContentTypes',
-                ]
-            )
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('fetchDropInContentTypes')->willThrowException($exception);
-        $subject->method('fetchFileBasedContentTypes')->willThrowException(new NoSuchCacheException('some error'));
-        self::assertSame([], $subject->fetchContentTypes());
+        $this->subject->method('fetchDropInContentTypes')->willThrowException($exception);
+        $this->subject->method('fetchFileBasedContentTypes')->willThrowException(new NoSuchCacheException('some error'));
+        self::assertSame([], $this->subject->fetchContentTypes());
     }
 
     public function testFetchContentTypesDoesNotSuppressOtherExceptionTypes(): void
     {
-        $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(
-                [
-                    'fetchDropInContentTypes',
-                ]
-            )
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('fetchDropInContentTypes')->willThrowException(new \RuntimeException('some error'));
+        $cache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
+        $this->subject->method('getCache')->willReturn($cache);
+        $this->subject->method('fetchDropInContentTypes')->willThrowException(new \RuntimeException('some error'));
         self::expectException(\RuntimeException::class);
-        $subject->fetchContentTypes();
+        $this->subject->fetchContentTypes();
     }
 
     public function testRegisterContentTypeNameIncludesTypeName(): void
     {
-        $subject = new ContentTypeManager();
-        $subject->registerTypeName('test_foobar');
-        self::assertContains('test_foobar', $subject->fetchContentTypeNames());
+        $this->subject->registerTypeName('test_foobar');
+        self::assertContains('test_foobar', $this->subject->fetchContentTypeNames());
     }
 
     public function testRegisterContentTypeDefinitionIncludesDefinition(): void
@@ -99,7 +92,7 @@ class ContentTypeManagerTest extends AbstractTestCase
             $field => $expectedValue,
         ];
         $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['determineContentTypeForTypeString'])
+            ->onlyMethods(['determineContentTypeForTypeString'])
             ->disableOriginalConstructor()
             ->getMock();
         $subject->expects(self::once())
@@ -124,39 +117,11 @@ class ContentTypeManagerTest extends AbstractTestCase
         $cache->expects(self::once())->method('set')->with(ContentTypeManager::CACHE_IDENTIFIER, []);
 
         $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['fetchContentTypes', 'getCache'])
+            ->onlyMethods(['fetchContentTypes', 'getCache'])
             ->disableOriginalConstructor()
             ->getMock();
+        $subject->method('getCache')->willReturn($cache);
         $subject->method('fetchContentTypes')->willReturn([]);
-        $subject->method('getCache')->willReturn($cache);
         $subject->regenerate();
-    }
-
-    public function testDetermineContentTypeLoadsTypeFromCache(): void
-    {
-        $definition = $this->getMockBuilder(ContentTypeDefinitionInterface::class)->getMockForAbstractClass();
-        $definition->method('getContentTypeName')->willReturn('test_foobar');
-
-        $cache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-        $cache->method('get')->willReturn($definition);
-
-        $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['getCache'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('getCache')->willReturn($cache);
-
-        self::assertSame($definition, $subject->determineContentTypeForTypeString('test_foobar'));
-    }
-
-    public function testDetermineContentTypeReturnsNullOnCacheError(): void
-    {
-        $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['getCache'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('getCache')->willThrowException(new NoSuchCacheException('some error'));
-
-        self::assertSame(null, $subject->determineContentTypeForTypeString('test_foobar'));
     }
 }

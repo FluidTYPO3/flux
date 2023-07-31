@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\NormalizedData;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
@@ -20,6 +21,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
+use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -27,6 +29,21 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class DataAccessTraitTest extends AbstractTestCase
 {
+    /**
+     * @var FluxService&MockObject
+     */
+    protected FluxService $fluxService;
+
+    /**
+     * @var RenderingContextBuilder&MockObject
+     */
+    protected RenderingContextBuilder $renderingContextBuilder;
+
+    /**
+     * @var RequestBuilder&MockObject
+     */
+    protected RequestBuilder $requestBuilder;
+
     protected function setUp(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE] = 1;
@@ -41,15 +58,16 @@ class DataAccessTraitTest extends AbstractTestCase
         $providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
         $this->singletonInstances[ProviderResolver::class] = $providerResolver;
-        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
+        $this->renderingContextBuilder = $this->getMockBuilder(RenderingContextBuilder::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->requestBuilder = $this->getMockBuilder(RequestBuilder::class)
             ->setMethods(['getEnvironmentVariable'])
             ->getMock();
-        $requestBuilder->method('getEnvironmentVariable')->willReturn('env');
-
-        GeneralUtility::addInstance(RequestBuilder::class, $requestBuilder);
+        $this->requestBuilder->method('getEnvironmentVariable')->willReturn('env');
 
         $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequest::class)->getMockForAbstractClass();
 
@@ -61,6 +79,15 @@ class DataAccessTraitTest extends AbstractTestCase
         unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']);
     }
 
+    protected function getControllerConstructorArguments(): array
+    {
+        return [
+            $this->fluxService,
+            $this->renderingContextBuilder,
+            $this->requestBuilder
+        ];
+    }
+
     public function testTraitThrowsUnexpectedValueExceptionOnMissingRecord(): void
     {
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
@@ -68,7 +95,7 @@ class DataAccessTraitTest extends AbstractTestCase
         $configurationManager->method('getConfiguration')->willReturn(['foo' => 'bar']);
         $configurationManager->method('getContentObject')->willReturn(null);
 
-        $subject = new DummyPageController();
+        $subject = new DummyPageController(...$this->getControllerConstructorArguments());
 
         self::expectExceptionCode(1666538343);
         $subject->injectConfigurationManager($configurationManager);
@@ -104,7 +131,7 @@ class DataAccessTraitTest extends AbstractTestCase
             ->method('transformAccordingToConfiguration')
             ->willReturnArgument(0);
 
-        $subject = new DummyPageController();
+        $subject = new DummyPageController(...$this->getControllerConstructorArguments());
 
         GeneralUtility::addInstance(FormDataTransformer::class, $formDataTransformer);
         GeneralUtility::addInstance(FlexFormImplementation::class, $flexFormImplementation);

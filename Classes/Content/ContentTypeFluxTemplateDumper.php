@@ -2,11 +2,9 @@
 declare(strict_types=1);
 namespace FluidTYPO3\Flux\Content;
 
-use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
 
@@ -18,6 +16,20 @@ use TYPO3Fluid\Fluid\Core\Parser\Source;
  */
 class ContentTypeFluxTemplateDumper
 {
+    private FormToFluidTemplateConverter $converter;
+    private ContentTypeManager $contentTypeManager;
+    private TemplateValidationService $validationService;
+
+    public function __construct(
+        FormToFluidTemplateConverter $converter,
+        ContentTypeManager $contentTypeManager,
+        TemplateValidationService $validationService
+    ) {
+        $this->converter = $converter;
+        $this->contentTypeManager = $contentTypeManager;
+        $this->validationService = $validationService;
+    }
+
     public function dumpFluxTemplate(array $parameters): string
     {
         $record = $parameters['row'];
@@ -26,8 +38,8 @@ class ContentTypeFluxTemplateDumper
             return '';
         }
 
-        /** @var RecordBasedContentTypeDefinition|null $definition */
-        $definition = $this->getContentType($parameters['row']['content_type']);
+        /** @var RecordBasedContentTypeDefinition $definition */
+        $definition = $this->contentTypeManager->determineContentTypeForTypeString($parameters['row']['content_type']);
         if (!$definition) {
             return '';
         }
@@ -36,11 +48,10 @@ class ContentTypeFluxTemplateDumper
         $options = [
             FormToFluidTemplateConverter::OPTION_TEMPLATE_SOURCE => $definition->getTemplateSource()
         ];
-        /** @var FormToFluidTemplateConverter $dumper */
-        $dumper = GeneralUtility::makeInstance(FormToFluidTemplateConverter::class);
-        $dump = $dumper->convertFormAndGrid($form, $grid, $options);
 
-        $error = $this->getTemplateValidationService()->validateTemplateSource($dump);
+        $dump = $this->converter->convertFormAndGrid($form, $grid, $options);
+
+        $error = $this->validationService->validateTemplateSource($dump);
         if ($error === null) {
             $validation = '<p class="text-success">Template parses OK, it is safe to copy</p>';
         } else {
@@ -49,19 +60,5 @@ class ContentTypeFluxTemplateDumper
 
         $content = $validation . '<pre>' . htmlspecialchars($dump) . '</pre>';
         return $content;
-    }
-
-    protected function getContentType(string $contentTypeName): ?ContentTypeDefinitionInterface
-    {
-        /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
-        return $contentTypeManager->determineContentTypeForTypeString($contentTypeName);
-    }
-
-    public function getTemplateValidationService(): TemplateValidationService
-    {
-        /** @var TemplateValidationService $templateValidationService */
-        $templateValidationService = GeneralUtility::makeInstance(TemplateValidationService::class);
-        return $templateValidationService;
     }
 }

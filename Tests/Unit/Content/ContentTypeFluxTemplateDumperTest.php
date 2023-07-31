@@ -12,7 +12,9 @@ use FluidTYPO3\Flux\Content\ContentTypeFluxTemplateDumper;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
+use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyContentTypeManager;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\TemplateView;
@@ -25,9 +27,11 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
 {
     protected ?array $record = null;
-    protected ?ContentTypeDefinitionInterface $contentTypeDefinition = null;
-    protected ?ContentTypeManager $contentTypeManager = null;
-    protected ?TemplateView $templateView;
+    protected ContentTypeDefinitionInterface $contentTypeDefinition;
+    protected ContentTypeManager $contentTypeManager;
+    protected TemplateValidationService $validationService;
+    protected TemplateView $templateView;
+    protected ContentTypeFluxTemplateDumper $subject;
 
     protected function setUp(): void
     {
@@ -42,7 +46,7 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
             'sorting' => 123,
         ];
         $this->contentTypeDefinition = $this->getMockBuilder(RecordBasedContentTypeDefinition::class)
-            ->setMethods(['getContentConfiguration', 'getGridConfiguration', 'getTemplateSource'])
+            ->onlyMethods(['getContentConfiguration', 'getGridConfiguration', 'getTemplateSource'])
             ->setConstructorArgs([$this->record])
             ->getMock();
         $this->contentTypeDefinition->method('getContentConfiguration')->willReturn([]);
@@ -50,10 +54,15 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
 
         $this->contentTypeManager->registerTypeDefinition($this->contentTypeDefinition);
 
+        $this->validationService = $this->getMockBuilder(TemplateValidationService::class)
+            ->onlyMethods(['validateTemplateSource'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $templateParser = new TemplateParser();
 
         $renderingContext = $this->getMockBuilder(RenderingContext::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getViewHelperVariableContainer',
                     'getViewHelperResolver',
@@ -75,28 +84,23 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
             ->getViewHelperResolver()
             ->addNamespace('flux', 'FluidTYPO3\\Flux\\ViewHelpers');
 
-
-        $this->singletonInstances[ContentTypeManager::class] = $this->contentTypeManager;
+        $this->subject = new ContentTypeFluxTemplateDumper(
+            new FormToFluidTemplateConverter(),
+            $this->contentTypeManager,
+            $this->validationService
+        );
 
         parent::setUp();
     }
 
     public function testDumpTemplateFromRecordReturnsEmptyStringOnMissingContentTypeDefinition(): void
     {
-        $subject = $this->getMockBuilder(ContentTypeFluxTemplateDumper::class)
-            ->setMethods(['getContentType'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('getContentType')->willReturn(null);
-
-        self::assertSame('', $subject->dumpFluxTemplate(['row' => ['uid' => 123, 'content_type' => '']]));
+        self::assertSame('', $this->subject->dumpFluxTemplate(['row' => ['uid' => 123, 'content_type' => '']]));
     }
 
     public function testDumpTemplateFromRecordReturnsEmptyStringOnNewRecord(): void
     {
-        $subject = new ContentTypeFluxTemplateDumper();
-
-        self::assertSame('', $subject->dumpFluxTemplate(['row' => ['uid' => 'NEW123']]));
+        self::assertSame('', $this->subject->dumpFluxTemplate(['row' => ['uid' => 'NEW123']]));
     }
 
     public function testDumpTemplateFromRecordBasedContentTypeDefinition(): void
@@ -109,9 +113,7 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
             'row' => $this->record,
         ];
 
-        $subject = new ContentTypeFluxTemplateDumper();
-
-        $output = $subject->dumpFluxTemplate($parameters);
+        $output = $this->subject->dumpFluxTemplate($parameters);
         $expected = <<< SOURCE
 <p class="text-success">Template parses OK, it is safe to copy</p><pre>&lt;f:layout /&gt;
 &lt;f:section name=&quot;Configuration&quot;&gt;
@@ -136,24 +138,13 @@ SOURCE;
     public function testDumpTemplateRendersErrorIfTemplateParsingCausesError(): void
     {
         $this->contentTypeDefinition->method('getTemplateSource')->willReturn('<f:invalid');
+        $this->validationService->method('validateTemplateSource')->willReturn('test error');
 
         $parameters = [
             'row' => $this->record,
         ];
 
-        $validationService = $this->getMockBuilder(TemplateValidationService::class)
-            ->setMethods(['validateTemplateSource'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $validationService->method('validateTemplateSource')->willReturn('test error');
-
-        $subject = $this->getMockBuilder(ContentTypeFluxTemplateDumper::class)
-            ->setMethods(['getTemplateValidationService'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('getTemplateValidationService')->willReturn($validationService);
-
-        $output = $subject->dumpFluxTemplate($parameters);
+        $output = $this->subject->dumpFluxTemplate($parameters);
         $expected = <<< SOURCE
 <p class="text-danger">test error</p><pre>&lt;f:layout /&gt;
 &lt;f:section name=&quot;Configuration&quot;&gt;

@@ -7,10 +7,21 @@ services:
   FluidTYPO3\Flux\:
     resource: '../Classes/*'
 
+  TYPO3\CMS\Backend\View\BackendViewFactory:
+    public: true
+
   FluidTYPO3\Flux\Integration\BackendLayoutRenderer:
     public: true
     autowire: false
-  TYPO3\CMS\Backend\View\BackendViewFactory:
+  FluidTYPO3\Flux\Content\ContentTypeManager:
+    public: true
+  FluidTYPO3\Flux\Content\ContentTypeValidator:
+    public: true
+  FluidTYPO3\Flux\Content\ContentTypeFluxTemplateDumper:
+    public: true
+  FluidTYPO3\Flux\Controller\ContentController:
+    public: true
+  FluidTYPO3\Flux\Controller\PageController:
     public: true
   FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator:
     public: true

@@ -8,11 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyContentTypeManager;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
@@ -21,6 +23,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class CoreTest extends AbstractTestCase
 {
     protected $objectManager;
+    private array $singletons;
 
     protected function setUp(): void
     {
@@ -31,6 +34,15 @@ class CoreTest extends AbstractTestCase
             $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
         );
         AccessibleCore::resetQueuedRegistrations();
+
+        $this->singletons = GeneralUtility::getSingletonInstances();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        GeneralUtility::resetSingletonInstances($this->singletons);
     }
 
     /**
@@ -66,6 +78,10 @@ class CoreTest extends AbstractTestCase
     {
         $fakeExtensionKey = 'flux';
         $fakeControllerName = 'Flux';
+        $contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::setSingletonInstance(ContentTypeManager::class, $contentTypeManager);
         AccessibleCore::registerProviderExtensionKey($fakeExtensionKey, $fakeControllerName);
         $registered = AccessibleCore::getRegisteredProviderExtensionKeys($fakeControllerName);
         $this->assertContains($fakeExtensionKey, $registered);
@@ -94,6 +110,10 @@ class CoreTest extends AbstractTestCase
             ]
         );
 
+        $contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::setSingletonInstance(ContentTypeManager::class, $contentTypeManager);
         AccessibleExtensionManagementUtility::setPackageManager($packageManager);
 
         $fakeExtensionKey = 'flux';

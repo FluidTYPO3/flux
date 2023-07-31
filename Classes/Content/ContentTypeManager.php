@@ -30,9 +30,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ContentTypeManager implements SingletonInterface
 {
-    const CACHE_IDENTIFIER_PREFIX = 'flux_content_types_';
     const CACHE_IDENTIFIER = 'flux_content_types';
-    const CACHE_TAG = 'content_types';
 
     /**
      * @var ContentTypeDefinitionInterface[]|null[]
@@ -52,11 +50,18 @@ class ContentTypeManager implements SingletonInterface
         static $types = [];
         if (empty($types)) {
             try {
-                $types = array_replace(
-                    $this->fetchDropInContentTypes(),
-                    $this->fetchFileBasedContentTypes(),
-                    $this->fetchRecordBasedContentTypes()
-                );
+                $cache = $this->getCache();
+                $fromCache = $cache->get(self::CACHE_IDENTIFIER);
+                if ($fromCache) {
+                    /** @var array $types */
+                    $types = $fromCache;
+                } else {
+                    $types = array_replace(
+                        $this->fetchDropInContentTypes(),
+                        $this->fetchFileBasedContentTypes(),
+                        $this->fetchRecordBasedContentTypes()
+                    );
+                }
                 $this->typeNames = array_merge($this->typeNames, array_keys($types));
             } catch (DBALException $error) {
                 // Suppress schema- or connection-related issues
@@ -98,18 +103,13 @@ class ContentTypeManager implements SingletonInterface
     public function regenerate(): void
     {
         $cache = $this->getCache();
+        $cache->remove(self::CACHE_IDENTIFIER);
         $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());
     }
 
     protected function loadSingleDefinitionFromCache(string $name): ?ContentTypeDefinitionInterface
     {
-        try {
-            /** @var ContentTypeDefinitionInterface|null $fromCache */
-            $fromCache = $this->getCache()->get(static::CACHE_IDENTIFIER_PREFIX . $name) ?: null;
-            return $fromCache;
-        } catch (NoSuchCacheException $error) {
-            return null;
-        }
+        return $this->fetchContentTypes()[$name] ?? null;
     }
 
     /**

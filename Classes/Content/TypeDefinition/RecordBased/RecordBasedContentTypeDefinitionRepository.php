@@ -12,10 +12,8 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class RecordBasedContentTypeDefinitionRepository implements SingletonInterface
 {

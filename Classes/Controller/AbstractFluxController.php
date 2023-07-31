@@ -53,21 +53,23 @@ abstract class AbstractFluxController extends ActionController
     protected ?string $fluxTableName = 'tt_content';
     protected array $data = [];
 
+    protected RenderingContextBuilder $renderingContextBuilder;
+    protected RequestBuilder $requestBuilder;
     protected FluxService $configurationService;
     protected ?ControllerProviderInterface $provider = null;
 
-    public function __construct()
-    {
-        /** @var FluxService $configurationService */
-        $configurationService = GeneralUtility::makeInstance(FluxService::class);
-        $this->configurationService = $configurationService;
+    public function __construct(
+        FluxService $fluxService,
+        RenderingContextBuilder $renderingContextBuilder,
+        RequestBuilder $requestBuilder
+    ) {
+        $this->configurationService = $fluxService;
+        $this->renderingContextBuilder = $renderingContextBuilder;
+        $this->requestBuilder = $requestBuilder;
 
         /** @var Arguments $arguments */
         $arguments = GeneralUtility::makeInstance(Arguments::class);
         $this->arguments = $arguments;
-
-        /** @var RequestBuilder $requestBuilder */
-        $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
 
         /** @var Request $request */
         $request = $requestBuilder->buildRequestFor(
@@ -229,13 +231,10 @@ abstract class AbstractFluxController extends ActionController
         /** @var TemplatePaths $templatePaths */
         $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $extensionKey);
 
-        /** @var RenderingContextBuilder $renderingContextBuilder */
-        $renderingContextBuilder = GeneralUtility::makeInstance(RenderingContextBuilder::class);
-
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $view->getRenderingContext();
 
-        $renderingContext = $renderingContextBuilder->buildRenderingContextFor(
+        $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionName,
             $this->configurationService->getResolver()->resolveControllerNameFromControllerClassName(get_class($this)),
             $controllerActionName
