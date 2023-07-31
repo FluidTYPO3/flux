@@ -30,7 +30,9 @@ class TemplateValidationService implements SingletonInterface
     {
         /** @var TemplateView $templateView */
         $templateView = GeneralUtility::makeInstance(TemplateView::class);
-        $parser = $templateView->getRenderingContext()->getTemplateParser();
+        $renderingContext = $templateView->getRenderingContext();
+        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName('flux');
+        $parser = $renderingContext->getTemplateParser();
         try {
             $parser->parse(class_exists(Sequencer::class) ? new Source($source) : $source);
         } catch (\Exception $error) {
