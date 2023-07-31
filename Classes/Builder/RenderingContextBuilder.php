@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Builder;
 
 use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -26,13 +27,18 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\TemplatePaths;
 
-class RenderingContextBuilder
+class RenderingContextBuilder implements SingletonInterface
 {
     private ConfigurationContext $context;
+    private RequestBuilder $requestBuilder;
 
-    public function __construct(ConfigurationContext $context)
+    /** @var array<string, RenderingContextInterface> */
+    private array $templates = [];
+
+    public function __construct(ConfigurationContext $context, RequestBuilder $requestBuilder)
     {
         $this->context = $context;
+        $this->requestBuilder = $requestBuilder;
     }
 
     public function buildRenderingContextFor(
@@ -41,19 +47,35 @@ class RenderingContextBuilder
         string $controllerActionName,
         ?string $templatePathAndFilename = null
     ): RenderingContextInterface {
+        $renderingContext = clone $this->retrieveOrCreateTemplateRenderingContext($extensionIdentity, $controllerName);
+
+        if (method_exists($renderingContext, 'setControllerAction')) {
+            $renderingContext->setControllerAction($controllerActionName);
+        }
+
+        if ($templatePathAndFilename) {
+            $templatePaths = clone $renderingContext->getTemplatePaths();
+            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
+            $renderingContext->setTemplatePaths($templatePaths);
+        }
+        return $renderingContext;
+    }
+
+    private function retrieveOrCreateTemplateRenderingContext(
+        string $extensionIdentity,
+        string $controllerName
+    ): RenderingContextInterface {
+        $identifier = $extensionIdentity . '__' . $controllerName;
+        if (isset($this->templates[$identifier])) {
+            return $this->templates[$identifier];
+        }
+
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionIdentity);
 
         $renderingContext = $this->createRenderingContextInstance();
 
-        /** @var RequestBuilder $requestBuilder */
-        $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
         /** @var RequestInterface&Request $request */
-        $request = $requestBuilder->buildRequestFor(
-            $extensionIdentity,
-            $controllerName,
-            'void',
-            'void'
-        );
+        $request = $this->requestBuilder->buildRequestFor($extensionIdentity, $controllerName, 'void', 'void');
 
         if (method_exists($renderingContext, 'setControllerContext')) {
             /** @var ControllerContext $controllerContext */
@@ -80,20 +102,17 @@ class RenderingContextBuilder
             ];
             /** @var TemplatePaths $templatePaths */
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $paths);
-            $templatePaths->fillDefaultsByPackageName($extensionKey);
-            $renderingContext->setTemplatePaths($templatePaths);
         }
 
+        $templatePaths->fillDefaultsByPackageName($extensionKey);
+        $renderingContext->setTemplatePaths($templatePaths);
 
-        if ($templatePathAndFilename) {
-            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
-        }
         if (method_exists($renderingContext, 'setControllerName')) {
             $renderingContext->setControllerName($controllerName);
         }
-        if (method_exists($renderingContext, 'setControllerAction')) {
-            $renderingContext->setControllerAction($controllerActionName);
-        }
+
+        $this->templates[$identifier] = $renderingContext;
+
         return $renderingContext;
     }
 
