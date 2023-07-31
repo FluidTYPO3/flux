@@ -55,7 +55,7 @@ class RenderingContextBuilderTest extends AbstractTestCase
 
             GeneralUtility::addInstance(UriBuilder::class, $uriBuilder);
             GeneralUtility::addInstance(ControllerContext::class, $controllerContext);
-            GeneralUtility::addInstance(RequestBuilder::class, $requestBuilder);
+            GeneralUtility::setSingletonInstance(RequestBuilder::class, $requestBuilder);
             GeneralUtility::setSingletonInstance(ConfigurationManager::class, $configurationManager);
         } else {
             $renderingContext = $this->getMockBuilder(RenderingContext::class)

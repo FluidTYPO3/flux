@@ -445,9 +445,7 @@ abstract class AbstractFluxController extends ActionController
         string $pluginSignature
     ): string {
         $arguments = $this->getServerRequest()->getQueryParams()[$pluginSignature] ?? [];
-        /** @var RequestBuilder $requestBuilder */
-        $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
-        $request = $requestBuilder->buildRequestFor(
+        $request = $this->requestBuilder->buildRequestFor(
             $extensionName,
             $this->configurationService->getResolver()->resolveControllerNameFromControllerClassName(
                 $controllerClassName
