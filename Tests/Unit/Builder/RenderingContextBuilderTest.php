@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Builder;
 
 use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
-use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -70,7 +69,7 @@ class RenderingContextBuilderTest extends AbstractTestCase
 
         GeneralUtility::addInstance(RenderingContext::class, $renderingContext);
 
-        $subject = new RenderingContextBuilder(new ConfigurationContext(), $requestBuilder);
+        $subject = new RenderingContextBuilder($requestBuilder);
         $output = $subject->buildRenderingContextFor(
             'FluidTYPO3.Flux',
             'Default',
