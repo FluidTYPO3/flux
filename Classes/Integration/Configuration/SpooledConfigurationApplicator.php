@@ -25,27 +25,31 @@ use TYPO3Fluid\Fluid\Exception;
 class SpooledConfigurationApplicator
 {
     private ConfigurationContext $context;
+    private ContentTypeBuilder $contentTypeBuilder;
+    private ContentTypeManager $contentTypeManager;
+    private RequestBuilder $requestBuilder;
 
-    public function __construct(ConfigurationContext $context)
-    {
+    public function __construct(
+        ConfigurationContext $context,
+        ContentTypeBuilder $contentTypeBuilder,
+        ContentTypeManager $contentTypeManager,
+        RequestBuilder $requestBuilder
+    ) {
         $this->context = $context;
+        $this->contentTypeBuilder = $contentTypeBuilder;
+        $this->contentTypeManager = $contentTypeManager;
+        $this->requestBuilder = $requestBuilder;
     }
-
-    protected static ?ContentTypeBuilder $contentTypeBuilder = null;
 
     public function processData(): void
     {
         $this->context->setBootMode(true);
 
         // Initialize the TCA needed by "template as CType" integrations
-        static::spoolQueuedContentTypeTableConfigurations(
-            Core::getQueuedContentTypeRegistrations()
-        );
+        $this->spoolQueuedContentTypeTableConfigurations(Core::getQueuedContentTypeRegistrations());
 
-        $contentTypeManager = $this->getContentTypeManager();
-
-        foreach ($contentTypeManager->fetchContentTypes() as $contentType) {
-            $contentTypeManager->registerTypeDefinition($contentType);
+        foreach ($this->contentTypeManager->fetchContentTypes() as $contentType) {
+            $this->contentTypeManager->registerTypeDefinition($contentType);
             Core::registerTemplateAsContentType(
                 $contentType->getExtensionIdentity(),
                 $contentType->getTemplatePathAndFilename(),
@@ -60,17 +64,16 @@ class SpooledConfigurationApplicator
         $this->context->setBootMode(false);
     }
 
-    public static function spoolQueuedContentTypeTableConfigurations(array $queue): void
+    private function spoolQueuedContentTypeTableConfigurations(array $queue): void
     {
-        $contentTypeBuilder = static::getContentTypeBuilder();
         foreach ($queue as $queuedRegistration) {
             [$extensionName, $templatePathAndFilename, , $contentType] = $queuedRegistration;
-            $contentType = $contentType ?: static::determineContentType($extensionName, $templatePathAndFilename);
-            $contentTypeBuilder->addBoilerplateTableConfiguration($contentType);
+            $contentType = $contentType ?: $this->determineContentType($extensionName, $templatePathAndFilename);
+            $this->contentTypeBuilder->addBoilerplateTableConfiguration($contentType);
         }
     }
 
-    protected static function determineContentType(
+    private function determineContentType(
         string $providerExtensionName,
         string $templatePathAndFilename
     ): string {
@@ -85,7 +88,6 @@ class SpooledConfigurationApplicator
     protected function spoolQueuedContentTypeRegistrations(array $queue): void
     {
         $applicationContext = $this->getApplicationContext();
-        $contentTypeBuilder = static::getContentTypeBuilder();
         $providers = [];
         foreach ($queue as $queuedRegistration) {
             /** @var ProviderInterface $provider */
@@ -98,9 +100,9 @@ class SpooledConfigurationApplicator
                 $controllerActionName
             ] = $queuedRegistration;
             try {
-                $contentType = $contentType ?: static::determineContentType($providerExtensionName, $templateFilename);
+                $contentType = $contentType ?: $this->determineContentType($providerExtensionName, $templateFilename);
                 $defaultControllerExtensionName = 'FluidTYPO3.Flux';
-                $provider = $contentTypeBuilder->configureContentTypeFromTemplateFile(
+                $provider = $this->contentTypeBuilder->configureContentTypeFromTemplateFile(
                     $providerExtensionName,
                     $templateFilename,
                     $providerClassName ?? Provider::class,
@@ -126,9 +128,7 @@ class SpooledConfigurationApplicator
         $backup = $GLOBALS['TYPO3_REQUEST'] ?? null;
 
         if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.3', '<')) {
-            /** @var RequestBuilder $requestBuilder */
-            $requestBuilder = GeneralUtility::makeInstance(RequestBuilder::class);
-            $GLOBALS['TYPO3_REQUEST'] = $requestBuilder->getServerRequest();
+            $GLOBALS['TYPO3_REQUEST'] = $this->requestBuilder->getServerRequest();
         }
 
         uasort(
@@ -146,7 +146,7 @@ class SpooledConfigurationApplicator
             $providerExtensionName = $provider->getExtensionKey($virtualRecord);
 
             try {
-                $contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider);
+                $this->contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider);
             } catch (Exception $error) {
                 if (!$applicationContext->isProduction()) {
                     throw $error;
@@ -180,16 +180,6 @@ class SpooledConfigurationApplicator
     protected function getApplicationContext(): ApplicationContext
     {
         return Environment::getContext();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected static function getContentTypeBuilder(): ContentTypeBuilder
-    {
-        /** @var ContentTypeBuilder $contentTypeBuilder */
-        $contentTypeBuilder = GeneralUtility::makeInstance(ContentTypeBuilder::class, true);
-        return $contentTypeBuilder;
     }
 
     /**

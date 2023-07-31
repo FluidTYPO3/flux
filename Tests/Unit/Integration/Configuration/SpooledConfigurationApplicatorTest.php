@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Configuration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
@@ -29,26 +30,15 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class SpooledConfigurationApplicatorTest extends AbstractTestCase
 {
-    private FluxService $fluxService;
-    private CacheManager $cacheManager;
     private SpooledConfigurationApplicator $subject;
     private ContentTypeDefinitionInterface $contentTypeDefinition;
     private ContentTypeDefinitionInterface $contentTypeDefinition2;
     private ContentTypeBuilder $contentTypeBuilder;
     private ContentTypeManager $contentTypeManager;
+    private RequestBuilder $requestBuilder;
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->cacheManager = $this->getMockBuilder(CacheManager::class)
-            ->onlyMethods(['getCache'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->cacheManager->method('getCache')
-            ->willReturn($this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass());
-
         $form = Form::create();
         $form->setOption(Form::OPTION_SORTING, 1);
 
@@ -66,9 +56,6 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->contentTypeBuilder->method('configureContentTypeFromTemplateFile')->willReturn($provider);
-
-        GeneralUtility::addInstance(ContentTypeBuilder::class, $this->contentTypeBuilder);
-        GeneralUtility::addInstance(ContentTypeBuilder::class, $this->contentTypeBuilder);
 
         $view = $this->getMockBuilder(ViewInterface::class)->getMockForAbstractClass();
 
@@ -96,11 +83,20 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
         $this->contentTypeManager->method('fetchContentTypes')
             ->willReturn([$this->contentTypeDefinition, $this->contentTypeDefinition2]);
 
+        $this->requestBuilder = $this->getMockBuilder(RequestBuilder::class)->disableOriginalConstructor()->getMock();
+
         $configurationContext = new ConfigurationContext();
 
         $this->subject = $this->getMockBuilder(SpooledConfigurationApplicator::class)
             ->onlyMethods(['getApplicationContext', 'getContentTypeManager'])
-            ->setConstructorArgs([$configurationContext])
+            ->setConstructorArgs(
+                [
+                    $configurationContext,
+                    $this->contentTypeBuilder,
+                    $this->contentTypeManager,
+                    $this->requestBuilder,
+                ]
+            )
             ->getMock();
         $this->subject->method('getContentTypeManager')->willReturn($this->contentTypeManager);
 
@@ -165,7 +161,9 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     public function testSpoolQueuedContentTypeTableConfigurations(): void
     {
         $this->contentTypeBuilder->expects(self::once())->method('addBoilerplateTableConfiguration');
-        SpooledConfigurationApplicator::spoolQueuedContentTypeTableConfigurations(
+        $this->callInaccessibleMethod(
+            $this->subject,
+            'spoolQueuedContentTypeTableConfigurations',
             [['FluidTYPO3.Flux', __DIR__ . '/../../../Fixtures/Templates/Content/Default.html', null, 'flux']]
         );
     }
