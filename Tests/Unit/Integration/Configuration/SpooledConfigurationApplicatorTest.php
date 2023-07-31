@@ -85,13 +85,10 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
 
         $this->requestBuilder = $this->getMockBuilder(RequestBuilder::class)->disableOriginalConstructor()->getMock();
 
-        $configurationContext = new ConfigurationContext();
-
         $this->subject = $this->getMockBuilder(SpooledConfigurationApplicator::class)
             ->onlyMethods(['getApplicationContext', 'getContentTypeManager'])
             ->setConstructorArgs(
                 [
-                    $configurationContext,
                     $this->contentTypeBuilder,
                     $this->contentTypeManager,
                     $this->requestBuilder,

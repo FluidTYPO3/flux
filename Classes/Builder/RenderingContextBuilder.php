@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Builder;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -29,12 +28,10 @@ use TYPO3Fluid\Fluid\View\TemplatePaths;
 
 class RenderingContextBuilder implements SingletonInterface
 {
-    private ConfigurationContext $context;
     private RequestBuilder $requestBuilder;
 
-    public function __construct(ConfigurationContext $context, RequestBuilder $requestBuilder)
+    public function __construct(RequestBuilder $requestBuilder)
     {
-        $this->context = $context;
         $this->requestBuilder = $requestBuilder;
     }
 
@@ -58,6 +55,14 @@ class RenderingContextBuilder implements SingletonInterface
 
         if (method_exists($renderingContext, 'getControllerContext')) {
             /** @var ControllerContext $controllerContext */
+            $controllerContext = $this->buildControllerContext($request);
+            try {
+                $renderingContext->setControllerContext($controllerContext);
+            } catch (\TypeError $error) {
+                throw new \UnexpectedValueException(
+                    'Controller class ' . $request->getControllerObjectName() . ' caused error: ' . $error->getMessage()
+                );
+            }
             $controllerContext = clone $renderingContext->getControllerContext($request);
             $controllerContext->setRequest($request);
             $renderingContext->setControllerContext($controllerContext);
@@ -72,24 +77,11 @@ class RenderingContextBuilder implements SingletonInterface
             $renderingContext->setControllerName($controllerName);
         }
 
-        if (!$this->context->isBootMode()) {
-            $templatePaths = $renderingContext->getTemplatePaths();
-        } else {
-            $resources = ExtensionManagementUtility::extPath($extensionKey) . 'Resources/Private/';
-            $paths = [
-                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$resources . 'Templates/'],
-                TemplatePaths::CONFIG_PARTIALROOTPATHS => [$resources . 'Partials/'],
-                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$resources . 'Layouts/'],
-            ];
-            /** @var TemplatePaths $templatePaths */
-            $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $paths);
-        }
+        $templatePaths = $renderingContext->getTemplatePaths();
 
         if ($templatePathAndFilename) {
             $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
         }
-
-        $renderingContext->setTemplatePaths($templatePaths);
 
         return $renderingContext;
     }

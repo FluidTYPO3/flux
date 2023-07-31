@@ -24,18 +24,15 @@ use TYPO3Fluid\Fluid\Exception;
 
 class SpooledConfigurationApplicator
 {
-    private ConfigurationContext $context;
     private ContentTypeBuilder $contentTypeBuilder;
     private ContentTypeManager $contentTypeManager;
     private RequestBuilder $requestBuilder;
 
     public function __construct(
-        ConfigurationContext $context,
         ContentTypeBuilder $contentTypeBuilder,
         ContentTypeManager $contentTypeManager,
         RequestBuilder $requestBuilder
     ) {
-        $this->context = $context;
         $this->contentTypeBuilder = $contentTypeBuilder;
         $this->contentTypeManager = $contentTypeManager;
         $this->requestBuilder = $requestBuilder;
@@ -43,8 +40,6 @@ class SpooledConfigurationApplicator
 
     public function processData(): void
     {
-        $this->context->setBootMode(true);
-
         // Initialize the TCA needed by "template as CType" integrations
         $this->spoolQueuedContentTypeTableConfigurations(Core::getQueuedContentTypeRegistrations());
 
@@ -60,8 +55,6 @@ class SpooledConfigurationApplicator
 
         $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
         Core::clearQueuedContentTypeRegistrations();
-
-        $this->context->setBootMode(false);
     }
 
     private function spoolQueuedContentTypeTableConfigurations(array $queue): void
