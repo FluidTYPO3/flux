@@ -32,9 +32,6 @@ class RenderingContextBuilder implements SingletonInterface
     private ConfigurationContext $context;
     private RequestBuilder $requestBuilder;
 
-    /** @var array<string, RenderingContextInterface> */
-    private array $templates = [];
-
     public function __construct(ConfigurationContext $context, RequestBuilder $requestBuilder)
     {
         $this->context = $context;
@@ -47,48 +44,32 @@ class RenderingContextBuilder implements SingletonInterface
         string $controllerActionName,
         ?string $templatePathAndFilename = null
     ): RenderingContextInterface {
-        $renderingContext = clone $this->retrieveOrCreateTemplateRenderingContext($extensionIdentity, $controllerName);
-
-        if (method_exists($renderingContext, 'setControllerAction')) {
-            $renderingContext->setControllerAction($controllerActionName);
-        }
-
-        if ($templatePathAndFilename) {
-            $templatePaths = clone $renderingContext->getTemplatePaths();
-            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
-            $renderingContext->setTemplatePaths($templatePaths);
-        }
-        return $renderingContext;
-    }
-
-    private function retrieveOrCreateTemplateRenderingContext(
-        string $extensionIdentity,
-        string $controllerName
-    ): RenderingContextInterface {
-        $identifier = $extensionIdentity . '__' . $controllerName;
-        if (isset($this->templates[$identifier])) {
-            return $this->templates[$identifier];
-        }
-
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionIdentity);
 
         $renderingContext = $this->createRenderingContextInstance();
 
         /** @var RequestInterface&Request $request */
-        $request = $this->requestBuilder->buildRequestFor($extensionIdentity, $controllerName, 'void', 'void');
+        $request = $this->requestBuilder->buildRequestFor(
+            $extensionIdentity,
+            $controllerName,
+            $controllerActionName,
+            'void'
+        );
 
-        if (method_exists($renderingContext, 'setControllerContext')) {
+        if (method_exists($renderingContext, 'getControllerContext')) {
             /** @var ControllerContext $controllerContext */
-            $controllerContext = $this->buildControllerContext($request);
-            try {
-                $renderingContext->setControllerContext($controllerContext);
-            } catch (\TypeError $error) {
-                throw new \UnexpectedValueException(
-                    'Controller class ' . $request->getControllerObjectName() . ' caused error: ' . $error->getMessage()
-                );
-            }
+            $controllerContext = clone $renderingContext->getControllerContext($request);
+            $controllerContext->setRequest($request);
+            $renderingContext->setControllerContext($controllerContext);
         } elseif (method_exists($renderingContext, 'setRequest')) {
             $renderingContext->setRequest($request);
+        }
+
+        if (method_exists($renderingContext, 'setControllerAction')) {
+            $renderingContext->setControllerAction($controllerActionName);
+        }
+        if (method_exists($renderingContext, 'setControllerName')) {
+            $renderingContext->setControllerName($controllerName);
         }
 
         if (!$this->context->isBootMode()) {
@@ -104,14 +85,11 @@ class RenderingContextBuilder implements SingletonInterface
             $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $paths);
         }
 
-        $templatePaths->fillDefaultsByPackageName($extensionKey);
-        $renderingContext->setTemplatePaths($templatePaths);
-
-        if (method_exists($renderingContext, 'setControllerName')) {
-            $renderingContext->setControllerName($controllerName);
+        if ($templatePathAndFilename) {
+            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
         }
 
-        $this->templates[$identifier] = $renderingContext;
+        $renderingContext->setTemplatePaths($templatePaths);
 
         return $renderingContext;
     }
