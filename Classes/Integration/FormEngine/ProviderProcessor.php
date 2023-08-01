@@ -12,6 +12,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ProviderProcessor implements FormDataProviderInterface
 {
+    private ProviderResolver $resolver;
+    private ContentTypeManager $contentTypeManager;
+    private SiteFinder $siteFinder;
+
+    public function __construct(
+        ProviderResolver $resolver,
+        ContentTypeManager $contentTypeManager,
+        SiteFinder $siteFinder
+    ) {
+        $this->resolver = $resolver;
+        $this->contentTypeManager = $contentTypeManager;
+        $this->siteFinder = $siteFinder;
+    }
+
     public function addData(array $result): array
     {
         if (!isset($result['tableName'])) {
@@ -23,11 +37,9 @@ class ProviderProcessor implements FormDataProviderInterface
         if ($result['tableName'] === 'tt_content') {
             $pageUid = $result['parentPageRow']['uid'];
             if ($pageUid > 0) {
-                /** @var SiteFinder $siteFinder */
-                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
                 $enabledContentTypes = [];
                 try {
-                    $site = $siteFinder->getSiteByPageId($pageUid);
+                    $site = $this->siteFinder->getSiteByPageId($pageUid);
                     $siteConfiguration = $site->getConfiguration();
                     $enabledContentTypes = GeneralUtility::trimExplode(
                         ',',
@@ -38,9 +50,7 @@ class ProviderProcessor implements FormDataProviderInterface
                     // Suppressed; sites not being found isn't a fatal problem here.
                 }
                 if (!empty($enabledContentTypes)) {
-                    /** @var ContentTypeManager $contentTypeManager */
-                    $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
-                    $fluidContentTypeNames = (array) $contentTypeManager->fetchContentTypeNames();
+                    $fluidContentTypeNames = (array) $this->contentTypeManager->fetchContentTypeNames();
                     $currentItems = $result['processedTca']['columns']['CType']['config']['items'];
                     foreach ($currentItems as $index => $optionArray) {
                         $contentTypeName = $optionArray[1];
@@ -54,8 +64,8 @@ class ProviderProcessor implements FormDataProviderInterface
             }
         }
 
-        $resolver = $this->getProviderResolver();
-        $providers = $resolver->resolveConfigurationProviders(
+        /** @var DataStructureProviderInterface[] $providers */
+        $providers = $this->resolver->resolveConfigurationProviders(
             $result['tableName'],
             null,
             $result['databaseRow'],
@@ -66,34 +76,5 @@ class ProviderProcessor implements FormDataProviderInterface
             $result = $provider->processTableConfiguration($result['databaseRow'], $result);
         }
         return $result;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function loadRecord(string $table, int $uid): array
-    {
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
-        $query = $queryBuilder->select('*')
-            ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $uid))
-            ->setMaxResults(1);
-        $query->getRestrictions()->removeAll();
-        /** @var array $results */
-        $results = $query->execute()->fetchAll();
-        return $results[0] ?? [];
-    }
-
-    /**
-     * @return ProviderResolver
-     * @codeCoverageIgnore
-     */
-    protected function getProviderResolver()
-    {
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
-        return $providerResolver;
     }
 }

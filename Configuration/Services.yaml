@@ -25,6 +25,8 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator:
     public: true
+  FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor:
+    public: true
   FluidTYPO3\Flux\Builder\RenderingContextBuilder:
     public: true
   FluidTYPO3\Flux\Builder\ViewBuilder:
