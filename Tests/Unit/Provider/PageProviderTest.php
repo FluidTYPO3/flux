@@ -421,6 +421,9 @@ class PageProviderTest extends AbstractTestCase
                             'settings.input_clear' => [
                                 'vDEF' => 1,
                             ],
+                            'foobar' => [
+                                'vDEF' => 1,
+                            ],
                         ],
                     ],
                 ],
@@ -432,10 +435,42 @@ class PageProviderTest extends AbstractTestCase
         $provider->method('loadRecordTreeFromDatabase')->willReturn([]);
 
         $storedRecord = $parentInstance->datamap[$tableName][$id];
-        $storedRecord[$fieldName] = GeneralUtility::array2xml($storedRecord[$fieldName]);
+        $storedRecord[$fieldName] = <<< DATA
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="options">
+            <language index="lDEF">
+                <field index="settings.input">
+                    <value index="vDEF">1</value>
+                </field>
+                <field index="foobar">
+                    <value index="vDEF">12</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>
+
+DATA;
 
         $expectedUpdateRecord = $storedRecord;
-        $expectedUpdateRecord[$fieldName] = '';
+        $expectedUpdateRecord[$fieldName] = <<< DATA
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3FlexForms>
+    <data>
+        <sheet index="options">
+            <language index="lDEF">
+                
+                <field index="foobar">
+                    <value index="vDEF">12</value>
+                </field>
+            </language>
+        </sheet>
+    </data>
+</T3FlexForms>
+
+DATA;
 
         $this->recordService->expects($this->atLeastOnce())->method('getSingle')->willReturn($storedRecord);
         $this->recordService->expects($this->once())->method('update')->with('pages', $expectedUpdateRecord);
