@@ -237,7 +237,8 @@ abstract class AbstractFluxController extends ActionController
         $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionName,
             $this->configurationService->getResolver()->resolveControllerNameFromControllerClassName(get_class($this)),
-            $controllerActionName
+            $controllerActionName,
+            $this->provider->getPluginName() ?? $this->provider->getControllerNameFromRecord($record)
         );
         if (method_exists($renderingContext, 'setRequest')) {
             $renderingContext->setRequest($this->request);

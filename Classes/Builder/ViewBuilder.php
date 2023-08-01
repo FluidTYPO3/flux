@@ -28,6 +28,7 @@ class ViewBuilder
         string $extensionIdentity,
         string $controllerName,
         string $controllerAction,
+        string $pluginName,
         ?string $templatePathAndFilename = null
     ): PreviewView {
         /** @var class-string $viewClassName */
@@ -37,6 +38,7 @@ class ViewBuilder
             $extensionIdentity,
             $controllerName,
             $controllerAction,
+            $pluginName,
             $templatePathAndFilename
         );
 
@@ -50,6 +52,7 @@ class ViewBuilder
         string $extensionIdentity,
         string $controllerName,
         string $controllerAction,
+        string $pluginName,
         ?string $templatePathAndFilename = null
     ): ViewInterface {
         /** @var class-string $viewClassName */
@@ -59,6 +62,7 @@ class ViewBuilder
             $extensionIdentity,
             $controllerName,
             $controllerAction,
+            $pluginName,
             $templatePathAndFilename
         );
 
@@ -72,12 +76,14 @@ class ViewBuilder
         string $extensionIdentity,
         string $controllerName,
         string $controllerAction,
+        string $pluginName,
         ?string $templatePathAndFilename
     ): RenderingContextInterface {
         return $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionIdentity,
             $controllerName,
             $controllerAction,
+            $pluginName,
             $templatePathAndFilename
         );
     }

@@ -63,6 +63,9 @@ class RequestBuilder implements SingletonInterface
             if (method_exists($request, 'setArguments')) {
                 $request->setArguments($arguments);
             }
+            if (method_exists($request, 'setPluginName')) {
+                $request->setPluginName($pluginName);
+            }
         }
 
         if (method_exists($request, 'setRequestUri')) {

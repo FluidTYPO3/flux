@@ -596,6 +596,7 @@ class AbstractProvider implements ProviderInterface
             $this->getControllerExtensionKeyFromRecord($row, $forField),
             $this->getControllerNameFromRecord($row),
             $this->getControllerActionFromRecord($row, $forField),
+            $this->getPluginName() ?? $this->getControllerNameFromRecord($row),
             $this->getTemplatePathAndFilename($row, $forField)
         );
     }
@@ -618,6 +619,7 @@ class AbstractProvider implements ProviderInterface
             $this->getControllerExtensionKeyFromRecord($row),
             $this->getControllerNameFromRecord($row),
             $this->getControllerActionFromRecord($row),
+            $this->getPluginName() ?? $this->getControllerNameFromRecord($row),
             $this->getTemplatePathAndFilename($row)
         )->getPreview($this, $row);
         return [null, $previewContent, empty($previewContent)];

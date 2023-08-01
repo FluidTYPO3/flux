@@ -38,7 +38,7 @@ class ViewBuilderTest extends AbstractTestCase
         GeneralUtility::addInstance(TemplateView::class, $view);
 
         $subject = new ViewBuilder($this->renderingContextBuilder);
-        $view = $subject->buildTemplateView('FluidTYPO3.Flux', 'Default', 'default');
+        $view = $subject->buildTemplateView('FluidTYPO3.Flux', 'Default', 'default', 'defaut');
         self::assertInstanceOf(TemplateView::class, $view);
     }
 
@@ -48,7 +48,7 @@ class ViewBuilderTest extends AbstractTestCase
         GeneralUtility::addInstance(PreviewView::class, $view);
 
         $subject = new ViewBuilder($this->renderingContextBuilder);
-        $view = $subject->buildPreviewView('FluidTYPO3.Flux', 'Default', 'default');
+        $view = $subject->buildPreviewView('FluidTYPO3.Flux', 'Default', 'default', 'default');
         self::assertInstanceOf(PreviewView::class, $view);
     }
 }

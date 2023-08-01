@@ -51,7 +51,7 @@ class ContentTypeValidator
 
     public function validateContentTypeRecord(array $parameters): string
     {
-        $view = $this->viewBuilder->buildTemplateView('FluidTYPO3.Flux', 'Content', 'validation');
+        $view = $this->viewBuilder->buildTemplateView('FluidTYPO3.Flux', 'Content', 'validation', 'validation');
 
         $record = $parameters['row'];
         $recordIsNew = strncmp((string)$record['uid'], 'NEW', 3) === 0;
