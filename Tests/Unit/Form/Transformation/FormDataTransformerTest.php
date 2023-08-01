@@ -31,23 +31,6 @@ class FormDataTransformerTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        if (!class_exists(FrontendUser::class)) {
-            $this->markTestSkipped('Skipping test with FrontendUser dependency');
-        }
-
-        parent::setUp();
-
-        $this->frontendUser = $this->getMockBuilder(FrontendUser::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->frontendUserRepository = $this->getMockBuilder(FrontendUserRepository::class)
-            ->setMethods(['findByUid'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->frontendUserRepository->method('findByUid')->willReturn($this->frontendUser);
-
-        $this->singletonInstances[FrontendUserRepository::class] = $this->frontendUserRepository;
         $this->singletonInstances[Repository::class] = $this->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -63,6 +46,22 @@ class FormDataTransformerTest extends AbstractTestCase
             ->getMock();
 
         parent::setUp();
+    }
+
+    private function initializeFrontendUserFixtures(): void
+    {
+
+        $this->frontendUser = $this->getMockBuilder(FrontendUser::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->frontendUserRepository = $this->getMockBuilder(FrontendUserRepository::class)
+            ->setMethods(['findByUid'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->frontendUserRepository->method('findByUid')->willReturn($this->frontendUser);
+
+        $this->singletonInstances[FrontendUserRepository::class] = $this->frontendUserRepository;
     }
 
     public function fixtureTransformToFooString(): string
@@ -98,9 +97,37 @@ class FormDataTransformerTest extends AbstractTestCase
             ['123,321', 'InvalidClass', '123'],
             [date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))],
             ['1', 'boolean', true],
-            ['1,2', ObjectStorage::class . '<' . FrontendUser::class . '>', null],
             ['1,2', ObjectStorage::class . '<\\Invalid>', null],
             ['bar', self::class . '->fixtureTransformToFooString', 'foo'],
+        ];
+    }
+
+    /**
+     * @dataProvider getValuesAndTransformationsForDomainObjects
+     * @param mixed $value
+     * @param mixed $expected
+     */
+    public function testTransformationOfDomainObjects($value, string $transformation, $expected): void
+    {
+        if (!class_exists(FrontendUser::class)) {
+            $this->markTestSkipped('Skipping test with FrontendUser dependency');
+        }
+
+        $this->subject->method('loadObjectsFromRepository')->willReturn([]);
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form->createField(Form\Field\Input::class, 'field')->setTransform($transformation);
+        $transformed = $this->subject->transformAccordingToConfiguration(['field' => $value], $form);
+        $this->assertNotSame(
+            $expected,
+            $transformed,
+            'Transformation type ' . $transformation . ' failed; values are still identical'
+        );
+    }
+
+    public function getValuesAndTransformationsForDomainObjects(): array
+    {
+        return [
+            ['1,2', ObjectStorage::class . '<' . FrontendUser::class . '>', null],
             ['1', FrontendUser::class, $this->frontendUser],
         ];
     }
@@ -157,6 +184,9 @@ class FormDataTransformerTest extends AbstractTestCase
 
     public function testSupportsFindByIdentifiers(): void
     {
+        if (!class_exists(FrontendUser::class)) {
+            $this->markTestSkipped('Skipping test with FrontendUser dependency');
+        }
         $repository = $this->getMockBuilder(FrontendUserGroupRepository::class)
             ->setMethods(['findByUid'])
             ->disableOriginalConstructor()
