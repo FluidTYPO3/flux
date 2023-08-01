@@ -363,9 +363,10 @@ abstract class AbstractFluxController extends ActionController
 
                 if (method_exists($this->request, 'withControllerExtensionName')) {
                     $this->request = $this->request->withControllerExtensionName($vendorLessExtensionName);
-                    if (method_exists($renderingContext, 'setRequest')) {
-                        $renderingContext->setRequest($this->request);
-                    }
+                }
+
+                if (method_exists($renderingContext, 'setRequest')) {
+                    $renderingContext->setRequest($this->request);
                 }
 
                 $this->configurationManager->setConfiguration(
