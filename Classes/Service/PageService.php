@@ -76,6 +76,8 @@ class PageService implements SingletonInterface, LoggerAwareInterface
 
         $resolvedMainTemplateIdentity = null;
         $resolvedSubTemplateIdentity = null;
+        $recordDefiningMain = null;
+        $recordDefiningSub = null;
         $rootLine = $this->getRootLine($pageUid);
 
         // Initialize with possibly-empty values and loop root line
@@ -89,11 +91,13 @@ class PageService implements SingletonInterface, LoggerAwareInterface
             $isCandidate = ((integer) ($page['uid'] ?? 0) !== $pageUid);
             if ($containsSubDefinition && $isCandidate) {
                 $resolvedSubTemplateIdentity = $subFieldValue;
+                $recordDefiningSub = $page;
                 if (empty($resolvedMainTemplateIdentity)) {
                     // Conditions met: current page is not $pageUid, original page did not
                     // contain a "this page" layout, current rootline page has "sub" selection.
                     // Then, set our "this page" value to use the "sub" selection that was detected.
                     $resolvedMainTemplateIdentity = $resolvedSubTemplateIdentity;
+                    $recordDefiningMain = $page;
                 }
                 break;
             }
@@ -105,7 +109,9 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         }
         $configuration = [
             'tx_fed_page_controller_action' => $resolvedMainTemplateIdentity,
-            'tx_fed_page_controller_action_sub' => $resolvedSubTemplateIdentity
+            'tx_fed_page_controller_action_sub' => $resolvedSubTemplateIdentity,
+            'record_main' => $recordDefiningMain,
+            'record_sub' => $recordDefiningSub,
         ];
         $this->runtimeCache->set($cacheId, $configuration);
         return $configuration;

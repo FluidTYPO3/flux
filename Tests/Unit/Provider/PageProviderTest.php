@@ -128,9 +128,11 @@ class PageProviderTest extends AbstractTestCase
             ->onlyMethods(['setDefaultValuesInFieldsWithInheritedValues'])
             ->getMock();
 
+        $this->pageService->method('getPageTemplateConfiguration')->willReturn([]);
+
         $instance->expects($this->once())->method('setDefaultValuesInFieldsWithInheritedValues')->willReturn($form);
         $instance->setForm($form);
-        $instance->getForm([]);
+        $instance->getForm(['uid' => 1]);
     }
 
     public function testGetControllerExtensionKeyFromRecordReturnsPresetKeyOnUnrecognisedAction(): void
@@ -164,14 +166,14 @@ class PageProviderTest extends AbstractTestCase
     public function getInheritanceTreeTestValues(): array
     {
         return [
-            [[], []],
-            [
-                [[PageProvider::FIELD_ACTION_SUB => 'testsub'], [PageProvider::FIELD_ACTION_MAIN => 'testmain']],
+            'empty tree returns empty' => [[], []],
+            'no sub action returns full tree' => [
+                [[PageProvider::FIELD_ACTION_MAIN => 'testmain']],
                 [[PageProvider::FIELD_ACTION_MAIN => 'testmain']]
             ],
-            [
-                [[PageProvider::FIELD_ACTION_SUB => 'testsub'], [PageProvider::FIELD_ACTION_MAIN => '']],
-                [[PageProvider::FIELD_ACTION_SUB => 'testsub'], [PageProvider::FIELD_ACTION_MAIN => '']],
+            'defined sub action halts reading' => [
+                [[PageProvider::FIELD_ACTION_MAIN => ''], [PageProvider::FIELD_ACTION_SUB => 'testsub']],
+                [[PageProvider::FIELD_ACTION_MAIN => '']],
             ],
         ];
     }
@@ -403,15 +405,15 @@ class PageProviderTest extends AbstractTestCase
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->createField('Input', 'settings.input')->setInherit(true);
         $record = $this->getBasicRecord();
-        $fieldName = $provider->getFieldName($record);
+        $fieldName = PageProvider::FIELD_NAME_MAIN;
         $tableName = $provider->getTableName($record);
-        $record[$fieldName] = Xml::EXPECTING_FLUX_REMOVALS;
+        $record[PageProvider::FIELD_NAME_MAIN] = Xml::EXPECTING_FLUX_REMOVALS;
         $id = $record['uid'];
         /** @var DataHandler $parentInstance */
         $parentInstance = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
         $parentInstance->datamap[$tableName][$id] = [
             'uid' => $record['uid'],
-            $fieldName => [
+            PageProvider::FIELD_NAME_MAIN => [
                 'data' => [
                     'options' => [
                         'lDEF' => [
@@ -428,14 +430,15 @@ class PageProviderTest extends AbstractTestCase
                     ],
                 ],
             ],
+            PageProvider::FIELD_NAME_SUB => ['data' => []],
         ];
-        $provider->expects($this->any())->method('getForm')->willReturn($form);
-        $provider->expects($this->once())->method('getInheritedPropertyValueByDottedPath')
-            ->with([], 'settings.input')->willReturn('test');
+        $provider->method('getForm')->willReturn($form);
+        $provider->method('getInheritedPropertyValueByDottedPath')->with([], 'settings.input')->willReturn('test');
         $provider->method('loadRecordTreeFromDatabase')->willReturn([]);
 
         $storedRecord = $parentInstance->datamap[$tableName][$id];
-        $storedRecord[$fieldName] = <<< DATA
+        $storedRecord[PageProvider::FIELD_NAME_SUB] = '';
+        $storedRecord[PageProvider::FIELD_NAME_MAIN] = <<< DATA
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>
@@ -455,7 +458,8 @@ class PageProviderTest extends AbstractTestCase
 DATA;
 
         $expectedUpdateRecord = $storedRecord;
-        $expectedUpdateRecord[$fieldName] = <<< DATA
+        $storedRecord[PageProvider::FIELD_NAME_SUB] = '';
+        $expectedUpdateRecord[PageProvider::FIELD_NAME_MAIN] = <<< DATA
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>

@@ -25,8 +25,15 @@ class Field extends AbstractFormField
 
     public function buildConfiguration(): array
     {
-        // void, not required by generic field type
-        return [];
+        $config = [
+            'default' => $this->getDefault(),
+        ];
+        if ($this->getClearable()) {
+            $config['fieldWizard']['fluxClearValue'] = [
+                'renderType' => 'fluxClearValue',
+            ];
+        }
+        return $config;
     }
 
     public static function create(array $settings = []): FieldInterface
@@ -65,21 +72,16 @@ class Field extends AbstractFormField
             return $value !== null && $value !== '';
         };
 
+        $configuration = array_replace($this->buildConfiguration(), $this->getConfig());
+
         $fieldStructureArray = [
             'label' => $this->getLabel(),
             'description' => $this->getDescription(),
             'exclude' => intval($this->getExclude()),
-            'config' => array_filter($this->getConfig(), $filterClosure),
+            'config' => array_filter($configuration, $filterClosure),
             'displayCond' => $this->getDisplayCondition(),
             'onChange' => $this->getOnChange(),
         ];
-
-
-        if ($this->getClearable()) {
-            $fieldStructureArray['config']['fieldWizard']['fluxClearValue'] = [
-                'renderType' => 'fluxClearValue',
-            ];
-        }
 
         $fieldStructureArray = array_filter($fieldStructureArray, $filterClosure);
         return $fieldStructureArray;

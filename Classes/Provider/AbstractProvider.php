@@ -511,6 +511,23 @@ class AbstractProvider implements ProviderInterface
         }
 
         $stored = $this->recordService->getSingle($tableName, '*', $id) ?? $record;
+
+        $removals = array_merge(
+            $removals,
+            $this->extractFieldNamesToClear($record, $fieldName)
+        );
+
+        if (!empty($removals) && !empty($stored[$fieldName])) {
+            $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($stored[$fieldName], $removals);
+            $this->recordService->update($tableName, $stored);
+        }
+
+        return false;
+    }
+
+    protected function extractFieldNamesToClear(array $record, string $fieldName): array
+    {
+        $removals = [];
         $data = $record[$fieldName]['data'];
         foreach ($data as $sheetName => $sheetFields) {
             foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
@@ -526,17 +543,7 @@ class AbstractProvider implements ProviderInterface
                 }
             }
         }
-
-        $removals = array_unique($removals);
-
-        if (!empty($removals)) {
-            $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($stored[$fieldName], $removals);
-            if ($stored['uid']) {
-                $this->recordService->update($tableName, $stored);
-            }
-        }
-
-        return false;
+        return array_unique($removals);
     }
 
     /**

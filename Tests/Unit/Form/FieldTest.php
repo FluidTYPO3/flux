@@ -14,10 +14,10 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class FieldTest extends AbstractTestCase
 {
-    public function testBuildConfigurationReturnsEmptyArray(): void
+    public function testBuildConfigurationReturnsExpectedArray(): void
     {
         $subject = new Field();
-        self::assertSame([], $subject->buildConfiguration());
+        self::assertSame(['default' => null], $subject->buildConfiguration());
     }
 
     public function testCreateThrowsUnexpectedValueExceptionWithoutType(): void

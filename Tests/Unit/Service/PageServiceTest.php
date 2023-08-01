@@ -51,11 +51,13 @@ class PageServiceTest extends AbstractTestCase
     {
         $m = 'tx_fed_page_controller_action';
         $s = 'tx_fed_page_controller_action_sub';
+        $bothDefined = [$m => 'test1->test1', $s => 'test2->test2'];
+        $subDefined = [$s => 'test2->test2'];
         return [
-            [[[]], null],
-            [[[$m => '', $s => '']], null],
-            [[[$m => 'test1->test1', $s => 'test2->test2']], [$m => 'test1->test1', $s => 'test2->test2']],
-            [[[$m => ''], [$s => 'test2->test2']], [$m => 'test2->test2', $s => 'test2->test2']]
+            'no pages in tree returns null' => [[[]], null],
+            'empty selections in tree returns null' => [[[$m => '', $s => '']], null],
+            'both actions defined returns both' => [[$bothDefined], $bothDefined + ['record_main' => null, 'record_sub' => $bothDefined]],
+            'sub action defined returns both' => [[[$m => ''], $subDefined], [$m => 'test2->test2', $s => 'test2->test2', 'record_main' => $subDefined, 'record_sub' => $subDefined]],
         ];
     }
 
