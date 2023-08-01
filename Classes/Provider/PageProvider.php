@@ -43,6 +43,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     protected string $extensionKey = 'FluidTYPO3.Flux';
     protected ?string $controllerName = 'Page';
     protected ?string $configurationSectionName = 'Configuration';
+    protected ?string $pluginName = 'Page';
 
     private static array $cache = [];
 
