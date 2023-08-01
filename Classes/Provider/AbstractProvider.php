@@ -643,7 +643,7 @@ class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Stub: override this to return a controller action name associated with $row.
+     * Stub: override this to return a controller name associated with $row.
      * Default strategy: return base name of Provider class minus the "Provider" suffix.
      */
     public function getControllerNameFromRecord(array $row): string
