@@ -35,9 +35,6 @@ services:
   FluidTYPO3\Flux\Provider\PageProvider:
     shared: false
     public: true
-  FluidTYPO3\Flux\Provider\SubPageProvider:
-    shared: false
-    public: true
   FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider:
     shared: false
     public: true
