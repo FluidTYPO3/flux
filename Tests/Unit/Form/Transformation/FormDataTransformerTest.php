@@ -50,7 +50,6 @@ class FormDataTransformerTest extends AbstractTestCase
 
     private function initializeFrontendUserFixtures(): void
     {
-
         $this->frontendUser = $this->getMockBuilder(FrontendUser::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -113,6 +112,7 @@ class FormDataTransformerTest extends AbstractTestCase
             $this->markTestSkipped('Skipping test with FrontendUser dependency');
         }
 
+        $this->initializeFrontendUserFixtures();
         $this->subject->method('loadObjectsFromRepository')->willReturn([]);
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->createField(Form\Field\Input::class, 'field')->setTransform($transformation);
