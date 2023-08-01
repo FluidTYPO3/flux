@@ -648,42 +648,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canPreProcessRecordAndTransferDataToRecordValues()
-    {
-        $provider = $this->getConfigurationProviderInstance();
-        $record = $this->getBasicRecord();
-        $parentInstance = $this->getMockBuilder(DataHandler::class)->disableOriginalConstructor()->getMock();
-        $tableName = $provider->getTableName($record);
-        if (empty($tableName)) {
-            $tableName = 'tt_content';
-            $provider->setTableName($tableName);
-        }
-        $fieldName = $provider->getFieldName($record);
-        if (empty($fieldName)) {
-            $fieldName = 'pi_flexform';
-            $provider->setFieldName($fieldName);
-        }
-        $GLOBALS['TCA'][$tableName]['columns']['header'] = true;
-        $record['header'] = 'old';
-        $record[$fieldName] = [
-            'data' => [
-                'options' => [
-                    'lDEF' => [
-                        $tableName . '.header' => [
-                            'vDEF' => 'overridden-header'
-                        ]
-                    ]
-                ]
-            ]
-        ];
-        $id = $record['uid'];
-        $provider->preProcessRecord($record, $id, $parentInstance);
-        $this->assertSame($record['header'], $record[$fieldName]['data']['options']['lDEF'][$tableName . '.header']['vDEF']);
-    }
-
-    /**
-     * @test
-     */
     public function canSetForm()
     {
         $form = Form::create(['name' => 'test']);

@@ -475,37 +475,6 @@ class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Pre-process record data for the table that this ConfigurationProvider
-     * is attached to.
-     *
-     * @param array $row The record by reference. Changing fields' values changes the record's values before display
-     * @param integer $id The ID of the current record (which is sometimes not included in $row
-     * @param DataHandler $reference A reference to the DataHandler object that is currently displaying the record
-     */
-    public function preProcessRecord(array &$row, int $id, DataHandler $reference): void
-    {
-        // TODO: move to single-fire implementation in TceMain (DataHandler)
-        // TODO: remove in Flux 10.0
-        $fieldName = $this->getFieldName($row);
-        if ($fieldName === null) {
-            return;
-        }
-        $tableName = (string) $this->getTableName($row);
-        if (is_array($row[$fieldName]) && isset($row[$fieldName]['data']['options']['lDEF'])
-            && is_array($row[$fieldName]['data']['options']['lDEF'])) {
-            foreach ($row[$fieldName]['data']['options']['lDEF'] as $key => $value) {
-                if (0 === strpos($key, $tableName)) {
-                    $parts = explode('.', $key);
-                    $realKey = array_pop($parts);
-                    if (isset($GLOBALS['TCA'][$tableName]['columns'][$realKey])) {
-                        $row[$realKey] = $value['vDEF'];
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Post-process record data for the table that this ConfigurationProvider
      * is attached to.
      *
