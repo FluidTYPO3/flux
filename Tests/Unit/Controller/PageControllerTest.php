@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -31,38 +32,5 @@ class PageControllerTest extends AbstractTestCase
         $subject = $this->getMockBuilder(PageController::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
         $record = $subject->getRecord();
         $this->assertSame(['foo' => 'bar'], $record);
-    }
-
-    public function testInitializeProvider()
-    {
-        /** @var FluxService|MockObject $pageConfigurationService */
-        $pageConfigurationService = $this->getMockBuilder(
-                FluxService::class
-            )->setMethods(
-                ['resolvePrimaryConfigurationProvider']
-            )->disableOriginalConstructor()
-            ->getMock();
-        /** @var PageService $pageService */
-        $pageService = $this->getMockBuilder(
-                PageService::class
-            )->setMethods(
-                ['getPageTemplateConfiguration']
-            )->disableOriginalConstructor()
-            ->getMock();
-        $pageConfigurationService->expects($this->once())->method('resolvePrimaryConfigurationProvider');
-        /** @var PageController|MockObject $instance */
-        $instance = $this->getMockBuilder(PageController::class)
-            ->setMethods(['getRecord'])
-            ->setConstructorArgs(
-                [
-                    $pageConfigurationService,
-                    $this->getMockBuilder(RenderingContextBuilder::class)->disableOriginalConstructor()->getMock(),
-                    $this->getMockBuilder(RequestBuilder::class)->disableOriginalConstructor()->getMock(),
-                    $pageService
-                ]
-            )
-            ->getMock();
-        $instance->expects($this->once())->method('getRecord')->willReturn([]);
-        $this->callInaccessibleMethod($instance, 'initializeProvider');
     }
 }

@@ -26,8 +26,7 @@ class DummyPageController extends PageController
         $fluxService = $this->createMock(FluxService::class);
         $renderingContextBuilder = $this->createMock(RenderingContextBuilder::class);
         $requestBuilder = $this->createMock(RequestBuilder::class);
-        $pageService = $this->createMock(PageService::class);
-        parent::__construct($fluxService, $renderingContextBuilder, $requestBuilder, $pageService);
+        parent::__construct($fluxService, $renderingContextBuilder, $requestBuilder);
     }
 
     public function setView(ViewInterface $view): void
@@ -48,11 +47,6 @@ class DummyPageController extends PageController
     public function getProvider(): ?ControllerProviderInterface
     {
         return $this->provider;
-    }
-
-    public function setProvider(ControllerProviderInterface $provider): void
-    {
-        $this->provider = $provider;
     }
 
     private function createMock(string $className): object
