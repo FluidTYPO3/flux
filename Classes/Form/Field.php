@@ -74,6 +74,13 @@ class Field extends AbstractFormField
             'onChange' => $this->getOnChange(),
         ];
 
+
+        if ($this->getClearable()) {
+            $fieldStructureArray['config']['fieldWizard']['fluxClearValue'] = [
+                'renderType' => 'fluxClearValue',
+            ];
+        }
+
         $fieldStructureArray = array_filter($fieldStructureArray, $filterClosure);
         return $fieldStructureArray;
     }
