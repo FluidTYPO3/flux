@@ -255,6 +255,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -398,6 +408,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -606,6 +626,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -709,6 +739,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -806,6 +846,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -984,6 +1034,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -1363,6 +1423,16 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -1693,6 +1763,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -1833,6 +1913,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2071,6 +2161,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -2157,6 +2257,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2329,6 +2439,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2590,6 +2710,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -2743,6 +2873,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -2874,6 +3014,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -3144,6 +3294,16 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -3410,6 +3570,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
