@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
@@ -60,7 +61,7 @@ class FormDataTransformerTest extends AbstractTestCase
             ->getMock();
         $this->frontendUserRepository->method('findByUid')->willReturn($this->frontendUser);
 
-        $this->singletonInstances[FrontendUserRepository::class] = $this->frontendUserRepository;
+        GeneralUtility::setSingletonInstance(FrontendUserRepository::class, $this->frontendUserRepository);
     }
 
     public function fixtureTransformToFooString(): string
