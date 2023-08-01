@@ -38,6 +38,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
     const OPTION_RECORD_TABLE = 'recordTable';
     const OPTION_DEFAULT_VALUES = 'defaultValues';
     const OPTION_TRANSFORM = 'transform';
+    const OPTION_HIDE_NATIVE_FIELDS = 'hideNativeFields';
     const POSITION_TOP = 'top';
     const POSITION_BOTTOM = 'bottom';
     const POSITION_BOTH = 'both';

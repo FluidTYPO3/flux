@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -216,5 +217,100 @@ class ProviderTest extends AbstractTestCase
         $provider = new Provider(...$this->getConstructorArguments());
         $provider->setControllerAction('test');
         $this->assertSame('test', $provider->getControllerActionFromRecord([]));
+    }
+
+    public function testProcessTableConfigurationReturnsUntouchedConfiguration(): void
+    {
+        $configuration = ['recordTypeValue' => '1'];
+        $instance = $this->getMockBuilder(AbstractProvider::class)
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->onlyMethods(['getForm'])
+            ->getMockForAbstractClass();
+        $instance->method('getForm')->willReturn(Form::create());
+        self::assertSame($configuration, $instance->processTableConfiguration(['uid' => 123], $configuration));
+    }
+
+    public function testProcessTableConfigurationAddsNativeFields(): void
+    {
+        $configuration = [
+            'recordTypeValue' => 'foo',
+            'processedTca' => [
+                'types' => [
+                    'foo' => [
+                        'showitem' => '',
+                    ]
+                ],
+                'columns' => [],
+            ],
+            'columnsToProcess' => [],
+            'databaseRow' => [],
+        ];
+        $expected = $configuration;
+        $expected['processedTca']['columns']['native'] = [
+            'label' => 'My Native Field',
+            'exclude' => 0,
+            'config' => [
+                'type' => 'input',
+                'size' => 32,
+                'eval' => 'trim',
+            ],
+        ];
+        $expected['columnsToProcess'] = ['native'];
+        $expected['processedTca']['types']['foo']['showitem'] = '--div--;My Special Sheet, native';
+        $expected['databaseRow'] = ['native' => null];
+
+        $form = Form::create();
+        $field = $form->createField('input', 'native', 'My Native Field');
+        $field->setNative(true);
+        $field->setPosition('before:header My Special Sheet');
+
+        $instance = $this->getMockBuilder(AbstractProvider::class)
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->onlyMethods(['getForm', 'getTableName'])
+            ->getMockForAbstractClass();
+        $instance->method('getForm')->willReturn($form);
+        $instance->method('getTableName')->willReturn('table');
+
+        $GLOBALS['TCA']['table']['types']['foo']['showitem'] = '';
+
+        self::assertSame($expected, $instance->processTableConfiguration(['uid' => 123], $configuration));
+    }
+
+    public function testProcessTableConfigurationRemovesNativeFields(): void
+    {
+        $configuration = [
+            'recordTypeValue' => '1',
+            'processedTca' => [
+                'columns' => [
+                    'native' => [
+                        'label' => 'My Native Field',
+                        'exclude' => 0,
+                        'config' => [
+                            'type' => 'input',
+                            'size' => 32,
+                            'eval' => 'trim',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $expected = [
+            'recordTypeValue' => '1',
+            'processedTca' => [
+                'columns' => [],
+            ],
+        ];
+
+        $form = Form::create();
+        $form->setOption(Form::OPTION_HIDE_NATIVE_FIELDS, 'native');
+
+        $instance = $this->getMockBuilder(AbstractProvider::class)
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->onlyMethods(['getForm', 'getTableName'])
+            ->getMockForAbstractClass();
+        $instance->method('getForm')->willReturn($form);
+        $instance->method('getTableName')->willReturn('table');
+
+        self::assertSame($expected, $instance->processTableConfiguration(['uid' => 123], $configuration));
     }
 }

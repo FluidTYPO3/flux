@@ -33,6 +33,27 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
         );
         $this->registerArgument('default', 'string', 'Default value for this attribute');
         $this->registerArgument(
+            'native',
+            'boolean',
+            'If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" ' .
+            'of this field is an already existing field, that original field will be replaced by this field. If the ' .
+            'field is a new field (which doesn\'t already exist in TCA). You can control where this field visually ' .
+            'appears in the editing form by specifying the "position" argument, which supports the same syntax as ' .
+            '\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). ' .
+            'Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm ' .
+            'where Flux fields are normally rendered.',
+            false,
+            false
+        );
+        $this->registerArgument(
+            'position',
+            'string',
+            'Only applies if native=1. Specify where in the editing form this field should be, using the syntax of ' .
+            '\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). ' .
+            'Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated ' .
+            'sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"'
+        );
+        $this->registerArgument(
             'required',
             'boolean',
             'If TRUE, this attribute must be filled when editing the FCE',
@@ -143,6 +164,8 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
         $component->setTransform($arguments['transform']);
         $component->setClearable($arguments['clear']);
         $component->setVariables($arguments['variables']);
+        $component->setNative($arguments['native']);
+        $component->setPosition($arguments['position']);
         return $component;
     }
 }

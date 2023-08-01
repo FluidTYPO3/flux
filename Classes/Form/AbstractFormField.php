@@ -27,6 +27,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
      */
     protected $displayCondition = null;
 
+    protected bool $native = false;
     protected bool $required = false;
     protected bool $requestUpdate = false;
     protected bool $inherit = true;
@@ -34,6 +35,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected bool $clearable = false;
     protected bool $exclude = false;
     protected ?string $validate = null;
+    protected ?string $position = null;
     protected array $config = [];
 
     public static function create(array $settings = []): FormInterface
@@ -115,6 +117,17 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             'transform' => $this->getTransform(),
             'default' => $this->getDefault(),
         ];
+    }
+
+    public function isNative(): bool
+    {
+        return $this->native;
+    }
+
+    public function setNative(bool $native): self
+    {
+        $this->native = $native;
+        return $this;
     }
 
     public function setRequired(bool $required): self
@@ -215,6 +228,17 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             }
         }
         return $validate;
+    }
+
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?string $position): self
+    {
+        $this->position = $position;
+        return $this;
     }
 
     public function setClearable(bool $clearable): self

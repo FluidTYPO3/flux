@@ -22,6 +22,7 @@ use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -587,6 +588,56 @@ class AbstractProvider implements ProviderInterface
      */
     public function processTableConfiguration(array $row, array $configuration): array
     {
+        $form = $this->getForm($row);
+        if (!$form) {
+            return $configuration;
+        }
+
+        /** @var string $table */
+        $table = $this->getTableName($row);
+        $recordType = $configuration['recordTypeValue'];
+
+        // Replace or add fields as native TCA fields if defined as native=1 in the Flux form:
+        foreach ($form->getFields() as $fieldName => $field) {
+            if (!$field->isNative()) {
+                continue;
+            }
+
+            // Basic initialization: declare the TCA field's data structure and initialize it in databaseRow.
+            $configuration['processedTca']['columns'][$fieldName] = $field->build();
+            if (!in_array($fieldName, $configuration['columnsToProcess'], true)) {
+                $configuration['columnsToProcess'][] = $fieldName;
+                $configuration['databaseRow'][$fieldName] = $configuration['databaseRow'][$fieldName]
+                    ?? $field->getDefault();
+            }
+
+            // Handle potential positioning instructions.
+            $positionOption = $field->getPosition();
+            if (!empty($positionOption)) {
+                $insertFieldDefinition = $fieldName;
+                if (strpos($positionOption, ' ') !== false) {
+                    [$position, $sheet] = explode(' ', $positionOption, 2);
+                    $insertFieldDefinition = '--div--;' . $sheet . ',' . $fieldName;
+                } else {
+                    $position = $positionOption;
+                }
+                ExtensionManagementUtility::addToAllTCAtypes($table, $insertFieldDefinition, $recordType, $position);
+                $configuration['processedTca']['types'][$recordType]['showitem']
+                    = $GLOBALS['TCA'][$table]['types'][$recordType]['showitem'];
+            }
+        }
+
+        // Remove any fields listed in the "hideNativeFields" Flux form option
+        /** @var string|array $hideFieldsOption */
+        $hideFieldsOption = $form->getOption(Form::OPTION_HIDE_NATIVE_FIELDS);
+        if (!empty($hideFieldsOption)) {
+            $hideFields = is_array($hideFieldsOption)
+                ? $hideFieldsOption
+                : GeneralUtility::trimExplode(',', $hideFieldsOption, true);
+            foreach ($hideFields as $hideField) {
+                unset($configuration['processedTca']['columns'][$hideField]);
+            }
+        }
         return $configuration;
     }
 

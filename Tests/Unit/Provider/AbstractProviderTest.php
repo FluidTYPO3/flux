@@ -865,30 +865,19 @@ abstract class AbstractProviderTest extends AbstractTestCase
 
         GeneralUtility::addInstance(ViewBuilder::class, $viewBuilder);
 
-        $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
+        $instance = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
             ->getMockForAbstractClass();
         $output = $instance->getPreview(['uid' => 123]);
         self::assertSame([null, 'preview', false], $output);
     }
 
-    public function testProcessTableConfigurationReturnsUntouchedConfiguration(): void
-    {
-        $configuration = ['foo' => 'bar'];
-        $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
-            ->setConstructorArgs($this->getConstructorArguments())
-            ->addMethods(['dummy'])
-            ->getMockForAbstractClass();
-        self::assertSame($configuration, $instance->processTableConfiguration(['uid' => 123], $configuration));
-    }
-
     public function testGetViewForRecord(): void
     {
         $this->prepareTemplateViewMock();
 
-        $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
+        $instance = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
-            //->onlyMethods(['getEnvironmentVariable'])
             ->getMockForAbstractClass();
         $output = $instance->getViewForRecord(['uid' => 123]);
         self::assertInstanceOf(TemplateView::class, $output);
@@ -907,7 +896,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
 
         $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
 
-        $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
+        $instance = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
             ->onlyMethods(['dispatchFlashMessageForException', 'getViewForRecord'])
             ->getMockForAbstractClass();

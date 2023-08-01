@@ -41,16 +41,14 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['flux'] = ['FluidTYPO3\\Flux\\ViewHelpers'];
 
     // FormEngine integration between TYPO3 forms and Flux Providers
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor::class] = array(
-        'depends' => array(
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor::class] = [
+        'depends' => [
+            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsOverrides::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\PageTsConfig::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessCommon::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessShowitem::class
-        ),
-        'before' => array(
-            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class
-        )
-    );
+        ],
+    ];
 
     // FormEngine integration for custom TCA field types used by Flux
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1575276512] = [

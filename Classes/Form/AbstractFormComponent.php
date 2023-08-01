@@ -412,10 +412,11 @@ abstract class AbstractFormComponent implements FormInterface
     {
         $structure = [];
         foreach ($children as $child) {
-            if ($child->getEnabled()) {
-                $name = $child->getName();
-                $structure[$name] = $child->build();
+            if (!$child->getEnabled() || $child instanceof FieldInterface && $child->isNative()) {
+                continue;
             }
+            $name = $child->getName();
+            $structure[$name] = $child->build();
         }
         return $structure;
     }

@@ -16,8 +16,12 @@ interface FieldInterface extends FormInterface
     public function buildConfiguration(): array;
     public function setClearable(bool $clearable): self;
     public function getClearable(): bool;
+    public function setNative(bool $native): self;
+    public function isNative(): bool;
     public function setRequired(bool $required): self;
     public function getRequired(): bool;
+    public function getPosition(): ?string;
+    public function setPosition(?string $position): self;
 
     /**
      * @param string|array|null $displayCondition
