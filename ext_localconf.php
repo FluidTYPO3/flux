@@ -71,13 +71,16 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\HtmlOutputNode::class,
     ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1661337814] = [
+        'nodeName' => 'fluxClearValue',
+        'priority' => 40,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\ClearValueWizard::class,
+    ];
 
     // Small override for record-localize controller to manipulate the record listing to provide child records in list
     if (!class_exists(\TYPO3\CMS\Backend\Controller\Event\AfterPageColumnsSelectedForLocalizationEvent::class)) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class]['className'] = \FluidTYPO3\Flux\Integration\Overrides\LocalizationController::class;
     }
-
-    // Various hooks needed to operate Flux
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;

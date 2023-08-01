@@ -104,6 +104,12 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             $fieldStructureArray['displayCond'] = $displayCondition;
         }
 
+        if ($this->getClearable()) {
+            $fieldStructureArray['config']['fieldWizard']['fluxClearValue'] = [
+                'renderType' => 'fluxClearValue',
+            ];
+        }
+
         if ($this->getRequestUpdate()) {
             $fieldStructureArray['onChange'] = 'reload';
         }

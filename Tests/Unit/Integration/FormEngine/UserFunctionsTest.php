@@ -49,11 +49,6 @@ class UserFunctionsTest extends AbstractTestCase
     public function getUserFunctionTestValues(): array
     {
         return [
-            'clear value field' => [
-                'renderClearValueWizardField',
-                ['itemName' => 'data[tt_content][1][pi_flexform][data][options][lDEF][settings.distribution][vDEF]'],
-                false
-            ],
             'HTML output field' => [
                 'renderHtmlOutputField',
                 ['parameters' => ['closure' => function () {
