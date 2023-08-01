@@ -8,13 +8,27 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
+use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\PageService;
+use PHPUnit\Framework\MockObject\Generator;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 class DummyPageController extends PageController
 {
     protected array $record = [];
+
+    public function __construct()
+    {
+        $fluxService = $this->createMock(FluxService::class);
+        $renderingContextBuilder = $this->createMock(RenderingContextBuilder::class);
+        $requestBuilder = $this->createMock(RequestBuilder::class);
+        $pageService = $this->createMock(PageService::class);
+        parent::__construct($fluxService, $renderingContextBuilder, $requestBuilder, $pageService);
+    }
 
     public function setView(ViewInterface $view): void
     {
@@ -39,5 +53,10 @@ class DummyPageController extends PageController
     public function setProvider(ControllerProviderInterface $provider): void
     {
         $this->provider = $provider;
+    }
+
+    private function createMock(string $className): object
+    {
+        return (new Generator())->getMock($className, [], [], '', false);
     }
 }

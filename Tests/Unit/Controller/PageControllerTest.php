@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
+use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
@@ -49,10 +51,18 @@ class PageControllerTest extends AbstractTestCase
             ->getMock();
         $pageConfigurationService->expects($this->once())->method('resolvePrimaryConfigurationProvider');
         /** @var PageController|MockObject $instance */
-        $instance = $this->getMockBuilder(PageController::class)->setMethods(['getRecord'])->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder(PageController::class)
+            ->setMethods(['getRecord'])
+            ->setConstructorArgs(
+                [
+                    $pageConfigurationService,
+                    $this->getMockBuilder(RenderingContextBuilder::class)->disableOriginalConstructor()->getMock(),
+                    $this->getMockBuilder(RequestBuilder::class)->disableOriginalConstructor()->getMock(),
+                    $pageService
+                ]
+            )
+            ->getMock();
         $instance->expects($this->once())->method('getRecord')->willReturn([]);
-        $instance->injectpageConfigurationService($pageConfigurationService);
-        $instance->injectPageService($pageService);
         $this->callInaccessibleMethod($instance, 'initializeProvider');
     }
 }

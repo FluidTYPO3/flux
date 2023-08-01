@@ -9,6 +9,8 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
+use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
@@ -20,27 +22,21 @@ class PageController extends AbstractFluxController implements PageControllerInt
     protected ?string $fluxTableName = 'pages';
 
     protected PageService $pageService;
-    protected FluxService $pageConfigurationService;
 
-    /**
-     * @var Response
-     */
-    protected $response;
-
-    public function injectPageService(PageService $pageService): void
-    {
+    public function __construct(
+        FluxService $fluxService,
+        RenderingContextBuilder $renderingContextBuilder,
+        RequestBuilder $requestBuilder,
+        PageService $pageService
+    ) {
+        parent::__construct($fluxService, $renderingContextBuilder, $requestBuilder);
         $this->pageService = $pageService;
-    }
-
-    public function injectPageConfigurationService(FluxService $pageConfigurationService): void
-    {
-        $this->pageConfigurationService = $pageConfigurationService;
     }
 
     protected function initializeProvider(): void
     {
         $record = $this->getRecord();
-        $provider = $this->pageConfigurationService->resolvePageProvider($record);
+        $provider = $this->configurationService->resolvePageProvider($record);
         if ($provider instanceof BasicProviderInterface) {
             $this->provider = $provider;
         }
