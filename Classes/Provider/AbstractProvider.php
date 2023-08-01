@@ -527,6 +527,8 @@ class AbstractProvider implements ProviderInterface
             }
         }
 
+        $removals = array_unique($removals);
+
         if (!empty($removals)) {
             $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($stored[$fieldName], $removals);
             if ($stored['uid']) {
