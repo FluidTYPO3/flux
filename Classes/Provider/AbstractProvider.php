@@ -479,57 +479,62 @@ class AbstractProvider implements ProviderInterface
      * is attached to.
      *
      * @param string $operation TYPO3 operation identifier, i.e. "update", "new" etc.
-     * @param integer $id The ID of the current record (which is sometimes not included in $row
-     * @param array $row the record by reference. Changing fields' values changes the record's values just before saving
-     * @param DataHandler $reference A reference to the DataHandler object that is currently saving the record
+     * @param integer $id The ID of the current record (which is sometimes not included in $row)
+     * @param array $row the record that was modified
+     * @param DataHandler $reference A reference to the DataHandler object that modified the record
      * @param array $removals Allows overridden methods to pass an array of fields to remove from the stored Flux value
-     * @return void
+     * @return bool true to stop processing other providers, false to continue processing other providers.
      */
     public function postProcessRecord(
         string $operation,
         int $id,
-        array &$row,
+        array $row,
         DataHandler $reference,
         array $removals = []
-    ): void {
-        // TODO: move to single-fire implementation in TceMain (DataHandler)
-        // TODO: remove in Flux 10.0
-        if ('update' === $operation || 'new' === $operation) {
-            $tableName = (string) $this->getTableName($row);
-            $record = $reference->datamap[$this->tableName][$id] ?? [];
-            $stored = $this->recordService->getSingle($tableName, '*', $record['uid'] ?? 0) ?? $record;
-            $fieldName = $this->getFieldName((array) $record);
-            $dontProcess = (
-                null === $fieldName
-                || false === isset($row[$fieldName])
-                || false === isset($record[$fieldName]['data'])
-                || false === is_array($record[$fieldName]['data'])
-            );
-            if (true === $dontProcess) {
-                return;
-            }
-            $data = $record[$fieldName]['data'];
-            foreach ($data as $sheetName => $sheetFields) {
-                foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
-                    if ('_clear' === substr($sheetFieldName, -6)) {
-                        array_push($removals, $sheetFieldName);
-                    } else {
-                        $clearFieldName = $sheetFieldName . '_clear';
-                        if (isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF'])) {
-                            if ((boolean) $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) {
-                                array_push($removals, $sheetFieldName);
-                            }
+    ): bool {
+        if (!in_array($operation, ['update', 'new'], true)) {
+            return false;
+        }
+
+        $record = $reference->datamap[$this->tableName][$id] ?? $row;
+        $tableName = (string) $this->getTableName($record);
+        $fieldName = $this->getFieldName($record);
+
+        $dontProcess = (
+            $fieldName === null
+            || !isset($record[$fieldName])
+            || !isset($record[$fieldName]['data'])
+            || !is_array($record[$fieldName]['data'])
+        );
+        if ($dontProcess) {
+            return false;
+        }
+
+        $stored = $this->recordService->getSingle($tableName, '*', $id) ?? $record;
+        $data = $record[$fieldName]['data'];
+        foreach ($data as $sheetName => $sheetFields) {
+            foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
+                if ('_clear' === substr($sheetFieldName, -6)) {
+                    $removals[] = $sheetFieldName;
+                } else {
+                    $clearFieldName = $sheetFieldName . '_clear';
+                    if (isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF'])) {
+                        if ((boolean) $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) {
+                            $removals[] = $sheetFieldName;
                         }
                     }
                 }
             }
-            $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($row[$fieldName], $removals);
-            $row[$fieldName] = $stored[$fieldName];
-            $reference->datamap[$this->tableName][$id][$fieldName] = $row[$fieldName];
+        }
+
+        if (!empty($removals)) {
+            $stored[$fieldName] = MiscellaneousUtility::cleanFlexFormXml($stored[$fieldName], $removals);
             if ($stored['uid']) {
                 $this->recordService->update($tableName, $stored);
             }
         }
+
+        return false;
     }
 
     /**

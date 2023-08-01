@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -50,6 +51,22 @@ class DataHandlerSubscriber
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
             $cacheManager->flushCachesInGroup('system');
             $this->regenerateContentTypes();
+            return;
+        }
+
+        $record = $reference->datamap[$table][$id];
+
+        /** @var RecordProcessingProvider[] $providers */
+        $providers = $this->getProviderResolver()->resolveConfigurationProviders(
+            $table,
+            null,
+            $record,
+            null,
+            [RecordProcessingProvider::class]
+        );
+
+        foreach ($providers as $provider) {
+            $provider->postProcessRecord($command, (integer) $id, $record, $reference, []);
         }
 
         if ($table !== 'tt_content'

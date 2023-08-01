@@ -180,14 +180,14 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     public function postProcessRecord(
         string $operation,
         int $id,
-        array &$row,
+        array $row,
         DataHandler $reference,
         array $removals = []
-    ): void {
-        if ('update' === $operation) {
+    ): bool {
+        if ($operation === 'update') {
             $record = $this->recordService->getSingle((string) $this->getTableName($row), '*', $id);
             if ($record === null) {
-                return;
+                return false;
             }
             if (isset($reference->datamap[$this->tableName][$id])) {
                 $record = RecursiveArrayUtility::mergeRecursiveOverrule(
@@ -221,7 +221,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                 }
             }
         }
-        parent::postProcessRecord($operation, $id, $row, $reference, $removals);
+        return parent::postProcessRecord($operation, $id, $row, $reference, $removals);
     }
 
     /**

@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\PluginProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\PreviewProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\View\ViewContext;
 
@@ -35,6 +36,7 @@ interface ProviderInterface extends
     DataStructureProviderInterface,
     ContentTypeProviderInterface,
     PluginProviderInterface,
-    PreviewProviderInterface
+    PreviewProviderInterface,
+    RecordProcessingProvider
 {
 }

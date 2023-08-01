@@ -431,12 +431,16 @@ class PageProviderTest extends AbstractTestCase
             ->with([], 'settings.input')->willReturn('test');
         $provider->method('loadRecordTreeFromDatabase')->willReturn([]);
 
-        $this->recordService->expects($this->atLeastOnce())->method('getSingle')->willReturn($parentInstance->datamap[$tableName][$id]);
-        $this->recordService->expects($this->once())->method('update');
+        $storedRecord = $parentInstance->datamap[$tableName][$id];
+        $storedRecord[$fieldName] = GeneralUtility::array2xml($storedRecord[$fieldName]);
+
+        $expectedUpdateRecord = $storedRecord;
+        $expectedUpdateRecord[$fieldName] = '';
+
+        $this->recordService->expects($this->atLeastOnce())->method('getSingle')->willReturn($storedRecord);
+        $this->recordService->expects($this->once())->method('update')->with('pages', $expectedUpdateRecord);
 
         $provider->postProcessRecord('update', $id, $record, $parentInstance);
-        $this->assertIsString($record[$fieldName]);
-        $this->assertStringNotContainsString('settings.input', $record[$fieldName]);
     }
 
     public function testLoadRecordTreeFromDatabaseReturnsEmptyArrayIfRecordIsEmpty(): void
