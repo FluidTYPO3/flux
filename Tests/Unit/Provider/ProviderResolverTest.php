@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Provider\ContentProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\Provider;
@@ -33,7 +32,7 @@ class ProviderResolverTest extends AbstractTestCase
         $subject->method('loadTypoScriptConfigurationProviderInstances')->willReturn([]);
         $subject->method('validateAndInstantiateProviders')->willReturnArgument(0);
 
-        $provider1 = $this->getMockBuilder(ContentProvider::class)->disableOriginalConstructor()->getMock();
+        $provider1 = $this->getMockBuilder(DummyConfigurationProvider::class)->disableOriginalConstructor()->getMock();
         $provider2 = $this->getMockBuilder(PageProvider::class)->disableOriginalConstructor()->getMock();
         $provider3 = $this->getMockBuilder(DummyBasicProvider::class)->disableOriginalConstructor()->getMock();
 
@@ -61,9 +60,9 @@ class ProviderResolverTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $configurationService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue([]));
-        GeneralUtility::setSingletonInstance(FluxService::class, $configurationService);
 
-        $instance = new ProviderResolver();
+        $instance = $this->getMockBuilder(ProviderResolver::class)->onlyMethods(['getFluxService'])->getMock();
+        $instance->method('getFluxService')->willReturn($configurationService);
 
         $providers = $instance->loadTypoScriptConfigurationProviderInstances();
         $this->assertIsArray($providers);
@@ -89,10 +88,9 @@ class ProviderResolverTest extends AbstractTestCase
             ->method('getTypoScriptByPath')
             ->willReturn($mockedTypoScript);
 
-        GeneralUtility::setSingletonInstance(FluxService::class, $configurationService);
-
         /** @var \FluidTYPO3\Flux\Provider\ProviderResolver $instance */
-        $instance = new ProviderResolver();
+        $instance = $this->getMockBuilder(ProviderResolver::class)->onlyMethods(['getFluxService'])->getMock();
+        $instance->method('getFluxService')->willReturn($configurationService);
 
         $dummyProvider = $this->getMockBuilder(DummyConfigurationProvider::class)->disableOriginalConstructor()->getMock();
         GeneralUtility::addInstance(DummyConfigurationProvider::class, $dummyProvider);
