@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
-class PageController extends AbstractFluxController implements PageControllerInterface
+class PageController extends AbstractFluxController
 {
     protected ?string $fluxRecordField = 'tx_fed_page_flexform';
     protected ?string $fluxTableName = 'pages';
