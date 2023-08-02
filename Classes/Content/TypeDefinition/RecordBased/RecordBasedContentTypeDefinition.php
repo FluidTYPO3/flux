@@ -70,7 +70,11 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
      */
     protected function getContentConfiguration(): array
     {
-        return (array) GeneralUtility::xml2array($this->record['content_configuration'] ?? '');
+        $configuration = $this->record['content_configuration'] ?? [];
+        if (is_array($configuration)) {
+            return $configuration;
+        }
+        return (array) GeneralUtility::xml2array($configuration);
     }
 
     /**
@@ -78,7 +82,11 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
      */
     protected function getGridConfiguration(): array
     {
-        return (array) GeneralUtility::xml2array($this->record['grid'] ?? '');
+        $configuration = $this->record['grid'] ?? [];
+        if (is_array($configuration)) {
+            return $configuration;
+        }
+        return (array) GeneralUtility::xml2array($configuration);
     }
 
     public function getSheetNamesAndLabels(): \Generator
