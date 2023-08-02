@@ -34,7 +34,7 @@ class ViewBuilder
         /** @var class-string $viewClassName */
         $viewClassName = PreviewView::class;
 
-        $renderingContext = $this->buildRenderingContext(
+        $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionIdentity,
             $controllerName,
             $controllerAction,
@@ -58,7 +58,7 @@ class ViewBuilder
         /** @var class-string $viewClassName */
         $viewClassName = TemplateView::class;
 
-        $renderingContext = $this->buildRenderingContext(
+        $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionIdentity,
             $controllerName,
             $controllerAction,
@@ -70,21 +70,5 @@ class ViewBuilder
         $view = GeneralUtility::makeInstance($viewClassName);
         $view->setRenderingContext($renderingContext);
         return $view;
-    }
-
-    private function buildRenderingContext(
-        string $extensionIdentity,
-        string $controllerName,
-        string $controllerAction,
-        string $pluginName,
-        ?string $templatePathAndFilename
-    ): RenderingContextInterface {
-        return $this->renderingContextBuilder->buildRenderingContextFor(
-            $extensionIdentity,
-            $controllerName,
-            $controllerAction,
-            $pluginName,
-            $templatePathAndFilename
-        );
     }
 }
