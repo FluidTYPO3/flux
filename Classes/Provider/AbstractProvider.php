@@ -582,7 +582,7 @@ class AbstractProvider implements ProviderInterface
 
         // Replace or add fields as native TCA fields if defined as native=1 in the Flux form:
         foreach ($form->getFields() as $fieldName => $field) {
-            if (!$field->isNative()) {
+            if (!$field instanceof Form\FieldInterface || !$field->isNative()) {
                 continue;
             }
 
