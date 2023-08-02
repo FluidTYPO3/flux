@@ -74,6 +74,7 @@ class RenderingContextBuilder implements SingletonInterface
         }
 
         $templatePaths = $renderingContext->getTemplatePaths();
+        $templatePaths->fillDefaultsByPackageName($extensionKey);
 
         if ($templatePathAndFilename) {
             $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
