@@ -151,7 +151,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
 
     public function getControllerActionReferenceFromRecord(array $row, ?string $forField = null): string
     {
-        if ($forField === self::FIELD_NAME_MAIN && !empty($row[self::FIELD_ACTION_MAIN])) {
+        if (($forField === self::FIELD_NAME_MAIN || $forField === null) && !empty($row[self::FIELD_ACTION_MAIN])) {
             return is_array($row[self::FIELD_ACTION_MAIN])
                 ? $row[self::FIELD_ACTION_MAIN][0]
                 : $row[self::FIELD_ACTION_MAIN];
