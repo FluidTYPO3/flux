@@ -51,6 +51,13 @@ services:
   FluidTYPO3\Flux\Form\Transformation\FormDataTransformer:
     public: true
 
+  FluidTYPO3\Flux\Integration\Event\ModifyPageLayoutContentEventListener:
+    public: true
+    tags:
+      - name: event.listener
+        identifier: 'flux-page-preview'
+        method: 'renderPreview'
+        event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
   FluidTYPO3\Flux\Integration\Event\PageContentPreviewRenderingEventListener:
     tags:
       - name: event.listener
