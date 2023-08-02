@@ -43,26 +43,30 @@ class ContentTypeManager implements SingletonInterface
     protected array $typeNames = [];
 
     /**
+     * @var FluidRenderingContentTypeDefinitionInterface[]
+     */
+    protected static array $cache = [];
+
+    /**
      * @return FluidRenderingContentTypeDefinitionInterface[]
      */
     public function fetchContentTypes(): iterable
     {
-        static $types = [];
-        if (empty($types)) {
+        if (empty(static::$cache)) {
             try {
                 $cache = $this->getCache();
+                /** @var FluidRenderingContentTypeDefinitionInterface[]|null $fromCache */
                 $fromCache = $cache->get(self::CACHE_IDENTIFIER);
                 if ($fromCache) {
-                    /** @var array $types */
-                    $types = $fromCache;
+                    static::$cache = $fromCache;
                 } else {
-                    $types = array_replace(
+                    static::$cache = array_replace(
                         $this->fetchDropInContentTypes(),
                         $this->fetchFileBasedContentTypes(),
                         $this->fetchRecordBasedContentTypes()
                     );
                 }
-                $this->typeNames = array_merge($this->typeNames, array_keys($types));
+                $this->typeNames = array_merge($this->typeNames, array_keys(static::$cache));
             } catch (DBALException $error) {
                 // Suppress schema- or connection-related issues
             } catch (Exception $error) {
@@ -71,7 +75,7 @@ class ContentTypeManager implements SingletonInterface
                 // Suppress caches not yet initialized errors
             }
         }
-        return $types;
+        return static::$cache;
     }
 
     public function fetchContentTypeNames(): iterable
@@ -102,6 +106,7 @@ class ContentTypeManager implements SingletonInterface
 
     public function regenerate(): void
     {
+        self::$cache = [];
         $cache = $this->getCache();
         $cache->remove(self::CACHE_IDENTIFIER);
         $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());
