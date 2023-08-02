@@ -27,7 +27,7 @@ class ColumnPositionNode extends AbstractNode implements NodeInterface
         $return = $this->initializeResultArray();
         /** @var UserFunctions $userFunctions */
         $userFunctions = GeneralUtility::makeInstance(UserFunctions::class);
-        $return['html'] = $userFunctions->renderColumnPositionField($this->parameters['parameterArray']);
+        $return['html'] = $userFunctions->renderColumnPositionField($this->parameters);
         return $return;
     }
 }

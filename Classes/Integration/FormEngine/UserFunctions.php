@@ -58,7 +58,8 @@ class UserFunctions
      */
     public function renderColumnPositionField(array &$parameters): string
     {
-        $colPos = $parameters['itemFormElValue'];
+        $colPos = $parameters['parameterArray']['itemFormElValue'];
+        $inputName = $parameters['parameterArray']['itemFormElName'];
         $inputValue = (string) $colPos;
 
         $id = StringUtility::getUniqueId('formengine-flux-colPos-');
@@ -68,7 +69,7 @@ class UserFunctions
             return sprintf(
                 '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" value="%s" />'
                 . 'Column position: <strong class="flux-flex-colPos-text">%d</strong>',
-                $parameters['itemFormElName'],
+                $inputName,
                 $id,
                 $inputValue,
                 $inputValue
@@ -78,7 +79,7 @@ class UserFunctions
         // The field does not yet have a value, which means this is used for a new panel
         // and we have to fill the fields that will be used by the JavaScript module to
         // determine the value
-        $rowUid = $parameters['row']['uid'];
+        $rowUid = $parameters['databaseRow']['uid'] ?? null;
         // Unsaved records may begin with "NEW", make sure we don't have one of those
         // as we cannot look up anything in the database in that case
         if (!isset($rowUid) || !is_int($rowUid)) {
@@ -93,7 +94,7 @@ class UserFunctions
             '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" '
             . 'data-max-value="%d" data-taken-values="%s" />Column position: '
             . '<strong class="flux-flex-colPos-text"></strong>',
-            $parameters['itemFormElName'],
+            $inputName,
             $id,
             $minimumColumnPosition,
             $maximumColumnPosition,

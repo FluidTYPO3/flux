@@ -106,7 +106,7 @@ class UserFunctionsTest extends AbstractTestCase
 
     public function testRenderColumnPositionFieldWithExistingColPosValue(): void
     {
-        $parameters = ['itemFormElValue' => '2', 'itemFormElName' => 'colPos'];
+        $parameters = ['parameterArray' => ['itemFormElValue' => '2', 'itemFormElName' => 'colPos'], 'databaseRow' => []];
         $subject = new UserFunctions();
         $output = $subject->renderColumnPositionField($parameters);
         self::assertStringContainsString('name="colPos"', $output);
@@ -115,7 +115,7 @@ class UserFunctionsTest extends AbstractTestCase
 
     public function testRenderColumnPositionFieldWithoutExistingColPosValue(): void
     {
-        $parameters = ['itemFormElValue' => '', 'itemFormElName' => 'colPos', 'row' => ['uid' => 'NEW123']];
+        $parameters = ['parameterArray' => ['itemFormElValue' => '', 'itemFormElName' => 'colPos'], 'databaseRow' => ['uid' => 'NEW123']];
         $subject = $this->getMockBuilder(UserFunctions::class)
             ->setMethods(['determineTakenColumnPositionsWithinParent'])
             ->disableOriginalConstructor()
