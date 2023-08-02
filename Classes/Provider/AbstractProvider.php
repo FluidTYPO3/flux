@@ -325,7 +325,7 @@ class AbstractProvider implements ProviderInterface
                 $this->getTemplatePathAndFilename($row, $forField)
             );
             if ($variables['form']->getOption(Form::OPTION_STATIC)) {
-                //$this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+                $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
             }
         }
 
