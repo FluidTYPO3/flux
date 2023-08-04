@@ -387,7 +387,7 @@ abstract class AbstractFormComponent implements FormInterface
             if (method_exists($this, $setterMethodName)) {
                 $typeReflection = (new \ReflectionMethod($this, $setterMethodName))->getParameters()[0]->getType();
                 if ($typeReflection) {
-                    switch ((string) $typeReflection) {
+                    switch ($typeReflection->getName()) {
                         case 'bool':
                             $propertyValue = (bool) $propertyValue;
                             break;
