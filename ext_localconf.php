@@ -116,7 +116,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     }
 
     \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
-        \FluidTYPO3\Flux\Integration\ContentTypeBuilder::DEFAULT_SHOWITEM,
+        \FluidTYPO3\Flux\Builder\ContentTypeBuilder::DEFAULT_SHOWITEM,
         [
             '10.4.0' => '
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,

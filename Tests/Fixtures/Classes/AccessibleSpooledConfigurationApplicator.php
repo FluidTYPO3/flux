@@ -3,7 +3,7 @@
 namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
-use FluidTYPO3\Flux\Integration\ContentTypeBuilder;
+use FluidTYPO3\Flux\Builder\ContentTypeBuilder;
 
 class AccessibleSpooledConfigurationApplicator extends SpooledConfigurationApplicator
 {
