@@ -16,6 +16,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class FlexFormBuilder
 {
@@ -124,7 +125,9 @@ class FlexFormBuilder
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.0', '<=')) {
+            $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+        }
 
         return $dataStructArray;
     }
