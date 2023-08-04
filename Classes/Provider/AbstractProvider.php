@@ -528,7 +528,7 @@ class AbstractProvider implements ProviderInterface
     protected function extractFieldNamesToClear(array $record, string $fieldName): array
     {
         $removals = [];
-        $data = $record[$fieldName]['data'];
+        $data = $record[$fieldName]['data'] ?? [];
         foreach ($data as $sheetName => $sheetFields) {
             foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
                 if ('_clear' === substr($sheetFieldName, -6)) {
