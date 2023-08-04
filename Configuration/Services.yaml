@@ -54,7 +54,16 @@ services:
     public: true
   FluidTYPO3\Flux\Form\Transformation\FormDataTransformer:
     public: true
+  FluidTYPO3\Flux\Integration\WizardItemsManipulator:
+    public: true
 
+  FluidTYPO3\Flux\Integration\Event\ModifyNewContentElementWizardItemsEventListener:
+    public: true
+    tags:
+      - name: event.listener
+        identifier: 'flux-new-content-wizard'
+        method: 'manipulateWizardItems'
+        event: TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent
   FluidTYPO3\Flux\Integration\Event\ModifyPageLayoutContentEventListener:
     public: true
     tags:

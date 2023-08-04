@@ -91,8 +91,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class . '->clearCacheCommand';
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] =
-        \FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems::class;
 
     if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '12', '<')) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['record_is_used']['flux'] =
@@ -101,6 +99,8 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
             \FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm::class;
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['flux'] =
             \FluidTYPO3\Flux\Integration\HookSubscribers\Preview::class;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['flux'] =
+            \FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems::class;
     }
 
     if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11', '<')) {
