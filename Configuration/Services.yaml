@@ -29,6 +29,8 @@ services:
     public: true
   FluidTYPO3\Flux\Builder\ContentTypeBuilder:
     public: true
+  FluidTYPO3\Flux\Builder\FlexFormBuilder:
+    public: true
   FluidTYPO3\Flux\Builder\RenderingContextBuilder:
     public: true
   FluidTYPO3\Flux\Builder\ViewBuilder:

@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Integration\Event;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\FlexFormBuilder;
+use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use TYPO3\CMS\Core\Configuration\Event\BeforeFlexFormDataStructureIdentifierInitializedEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

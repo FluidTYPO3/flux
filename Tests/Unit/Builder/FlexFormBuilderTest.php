@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Tests\Unit\Integration;
+namespace FluidTYPO3\Flux\Tests\Unit\Builder;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\FlexFormBuilder;
+use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;

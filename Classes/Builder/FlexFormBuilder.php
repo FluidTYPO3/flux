@@ -1,5 +1,5 @@
 <?php
-namespace FluidTYPO3\Flux\Integration;
+namespace FluidTYPO3\Flux\Builder;
 
 /*
  * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
