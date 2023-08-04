@@ -56,7 +56,7 @@ class DataHandlerSubscriber
         }
 
         if ($GLOBALS['BE_USER']->workspace) {
-            $record = BackendUtility::getRecord($table, $id);
+            $record = BackendUtility::getRecord($table, (integer) $id);
         } else {
             $record = $reference->datamap[$table][$id] ?? null;
         }
