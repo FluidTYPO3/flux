@@ -385,7 +385,13 @@ abstract class AbstractFormComponent implements FormInterface
         foreach ($structure as $propertyName => $propertyValue) {
             $setterMethodName = 'set' . ucfirst($propertyName);
             if (method_exists($this, $setterMethodName)) {
-                $typeReflection = (new \ReflectionMethod($this, $setterMethodName))->getParameters()[0]->getType();
+                /** @var \ReflectionParameter|null $parameterReflection */
+                $parameterReflection = (new \ReflectionMethod($this, $setterMethodName))->getParameters()[0] ?? null;
+                if ($parameterReflection === null) {
+                    continue;
+                }
+                /** @var \ReflectionNamedType $typeReflection */
+                $typeReflection = $parameterReflection->getType();
                 if ($typeReflection) {
                     switch ($typeReflection->getName()) {
                         case 'bool':
