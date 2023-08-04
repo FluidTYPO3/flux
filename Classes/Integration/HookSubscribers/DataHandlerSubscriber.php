@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -54,7 +55,11 @@ class DataHandlerSubscriber
             return;
         }
 
-        $record = $reference->datamap[$table][$id];
+        if ($GLOBALS['BE_USER']->workspace) {
+            $record = BackendUtility::getRecord($table, $id);
+        } else {
+            $record = $reference->datamap[$table][$id];
+        }
 
         /** @var RecordProcessingProvider[] $providers */
         $providers = $this->getProviderResolver()->resolveConfigurationProviders(
