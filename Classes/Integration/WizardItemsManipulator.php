@@ -64,7 +64,7 @@ class WizardItemsManipulator
     protected function filterPermittedFluidContentTypesByInsertionPosition(
         array $items,
         int $pageUid,
-        int $columnPosition,
+        int $columnPosition
     ): array {
         [$whitelist, $blacklist] = $this->getWhiteAndBlackListsFromPageAndContentColumn($pageUid, $columnPosition);
         $overrides = HookHandler::trigger(
