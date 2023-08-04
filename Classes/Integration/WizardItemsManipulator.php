@@ -8,9 +8,7 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
-use Psr\Http\Message\RequestInterface;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

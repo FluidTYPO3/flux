@@ -8,19 +8,10 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Content\ContentTypeManager;
-use FluidTYPO3\Flux\Form\FormInterface;
-use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\WizardItemsManipulator;
-use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
-use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class WizardItems implements NewContentElementWizardHookInterface
 {
