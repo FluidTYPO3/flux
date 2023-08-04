@@ -8,13 +8,10 @@ namespace FluidTYPO3\Flux\Integration\Event;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\PreviewRenderer;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ModifyPageLayoutContentEventListener
 {

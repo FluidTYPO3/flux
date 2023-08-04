@@ -8,14 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
-use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Controller\PageController;
-use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\PageService;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class PageControllerTest

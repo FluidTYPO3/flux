@@ -12,7 +12,6 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\TemplateView;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class ViewBuilder
