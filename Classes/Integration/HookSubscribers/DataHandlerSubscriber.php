@@ -58,20 +58,22 @@ class DataHandlerSubscriber
         if ($GLOBALS['BE_USER']->workspace) {
             $record = BackendUtility::getRecord($table, $id);
         } else {
-            $record = $reference->datamap[$table][$id];
+            $record = $reference->datamap[$table][$id] ?? null;
         }
 
-        /** @var RecordProcessingProvider[] $providers */
-        $providers = $this->getProviderResolver()->resolveConfigurationProviders(
-            $table,
-            null,
-            $record,
-            null,
-            [RecordProcessingProvider::class]
-        );
+        if ($record !== null) {
+            /** @var RecordProcessingProvider[] $providers */
+            $providers = $this->getProviderResolver()->resolveConfigurationProviders(
+                $table,
+                null,
+                $record,
+                null,
+                [RecordProcessingProvider::class]
+            );
 
-        foreach ($providers as $provider) {
-            $provider->postProcessRecord($command, (integer) $id, $record, $reference, []);
+            foreach ($providers as $provider) {
+                $provider->postProcessRecord($command, (integer) $id, $record, $reference, []);
+            }
         }
 
         if ($table !== 'tt_content'
