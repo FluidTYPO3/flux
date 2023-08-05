@@ -16,8 +16,10 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3Fluid\Fluid\Exception;
@@ -27,15 +29,18 @@ class SpooledConfigurationApplicator
     private ContentTypeBuilder $contentTypeBuilder;
     private ContentTypeManager $contentTypeManager;
     private RequestBuilder $requestBuilder;
+    private PackageManager $packageManager;
 
     public function __construct(
         ContentTypeBuilder $contentTypeBuilder,
         ContentTypeManager $contentTypeManager,
-        RequestBuilder $requestBuilder
+        RequestBuilder $requestBuilder,
+        PackageManager $packageManager
     ) {
         $this->contentTypeBuilder = $contentTypeBuilder;
         $this->contentTypeManager = $contentTypeManager;
         $this->requestBuilder = $requestBuilder;
+        $this->packageManager = $packageManager;
     }
 
     public function processData(): void
@@ -55,6 +60,28 @@ class SpooledConfigurationApplicator
 
         $this->spoolQueuedContentTypeRegistrations(Core::getQueuedContentTypeRegistrations());
         Core::clearQueuedContentTypeRegistrations();
+
+        $scopedRequire = static function (string $filename): void {
+            require $filename;
+        };
+
+        $activePackages = $this->packageManager->getActivePackages();
+        foreach ($activePackages as $package) {
+            try {
+                $finder = Finder::create()
+                    ->files()
+                    ->sortByName()
+                    ->depth(0)
+                    ->name('*.php')
+                    ->in($package->getPackagePath() . 'Configuration/TCA/Flux');
+            } catch (\InvalidArgumentException $e) {
+                // No such directory in this package
+                continue;
+            }
+            foreach ($finder as $fileInfo) {
+                $scopedRequire($fileInfo->getPathname());
+            }
+        }
     }
 
     private function spoolQueuedContentTypeTableConfigurations(array $queue): void

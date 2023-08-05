@@ -21,6 +21,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3Fluid\Fluid\Exception;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
@@ -32,6 +33,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     private ContentTypeBuilder $contentTypeBuilder;
     private ContentTypeManager $contentTypeManager;
     private RequestBuilder $requestBuilder;
+    private PackageManager $packageManager;
 
     protected function setUp(): void
     {
@@ -81,6 +83,12 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
 
         $this->requestBuilder = $this->getMockBuilder(RequestBuilder::class)->disableOriginalConstructor()->getMock();
 
+        $this->packageManager = $this->getMockBuilder(PackageManager::class)
+            ->onlyMethods(['getActivePackages'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->packageManager->method('getActivePackages')->willReturn([]);
+
         $this->subject = $this->getMockBuilder(SpooledConfigurationApplicator::class)
             ->onlyMethods(['getApplicationContext', 'getContentTypeManager'])
             ->setConstructorArgs(
@@ -88,6 +96,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
                     $this->contentTypeBuilder,
                     $this->contentTypeManager,
                     $this->requestBuilder,
+                    $this->packageManager,
                 ]
             )
             ->getMock();
