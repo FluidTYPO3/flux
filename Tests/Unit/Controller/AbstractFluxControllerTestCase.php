@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -91,6 +92,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             $this->fluxService,
             $this->renderingContextBuilder,
             $this->requestBuilder,
+            $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
         ];
     }
 

@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Integration\NormalizedData\ImplementationRegistry;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
@@ -84,7 +85,8 @@ class DataAccessTraitTest extends AbstractTestCase
         return [
             $this->fluxService,
             $this->renderingContextBuilder,
-            $this->requestBuilder
+            $this->requestBuilder,
+            $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
         ];
     }
 

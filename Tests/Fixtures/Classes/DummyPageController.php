@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use PHPUnit\Framework\MockObject\Generator;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
@@ -26,7 +27,8 @@ class DummyPageController extends PageController
         $fluxService = $this->createMock(FluxService::class);
         $renderingContextBuilder = $this->createMock(RenderingContextBuilder::class);
         $requestBuilder = $this->createMock(RequestBuilder::class);
-        parent::__construct($fluxService, $renderingContextBuilder, $requestBuilder);
+        $recordService = $this->createMock(WorkspacesAwareRecordService::class);
+        parent::__construct($fluxService, $renderingContextBuilder, $requestBuilder, $recordService);
     }
 
     public function setView(ViewInterface $view): void

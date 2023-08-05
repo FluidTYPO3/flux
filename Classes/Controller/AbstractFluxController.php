@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
@@ -56,16 +57,19 @@ abstract class AbstractFluxController extends ActionController
     protected RenderingContextBuilder $renderingContextBuilder;
     protected RequestBuilder $requestBuilder;
     protected FluxService $configurationService;
+    protected WorkspacesAwareRecordService $recordService;
     protected ?ControllerProviderInterface $provider = null;
 
     public function __construct(
         FluxService $fluxService,
         RenderingContextBuilder $renderingContextBuilder,
-        RequestBuilder $requestBuilder
+        RequestBuilder $requestBuilder,
+        WorkspacesAwareRecordService $recordService
     ) {
         $this->configurationService = $fluxService;
         $this->renderingContextBuilder = $renderingContextBuilder;
         $this->requestBuilder = $requestBuilder;
+        $this->recordService = $recordService;
 
         /** @var Arguments $arguments */
         $arguments = GeneralUtility::makeInstance(Arguments::class);
@@ -537,7 +541,15 @@ abstract class AbstractFluxController extends ActionController
                 1666538343
             );
         }
-        return $contentObject->data;
+        $record = $contentObject->data;
+        if ($record['_LOCALIZED_UID'] ?? false) {
+            $record = $this->recordService->getSingle(
+                (string) $this->getFluxTableName(),
+                '*',
+                $record['_LOCALIZED_UID']
+            ) ?? $record;
+        }
+        return $record;
     }
 
     protected function getServerRequest(): ServerRequestInterface
