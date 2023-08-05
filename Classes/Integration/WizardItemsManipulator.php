@@ -228,11 +228,16 @@ class WizardItemsManipulator
         /** @var string|null $allowed */
         $allowed = $component->getVariable('allowedContentTypes');
         if ($allowed !== null) {
-            $whitelist = array_merge($whitelist, GeneralUtility::trimExplode(',', $allowed));
+            // Whitelist is not merged - it is mutually exclusive. If defined in content element's nested column, then
+            // that whitelist will be the only whitelist considered. Otherwise, the page column's whitelist is used.
+            $whitelist = GeneralUtility::trimExplode(',', $allowed);
         }
         /** @var string|null $denied */
         $denied = $component->getVariable('deniedContentTypes');
         if ($denied !== null) {
+            // But the blacklist is cumulative: if the content element's nested column defines unwanted content types
+            // and the page column also defines unwanted content types then the two lists are combined into one larger
+            // list of unwanted content types declared by both the page and parent content column.
             $blacklist = array_merge($blacklist, GeneralUtility::trimExplode(',', $denied));
         }
         return [$whitelist, $blacklist];

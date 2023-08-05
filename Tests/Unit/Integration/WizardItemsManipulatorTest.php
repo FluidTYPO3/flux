@@ -15,9 +15,11 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Integration\WizardItemsManipulator;
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
@@ -44,7 +46,6 @@ class WizardItemsManipulatorTest extends AbstractTestCase
             ->onlyMethods(['fetchContentTypeNames'])
             ->disableOriginalConstructor()
             ->getMock();
-
         $this->siteFinder = $this->getMockBuilder(SiteFinder::class)
             ->onlyMethods(['getSiteByPageId'])
             ->disableOriginalConstructor()
@@ -210,5 +211,60 @@ class WizardItemsManipulatorTest extends AbstractTestCase
 
         $items = $subject->manipulateWizardItems($items, 1, 12);
         self::assertSame([$type1], $items);
+    }
+
+    public function testGetWhiteAndBlackListsFromPageAndContentColumn(): void
+    {
+        $pageUid = 123;
+        $parentRecordUid = 456;
+        $columnPosition = ColumnNumberUtility::calculateColumnNumberForParentAndColumn($parentRecordUid, 13);
+
+        $pageRecord = ['uid' => 123];
+        $contentRecord = ['uid' => 456, 'colPos' => 3];
+
+        $pageGrid = Grid::create();
+        $pageGrid->createContainer(Row::class, 'row')
+            ->createContainer(Column::class, 'column')
+            ->setColumnPosition(3)
+            ->setVariable('allowedContentTypes', 'c1,c2')
+            ->setVariable('deniedContentTypes', 'c8');
+
+        $contentGrid = Grid::create();
+        $contentGrid->createContainer(Row::class, 'row')
+            ->createContainer(Column::class, 'column')
+            ->setColumnPosition(13)
+            ->setVariable('allowedContentTypes', 'c4,c5')
+            ->setVariable('deniedContentTypes', 'c9');
+
+        $pageProvider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+        $pageProvider->method('getGrid')->willReturn($pageGrid);
+
+        $contentProvider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
+        $contentProvider->method('getGrid')->willReturn($contentGrid);
+
+        $this->recordService->method('getSingle')->willReturnMap(
+            [
+                ['pages', '*', $pageUid, $pageRecord],
+                ['tt_content', 'uid,colPos', $parentRecordUid, ['uid' => 789, 'colPos' => 3]],
+                ['tt_content', '*', $parentRecordUid, $contentRecord],
+            ]
+        );
+        $this->fluxService->method('resolveConfigurationProviders')->willReturnOnConsecutiveCalls(
+            [$pageProvider],
+            [$contentProvider]
+        );
+
+        [$whitelist, $blacklist] = $this->callInaccessibleMethod(
+            $this->subject,
+            'getWhiteAndBlackListsFromPageAndContentColumn',
+            $pageUid,
+            $columnPosition
+        );
+
+        $expectedWhitelist = ['c4', 'c5'];
+        $expectedBlacklist = ['c8', 'c9'];
+
+        self::assertSame($expectedWhitelist, $whitelist, 'Whitelist does not match expected value');
+        self::assertSame($expectedBlacklist, $blacklist, 'Blacklist does not match expected value');
     }
 }
