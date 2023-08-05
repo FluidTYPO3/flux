@@ -12,6 +12,9 @@
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
                 'fieldWizard' => [
                     'selectIcons' => [
                         'disabled' => false
@@ -23,9 +26,13 @@
             'exclude' => 1,
             'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action_sub',
             'onChange' => 'reload',
+
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
                 'fieldWizard' => [
                     'selectIcons' => [
                         'disabled' => false
