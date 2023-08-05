@@ -12,7 +12,6 @@
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => 'FluidTYPO3\Flux\Backend\PageLayoutDataProvider->addItems',
                 'fieldWizard' => [
                     'selectIcons' => [
                         'disabled' => false
@@ -27,7 +26,6 @@
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => 'FluidTYPO3\Flux\Backend\PageLayoutDataProvider->addItems',
                 'fieldWizard' => [
                     'selectIcons' => [
                         'disabled' => false
@@ -56,6 +54,18 @@
             ]
         ],
     ]);
+
+    \FluidTYPO3\Flux\Integration\MultipleItemsProcFunc::register(
+        'pages',
+        'tx_fed_page_controller_action',
+        \FluidTYPO3\Flux\Backend\PageLayoutDataProvider::class . '->addItems'
+    );
+
+    \FluidTYPO3\Flux\Integration\MultipleItemsProcFunc::register(
+        'pages',
+        'tx_fed_page_controller_action_sub',
+        \FluidTYPO3\Flux\Backend\PageLayoutDataProvider::class . '->addItems'
+    );
 
     $userFunctionsClass = new \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions();
     if (is_callable([$userFunctionsClass , 'fluxFormFieldDisplayCondition'])) {
