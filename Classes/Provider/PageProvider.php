@@ -272,7 +272,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         foreach ($records as $index => $record) {
             $hasSubAction = false === empty($record[self::FIELD_ACTION_SUB]);
             if ($hasSubAction) {
-                return array_slice($records, 0, $index);
+                return array_slice($records, 0, $index + 1);
             }
         }
         return $records;

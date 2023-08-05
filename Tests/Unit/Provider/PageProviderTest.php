@@ -172,8 +172,8 @@ class PageProviderTest extends AbstractTestCase
                 [[PageProvider::FIELD_ACTION_MAIN => 'testmain']]
             ],
             'defined sub action halts reading' => [
+                [[PageProvider::FIELD_ACTION_MAIN => ''], [PageProvider::FIELD_ACTION_SUB => 'testsub'], [PageProvider::FIELD_ACTION_SUB => 'notincluded']],
                 [[PageProvider::FIELD_ACTION_MAIN => ''], [PageProvider::FIELD_ACTION_SUB => 'testsub']],
-                [[PageProvider::FIELD_ACTION_MAIN => '']],
             ],
         ];
     }
