@@ -13,6 +13,19 @@ Arguments
 =========
 
 
+.. _form.variable_value:
+
+value
+-----
+
+:aspect:`DataType`
+   mixed
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Value of the option
+
 .. _form.variable_name:
 
 name
@@ -25,16 +38,3 @@ name
    true
 :aspect:`Description`
    Name of the option - valid values and their behaviours depend entirely on the consumer that will handle the Form instance
-
-.. _form.variable_value:
-
-value
------
-
-:aspect:`DataType`
-   mixed
-
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Value of the option
