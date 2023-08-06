@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form\Field;
+use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
 use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
@@ -90,6 +91,11 @@ class FieldViewHelper extends AbstractFieldViewHelper
         if ($arguments['clear'] ?? false) {
             $field->setClearable(true);
         }
+
+        if (!$parent instanceof FieldContainerInterface) {
+            return $field;
+        }
+
         $parent->add($field);
         return $field;
     }

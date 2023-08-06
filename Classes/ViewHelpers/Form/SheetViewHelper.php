@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -64,6 +65,7 @@ class SheetViewHelper extends AbstractFormViewHelper
     public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Sheet
     {
         /** @var array $arguments */
+        /** @var Form $form */
         $form = static::getContainerFromRenderingContext($renderingContext);
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
         if ($form->has($arguments['name'])) {
