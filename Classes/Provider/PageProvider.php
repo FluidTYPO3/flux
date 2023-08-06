@@ -405,7 +405,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                         $position[$field->getName()] = $field;
                     }
                 }
-
             } elseif (!$child instanceof Form\FieldContainerInterface) {
                 $parentArrayPosition['lDEF'][$childName]['vDEF'] = $child;
             } else {
