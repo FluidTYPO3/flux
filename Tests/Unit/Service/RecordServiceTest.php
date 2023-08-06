@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -47,6 +48,8 @@ class RecordServiceTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $expressionBuilder = $this->getMockBuilder(ExpressionBuilder::class)->disableOriginalConstructor()->getMock();
+
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
             ->setMethods(
                 [
@@ -63,6 +66,8 @@ class RecordServiceTest extends AbstractTestCase
                     'execute',
                     'set',
                     'getRestrictions',
+                    'expr',
+                    'createNamedParameter',
                 ]
             )
             ->disableOriginalConstructor()
@@ -78,6 +83,8 @@ class RecordServiceTest extends AbstractTestCase
         $queryBuilder->method('setFirstResult')->willReturnSelf();
         $queryBuilder->method('setParameters')->willReturnSelf();
         $queryBuilder->method('execute')->willReturn($this->statement);
+        $queryBuilder->method('expr')->willReturn($expressionBuilder);
+        $queryBuilder->method('createNamedParameter')->willReturn('param');
         $queryBuilder->method('getRestrictions')->willReturn(
             $this->getMockBuilder(QueryRestrictionContainerInterface::class)->getMockForAbstractClass()
         );

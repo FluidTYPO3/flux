@@ -16,6 +16,9 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -74,6 +77,22 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
             ->disableOriginalConstructor()
             ->getMock();
         GeneralUtility::addInstance(ContentObjectFactory::class, $contentObjectFactory);
+
+        $expressionBuilder = $this->getMockBuilder(ExpressionBuilder::class)
+            ->onlyMethods(['eq'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->onlyMethods(['getQueryBuilderForTable'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->onlyMethods(['expr'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder->method('expr')->willReturn($expressionBuilder);
+
+        GeneralUtility::addInstance(ConnectionPool::class, $connectionPool);
     }
 
     /**

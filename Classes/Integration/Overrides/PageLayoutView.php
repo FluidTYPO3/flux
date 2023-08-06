@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
  */
 
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
@@ -74,7 +75,10 @@ class PageLayoutView extends \TYPO3\CMS\Backend\View\PageLayoutView
         if (empty($columns)) {
             return [];
         }
-        $additionalWhereClause .= ' AND colPos IN (' . implode(',', $columns) . ') ';
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
+        $additionalWhereClause .= ' AND ' . (string) $queryBuilder->expr()->in('colPos', $columns);
         return parent::getContentRecordsPerColumn($table, $id, $columns, $additionalWhereClause);
     }
 }

@@ -63,10 +63,10 @@ class RecordService implements SingletonInterface
         if ($this->isBackendOrPreviewContext()) {
             return BackendUtility::getRecord($table, $uid, $fields);
         }
-        $results = $this->getQueryBuilder($table)
-            ->from($table)
+        $queryBuilder = $this->getQueryBuilder($table);
+        $results = $queryBuilder->from($table)
             ->select(...explode(',', $fields))
-            ->where(sprintf('uid = %d', $uid))
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid)))
             ->execute()
             ->fetchAll() ?: [];
         $firstResult = reset($results);
@@ -78,7 +78,9 @@ class RecordService implements SingletonInterface
      */
     public function update(string $table, array $record)
     {
-        $builder = $this->getQueryBuilder($table)->update($table)->where(sprintf('uid = %d', $record['uid']));
+        $queryBuilder = $this->getQueryBuilder($table);
+        $builder = $queryBuilder->update($table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($record['uid'])));
         foreach ($record as $name => $value) {
             $builder->set($name, $value);
         }
@@ -91,8 +93,10 @@ class RecordService implements SingletonInterface
     public function delete(string $table, $recordOrUid): bool
     {
         $clauseUid = true === is_array($recordOrUid) ? $recordOrUid['uid'] : $recordOrUid;
-        $clause = "uid = '" . intval($clauseUid) . "'";
-        return (bool) $this->getQueryBuilder($table)->delete($table)->where($clause)->execute();
+        $queryBuilder = $this->getQueryBuilder($table);
+        return (bool) $queryBuilder->delete($table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($clauseUid)))
+            ->execute();
     }
 
     public function preparedGet(string $table, string $fields, string $condition, array $values = []): array

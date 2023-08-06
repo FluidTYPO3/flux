@@ -19,6 +19,7 @@ use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -175,8 +176,12 @@ class GetViewHelper extends AbstractViewHelper
             }
         }
 
-        $conditions = sprintf(
-            'colPos = %d',
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
+
+        $conditions = $queryBuilder->expr()->eq(
+            'colPos',
             ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                 ($parent['l18n_parent'] ?? null) ?: $parent['uid'],
                 (int) $columnPosition
