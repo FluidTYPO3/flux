@@ -45,6 +45,9 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
     // FormEngine integration between TYPO3 forms and Flux Providers
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor::class] = [
+        'before' => [
+            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaFlexProcess::class,
+        ],
         'depends' => [
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsOverrides::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\PageTsConfig::class,

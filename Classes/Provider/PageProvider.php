@@ -95,7 +95,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
 
         if ($form) {
             $form->setOption(PreviewView::OPTION_PREVIEW, [PreviewView::OPTION_MODE => 'none']);
-            $form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
         }
 
         return $form;
@@ -228,12 +227,15 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                     if (is_array($record[$tableFieldName]['data'] ?? null)) {
                         $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'] ?? null;
                         $inheritedConfiguration = $this->getInheritedConfiguration($record);
+                        if (!isset($inheritedConfiguration[$fieldName])) {
+                            continue;
+                        }
                         $inheritedValue = $this->getInheritedPropertyValueByDottedPath(
                             $inheritedConfiguration,
                             $fieldName
                         );
                         $empty = (true === empty($value) && $value !== '0' && $value !== 0);
-                        $same = ($inheritedValue == $value);
+                        $same = ($inheritedValue === $value);
                         if (true === $same && true === $inherit || (true === $inheritEmpty && true === $empty)) {
                             $removeForField[] = $fieldName;
                         }
@@ -261,6 +263,158 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return false;
     }
 
+    public function processTableConfiguration(array $row, array $configuration): array
+    {
+        $currentPageRecord = $this->recordService->getSingle(
+            (string) $this->getTableName($row),
+            'uid,' . self::FIELD_NAME_MAIN . ',' . self::FIELD_NAME_SUB,
+            $configuration['vanillaUid']
+        );
+        if (!$currentPageRecord) {
+            return $configuration;
+        }
+
+        $tree = $this->getInheritanceTree($currentPageRecord);
+
+        $dataMirror = [];
+        $inheritedConfiguration = [];
+        foreach ([self::FIELD_NAME_MAIN, self::FIELD_NAME_SUB] as $field) {
+            if (!empty($currentPageRecord[$field])) {
+                $currentPageRecord[$field] = GeneralUtility::xml2array($currentPageRecord[$field]);
+            }
+            /** @var Form&Form $form */
+            $form = $this->getForm($row, $field);
+            foreach ($tree as $branch) {
+                if (!empty($branch[$field])) {
+                    /** @var array $branchData */
+                    $branchData = GeneralUtility::xml2array($branch[$field] ?? '');
+                    $inheritedConfiguration[$field] = RecursiveArrayUtility::mergeRecursiveOverrule(
+                        $inheritedConfiguration[$field] ?? [],
+                        $branchData
+                    );
+                }
+            }
+
+            $dataMirror[$field] = ['data' => []];
+            $this->extractDataStorageMirrorWithInheritableFields($form, $dataMirror[$field]['data']);
+        }
+
+        $inheritedConfigurationForMainField = $inheritedConfiguration[self::FIELD_NAME_SUB];
+        $this->unsetUninheritableFieldsInInheritedConfiguration(
+            $inheritedConfigurationForMainField,
+            $currentPageRecord[self::FIELD_NAME_MAIN],
+            $dataMirror[self::FIELD_NAME_MAIN]
+        );
+
+        $inheritedConfigurationForSubField = $inheritedConfiguration[self::FIELD_NAME_SUB];
+        $this->unsetUninheritableFieldsInInheritedConfiguration(
+            $inheritedConfigurationForSubField,
+            $currentPageRecord[self::FIELD_NAME_SUB],
+            $dataMirror[self::FIELD_NAME_SUB]
+        );
+
+        if (empty($configuration['databaseRow'][self::FIELD_ACTION_MAIN][0])) {
+            $configuration['databaseRow'][self::FIELD_NAME_MAIN] = RecursiveArrayUtility::mergeRecursiveOverrule(
+                $inheritedConfigurationForMainField,
+                $configuration['databaseRow'][self::FIELD_NAME_MAIN]
+            );
+        }
+        $configuration['databaseRow'][self::FIELD_NAME_SUB] = RecursiveArrayUtility::mergeRecursiveOverrule(
+            $inheritedConfigurationForSubField,
+            $configuration['databaseRow'][self::FIELD_NAME_SUB]
+        );
+
+        return parent::processTableConfiguration($row, $configuration);
+    }
+
+    /**
+     * @param array|string|null $immediateConfiguration
+     */
+    private function unsetUninheritableFieldsInInheritedConfiguration(
+        array &$inheritedConfiguration,
+        &$immediateConfiguration,
+        array &$dataMirror
+    ): void {
+        foreach ($inheritedConfiguration as $key => &$value) {
+            if (!is_array($value)) {
+                continue;
+            }
+
+            $inheritedValueIsSection = $this->checkIsSection($inheritedConfiguration[$key] ?? []);
+            if (!isset($dataMirror[$key]) && !$inheritedValueIsSection) {
+                unset($inheritedConfiguration[$key]);
+                continue;
+            }
+            $dataMirrorItem = &$dataMirror[$key];
+            if ($dataMirrorItem instanceof Form\FieldInterface && !$dataMirrorItem->getInherit()) {
+                unset($inheritedConfiguration[$key]);
+                continue;
+            }
+            $immediateConfigurationIsArray = is_array($immediateConfiguration);
+            $immediateSubConfiguration = $immediateConfigurationIsArray ? $immediateConfiguration[$key] ?? null : null;
+            if ($immediateConfigurationIsArray
+                && is_array($immediateSubConfiguration)
+                && $inheritedValueIsSection
+                && $this->checkIsSection($immediateConfiguration[$key])
+            ) {
+                // Immediate configuration is a section, and it has items. Do not allow inheritance.
+                unset($inheritedConfiguration[$key]);
+                continue;
+            } elseif ($inheritedValueIsSection) {
+                // Do not further process an inherited section - inheritance is desired.
+                continue;
+            }
+            $this->unsetUninheritableFieldsInInheritedConfiguration(
+                $inheritedConfiguration[$key],
+                $immediateSubConfiguration,
+                $dataMirrorItem,
+            );
+        }
+    }
+
+    private function checkIsSection(array $data): bool
+    {
+        // Determine if we are working on a section object. If so, the inherited configuration will contain an extra
+        // dimension; an alpha-numeric unique key 22 chars in length. We can identify if that is the case by
+        // checking that every array key is exactly 22 chars and every element contains a "_TOGGLE" key.
+        $numberOfValues = count($data);
+        return $numberOfValues > 0
+            && strlen(implode('', array_keys($data))) === ($numberOfValues * 22)
+            && count(array_column($data, '_TOGGLE')) === $numberOfValues;
+    }
+
+    private function extractDataStorageMirrorWithInheritableFields(
+        Form\FieldContainerInterface $container,
+        array &$parentArrayPosition
+    ): void {
+        if (!$container->getInherit()) {
+            return;
+        }
+        foreach ($container->getChildren() as $child) {
+            if (!$child->getInherit()) {
+                continue;
+            }
+            $childName = $child->getName();
+            if ($child instanceof Form\Container\Section) {
+                foreach ($child->getChildren() as $sectionObject) {
+                    /** @var Form\Container\SectionObject $sectionObject */
+                    $sectionObjectName = $sectionObject->getName();
+                    $parentArrayPosition['lDEF'][$childName]['el'][$sectionObjectName]['el'] = [];
+                    $position = &$parentArrayPosition['lDEF'][$childName]['el'][$sectionObjectName]['el'];
+                    foreach ($sectionObject->getChildren() as $field) {
+                        $position[$field->getName()] = $field;
+                    }
+                }
+
+            } elseif (!$child instanceof Form\FieldContainerInterface) {
+                $parentArrayPosition['lDEF'][$childName]['vDEF'] = $child;
+            } else {
+                $parentArrayPosition[$childName] = [];
+                $this->extractDataStorageMirrorWithInheritableFields($child, $parentArrayPosition[$childName]);
+            }
+        }
+    }
+
     /**
      * Gets an inheritance tree (ordered first parent -> ... -> root record)
      * of record arrays containing raw values, stopping at the first parent
@@ -276,19 +430,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             }
         }
         return $records;
-    }
-
-    protected function setDefaultValuesInFieldsWithInheritedValues(Form $form, array $row): Form
-    {
-        $inheritedConfiguration = $this->getInheritedConfiguration($row);
-        foreach ($form->getFields() as $field) {
-            $name = (string) $field->getName();
-            $inheritedValue = $this->getInheritedPropertyValueByDottedPath($inheritedConfiguration, $name);
-            if (null !== $inheritedValue && true === $field instanceof Form\FieldInterface) {
-                $field->setDefault($inheritedValue);
-            }
-        }
-        return $form;
     }
 
     protected function getInheritedConfiguration(array $row): array

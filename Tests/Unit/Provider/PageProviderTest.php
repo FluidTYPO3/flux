@@ -119,22 +119,6 @@ class PageProviderTest extends AbstractTestCase
         $this->assertStringEndsWith($expected, $result);
     }
 
-    public function testGetFormCallsSetDefaultValuesInFieldsWithInheritedValues(): void
-    {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        /** @var PageProvider|MockObject $instance */
-        $instance = $this->getMockBuilder(PageProvider::class)
-            ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(['setDefaultValuesInFieldsWithInheritedValues'])
-            ->getMock();
-
-        $this->pageService->method('getPageTemplateConfiguration')->willReturn([]);
-
-        $instance->expects($this->once())->method('setDefaultValuesInFieldsWithInheritedValues')->willReturn($form);
-        $instance->setForm($form);
-        $instance->getForm(['uid' => 1]);
-    }
-
     public function testGetControllerExtensionKeyFromRecordReturnsPresetKeyOnUnrecognisedAction(): void
     {
         /** @var PageProvider|MockObject $instance */
@@ -283,28 +267,6 @@ class PageProviderTest extends AbstractTestCase
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
         $values = $provider->getFlexformValues($record);
         $this->assertEquals($values, []);
-    }
-
-    /**
-     * @test
-     */
-    public function setsDefaultValueInFieldsBasedOnInheritedValue(): void
-    {
-        $row = [];
-        $className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-        $instance = $this->getMockBuilder($className)
-            ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(['getInheritedPropertyValueByDottedPath', 'getInheritedConfiguration'])
-            ->getMock();
-        $instance->expects($this->once())->method('getInheritedPropertyValueByDottedPath')
-            ->with([], 'input')->will($this->returnValue('default'));
-        $instance->expects($this->once())->method('getInheritedConfiguration')
-            ->with($row)->will($this->returnValue([]));
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $field = $form->createField('Input', 'input');
-        $returnedForm = $this->callInaccessibleMethod($instance, 'setDefaultValuesInFieldsWithInheritedValues', $form, $row);
-        $this->assertSame($form, $returnedForm);
-        $this->assertEquals('default', $field->getDefault());
     }
 
     /**
