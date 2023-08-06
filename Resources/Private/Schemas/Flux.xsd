@@ -4231,14 +4231,14 @@ Groups FlexForm fields into sheets.
       <xsd:sequence>
         <xsd:any minOccurs="0" maxOccurs="1"/>
       </xsd:sequence>
+      <xsd:attribute type="xsd:anySimpleType" name="value" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Value of the option]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:string" name="name" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the option - valid values and their behaviours depend entirely on the consumer that will handle the Form instance]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="value" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Value of the option]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
     </xsd:complexType>
