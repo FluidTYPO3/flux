@@ -56,6 +56,8 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\WizardItemsManipulator:
     public: true
+  FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems:
+    public: true
 
   FluidTYPO3\Flux\Integration\Event\ModifyNewContentElementWizardItemsEventListener:
     public: true
