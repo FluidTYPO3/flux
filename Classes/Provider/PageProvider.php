@@ -314,14 +314,29 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         );
 
         if (empty($configuration['databaseRow'][self::FIELD_ACTION_MAIN][0])) {
-            $configuration['databaseRow'][self::FIELD_NAME_MAIN] = RecursiveArrayUtility::mergeRecursiveOverrule(
-                $inheritedConfigurationForMainField,
-                $configuration['databaseRow'][self::FIELD_NAME_MAIN]
-            );
+            if (!empty($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
+                if (is_array($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
+                    $currentData = $configuration['databaseRow'][self::FIELD_NAME_MAIN];
+                } else {
+                    /** @var array $currentData */
+                    $currentData = GeneralUtility::xml2array($configuration['databaseRow'][self::FIELD_NAME_MAIN]);
+                }
+                $configuration['databaseRow'][self::FIELD_NAME_MAIN] = RecursiveArrayUtility::mergeRecursiveOverrule(
+                    $inheritedConfigurationForMainField,
+                    $currentData
+                );
+            }
+        }
+        $subData = [];
+        if (is_array($configuration['databaseRow'][self::FIELD_NAME_SUB])) {
+            $currentData = $configuration['databaseRow'][self::FIELD_NAME_SUB];
+        } else {
+            /** @var array $currentData */
+            $currentData = GeneralUtility::xml2array($configuration['databaseRow'][self::FIELD_NAME_SUB]);
         }
         $configuration['databaseRow'][self::FIELD_NAME_SUB] = RecursiveArrayUtility::mergeRecursiveOverrule(
             $inheritedConfigurationForSubField,
-            $configuration['databaseRow'][self::FIELD_NAME_SUB]
+            $subData
         );
 
         return parent::processTableConfiguration($row, $configuration);
