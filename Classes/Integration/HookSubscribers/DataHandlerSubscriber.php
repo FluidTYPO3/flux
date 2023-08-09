@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
@@ -170,7 +171,13 @@ class DataHandlerSubscriber
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processDatamap_preProcessFieldArray(array &$fieldArray, $table, $id, DataHandler $dataHandler)
     {
-        if ($table === 'pages' && strpos((string) $id, 'NEW') === 0 && ($fieldArray['l10n_source'] ?? 0) > 0) {
+        $isNewRecord = strpos((string) $id, 'NEW') === 0;
+        $isTranslatedRecord = ($fieldArray['l10n_source'] ?? 0) > 0;
+        $pageIntegrationEnabled = ExtensionConfigurationUtility::getOption(
+            ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION
+        );
+        $isPageRecord = $table === 'pages';
+        if ($pageIntegrationEnabled && $isPageRecord && $isNewRecord && $isTranslatedRecord) {
             // Record is a newly created page and is a translation of a page. In all likelyhood (but we can't actually
             // know for sure since TYPO3 uses a nested DataHandler for this...) this record is the result of a blank
             // initial copy of the original language's record. We may want to copy the "Page Configuration" fields'
