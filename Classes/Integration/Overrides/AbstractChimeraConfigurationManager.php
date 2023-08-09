@@ -83,8 +83,10 @@ abstract class AbstractChimeraConfigurationManager extends ConfigurationManager
     {
         $this->refreshRequestIfNecessary();
         if ($this->applicationType instanceof ApplicationType && $this->applicationType->isFrontend()) {
+            $this->concreteConfigurationManager = $this->frontendConfigurationManager;
             return $this->frontendConfigurationManager;
         }
+        $this->concreteConfigurationManager = $this->backendConfigurationManager;
         return $this->backendConfigurationManager;
     }
 }
