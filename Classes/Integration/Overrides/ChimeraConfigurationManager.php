@@ -6,6 +6,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager;
+use TYPO3\CMS\Extbase\Service\ExtensionService;
 
 class ChimeraConfigurationManager extends AbstractChimeraConfigurationManager
 {
@@ -27,6 +28,10 @@ class ChimeraConfigurationManager extends AbstractChimeraConfigurationManager
 
         $this->frontendConfigurationManager = $frontendConfigurationManager;
         $this->backendConfigurationManager = $backendConfigurationManager;
+
+        /** @var ExtensionService $extensionService */
+        $extensionService = $this->container->get(ExtensionService::class);
+        $extensionService->injectConfigurationManager($this);
     }
 
     public function setRequest(ServerRequestInterface $request): void
