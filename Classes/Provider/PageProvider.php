@@ -299,14 +299,14 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $this->extractDataStorageMirrorWithInheritableFields($form, $dataMirror[$field]['data']);
         }
 
-        $inheritedConfigurationForMainField = $inheritedConfiguration[self::FIELD_NAME_SUB];
+        $inheritedConfigurationForMainField = $inheritedConfiguration[self::FIELD_NAME_SUB] ?? [];
         $this->unsetUninheritableFieldsInInheritedConfiguration(
             $inheritedConfigurationForMainField,
             $currentPageRecord[self::FIELD_NAME_MAIN],
             $dataMirror[self::FIELD_NAME_MAIN]
         );
 
-        $inheritedConfigurationForSubField = $inheritedConfiguration[self::FIELD_NAME_SUB];
+        $inheritedConfigurationForSubField = $inheritedConfiguration[self::FIELD_NAME_SUB] ?? [];
         $this->unsetUninheritableFieldsInInheritedConfiguration(
             $inheritedConfigurationForSubField,
             $currentPageRecord[self::FIELD_NAME_SUB],
