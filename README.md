@@ -258,3 +258,6 @@ Caveats
   `Configuration/Services.yaml` file in Flux.
 * When working with custom Controller classes, make sure you declare each Controller class as `public: true` in Service
   config of your extension.
+* Note that both Providers and Controllers use constructor injection of dependencies. If you use custom Controllers and/or
+  Providers and these override the `__construct` method, make sure that they take the same arguments as the parent class and
+  that you call `parent::__construct()` with those arguments from your overridden `__construct` method.
