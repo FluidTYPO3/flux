@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3Fluid\Fluid\Exception;
 
 class SpooledConfigurationApplicator
@@ -147,9 +146,7 @@ class SpooledConfigurationApplicator
 
         $backup = $GLOBALS['TYPO3_REQUEST'] ?? null;
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.3', '<')) {
-            $GLOBALS['TYPO3_REQUEST'] = $this->requestBuilder->getServerRequest();
-        }
+        $GLOBALS['TYPO3_REQUEST'] = $this->requestBuilder->getServerRequest();
 
         uasort(
             $providers,

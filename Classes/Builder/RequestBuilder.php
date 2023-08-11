@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Builder;
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
+use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
@@ -85,6 +86,10 @@ class RequestBuilder implements SingletonInterface
             'applicationType',
             defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
         )->withQueryParams($_GET);
+
+        if (!$request->getAttribute('normalizedParams')) {
+            $request = $request->withAttribute('normalizedParams', NormalizedParams::createFromRequest($request));
+        }
 
         if (class_exists(FrontendTypoScript::class) && !$request->getAttribute('frontend.typoscript')) {
             /** @var FrontendTypoScript $frontendTypoScript */
