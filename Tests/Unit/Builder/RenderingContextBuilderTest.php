@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Builder;
 use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -32,10 +33,13 @@ class RenderingContextBuilderTest extends AbstractTestCase
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['expressionNodeTypes'] = [];
         $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
 
-            ->setMethods(['getEnvironmentVariable'])
+            ->setMethods(['getEnvironmentVariable', 'getServerRequest'])
             ->disableOriginalConstructor()
             ->getMock();
         $requestBuilder->method('getEnvironmentVariable')->willReturn('foobar');
+        $requestBuilder->method('getServerRequest')->willReturn(
+            $this->getMockBuilder(ServerRequest::class)->disableOriginalConstructor()->getMock()
+        );
 
         if (class_exists(ControllerContext::class)) {
             $renderingContext = $this->getMockBuilder(RenderingContext::class)
