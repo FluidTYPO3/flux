@@ -10,9 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  */
 
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3Fluid\Fluid\Core\Variables\VariableProviderInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
