@@ -22,6 +22,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -615,6 +616,8 @@ class DataHandlerSubscriber
         $queryBuilder = $this->createQueryBuilderForTable($table);
         if ($command === 'undelete') {
             $queryBuilder->getRestrictions()->removeAll();
+        } else {
+            $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
         }
 
         $query = $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
