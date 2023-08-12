@@ -40,37 +40,6 @@ class FluxServiceTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider getConvertFileReferenceToTemplatePathAndFilenameTestValues
-     * @param string $reference
-     * @param string|NULL $resourceFactoryOutput
-     * @param string $expected
-     * @return void
-     */
-    public function testConvertFileReferenceToTemplatePathAndFilename($reference, $resourceFactoryOutput, $expected)
-    {
-        $instance = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolveAbsolutePathForFilename'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $instance->method('resolveAbsolutePathForFilename')->willReturnArgument(0);
-        if (null !== $resourceFactoryOutput) {
-            $file = $this->getMockBuilder(File::class)->setMethods(['getIdentifier'])->disableOriginalConstructor()->getMock();
-            $file->method('getIdentifier')->willReturn($resourceFactoryOutput);
-            /** @var ResourceFactory|MockObject $resourceFactory */
-            $resourceFactory = $this->getMockBuilder(
-                ResourceFactory::class
-            )->setMethods(
-                ['getFileObjectFromCombinedIdentifier']
-            )->disableOriginalConstructor()->getMock();
-            $resourceFactory->expects($this->once())->method('getFileObjectFromCombinedIdentifier')
-                ->with($reference)->willReturn($file);
-            $this->setInaccessiblePropertyValue($instance, 'resourceFactory', $resourceFactory);
-        }
-        $result = $instance->convertFileReferenceToTemplatePathAndFilename($reference);
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
      * @return array
      */
     public function getConvertFileReferenceToTemplatePathAndFilenameTestValues()
