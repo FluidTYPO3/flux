@@ -110,7 +110,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         ];
 
         $statement = $this->getMockBuilder(Statement::class)
-            ->addMethods(['fetchAll'])
+            ->setMethods(['fetchAll'])
             ->disableOriginalConstructor()
             ->getMock();
         $statement->method('fetchAll')->willReturn([]);
