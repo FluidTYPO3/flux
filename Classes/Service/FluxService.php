@@ -70,17 +70,6 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         $this->configurationManager = $configurationManager;
     }
 
-    public function sortObjectsByProperty(array $objects, string $sortBy, string $sortDirection = 'ASC'): array
-    {
-        $ascending = 'ASC' === strtoupper($sortDirection);
-        uasort($objects, function ($a, $b) use ($sortBy, $ascending) {
-            $a = ObjectAccess::getPropertyPath($a, $sortBy);
-            $b = ObjectAccess::getPropertyPath($b, $sortBy);
-            return $ascending ? $a <=> $b : $b <=> $a;
-        });
-        return $objects;
-    }
-
     /**
      * ResolveUtility the top-priority ConfigurationPrivider which can provide
      * a working FlexForm configuration baed on the given parameters.

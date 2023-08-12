@@ -255,21 +255,6 @@ class FluxServiceTest extends AbstractTestCase
     }
 
     /**
-     * @test
-     * @dataProvider getSortObjectsTestValues
-     * @param array $input
-     * @param string $sortBy
-     * @param string $direction
-     * @param array $expectedOutput
-     */
-    public function testSortObjectsByProperty($input, $sortBy, $direction, $expectedOutput)
-    {
-        $service = $this->createFluxServiceInstance();
-        $sorted = $service->sortObjectsByProperty($input, $sortBy, $direction);
-        $this->assertSame($expectedOutput, $sorted);
-    }
-
-    /**
      * @return array
      */
     public function getSortObjectsTestValues()
