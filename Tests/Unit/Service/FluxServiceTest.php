@@ -52,25 +52,6 @@ class FluxServiceTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider getViewConfigurationByFileReferenceTestValues
-     * @param string $reference
-     * @param string $expectedParameter
-     * @return void
-     */
-    public function testGetViewConfigurationByFileReference($reference, $expectedParameter)
-    {
-        $templatePaths = $this->getMockBuilder(TemplatePaths::class)->setMethods(['toArray'])->getMock();
-        $templatePaths->method('toArray')->willReturn($expectedParameter);
-        $instance = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['createTemplatePaths'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $instance->method('createTemplatePaths')->willReturn($templatePaths);
-        $result = $instance->getViewConfigurationByFileReference($reference);
-        $this->assertEquals($expectedParameter, $result);
-    }
-
-    /**
      * @return array
      */
     public function getViewConfigurationByFileReferenceTestValues()

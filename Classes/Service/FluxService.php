@@ -91,16 +91,6 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         return $settings;
     }
 
-    public function getViewConfigurationByFileReference(string $reference): array
-    {
-        $extensionKey = 'flux';
-        if (0 === strpos($reference, 'EXT:')) {
-            $extensionKey = substr($reference, 4, strpos($reference, '/') - 4);
-        }
-        $templatePaths = $this->createTemplatePaths($extensionKey);
-        return $templatePaths->toArray();
-    }
-
     public function getPageConfiguration(?string $extensionName = null): array
     {
         if (null !== $extensionName && true === empty($extensionName)) {
