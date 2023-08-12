@@ -20,9 +20,8 @@ services:
   TYPO3\CMS\Backend\View\BackendViewFactory:
     public: true
 
-  FluidTYPO3\Flux\Integration\BackendLayoutRenderer:
+  FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:
     public: true
-    autowire: false
   FluidTYPO3\Flux\Content\ContentTypeManager:
     public: true
   FluidTYPO3\Flux\Content\ContentTypeValidator:
@@ -43,6 +42,9 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion:
     public: true
+  FluidTYPO3\Flux\Integration\BackendLayoutRenderer:
+    public: true
+    autowire: false
   FluidTYPO3\Flux\Integration\Resolver:
     public: true
   FluidTYPO3\Flux\Integration\PreviewRenderer:

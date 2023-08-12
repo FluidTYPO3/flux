@@ -18,22 +18,16 @@ use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderInterface;
 use TYPO3\CMS\Backend\View\BackendLayout\DefaultDataProvider;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class BackendLayoutDataProvider extends DefaultDataProvider implements DataProviderInterface
 {
     protected ProviderResolver $providerResolver;
     protected WorkspacesAwareRecordService $recordService;
 
-    public function __construct()
+    public function __construct(ProviderResolver $providerResolver, WorkspacesAwareRecordService $recordService)
     {
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         $this->providerResolver = $providerResolver;
-
-        /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
-        $workspacesAwareRecordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
-        $this->recordService = $workspacesAwareRecordService;
+        $this->recordService = $recordService;
     }
 
     public function addBackendLayouts(

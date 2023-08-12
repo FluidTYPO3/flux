@@ -38,9 +38,6 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->singletonInstances[WorkspacesAwareRecordService::class] = $this->recordService;
-        $this->singletonInstances[ProviderResolver::class] = $this->providerResolver;
-
         parent::setUp();
     }
 
@@ -50,7 +47,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testGetBackendLayoutReturnsEmptyLayoutWithoutRecord()
     {
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn(
@@ -74,7 +72,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
         );
 
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn(
@@ -96,7 +95,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
         $this->providerResolver->method('resolvePageProvider')->willReturn(null);
 
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn($this->createBackendLayoutMock());
@@ -110,7 +110,7 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testGetBackendLayoutReturnsBackendLayoutWithRecordAndProvider()
     {
         $backendLayout = $this->getMockBuilder(BackendLayout::class)
-            ->setMethods(['dummy'])
+            ->addMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
         $grid = $this->getMockBuilder(Grid::class)
@@ -120,7 +120,7 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
         $grid->method('buildBackendLayout')->willReturn($backendLayout);
 
         $provider = $this->getMockBuilder(PageProvider::class)
-            ->setMethods(['getGrid'])
+            ->onlyMethods(['getGrid'])
             ->disableOriginalConstructor()
             ->getMock();
         $provider->method('getGrid')->willReturn($grid);
@@ -129,7 +129,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
         $this->providerResolver->method('resolvePageProvider')->willReturn($provider);
 
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn($this->createBackendLayoutMock());
@@ -143,7 +144,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testAddBackendLayouts()
     {
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn($this->createBackendLayoutMock());
