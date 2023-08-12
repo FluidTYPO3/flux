@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDef
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
@@ -52,6 +53,10 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->singletonInstances[RecordBasedContentTypeDefinitionRepository::class] = $this->getMockBuilder(RecordBasedContentTypeDefinitionRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -66,6 +71,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
             $this->cacheService,
+            $this->typoScriptService,
             $this->contentTypeManager,
         ];
     }

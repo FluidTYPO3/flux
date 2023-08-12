@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -27,6 +28,7 @@ class ProviderTest extends AbstractTestCase
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
     protected CacheService $cacheService;
+    protected TypoScriptService $typoScriptService;
     protected array $definition = [
         'name' => 'test',
         'label' => 'Test provider',
@@ -75,7 +77,6 @@ class ProviderTest extends AbstractTestCase
         $this->fluxService = $this->getMockBuilder(FluxService::class)
             ->onlyMethods(
                 [
-                    'getSettingsForExtensionName',
                     'convertFlexFormContentToArray',
                 ]
             )
@@ -92,6 +93,10 @@ class ProviderTest extends AbstractTestCase
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         parent::setUp();
     }
@@ -103,6 +108,7 @@ class ProviderTest extends AbstractTestCase
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
             $this->cacheService,
+            $this->typoScriptService,
         ];
     }
 
@@ -139,6 +145,7 @@ class ProviderTest extends AbstractTestCase
         $provider = new Provider(...$this->getConstructorArguments());
         $provider->setExtensionKey('test');
         $resolver = $this->getMockBuilder(ProviderResolver::class)
+            ->disableOriginalConstructor()
             ->onlyMethods(['resolvePrimaryConfigurationProvider'])
             ->getMock();
         $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);

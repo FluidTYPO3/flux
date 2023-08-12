@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\CustomForm;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
@@ -41,6 +42,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
     protected CacheService $cacheService;
+    protected TypoScriptService $typoScriptService;
     protected string $configurationProviderClassName = Provider::class;
     private array $dummyGridConfiguration = [
         'columns' => [
@@ -66,7 +68,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $this->fluxService = $this->getMockBuilder(FluxService::class)
             ->onlyMethods(
                 [
-                    'getSettingsForExtensionName',
                     'convertFlexFormContentToArray',
                 ]
             )
@@ -81,6 +82,10 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->getMock();
         $this->cacheService = $this->getMockBuilder(CacheService::class)
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -863,7 +868,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
             $form
         );
 
-        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->typoScriptService->method('getSettingsForExtensionName')->willReturn([]);
 
         $instance = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
@@ -893,7 +898,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
             $form
         );
 
-        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->typoScriptService->method('getSettingsForExtensionName')->willReturn([]);
         $this->cacheService->expects(self::once())->method('setInCaches');
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
@@ -916,7 +921,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     {
         $view = $this->prepareTemplateViewMock();
 
-        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->typoScriptService->method('getSettingsForExtensionName')->willReturn([]);
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
@@ -949,7 +954,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $view = $this->prepareTemplateViewMock();
         $view->method('renderSection')->willThrowException(new InvalidTemplateResourceException(''));
 
-        $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
+        $this->typoScriptService->method('getSettingsForExtensionName')->willReturn([]);
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())

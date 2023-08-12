@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -63,10 +64,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
      */
     protected RequestBuilder $requestBuilder;
 
+    protected TypoScriptService $typoScriptService;
+
     protected function setUp(): void
     {
         $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider', 'getSettingsForExtensionName'])
+            ->setMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -83,6 +86,11 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->getMock();
         $this->requestBuilder->method('getEnvironmentVariable')->willReturn('env');
 
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         parent::setUp();
     }
 
@@ -93,6 +101,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             $this->renderingContextBuilder,
             $this->requestBuilder,
             $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
+            $this->typoScriptService
         ];
     }
 
@@ -395,10 +404,10 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $mock->expects($this->once())->method('getRecord')->willReturn($record);
 
         if (($settings['useTypoScript'] ?? false) || ($data['settings']['useTypoScript'] ?? false)) {
-            $this->fluxService->expects($this->once())
+            $this->typoScriptService->expects($this->once())
                 ->method('getSettingsForExtensionName');
         } else {
-            $this->fluxService->expects($this->never())
+            $this->typoScriptService->expects($this->never())
                 ->method('getSettingsForExtensionName');
         }
         $this->setInaccessiblePropertyValue($mock, 'data', $data);
@@ -616,7 +625,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $provider->method('getFlexFormValues')->willReturn(['settings' => ['useTypoScript' => 1]]);
-        $this->fluxService->method('getSettingsForExtensionName')->willReturn(['foo' => 'bar']);
+        $this->typoScriptService->method('getSettingsForExtensionName')->willReturn(['foo' => 'bar']);
         $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $settings = [
             'useTypoScript' => true

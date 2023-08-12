@@ -53,6 +53,8 @@ services:
     public: true
   FluidTYPO3\Flux\Builder\ViewBuilder:
     public: true
+  FluidTYPO3\Flux\Provider\ProviderResolver:
+    public: true
   FluidTYPO3\Flux\Provider\Provider:
     shared: false
     public: true
@@ -75,6 +77,8 @@ services:
   FluidTYPO3\Flux\Integration\WizardItemsManipulator:
     public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems:
+    public: true
+  FluidTYPO3\Flux\Service\TypoScriptService:
     public: true
   FluidTYPO3\Flux\Service\CacheService:
     public: true

@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Integration\NormalizedData\ImplementationRegistry;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -45,6 +46,8 @@ class DataAccessTraitTest extends AbstractTestCase
      */
     protected RequestBuilder $requestBuilder;
 
+    protected TypoScriptService $typoScriptService;
+
     protected function setUp(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE] = 1;
@@ -53,7 +56,7 @@ class DataAccessTraitTest extends AbstractTestCase
         $provider->method('getForm')->willReturn(Form::create());
 
         $providerResolver = $this->getMockBuilder(ProviderResolver::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
+            ->onlyMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
         $providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
@@ -66,9 +69,13 @@ class DataAccessTraitTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->requestBuilder = $this->getMockBuilder(RequestBuilder::class)
-            ->setMethods(['getEnvironmentVariable'])
+            ->onlyMethods(['getEnvironmentVariable'])
             ->getMock();
         $this->requestBuilder->method('getEnvironmentVariable')->willReturn('env');
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequest::class)->getMockForAbstractClass();
 
@@ -87,6 +94,7 @@ class DataAccessTraitTest extends AbstractTestCase
             $this->renderingContextBuilder,
             $this->requestBuilder,
             $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
+            $this->typoScriptService,
         ];
     }
 

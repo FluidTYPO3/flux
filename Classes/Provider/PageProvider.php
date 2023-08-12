@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
@@ -56,9 +57,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         WorkspacesAwareRecordService $recordService,
         ViewBuilder $viewBuilder,
         CacheService $cacheService,
+        TypoScriptService $typoScriptService,
         PageService $pageService
     ) {
-        parent::__construct($configurationService, $recordService, $viewBuilder, $cacheService);
+        parent::__construct($configurationService, $recordService, $viewBuilder, $cacheService, $typoScriptService);
         $this->pageService = $pageService;
     }
 

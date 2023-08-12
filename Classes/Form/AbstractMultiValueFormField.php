@@ -257,7 +257,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     protected function getLabelPropertyName(string $table, string $type): string
     {
         $path = sprintf('config.tx_extbase.persistence.classes.%s.mapping.tableName', $type);
-        $mappedTable = $this->getConfigurationService()->getTypoScriptByPath($path);
+        $mappedTable = $this->getTypoScriptService()->getTypoScriptByPath($path);
         $labelField = $GLOBALS['TCA'][$mappedTable ?: $table]['ctrl']['label'];
         $propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
         return $propertyName;

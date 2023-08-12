@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
@@ -75,17 +76,20 @@ class AbstractProvider implements ProviderInterface
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
     protected CacheService $cacheService;
+    protected TypoScriptService $typoScriptService;
 
     public function __construct(
         FluxService $configurationService,
         WorkspacesAwareRecordService $recordService,
         ViewBuilder $viewBuilder,
-        CacheService $cacheService
+        CacheService $cacheService,
+        TypoScriptService $typoScriptService
     ) {
         $this->configurationService = $configurationService;
         $this->recordService = $recordService;
         $this->viewBuilder = $viewBuilder;
         $this->cacheService = $cacheService;
+        $this->typoScriptService = $typoScriptService;
     }
 
     public function loadSettings(array $settings): void
@@ -170,7 +174,7 @@ class AbstractProvider implements ProviderInterface
         $fieldName = $forField ?? $this->getFieldName($row);
         $variables = [
             'record' => $row,
-            'settings' => $this->configurationService->getSettingsForExtensionName($extensionKey)
+            'settings' => $this->typoScriptService->getSettingsForExtensionName($extensionKey)
         ];
 
         // Special case: when saving a new record variable $row[$fieldName] is already an array

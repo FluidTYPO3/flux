@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -24,6 +25,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ProviderResolver implements SingletonInterface
 {
     protected array $providers = [];
+    protected TypoScriptService $typoScriptService;
+
+    public function __construct(TypoScriptService $typoScriptService)
+    {
+        $this->typoScriptService = $typoScriptService;
+    }
 
     /**
      * ResolveUtility the top-priority ConfigurationPrivider which can provide
@@ -108,7 +115,7 @@ class ProviderResolver implements SingletonInterface
     public function loadTypoScriptConfigurationProviderInstances(): array
     {
         /** @var array[] $providerConfigurations */
-        $providerConfigurations = (array) $this->getFluxService()->getTypoScriptByPath('plugin.tx_flux.providers');
+        $providerConfigurations = (array) $this->typoScriptService->getTypoScriptByPath('plugin.tx_flux.providers');
         $providers = [];
         foreach ($providerConfigurations as $name => $providerSettings) {
             $className = Provider::class;

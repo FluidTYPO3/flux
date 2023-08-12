@@ -82,48 +82,6 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
     }
 
     /**
-     * Returns the plugin.tx_extsignature.settings array.
-     * Accepts any input extension name type.
-     */
-    public function getSettingsForExtensionName(string $extensionName): array
-    {
-        $signature = ExtensionNamingUtility::getExtensionSignature($extensionName);
-        return (array) $this->getTypoScriptByPath('plugin.tx_' . $signature . '.settings');
-    }
-
-    /**
-     * Gets the value/array from global TypoScript by
-     * dotted path expression.
-     *
-     * @return array|mixed
-     */
-    public function getTypoScriptByPath(string $path)
-    {
-        $cacheId = md5('ts_' . $path);
-        $fromCache = $this->cacheService->getFromCaches($cacheId);
-        if ($fromCache) {
-            return $fromCache;
-        }
-
-        $all = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
-        );
-
-        $value = &$all;
-        foreach (explode('.', $path) as $segment) {
-            $value = ($value[$segment . '.'] ?? $value[$segment] ?? null);
-            if ($value === null) {
-                break;
-            }
-        }
-        if (is_array($value)) {
-            $value = GeneralUtility::removeDotsFromTS($value);
-        }
-        $this->cacheService->setInCaches($value, true, $cacheId);
-        return $value;
-    }
-
-    /**
      * ResolveUtility the top-priority ConfigurationPrivider which can provide
      * a working FlexForm configuration baed on the given parameters.
      *

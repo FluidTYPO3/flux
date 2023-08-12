@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -58,18 +59,21 @@ abstract class AbstractFluxController extends ActionController
     protected RequestBuilder $requestBuilder;
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
+    protected TypoScriptService $typoScriptService;
     protected ?ControllerProviderInterface $provider = null;
 
     public function __construct(
         FluxService $fluxService,
         RenderingContextBuilder $renderingContextBuilder,
         RequestBuilder $requestBuilder,
-        WorkspacesAwareRecordService $recordService
+        WorkspacesAwareRecordService $recordService,
+        TypoScriptService $typoScriptService
     ) {
         $this->configurationService = $fluxService;
         $this->renderingContextBuilder = $renderingContextBuilder;
         $this->requestBuilder = $requestBuilder;
         $this->recordService = $recordService;
+        $this->typoScriptService = $typoScriptService;
 
         /** @var Arguments $arguments */
         $arguments = GeneralUtility::makeInstance(Arguments::class);
@@ -142,7 +146,7 @@ abstract class AbstractFluxController extends ActionController
             // an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
             // will read the "settings" array from that location instead - thus excluding variables from the flexform
             // which are still available as $this->data but no longer available automatically in the template.
-            $this->settings = $this->configurationService->getSettingsForExtensionName($extensionKey);
+            $this->settings = $this->typoScriptService->getSettingsForExtensionName($extensionKey);
         }
     }
 

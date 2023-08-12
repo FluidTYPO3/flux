@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyBasicProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
@@ -23,10 +24,22 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ProviderResolverTest extends AbstractTestCase
 {
+    private TypoScriptService $typoScriptService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
     public function testResolveConfigurationProvidersFiltersProviders(): void
     {
         $subject = $this->getMockBuilder(ProviderResolver::class)
-            ->setMethods(['loadTypoScriptConfigurationProviderInstances', 'validateAndInstantiateProviders'])
+            ->onlyMethods(['loadTypoScriptConfigurationProviderInstances', 'validateAndInstantiateProviders'])
             ->disableOriginalConstructor()
             ->getMock();
         $subject->method('loadTypoScriptConfigurationProviderInstances')->willReturn([]);
@@ -55,14 +68,9 @@ class ProviderResolverTest extends AbstractTestCase
      */
     public function loadTypoScriptProvidersReturnsEmptyArrayEarlyIfSetupNotFound()
     {
-        $configurationService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getTypoScriptByPath'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $configurationService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue([]));
+        $this->typoScriptService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue([]));
 
-        $instance = $this->getMockBuilder(ProviderResolver::class)->onlyMethods(['getFluxService'])->getMock();
-        $instance->method('getFluxService')->willReturn($configurationService);
+        $instance = new ProviderResolver($this->typoScriptService);
 
         $providers = $instance->loadTypoScriptConfigurationProviderInstances();
         $this->assertIsArray($providers);
@@ -80,17 +88,11 @@ class ProviderResolverTest extends AbstractTestCase
             ]
         ];
 
-        $configurationService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getTypoScriptByPath'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $configurationService->expects($this->once())
+        $this->typoScriptService->expects($this->once())
             ->method('getTypoScriptByPath')
             ->willReturn($mockedTypoScript);
 
-        /** @var \FluidTYPO3\Flux\Provider\ProviderResolver $instance */
-        $instance = $this->getMockBuilder(ProviderResolver::class)->onlyMethods(['getFluxService'])->getMock();
-        $instance->method('getFluxService')->willReturn($configurationService);
+        $instance = new ProviderResolver($this->typoScriptService);
 
         $dummyProvider = $this->getMockBuilder(DummyConfigurationProvider::class)->disableOriginalConstructor()->getMock();
         GeneralUtility::addInstance(DummyConfigurationProvider::class, $dummyProvider);
@@ -161,7 +163,7 @@ class ProviderResolverTest extends AbstractTestCase
     public function resolveConfigurationProvidersReturnsExpectedProviders(array $providers)
     {
         $instance = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(['getAllRegisteredProviderInstances'])
+            ->onlyMethods(['getAllRegisteredProviderInstances'])
             ->disableOriginalConstructor()
             ->getMock();
         $instance->expects($this->once())->method('getAllRegisteredProviderInstances')->willReturn($providers);
@@ -177,7 +179,7 @@ class ProviderResolverTest extends AbstractTestCase
     public function resolvePrimaryConfigurationProvidersReturnsExpectedProvider(array $providers)
     {
         $instance = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(['getAllRegisteredProviderInstances'])
+            ->onlyMethods(['getAllRegisteredProviderInstances'])
             ->disableOriginalConstructor()
             ->getMock();
         $instance->expects($this->once())->method('getAllRegisteredProviderInstances')->willReturn($providers);
@@ -191,13 +193,13 @@ class ProviderResolverTest extends AbstractTestCase
     public function getProviderTestValues()
     {
         $priority50 = $this->getMockBuilder(Provider::class)
-            ->setMethods(['getPriority', 'trigger'])
+            ->onlyMethods(['getPriority', 'trigger'])
             ->disableOriginalConstructor()
             ->getMock();
         $priority50->expects($this->atLeastOnce())->method('getPriority')->willReturn(50);
         $priority50->expects($this->atLeastOnce())->method('trigger')->willReturn(true);
         $priority40 = $this->getMockBuilder(Provider::class)
-            ->setMethods(['getPriority', 'trigger'])
+            ->onlyMethods(['getPriority', 'trigger'])
             ->disableOriginalConstructor()
             ->getMock();
         $priority40->expects($this->atLeastOnce())->method('getPriority')->willReturn(40);

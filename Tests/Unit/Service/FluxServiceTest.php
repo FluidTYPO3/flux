@@ -320,67 +320,6 @@ class FluxServiceTest extends AbstractTestCase
 
     /**
      * @test
-     */
-    public function testGetTypoScriptByPath()
-    {
-        $service = new DummyFluxService();
-
-        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
-        $configurationManager->method('getConfiguration')->willReturn(
-            [
-                'plugin' => [
-                    'tx_test' => [
-                        'settings' => [
-                            'foo' => 'bar',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $service->setServerRequest(new ServerRequest());
-        $service->setConfigurationManager($configurationManager);
-
-        $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
-        $this->assertEquals(['foo' => 'bar'], $result);
-    }
-
-    /**
-     * @test
-     */
-    public function testGetTypoScriptByPathWhenCacheHasEntry()
-    {
-        $cacheService = $this->getMockBuilder(CacheService::class)
-            ->onlyMethods(['getFromCaches', 'setInCaches'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $cacheService->method('getFromCaches')->willReturn(['test_var' => 'test_val']);
-
-        $service = new DummyFluxService();
-        $service->setCacheService($cacheService);
-
-        $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
-        $this->assertEquals(['test_var' => 'test_val'], $result);
-    }
-
-    /**
-     * @test
-     */
-    public function testGetSettingsForExtensionName()
-    {
-        $instance = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getTypoScriptByPath'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $instance->expects($this->once())->method('getTypoScriptByPath')
-            ->with('plugin.tx_underscore.settings')
-            ->willReturn(['test' => 'test']);
-        $result = $instance->getSettingsForExtensionName('under_score');
-        $this->assertEquals(['test' => 'test'], $result);
-    }
-
-    /**
-     * @test
      * @dataProvider getConvertFlexFormContentToArrayTestValues
      * @param string $flexFormContent
      * @param Form|NULL $form

@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridPro
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
@@ -25,6 +26,7 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
     protected ViewBuilder $viewBuilder;
     protected CacheService $cacheService;
     protected ContentTypeManager $contentTypeManager;
+    protected TypoScriptService $typoScriptService;
 
     protected function setUp(): void
     {
@@ -46,6 +48,10 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         parent::setUp();
     }
@@ -57,6 +63,7 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
             $this->cacheService,
+            $this->typoScriptService,
             $this->contentTypeManager,
         ];
     }

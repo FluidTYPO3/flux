@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
@@ -31,6 +32,7 @@ class PageProviderTest extends AbstractTestCase
     protected WorkspacesAwareRecordService $recordService;
     protected PageService $pageService;
     protected CacheService $cacheService;
+    protected TypoScriptService $typoScriptService;
     protected string $configurationProviderClassName = PageProvider::class;
 
     protected function setUp(): void
@@ -39,7 +41,6 @@ class PageProviderTest extends AbstractTestCase
         $this->fluxService = $this->getMockBuilder(FluxService::class)
             ->onlyMethods(
                 [
-                    'getSettingsForExtensionName',
                     'convertFlexFormContentToArray',
                     'resolvePrimaryConfigurationProvider',
                 ]
@@ -57,6 +58,10 @@ class PageProviderTest extends AbstractTestCase
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->pageService = $this->getMockBuilder(PageService::class)
             ->onlyMethods(['getPageTemplateConfiguration'])
             ->disableOriginalConstructor()
@@ -70,6 +75,7 @@ class PageProviderTest extends AbstractTestCase
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
             $this->cacheService,
+            $this->typoScriptService,
             $this->pageService,
         ];
     }
