@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -19,10 +20,12 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 class FlexFormBuilder
 {
     protected FluxService $configurationService;
+    protected CacheService $cacheService;
 
-    public function __construct(FluxService $fluxService)
+    public function __construct(FluxService $fluxService, CacheService $cacheService)
     {
         $this->configurationService = $fluxService;
+        $this->cacheService = $cacheService;
     }
 
     public function resolveDataStructureIdentifier(
@@ -85,7 +88,7 @@ class FlexFormBuilder
         $cacheKey = md5(serialize($identifier));
 
         /** @var array|null $fromCache */
-        $fromCache = $this->configurationService->getFromCaches($cacheKey);
+        $fromCache = $this->cacheService->getFromCaches($cacheKey);
         if ($fromCache) {
             return $fromCache;
         }
@@ -112,12 +115,6 @@ class FlexFormBuilder
 
         $form = $provider->getForm($record, $fieldName);
         $provider->postProcessDataStructure($record, $dataStructArray, $identifier);
-        if ($form && $form->getOption(Form::OPTION_STATIC)) {
-            // This provider has requested static DS caching; stop attempting
-            // to process any other DS, cache and return this DS as final result:
-            $this->configurationService->setInCaches($dataStructArray, true, $cacheKey);
-            return $dataStructArray;
-        }
 
         if (empty($dataStructArray)) {
             $dataStructArray = ['ROOT' => ['el' => []]];
@@ -125,6 +122,13 @@ class FlexFormBuilder
 
         if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.0', '<=')) {
             $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
+        }
+
+        if ($form && $form->getOption(Form::OPTION_STATIC)) {
+            // This provider has requested static DS caching; stop attempting
+            // to process any other DS, cache and return this DS as final result:
+            $this->cacheService->setInCaches($dataStructArray, true, $cacheKey);
+            return $dataStructArray;
         }
 
         return $dataStructArray;
