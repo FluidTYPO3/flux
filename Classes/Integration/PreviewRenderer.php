@@ -16,6 +16,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class PreviewRenderer
 {
     protected static bool $assetsIncluded = false;
+    private PageRenderer $pageRenderer;
+    private FluxService $fluxService;
+
+    public function __construct(PageRenderer $pageRenderer, FluxService $fluxService)
+    {
+        $this->pageRenderer = $pageRenderer;
+        $this->fluxService = $fluxService;
+    }
 
     public function renderPreview(array $row): ?array
     {
@@ -24,7 +32,7 @@ class PreviewRenderer
         $headerContent = null;
         $drawItem = true;
         $itemContent = '<a name="c' . $row['uid'] . '"></a>';
-        $providers = $this->getConfigurationService()->resolveConfigurationProviders('tt_content', $fieldName, $row);
+        $providers = $this->fluxService->resolveConfigurationProviders('tt_content', $fieldName, $row);
         foreach ($providers as $provider) {
             /** @var ProviderInterface $provider */
             [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);
@@ -48,22 +56,10 @@ class PreviewRenderer
     protected function attachAssets(): void
     {
         if (!static::$assetsIncluded) {
-            /** @var PageRenderer $pageRenderer */
-            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-            $pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
-            $pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
+            $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
+            $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
 
             static::$assetsIncluded = true;
         }
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getConfigurationService(): FluxService
-    {
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
-        return $fluxService;
     }
 }

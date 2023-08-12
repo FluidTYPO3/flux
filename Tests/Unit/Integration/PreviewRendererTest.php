@@ -17,24 +17,36 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PreviewRendererTest extends AbstractTestCase
 {
+    private PageRenderer $pageRenderer;
+    private FluxService $fluxService;
+
+    protected function setUp(): void
+    {
+        $this->pageRenderer = $this->getMockBuilder(PageRenderer::class)
+            ->onlyMethods(['loadRequireJsModule'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->onlyMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        parent::setUp();
+    }
+
     public function testPreProcess(): void
     {
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getPreview')->willReturn(['header', 'content', false]);
 
-        $configurationService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolveConfigurationProviders'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $configurationService->method('resolveConfigurationProviders')->willReturn([$provider]);
+        $this->fluxService->method('resolveConfigurationProviders')->willReturn([$provider]);
 
         $record = ['uid' => 123];
 
         $subject = $this->getMockBuilder(PreviewRenderer::class)
-            ->setMethods(['getConfigurationService', 'attachAssets'])
-            ->disableOriginalConstructor()
+            ->onlyMethods(['attachAssets'])
+            ->setConstructorArgs([$this->pageRenderer, $this->fluxService])
             ->getMock();
-        $subject->method('getConfigurationService')->willReturn($configurationService);
 
         [$headerContent, $itemContent, $drawItem] = $subject->renderPreview($record);
 
@@ -45,12 +57,8 @@ class PreviewRendererTest extends AbstractTestCase
 
     public function testAttachAssets(): void
     {
-        $pageRenderer = $this->getMockBuilder(PageRenderer::class)->setMethods(['loadRequireJsModule'])->disableOriginalConstructor()->getMock();
-        $pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
-        $instances = GeneralUtility::getSingletonInstances();
-        GeneralUtility::setSingletonInstance(PageRenderer::class, $pageRenderer);
-        $subject = $this->createInstance();
+        $this->pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
+        $subject = new PreviewRenderer($this->pageRenderer, $this->fluxService);
         $this->callInaccessibleMethod($subject, 'attachAssets');
-        GeneralUtility::resetSingletonInstances($instances);
     }
 }
