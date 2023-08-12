@@ -178,17 +178,4 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         );
         return $templatePaths;
     }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function resolveAbsolutePathForFilename(string $filename): string
-    {
-        return GeneralUtility::getFileAbsFileName($filename);
-    }
-
-    protected function getRequest(): ServerRequest
-    {
-        return $GLOBALS['TYPO3_REQUEST'] ?? $this->serverRequest;
-    }
 }
