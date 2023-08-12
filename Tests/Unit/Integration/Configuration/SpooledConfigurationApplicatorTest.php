@@ -109,9 +109,9 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     public function testProcessData(): void
     {
         $this->subject->method('getApplicationContext')->willReturn(new ApplicationContext('Development'));
-        $this->contentTypeManager->expects(self::exactly(2))
-            ->method('registerTypeDefinition')
-            ->withConsecutive([$this->contentTypeDefinition], [$this->contentTypeDefinition2]);
+        $this->contentTypeBuilder->expects(self::exactly(2))
+            ->method('configureContentTypeFromTemplateFile')
+            ->willReturn($this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass());
 
         $this->subject->processData();
     }
@@ -129,10 +129,8 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     public function testProcessDataSwallowsFluidExceptionInProductionContextWhenConfiguring(): void
     {
         $this->subject->method('getApplicationContext')->willReturn(new ApplicationContext('Production'));
-        $this->contentTypeManager->expects(self::exactly(2))
-            ->method('registerTypeDefinition')
-            ->withConsecutive([$this->contentTypeDefinition], [$this->contentTypeDefinition2]);
-        $this->contentTypeBuilder->method('configureContentTypeFromTemplateFile')
+        $this->contentTypeBuilder->expects(self::atLeastOnce())
+            ->method('configureContentTypeFromTemplateFile')
             ->willThrowException(new Exception('test'));
 
         $this->subject->processData();
@@ -151,10 +149,8 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     public function testProcessDataSwallowsFluidExceptionInProductionContextWhenRegistering(): void
     {
         $this->subject->method('getApplicationContext')->willReturn(new ApplicationContext('Production'));
-        $this->contentTypeManager->expects(self::exactly(2))
-            ->method('registerTypeDefinition')
-            ->withConsecutive([$this->contentTypeDefinition], [$this->contentTypeDefinition2]);
-        $this->contentTypeBuilder->method('registerContentType')
+        $this->contentTypeBuilder->expects(self::atLeastOnce())
+            ->method('registerContentType')
             ->willThrowException(new Exception('test'));
 
         $this->subject->processData();
