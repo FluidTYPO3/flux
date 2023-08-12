@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -73,15 +74,18 @@ class AbstractProvider implements ProviderInterface
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
+    protected CacheService $cacheService;
 
     public function __construct(
         FluxService $configurationService,
         WorkspacesAwareRecordService $recordService,
-        ViewBuilder $viewBuilder
+        ViewBuilder $viewBuilder,
+        CacheService $cacheService
     ) {
         $this->configurationService = $configurationService;
         $this->recordService = $recordService;
         $this->viewBuilder = $viewBuilder;
+        $this->cacheService = $cacheService;
     }
 
     public function loadSettings(array $settings): void
@@ -292,7 +296,7 @@ class AbstractProvider implements ProviderInterface
     {
         $cacheKeyAll = $this->getCacheKeyForStoredVariable($row, '_all', $forField) . '_' . $forField;
         /** @var array $allCached */
-        $allCached = $this->configurationService->getFromCaches($cacheKeyAll);
+        $allCached = $this->cacheService->getFromCaches($cacheKeyAll);
         $fromCache = $allCached[$name] ?? null;
         if ($fromCache) {
             return $fromCache;
@@ -325,7 +329,7 @@ class AbstractProvider implements ProviderInterface
                 $this->getTemplatePathAndFilename($row, $forField)
             );
             if ($variables['form']->getOption(Form::OPTION_STATIC)) {
-                $this->configurationService->setInCaches($variables, true, $cacheKeyAll);
+                $this->cacheService->setInCaches($variables, true, $cacheKeyAll);
             }
         }
 

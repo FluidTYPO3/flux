@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\CustomForm;
@@ -39,6 +40,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     protected FluxService $fluxService;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
+    protected CacheService $cacheService;
     protected string $configurationProviderClassName = Provider::class;
     private array $dummyGridConfiguration = [
         'columns' => [
@@ -64,8 +66,6 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $this->fluxService = $this->getMockBuilder(FluxService::class)
             ->onlyMethods(
                 [
-                    'getFromCaches',
-                    'setInCaches',
                     'getSettingsForExtensionName',
                     'convertFlexFormContentToArray',
                 ]
@@ -79,6 +79,10 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         parent::setUp();
     }
@@ -89,6 +93,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
             $this->fluxService,
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+            $this->cacheService,
         ];
     }
 
@@ -889,7 +894,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         );
 
         $this->fluxService->method('getSettingsForExtensionName')->willReturn([]);
-        $this->fluxService->expects(self::once())->method('setInCaches');
+        $this->cacheService->expects(self::once())->method('setInCaches');
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
@@ -927,7 +932,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
 
     public function testExtractConfigurationReturnsValueFromCache(): void
     {
-        $this->fluxService->method('getFromCaches')->willReturn(['test' => 'foo']);
+        $this->cacheService->method('getFromCaches')->willReturn(['test' => 'foo']);
 
         $instance = $subject = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())

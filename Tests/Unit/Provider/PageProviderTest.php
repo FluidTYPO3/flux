@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\PageProvider;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -29,6 +30,7 @@ class PageProviderTest extends AbstractTestCase
     protected FluxService $fluxService;
     protected WorkspacesAwareRecordService $recordService;
     protected PageService $pageService;
+    protected CacheService $cacheService;
     protected string $configurationProviderClassName = PageProvider::class;
 
     protected function setUp(): void
@@ -37,8 +39,6 @@ class PageProviderTest extends AbstractTestCase
         $this->fluxService = $this->getMockBuilder(FluxService::class)
             ->onlyMethods(
                 [
-                    'getFromCaches',
-                    'setInCaches',
                     'getSettingsForExtensionName',
                     'convertFlexFormContentToArray',
                     'resolvePrimaryConfigurationProvider',
@@ -53,6 +53,10 @@ class PageProviderTest extends AbstractTestCase
             ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->pageService = $this->getMockBuilder(PageService::class)
             ->onlyMethods(['getPageTemplateConfiguration'])
             ->disableOriginalConstructor()
@@ -65,6 +69,7 @@ class PageProviderTest extends AbstractTestCase
             $this->fluxService,
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+            $this->cacheService,
             $this->pageService,
         ];
     }

@@ -12,6 +12,7 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -54,9 +55,10 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         FluxService $configurationService,
         WorkspacesAwareRecordService $recordService,
         ViewBuilder $viewBuilder,
+        CacheService $cacheService,
         PageService $pageService
     ) {
-        parent::__construct($configurationService, $recordService, $viewBuilder);
+        parent::__construct($configurationService, $recordService, $viewBuilder, $cacheService);
         $this->pageService = $pageService;
     }
 

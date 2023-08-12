@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionIn
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinitionRepository;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -25,6 +26,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
     protected FluxService $fluxService;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
+    protected CacheService $cacheService;
     protected ContentTypeManager $contentTypeManager;
     protected ContentTypeDefinitionInterface $contentTypeDefinition;
 
@@ -46,6 +48,10 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
             ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->singletonInstances[RecordBasedContentTypeDefinitionRepository::class] = $this->getMockBuilder(RecordBasedContentTypeDefinitionRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -59,6 +65,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
             $this->fluxService,
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+            $this->cacheService,
             $this->contentTypeManager,
         ];
     }

@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -43,9 +44,10 @@ class RuntimeDefinedContentProvider extends AbstractProvider implements GridProv
         FluxService $configurationService,
         WorkspacesAwareRecordService $recordService,
         ViewBuilder $viewBuilder,
+        CacheService $cacheService,
         ContentTypeManager $contentTypeManager
     ) {
-        parent::__construct($configurationService, $recordService, $viewBuilder);
+        parent::__construct($configurationService, $recordService, $viewBuilder, $cacheService);
         $this->contentTypeDefinitions = $contentTypeManager;
     }
 

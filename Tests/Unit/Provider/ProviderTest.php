@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
@@ -25,6 +26,7 @@ class ProviderTest extends AbstractTestCase
     protected FluxService $fluxService;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
+    protected CacheService $cacheService;
     protected array $definition = [
         'name' => 'test',
         'label' => 'Test provider',
@@ -73,8 +75,6 @@ class ProviderTest extends AbstractTestCase
         $this->fluxService = $this->getMockBuilder(FluxService::class)
             ->onlyMethods(
                 [
-                    'getFromCaches',
-                    'setInCaches',
                     'getSettingsForExtensionName',
                     'convertFlexFormContentToArray',
                 ]
@@ -88,6 +88,10 @@ class ProviderTest extends AbstractTestCase
             ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         parent::setUp();
     }
@@ -98,6 +102,7 @@ class ProviderTest extends AbstractTestCase
             $this->fluxService,
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+            $this->cacheService,
         ];
     }
 

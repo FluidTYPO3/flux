@@ -215,23 +215,6 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         return $settings;
     }
 
-    /**
-     * @param mixed $value
-     * @return void
-     */
-    public function setInCaches($value, bool $persistent, string ...$identifyingValues)
-    {
-        $this->cacheService->setInCaches($value, $persistent, ...$identifyingValues);
-    }
-
-    /**
-     * @return mixed|false
-     */
-    public function getFromCaches(string ...$identifyingValues)
-    {
-        return $this->cacheService->getFromCaches(...$identifyingValues);
-    }
-
     public function convertFileReferenceToTemplatePathAndFilename(string $reference): string
     {
         $parts = explode(':', $reference);
