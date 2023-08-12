@@ -848,7 +848,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
         $instance = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
             ->getMockForAbstractClass();
-        $output = $instance->getViewForRecord(['uid' => 123]);
+        $output = $this->callInaccessibleMethod($instance, 'getViewForRecord', ['uid' => 123]);
         self::assertInstanceOf(TemplateView::class, $output);
     }
 
