@@ -65,5 +65,4 @@ class TypoScriptService implements SingletonInterface
         $this->cacheService->setInCaches($value, true, $cacheId);
         return $value;
     }
-
 }
