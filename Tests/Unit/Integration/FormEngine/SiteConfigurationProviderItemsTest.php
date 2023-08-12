@@ -18,31 +18,26 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SiteConfigurationProviderItemsTest extends AbstractTestCase
 {
-    private ?PageService $pageService;
+    private PageService $pageService;
+    private ContentTypeManager $contentTypeManager;
 
     protected function setUp(): void
     {
         $this->pageService = $this->getMockBuilder(PageService::class)
-            ->setMethods(['getAvailablePageTemplateFiles'])
+            ->onlyMethods(['getAvailablePageTemplateFiles'])
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->singletonInstances[PageService::class] = $this->pageService;
+        $this->contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
+            ->onlyMethods(['fetchContentTypeNames'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         parent::setUp();
     }
 
     public function testProcessContentTypeItems(): void
     {
-        $singletons = GeneralUtility::getSingletonInstances();
-
-        $contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['fetchContentTypeNames'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $contentTypeManager->method('fetchContentTypeNames')->willReturn(['flux_test', 'flux_test2']);
-
-        GeneralUtility::setSingletonInstance(ContentTypeManager::class, $contentTypeManager);
+        $this->contentTypeManager->method('fetchContentTypeNames')->willReturn(['flux_test', 'flux_test2']);
 
         $tca = ['items' => []];
 
@@ -50,7 +45,7 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
         $expected['items'][] = ['flux_test', 'flux_test'];
         $expected['items'][] = ['flux_test2', 'flux_test2'];
 
-        $subject = new SiteConfigurationProviderItems();
+        $subject = new SiteConfigurationProviderItems($this->contentTypeManager, $this->pageService);
         $output = $subject->processContentTypeItems(
             $tca,
             $this->getMockBuilder(TcaSelectItems::class)->disableOriginalConstructor()->getMock()
@@ -60,8 +55,6 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
             $expected,
             $output
         );
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     public function testProcessPageTemplateItems(): void
@@ -80,8 +73,8 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
         );
 
         $subject = $this->getMockBuilder(SiteConfigurationProviderItems::class)
-            ->setMethods(['translate'])
-            ->disableOriginalConstructor()
+            ->onlyMethods(['translate'])
+            ->setConstructorArgs([$this->contentTypeManager, $this->pageService])
             ->getMock();
         $subject->method('translate')->willReturn('test');
 
