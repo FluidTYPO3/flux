@@ -74,14 +74,8 @@
         \FluidTYPO3\Flux\Backend\PageLayoutDataProvider::class . '->addItems'
     );
 
-    $userFunctionsClass = new \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions();
-    if (is_callable([$userFunctionsClass , 'fluxFormFieldDisplayCondition'])) {
-
-        // Flux version is recent enough to support the custom displayCond from Flux that hides the entire "flex" field
-        // if there are no fields in the DS it uses.
-        $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform';
-        $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform_sub';
-    }
+    $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform';
+    $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform_sub';
 
     $doktypes = '0,1,4';
     $doktypesOptionValue = \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES);
