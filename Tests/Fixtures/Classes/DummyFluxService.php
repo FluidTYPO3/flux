@@ -19,24 +19,16 @@ class DummyFluxService extends FluxService
     public function __construct()
     {
         $this->serverRequest = $this->createMock(ServerRequest::class);
-        $this->recordService = $this->createMock(WorkspacesAwareRecordService::class);
         $this->resourceFactory = $this->createMock(ResourceFactory::class);
         $this->providerResolver = $this->createMock(ProviderResolver::class);
-        $this->cacheService = $this->createMock(CacheService::class);
         $this->transformer = $this->createMock(FormDataTransformer::class);
         $this->flexFormService = $this->createMock(FlexFormService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->configurationManager = $this->createMock(ConfigurationManagerInterface::class);
     }
 
     public function setServerRequest(ServerRequest $serverRequest): void
     {
         $this->serverRequest = $serverRequest;
-    }
-
-    public function setRecordService(RecordService $recordService): void
-    {
-        $this->recordService = $recordService;
     }
 
     public function setResourceFactory(ResourceFactory $resourceFactory): void
@@ -49,11 +41,6 @@ class DummyFluxService extends FluxService
         $this->providerResolver = $providerResolver;
     }
 
-    public function setCacheService(CacheService $cacheService): void
-    {
-        $this->cacheService = $cacheService;
-    }
-
     public function setFormDataTransformer(FormDataTransformer $transformer): void
     {
         $this->transformer = $transformer;
@@ -62,11 +49,6 @@ class DummyFluxService extends FluxService
     public function setFlexFormService(FlexFormService $flexFormService): void
     {
         $this->flexFormService = $flexFormService;
-    }
-
-    public function setConfigurationManager(ConfigurationManagerInterface $configurationManager): void
-    {
-        $this->configurationManager = $configurationManager;
     }
 
     private function createMock(string $className): object

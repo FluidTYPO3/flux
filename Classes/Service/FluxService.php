@@ -42,32 +42,23 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     protected ServerRequest $serverRequest;
-    protected WorkspacesAwareRecordService $recordService;
     protected ResourceFactory $resourceFactory;
     protected ProviderResolver $providerResolver;
-    protected CacheService $cacheService;
     protected FormDataTransformer $transformer;
     protected FlexFormService $flexFormService;
-    protected ConfigurationManagerInterface $configurationManager;
 
     public function __construct(
         ServerRequest $serverRequest,
-        WorkspacesAwareRecordService $recordService,
         ResourceFactory $resourceFactory,
         ProviderResolver $providerResolver,
-        CacheService $cacheService,
         FormDataTransformer $transformer,
-        FlexFormService $flexFormService,
-        ConfigurationManagerInterface $configurationManager
+        FlexFormService $flexFormService
     ) {
         $this->serverRequest = $serverRequest;
-        $this->recordService = $recordService;
         $this->resourceFactory = $resourceFactory;
         $this->providerResolver = $providerResolver;
-        $this->cacheService = $cacheService;
         $this->transformer = $transformer;
         $this->flexFormService = $flexFormService;
-        $this->configurationManager = $configurationManager;
     }
 
     /**
