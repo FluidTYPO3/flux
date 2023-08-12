@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * @codeCoverageIgnore

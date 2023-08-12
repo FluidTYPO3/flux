@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Integration\FormEngine\SiteConfigurationProviderItems;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SiteConfigurationProviderItemsTest extends AbstractTestCase
 {
