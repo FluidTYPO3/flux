@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Core\ApplicationContext;
@@ -34,6 +35,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     private ContentTypeManager $contentTypeManager;
     private RequestBuilder $requestBuilder;
     private PackageManager $packageManager;
+    private CacheService $cacheService;
 
     protected function setUp(): void
     {
@@ -42,6 +44,11 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
 
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getForm')->willReturn($form);
+
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getFromCaches', 'setInCaches', 'remove'])
+            ->getMock();
 
         $this->contentTypeBuilder = $this->getMockBuilder(ContentTypeBuilder::class)
             ->onlyMethods(
@@ -90,18 +97,17 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
         $this->packageManager->method('getActivePackages')->willReturn([]);
 
         $this->subject = $this->getMockBuilder(SpooledConfigurationApplicator::class)
-            ->onlyMethods(['getApplicationContext', 'getContentTypeManager'])
+            ->onlyMethods(['getApplicationContext'])
             ->setConstructorArgs(
                 [
                     $this->contentTypeBuilder,
                     $this->contentTypeManager,
                     $this->requestBuilder,
                     $this->packageManager,
+                    $this->cacheService,
                 ]
             )
             ->getMock();
-        $this->subject->method('getContentTypeManager')->willReturn($this->contentTypeManager);
-
 
         parent::setUp();
     }

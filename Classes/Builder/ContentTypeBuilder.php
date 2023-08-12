@@ -18,7 +18,6 @@ use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
@@ -35,13 +34,6 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 class ContentTypeBuilder
 {
     const DEFAULT_SHOWITEM = 'defaultShowItem';
-
-    protected CacheService $cacheService;
-
-    public function __construct(CacheService $cacheService)
-    {
-        $this->cacheService = $cacheService;
-    }
 
     /**
      * @param string $providerExtensionName
@@ -208,30 +200,24 @@ class ContentTypeBuilder
         string $contentType,
         ProviderInterface $provider
     ): void {
-        $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName);
-        /** @var Form|null $form */
-        $form = $this->cacheService->getFromCaches($cacheId);
+        // Provider *must* be able to return a Form without any global configuration or specific content
+        // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
+        $form = $provider->getForm(['CType' => $contentType]);
         if (!$form) {
-            // Provider *must* be able to return a Form without any global configuration or specific content
-            // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
-            $form = $provider->getForm(['CType' => $contentType]);
-            if (!$form) {
-                return;
-            }
-            try {
-                $form->setExtensionName($providerExtensionName);
-                //$this->cacheService->setInCaches($form, true, $cacheId);
-            } catch (\Exception $error) {
-                // Possible serialization error!
-                // Unfortunately we must do pokemon-style exception catching since serialization
-                // errors use the most base Exception class in PHP. So instead we check for a
-                // specific dispatcher in the stack trace and re-throw if not matched.
-                $pitcher = $error->getTrace()[0] ?? false;
-                if ($pitcher && ($pitcher['class'] ?? '') !== 'SplObjectStorage'
-                    && $pitcher['function'] !== 'serialize'
-                ) {
-                    throw $error;
-                }
+            return;
+        }
+        try {
+            $form->setExtensionName($providerExtensionName);
+        } catch (\Exception $error) {
+            // Possible serialization error!
+            // Unfortunately we must do pokemon-style exception catching since serialization
+            // errors use the most base Exception class in PHP. So instead we check for a
+            // specific dispatcher in the stack trace and re-throw if not matched.
+            $pitcher = $error->getTrace()[0] ?? false;
+            if ($pitcher && ($pitcher['class'] ?? '') !== 'SplObjectStorage'
+                && $pitcher['function'] !== 'serialize'
+            ) {
+                throw $error;
             }
         }
 
@@ -247,14 +233,6 @@ class ContentTypeBuilder
             'CType',
             $providerExtensionName
         );
-
-        /*
-        // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
-        // all TypoScript is finally loaded.
-        $this->cacheService->remove(
-            'viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName)
-        );
-        */
     }
 
     protected function addIcon(Form $form, string $contentType): string

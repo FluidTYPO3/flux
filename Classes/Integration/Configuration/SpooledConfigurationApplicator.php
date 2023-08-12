@@ -16,31 +16,36 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Package\PackageManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Exception;
 
 class SpooledConfigurationApplicator
 {
+    private const CACHE_ID_SORTINGS = 'flux_contentType_sortingValues';
+
     private ContentTypeBuilder $contentTypeBuilder;
     private ContentTypeManager $contentTypeManager;
     private RequestBuilder $requestBuilder;
     private PackageManager $packageManager;
+    private CacheService $cacheService;
 
     public function __construct(
         ContentTypeBuilder $contentTypeBuilder,
         ContentTypeManager $contentTypeManager,
         RequestBuilder $requestBuilder,
-        PackageManager $packageManager
+        PackageManager $packageManager,
+        CacheService $cacheService
     ) {
         $this->contentTypeBuilder = $contentTypeBuilder;
         $this->contentTypeManager = $contentTypeManager;
         $this->requestBuilder = $requestBuilder;
         $this->packageManager = $packageManager;
+        $this->cacheService = $cacheService;
     }
 
     public function processData(): void
@@ -112,7 +117,6 @@ class SpooledConfigurationApplicator
         $applicationContext = $this->getApplicationContext();
         $providers = [];
         foreach ($queue as $queuedRegistration) {
-            /** @var ProviderInterface $provider */
             [
                 $providerExtensionName,
                 $templateFilename,
@@ -124,6 +128,8 @@ class SpooledConfigurationApplicator
             try {
                 $contentType = $contentType ?: $this->determineContentType($providerExtensionName, $templateFilename);
                 $defaultControllerExtensionName = 'FluidTYPO3.Flux';
+
+                /** @var ProviderInterface $provider */
                 $provider = $this->contentTypeBuilder->configureContentTypeFromTemplateFile(
                     $providerExtensionName,
                     $templateFilename,
@@ -145,25 +151,28 @@ class SpooledConfigurationApplicator
             }
         }
 
-        $self = $this;
-
         $backup = $GLOBALS['TYPO3_REQUEST'] ?? null;
 
         $GLOBALS['TYPO3_REQUEST'] = $this->requestBuilder->getServerRequest();
 
+        $sortingValues = $this->resolveSortingValues($providers);
         uasort(
             $providers,
-            function (ProviderInterface $item1, ProviderInterface $item2) use ($self) {
-                $form1 = $item1->getForm(['CType' => $item1->getContentObjectType()]);
-                $form2 = $item2->getForm(['CType' => $item2->getContentObjectType()]);
-                return $self->resolveSortingValue($form1) <=> $self->resolveSortingValue($form2);
+            function (ProviderInterface $item1, ProviderInterface $item2) use ($sortingValues) {
+                $contentType1 = $item1->getContentObjectType();
+                $contentType2 = $item2->getContentObjectType();
+                return ($sortingValues[$contentType1] ?? 0) <=> ($sortingValues[$contentType2] ?? 0);
             }
         );
+
+        $providerExtensionNamesToFlush = [];
 
         foreach ($providers as $provider) {
             $contentType = $provider->getContentObjectType();
             $virtualRecord = ['CType' => $contentType];
             $providerExtensionName = $provider->getExtensionKey($virtualRecord);
+
+            $providerExtensionNamesToFlush[] = $providerExtensionName;
 
             try {
                 $this->contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider);
@@ -174,7 +183,37 @@ class SpooledConfigurationApplicator
             }
         }
 
+        // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
+        // all TypoScript is finally loaded.
+        foreach (array_unique($providerExtensionNamesToFlush) as $providerExtensionName) {
+            $this->cacheService->remove(
+                'viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName)
+            );
+        }
+
         $GLOBALS['TYPO3_REQUEST'] = $backup;
+    }
+
+    /**
+     * @param ProviderInterface[] $providers
+     */
+    private function resolveSortingValues(array $providers): array
+    {
+        /** @var array|false $fromCache */
+        $fromCache = $this->cacheService->getFromCaches(self::CACHE_ID_SORTINGS);
+        if ($fromCache) {
+            return $fromCache;
+        }
+
+        $sortingValues = [];
+        foreach ($providers as $provider) {
+            $contentObjectType = $provider->getContentObjectType();
+            $form = $provider->getForm(['CType' => $contentObjectType]);
+            $sortingValues[$contentObjectType] = $this->resolveSortingValue($form);
+        }
+
+        $this->cacheService->setInCaches($sortingValues, true, self::CACHE_ID_SORTINGS);
+        return $sortingValues;
     }
 
     private function resolveSortingValue(?Form $form): string
@@ -200,15 +239,5 @@ class SpooledConfigurationApplicator
     protected function getApplicationContext(): ApplicationContext
     {
         return Environment::getContext();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getContentTypeManager(): ContentTypeManager
-    {
-        /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
-        return $contentTypeManager;
     }
 }
