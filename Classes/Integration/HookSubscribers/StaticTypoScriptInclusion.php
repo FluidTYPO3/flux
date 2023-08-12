@@ -18,6 +18,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class StaticTypoScriptInclusion
 {
     protected static bool $recursed = false;
+    private SpooledConfigurationApplicator $applicator;
+
+    public function __construct(SpooledConfigurationApplicator $applicator)
+    {
+        $this->applicator = $applicator;
+    }
 
     public function includeStaticTypoScriptHook(array $parameters, TemplateService $caller): void
     {
@@ -42,9 +48,7 @@ class StaticTypoScriptInclusion
             // place - and therefore, the negative impact of this is considered very marginal.
             static::$recursed = true;
 
-            /** @var SpooledConfigurationApplicator $applicator */
-            $applicator = GeneralUtility::makeInstance(SpooledConfigurationApplicator::class);
-            $applicator->processData();
+            $this->applicator->processData();
         }
     }
 }

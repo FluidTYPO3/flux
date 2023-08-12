@@ -13,21 +13,19 @@ use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Table Configuration (TCA) post processor
- *
- * Simply loads the Flux service and lets methods
- * on this Service load necessary configuration.
- *
  * @codeCoverageIgnore
  */
 class TableConfigurationPostProcessor implements TableConfigurationPostProcessingHookInterface
 {
-    protected static bool $recursed = false;
+    private SpooledConfigurationApplicator $applicator;
+
+    public function __construct(SpooledConfigurationApplicator $applicator)
+    {
+        $this->applicator = $applicator;
+    }
 
     public function processData(): void
     {
-        /** @var SpooledConfigurationApplicator $applicator */
-        $applicator = GeneralUtility::makeInstance(SpooledConfigurationApplicator::class);
-        $applicator->processData();
+        $this->applicator->processData();
     }
 }

@@ -39,6 +39,10 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\FormEngine\SiteConfigurationProviderItems:
     public: true
+  FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor:
+    public: true
+  FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion:
+    public: true
   FluidTYPO3\Flux\Builder\ContentTypeBuilder:
     public: true
   FluidTYPO3\Flux\Builder\FlexFormBuilder:
