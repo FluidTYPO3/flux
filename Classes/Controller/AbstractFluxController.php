@@ -404,9 +404,9 @@ abstract class AbstractFluxController extends ActionController
             $content = $this->view->render();
         } else {
             $foreignControllerClass = $this->resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
-                    $extensionName,
-                    $controllerName
-                );
+                $extensionName,
+                $controllerName
+            );
             $content = $this->callSubControllerAction(
                 $extensionName,
                 $foreignControllerClass ?? static::class,
@@ -437,9 +437,9 @@ abstract class AbstractFluxController extends ActionController
         string $actionName
     ): bool {
         $potentialControllerClassName = $this->resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
-                $extensionName,
-                $controllerName
-            );
+            $extensionName,
+            $controllerName
+        );
         if ($potentialControllerClassName === null) {
             return false;
         }
