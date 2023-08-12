@@ -14,13 +14,10 @@ use Doctrine\DBAL\Driver\Exception;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
-use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
-use TYPO3\CMS\Core\Cache\CacheManager;
+use FluidTYPO3\Flux\Service\CacheService;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Content Type Manager
@@ -32,8 +29,10 @@ class ContentTypeManager implements SingletonInterface
 {
     const CACHE_IDENTIFIER = 'flux_content_types';
 
+    protected CacheService $cacheService;
+
     /**
-     * @var ContentTypeDefinitionInterface[]|null[]
+     * @var ContentTypeDefinitionInterface[]
      */
     protected array $types = [];
 
@@ -42,40 +41,41 @@ class ContentTypeManager implements SingletonInterface
      */
     protected array $typeNames = [];
 
-    /**
-     * @var FluidRenderingContentTypeDefinitionInterface[]
-     */
-    protected static array $cache = [];
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
 
     /**
-     * @return FluidRenderingContentTypeDefinitionInterface[]
+     * @return ContentTypeDefinitionInterface[]
      */
     public function fetchContentTypes(): iterable
     {
-        if (empty(static::$cache)) {
-            try {
-                $cache = $this->getCache();
-                /** @var FluidRenderingContentTypeDefinitionInterface[]|null $fromCache */
-                $fromCache = $cache->get(self::CACHE_IDENTIFIER);
-                if ($fromCache) {
-                    static::$cache = $fromCache;
-                } else {
-                    static::$cache = array_replace(
-                        $this->fetchDropInContentTypes(),
-                        $this->fetchFileBasedContentTypes(),
-                        $this->fetchRecordBasedContentTypes()
-                    );
-                }
-                $this->typeNames = array_merge($this->typeNames, array_keys(static::$cache));
-            } catch (DBALException $error) {
-                // Suppress schema- or connection-related issues
-            } catch (Exception $error) {
-                // Suppress schema- or connection-related issues
-            } catch (NoSuchCacheException $error) {
-                // Suppress caches not yet initialized errors
-            }
+        if (!empty($this->types)) {
+            return $this->types;
         }
-        return static::$cache;
+        try {
+            /** @var ContentTypeDefinitionInterface[] $types */
+            $types = $this->cacheService->getFromCaches(self::CACHE_IDENTIFIER);
+            if (!$types) {
+                $types = array_replace(
+                    $this->fetchDropInContentTypes(),
+                    $this->fetchFileBasedContentTypes(),
+                    $this->fetchRecordBasedContentTypes()
+                );
+                $this->cacheService->setInCaches($types, true, self::CACHE_IDENTIFIER);
+            }
+            $this->typeNames = array_merge($this->typeNames, array_keys($types));
+            $this->types = $types;
+            return $this->types;
+        } catch (DBALException $error) {
+            // Suppress schema- or connection-related issues
+        } catch (Exception $error) {
+            // Suppress schema- or connection-related issues
+        } catch (NoSuchCacheException $error) {
+            // Suppress caches not yet initialized errors
+        }
+        return [];
     }
 
     public function fetchContentTypeNames(): iterable
@@ -95,8 +95,7 @@ class ContentTypeManager implements SingletonInterface
 
     public function determineContentTypeForTypeString(string $contentTypeName): ?ContentTypeDefinitionInterface
     {
-        return $this->types[$contentTypeName]
-            ?? ($this->types[$contentTypeName] = $this->loadSingleDefinitionFromCache($contentTypeName));
+        return $this->fetchContentTypes()[$contentTypeName] ?? null;
     }
 
     public function determineContentTypeForRecord(array $record): ?ContentTypeDefinitionInterface
@@ -106,15 +105,8 @@ class ContentTypeManager implements SingletonInterface
 
     public function regenerate(): void
     {
-        self::$cache = [];
-        $cache = $this->getCache();
-        $cache->remove(self::CACHE_IDENTIFIER);
-        $cache->set(static::CACHE_IDENTIFIER, $this->fetchContentTypes());
-    }
-
-    protected function loadSingleDefinitionFromCache(string $name): ?ContentTypeDefinitionInterface
-    {
-        return $this->fetchContentTypes()[$name] ?? null;
+        $this->cacheService->remove(self::CACHE_IDENTIFIER);
+        $this->cacheService->setInCaches($this->fetchContentTypes(), true, static::CACHE_IDENTIFIER);
     }
 
     /**
@@ -139,25 +131,5 @@ class ContentTypeManager implements SingletonInterface
     protected function fetchRecordBasedContentTypes(): array
     {
         return (array) RecordBasedContentTypeDefinition::fetchContentTypes();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getCache(): FrontendInterface
-    {
-        try {
-            /** @var CacheManager $cacheManager */
-            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-            return $cacheManager->getCache('flux');
-        } catch (NoSuchCacheException $error) {
-            $cacheManager->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
-            try {
-                $cache = $cacheManager->getCache('flux');
-            } catch (NoSuchCacheException $error) {
-                $cache = $cacheManager->getCache('runtime');
-            }
-        }
-        return $cache;
     }
 }

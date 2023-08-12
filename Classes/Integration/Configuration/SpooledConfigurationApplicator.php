@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Integration\Configuration;
 use FluidTYPO3\Flux\Builder\ContentTypeBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
@@ -48,7 +49,9 @@ class SpooledConfigurationApplicator
         $this->spoolQueuedContentTypeTableConfigurations(Core::getQueuedContentTypeRegistrations());
 
         foreach ($this->contentTypeManager->fetchContentTypes() as $contentType) {
-            $this->contentTypeManager->registerTypeDefinition($contentType);
+            if (!$contentType instanceof FluidRenderingContentTypeDefinitionInterface) {
+                continue;
+            }
             Core::registerTemplateAsContentType(
                 $contentType->getExtensionIdentity(),
                 $contentType->getTemplatePathAndFilename(),

@@ -22,9 +22,6 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -48,7 +45,7 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
     protected WorkspacesAwareRecordService $recordService;
     protected ResourceFactory $resourceFactory;
     protected ProviderResolver $providerResolver;
-    protected CacheManager $cacheManager;
+    protected CacheService $cacheService;
     protected FormDataTransformer $transformer;
     protected FlexFormService $flexFormService;
     protected ConfigurationManagerInterface $configurationManager;
@@ -58,7 +55,7 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         WorkspacesAwareRecordService $recordService,
         ResourceFactory $resourceFactory,
         ProviderResolver $providerResolver,
-        CacheManager $cacheManager,
+        CacheService $cacheService,
         FormDataTransformer $transformer,
         FlexFormService $flexFormService,
         ConfigurationManagerInterface $configurationManager
@@ -67,7 +64,7 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         $this->recordService = $recordService;
         $this->resourceFactory = $resourceFactory;
         $this->providerResolver = $providerResolver;
-        $this->cacheManager = $cacheManager;
+        $this->cacheService = $cacheService;
         $this->transformer = $transformer;
         $this->flexFormService = $flexFormService;
         $this->configurationManager = $configurationManager;
@@ -102,9 +99,8 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
      */
     public function getTypoScriptByPath(string $path)
     {
-        $cache = $this->getRuntimeCache();
         $cacheId = md5('ts_' . $path);
-        $fromCache = $cache->get($cacheId);
+        $fromCache = $this->cacheService->getFromCaches($cacheId);
         if ($fromCache) {
             return $fromCache;
         }
@@ -123,7 +119,7 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
         if (is_array($value)) {
             $value = GeneralUtility::removeDotsFromTS($value);
         }
-        $cache->set($cacheId, $value);
+        $this->cacheService->setInCaches($value, true, $cacheId);
         return $value;
     }
 
@@ -221,26 +217,19 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
 
     /**
      * @param mixed $value
-     * @param array $identifyingValues
      * @return void
      */
-    public function setInCaches($value, bool $persistent, ...$identifyingValues)
+    public function setInCaches($value, bool $persistent, string ...$identifyingValues)
     {
-        $cacheKey = $this->createCacheIdFromValues($identifyingValues);
-        $this->getRuntimeCache()->set($cacheKey, $value);
-        if ($persistent) {
-            $this->getPersistentCache()->set($cacheKey, $value);
-        }
+        $this->cacheService->setInCaches($value, $persistent, ...$identifyingValues);
     }
 
     /**
-     * @param array $identifyingValues
      * @return mixed|false
      */
-    public function getFromCaches(...$identifyingValues)
+    public function getFromCaches(string ...$identifyingValues)
     {
-        $cacheKey = $this->createCacheIdFromValues($identifyingValues);
-        return $this->getRuntimeCache()->get($cacheKey) ?: $this->getPersistentCache()->get($cacheKey);
+        return $this->cacheService->getFromCaches(...$identifyingValues);
     }
 
     public function convertFileReferenceToTemplatePathAndFilename(string $reference): string
@@ -351,39 +340,6 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
     {
         $provider = $this->resolvePrimaryConfigurationProvider('pages', PageProvider::FIELD_NAME_MAIN, $row);
         return $provider;
-    }
-
-    protected function createCacheIdFromValues(array $identifyingValues): string
-    {
-        return 'flux-' . md5(serialize($identifyingValues));
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getRuntimeCache(): FrontendInterface
-    {
-        static $cache;
-        if (!$cache) {
-            $cache = $this->cacheManager->getCache('runtime');
-        }
-        return $cache;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getPersistentCache(): FrontendInterface
-    {
-        static $cache;
-        if (!$cache) {
-            try {
-                $cache = $this->cacheManager->getCache('flux');
-            } catch (NoSuchCacheException $error) {
-                $cache = $this->cacheManager->getCache('runtime');
-            }
-        }
-        return $cache;
     }
 
     /**

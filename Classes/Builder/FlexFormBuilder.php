@@ -13,8 +13,6 @@ use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
@@ -22,10 +20,8 @@ class FlexFormBuilder
 {
     protected FluxService $configurationService;
 
-    public function __construct()
+    public function __construct(FluxService $fluxService)
     {
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
         $this->configurationService = $fluxService;
     }
 
@@ -86,8 +82,10 @@ class FlexFormBuilder
             return [];
         }
 
+        $cacheKey = md5(serialize($identifier));
+
         /** @var array|null $fromCache */
-        $fromCache = $this->configurationService->getFromCaches($identifier);
+        $fromCache = $this->configurationService->getFromCaches($cacheKey);
         if ($fromCache) {
             return $fromCache;
         }
@@ -117,7 +115,7 @@ class FlexFormBuilder
         if ($form && $form->getOption(Form::OPTION_STATIC)) {
             // This provider has requested static DS caching; stop attempting
             // to process any other DS, cache and return this DS as final result:
-            $this->configurationService->setInCaches($dataStructArray, true, $identifier);
+            $this->configurationService->setInCaches($dataStructArray, true, $cacheKey);
             return $dataStructArray;
         }
 
@@ -158,33 +156,5 @@ class FlexFormBuilder
     protected function loadRecordWithoutRestriction(string $table, int $uid): ?array
     {
         return BackendUtility::getRecord($table, $uid, '*', '', false);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getCache(): FrontendInterface
-    {
-        static $cache;
-        if (!$cache) {
-            /** @var CacheManager $cacheManager */
-            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-            $cache = $cacheManager->getCache('flux');
-        }
-        return $cache;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getRuntimeCache(): FrontendInterface
-    {
-        static $cache;
-        if (!$cache) {
-            /** @var CacheManager $cacheManager */
-            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-            $cache = $cacheManager->getCache('runtime');
-        }
-        return $cache;
     }
 }

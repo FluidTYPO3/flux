@@ -12,10 +12,10 @@ use FluidTYPO3\Flux\Builder\ContentTypeBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -26,6 +26,8 @@ use TYPO3\CMS\Lang\LanguageService;
  */
 class ContentTypeBuilderTest extends AbstractTestCase
 {
+    protected CacheService $cacheService;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,6 +40,11 @@ class ContentTypeBuilderTest extends AbstractTestCase
         $packageManager = $this->getMockBuilder(PackageManager::class)->setMethods(['getPackage', 'isPackageActive'])->disableOriginalConstructor()->getMock();
         $packageManager->method('getPackage')->willReturn($package);
         $packageManager->method('isPackageActive')->willReturn(true);
+
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['setInCaches', 'getFromCaches'])
+            ->getMock();
 
         CompatibilityRegistry::register(ContentTypeBuilder::DEFAULT_SHOWITEM, ['8.7' => 'foo']);
         AccessibleExtensionManagementUtility::setPackageManager($packageManager);
@@ -54,7 +61,7 @@ class ContentTypeBuilderTest extends AbstractTestCase
 
     public function testAddBoilerplateTableConfiguration(): void
     {
-        $subject = new ContentTypeBuilder();
+        $subject = new ContentTypeBuilder($this->cacheService);
         $subject->addBoilerplateTableConfiguration('foobar');
         $this->assertNotEmpty($GLOBALS['TCA']['tt_content']['types']['foobar']);
     }
@@ -63,9 +70,10 @@ class ContentTypeBuilderTest extends AbstractTestCase
     {
         $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] = [];
 
-        $subject = $this->getMockBuilder(ContentTypeBuilder::class)->setMethods(['getCache', 'getRuntimeCache', 'createIcon'])->getMock();
-        $subject->method('getCache')->willReturn($this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass());
-        $subject->method('getRuntimeCache')->willReturn($this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass());
+        $subject = $this->getMockBuilder(ContentTypeBuilder::class)
+            ->setConstructorArgs([$this->cacheService])
+            ->onlyMethods(['createIcon'])
+            ->getMock();
         $subject->method('createIcon')->willReturn('icon');
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
@@ -83,7 +91,9 @@ class ContentTypeBuilderTest extends AbstractTestCase
     {
         $provider = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock();
         GeneralUtility::addInstance(Provider::class, $provider);
-        $subject = $this->getMockBuilder(ContentTypeBuilder::class)->setMethods(['dummy'])->getMock();
+        $subject = $this->getMockBuilder(ContentTypeBuilder::class)
+            ->setConstructorArgs([$this->cacheService])
+            ->addMethods(['dummy'])->getMock();
         $result = $subject->configureContentTypeFromTemplateFile(
             'FluidTYPO3.Flux',
             $this->getAbsoluteFixtureTemplatePathAndFilename(static::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL)
@@ -94,7 +104,7 @@ class ContentTypeBuilderTest extends AbstractTestCase
     public function testThrowsExceptionOnInvalidProviderClass(): void
     {
         $this->expectExceptionCode(1690816678);
-        (new ContentTypeBuilder())->configureContentTypeFromTemplateFile(
+        (new ContentTypeBuilder($this->cacheService))->configureContentTypeFromTemplateFile(
             'FluidTYPO3.Flux',
             '/dev/null',
             \DateTime::class,

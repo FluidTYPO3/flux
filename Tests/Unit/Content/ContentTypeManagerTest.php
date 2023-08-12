@@ -11,29 +11,34 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content;
 use Doctrine\DBAL\DBALException;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyContentTypeManager;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 
 class ContentTypeManagerTest extends AbstractTestCase
 {
+    private CacheService $cacheService;
     private ContentTypeManager $subject;
 
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->getMock();
+
         $this->subject = $this->getMockBuilder(ContentTypeManager::class)
+            ->setConstructorArgs([$this->cacheService])
             ->onlyMethods(
                 [
                     'fetchDropInContentTypes',
                     'fetchFileBasedContentTypes',
                     'fetchRecordBasedContentTypes',
-                    'getCache',
                 ]
             )
-            ->disableOriginalConstructor()
             ->getMock();
     }
 
@@ -57,8 +62,6 @@ class ContentTypeManagerTest extends AbstractTestCase
 
     public function testFetchContentTypesDoesNotSuppressOtherExceptionTypes(): void
     {
-        $cache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-        $this->subject->method('getCache')->willReturn($cache);
         $this->subject->method('fetchDropInContentTypes')->willThrowException(new \RuntimeException('some error'));
         self::expectException(\RuntimeException::class);
         $this->subject->fetchContentTypes();
@@ -75,7 +78,7 @@ class ContentTypeManagerTest extends AbstractTestCase
         $definition = $this->getMockBuilder(ContentTypeDefinitionInterface::class)->getMockForAbstractClass();
         $definition->method('getContentTypeName')->willReturn('test_foobar');
 
-        $subject = new ContentTypeManager();
+        $subject = new ContentTypeManager($this->cacheService);
         $subject->registerTypeDefinition($definition);
 
         self::assertSame($definition, $subject->determineContentTypeForTypeString('test_foobar'));
@@ -93,7 +96,7 @@ class ContentTypeManagerTest extends AbstractTestCase
         ];
         $subject = $this->getMockBuilder(ContentTypeManager::class)
             ->onlyMethods(['determineContentTypeForTypeString'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$this->cacheService])
             ->getMock();
         $subject->expects(self::once())
             ->method('determineContentTypeForTypeString')
@@ -113,14 +116,12 @@ class ContentTypeManagerTest extends AbstractTestCase
 
     public function testRegenerateSetsCacheValue(): void
     {
-        $cache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-        $cache->expects(self::once())->method('set')->with(ContentTypeManager::CACHE_IDENTIFIER, []);
+        $this->cacheService->expects(self::once())->method('setInCaches')->with([], true, ContentTypeManager::CACHE_IDENTIFIER);
 
         $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->onlyMethods(['fetchContentTypes', 'getCache'])
-            ->disableOriginalConstructor()
+            ->onlyMethods(['fetchContentTypes'])
+            ->setConstructorArgs([$this->cacheService])
             ->getMock();
-        $subject->method('getCache')->willReturn($cache);
         $subject->method('fetchContentTypes')->willReturn([]);
         $subject->regenerate();
     }

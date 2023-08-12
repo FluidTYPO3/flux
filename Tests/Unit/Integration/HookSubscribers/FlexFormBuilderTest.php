@@ -21,18 +21,16 @@ class FlexFormBuilderTest extends AbstractTestCase
     protected function setUp(): void
     {
         $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getFromCaches', 'setInCaches', 'resolvePrimaryConfigurationProvider'])
+            ->onlyMethods(['getFromCaches', 'setInCaches', 'resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->singletonInstances[FluxService::class] = $this->fluxService;
 
         parent::setUp();
     }
 
     public function testCreatesInstancesInConstructor(): void
     {
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
         self::assertInstanceOf(
             FluxService::class,
             $this->getInaccessiblePropertyValue($subject, 'configurationService')
@@ -46,7 +44,7 @@ class FlexFormBuilderTest extends AbstractTestCase
     {
         $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(null);
 
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
 
         $result = $subject->resolveDataStructureIdentifier(
             'sometable',
@@ -63,8 +61,7 @@ class FlexFormBuilderTest extends AbstractTestCase
     public function testReturnsEmptyDataStructureForIdentifier(array $identifier)
     {
         $subject = $this->getMockBuilder(FlexFormBuilder::class)
-            #->setMethods(['dummy'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$this->fluxService])
             ->getMock();
         $result = $subject->parseDataStructureByIdentifier($identifier);
         $this->assertSame([], $result);
@@ -73,7 +70,7 @@ class FlexFormBuilderTest extends AbstractTestCase
     public function testDataStructureForIdentifierFromCache()
     {
         $structure = ['foo' => 'bar'];
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
         $this->fluxService->method('getFromCaches')->willReturn($structure);
         $result = $subject->parseDataStructureByIdentifier(['type' => 'flux', 'record' => ['uid' => 123]]);
         $this->assertSame($structure, $result);
@@ -82,7 +79,8 @@ class FlexFormBuilderTest extends AbstractTestCase
     public function testParseDataStructureForIdentifierThrowsExceptionIfUnableToLoadRecord()
     {
         $subject = $this->getMockBuilder(FlexFormBuilder::class)
-            ->setMethods(['loadRecordWithoutRestriction'])
+            ->setConstructorArgs([$this->fluxService])
+            ->onlyMethods(['loadRecordWithoutRestriction'])
             ->getMock();
         $subject->method('loadRecordWithoutRestriction')->willReturn(null);
 
@@ -95,9 +93,8 @@ class FlexFormBuilderTest extends AbstractTestCase
     public function testReturnsEmptyDataStructureForIdentifierReturnsEmptyArrayWithoutProvider()
     {
         $subject = $this->getMockBuilder(FlexFormBuilder::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
+            ->setConstructorArgs([$this->fluxService])
             ->getMock();
-        $subject->method('resolvePrimaryConfigurationProvider')->willReturn(null);
 
         $result = $subject->parseDataStructureByIdentifier(
             [
@@ -118,7 +115,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getForm')->willReturn($form);
 
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
 
         $this->fluxService->expects(self::once())->method('setInCaches');
         $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
@@ -141,7 +138,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getForm')->willReturn($form);
 
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
 
         $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 

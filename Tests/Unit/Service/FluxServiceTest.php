@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyFluxService;
@@ -19,7 +20,6 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use PHPUnit\Framework\MockObject\MockObject;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -323,12 +323,7 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetTypoScriptByPath()
     {
-        $service = $this->getMockBuilder(DummyFluxService::class)
-            ->onlyMethods(['getRuntimeCache'])
-            ->getMock();
-        $service->method('getRuntimeCache')->willReturn(
-            $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass()
-        );
+        $service = new DummyFluxService();
 
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
         $configurationManager->method('getConfiguration')->willReturn(
@@ -355,14 +350,14 @@ class FluxServiceTest extends AbstractTestCase
      */
     public function testGetTypoScriptByPathWhenCacheHasEntry()
     {
-        $cache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-        $cache->method('get')->willReturn(['test_var' => 'test_val']);
-
-        $service = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getRuntimeCache'])
+        $cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['getFromCaches', 'setInCaches'])
             ->disableOriginalConstructor()
             ->getMock();
-        $service->method('getRuntimeCache')->willReturn($cache);
+        $cacheService->method('getFromCaches')->willReturn(['test_var' => 'test_val']);
+
+        $service = new DummyFluxService();
+        $service->setCacheService($cacheService);
 
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
         $this->assertEquals(['test_var' => 'test_val'], $result);
@@ -480,48 +475,5 @@ class FluxServiceTest extends AbstractTestCase
             'ext',
             [GridProviderInterface::class]
         );
-    }
-
-    public function testSetInCaches(): void
-    {
-        $runtimeCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-        $persistentCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-
-        $runtimeCache->expects(self::once())->method('set')->with('flux-ec10e0c7a344da191700ab4ace1a5e26', 'foobar');
-        $persistentCache->expects(self::once())->method('set')->with('flux-ec10e0c7a344da191700ab4ace1a5e26', 'foobar');
-
-        $subject = $this->getMockBuilder(FluxService::class)
-            ->onlyMethods(['getRuntimeCache', 'getPersistentCache'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('getRuntimeCache')->willReturn($runtimeCache);
-        $subject->method('getPersistentCache')->willReturn($persistentCache);
-
-        $subject->setInCaches('foobar', true, 'a', 'b', 'c');
-    }
-
-    public function testGetFromCaches(): void
-    {
-        $runtimeCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-        $persistentCache = $this->getMockBuilder(FrontendInterface::class)->getMockForAbstractClass();
-
-        $runtimeCache->expects(self::once())
-            ->method('get')
-            ->with('flux-ec10e0c7a344da191700ab4ace1a5e26')
-            ->willReturn(false);
-        $persistentCache->expects(self::once())
-            ->method('get')
-            ->with('flux-ec10e0c7a344da191700ab4ace1a5e26')
-            ->willReturn('foobar');
-
-        $subject = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getRuntimeCache', 'getPersistentCache'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('getRuntimeCache')->willReturn($runtimeCache);
-        $subject->method('getPersistentCache')->willReturn($persistentCache);
-
-        $output = $subject->getFromCaches('a', 'b', 'c');
-        self::assertSame('foobar', $output);
     }
 }

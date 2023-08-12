@@ -15,13 +15,14 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class FlexFormBuilderTest extends AbstractTestCase
 {
+    protected FluxService $fluxService;
     protected function setUp(): void
     {
-        $this->singletonInstances[FluxService::class] = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
+        $this->fluxService = $this->getMockBuilder(FluxService::class)
+            ->onlyMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->singletonInstances[FluxService::class]->method('resolvePrimaryConfigurationProvider')
+        $this->fluxService->method('resolvePrimaryConfigurationProvider')
             ->willReturn($this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass());
 
         $GLOBALS['TCA']['table']['ctrl'] = [
@@ -49,20 +50,20 @@ class FlexFormBuilderTest extends AbstractTestCase
             ],
         ];
 
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
         $output = $subject->resolveDataStructureIdentifier('table', 'field', $expected['record'], ['original' => true]);
         self::assertSame($expected, $output);
     }
 
     public function testParseDataStructureByIdentifierReturnsEmptyOnMismatchedType(): void
     {
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
         self::assertSame([], $subject->parseDataStructureByIdentifier(['type' => 'notmatched']));
     }
 
     public function testParseDataStructureByIdentifierReturnsEmptyWithoutRecord(): void
     {
-        $subject = new FlexFormBuilder();
+        $subject = new FlexFormBuilder($this->fluxService);
         self::assertSame([], $subject->parseDataStructureByIdentifier(['type' => 'flux', 'record' => null]));
     }
 }

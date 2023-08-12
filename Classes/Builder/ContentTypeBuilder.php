@@ -18,12 +18,10 @@ use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
-use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -37,6 +35,13 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 class ContentTypeBuilder
 {
     const DEFAULT_SHOWITEM = 'defaultShowItem';
+
+    protected CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
 
     /**
      * @param string $providerExtensionName
@@ -204,9 +209,8 @@ class ContentTypeBuilder
         ProviderInterface $provider
     ): void {
         $cacheId = 'CType_' . md5($contentType . '__' . $providerExtensionName);
-        $cache = $this->getCache();
         /** @var Form|null $form */
-        $form = $cache->get($cacheId);
+        $form = $this->cacheService->getFromCaches($cacheId);
         if (!$form) {
             // Provider *must* be able to return a Form without any global configuration or specific content
             // record being passed to it. We test this now to fail early if any errors happen during Form fetching.
@@ -216,7 +220,7 @@ class ContentTypeBuilder
             }
             try {
                 $form->setExtensionName($providerExtensionName);
-                $cache->set($cacheId, $form);
+                //$this->cacheService->setInCaches($form, true, $cacheId);
             } catch (\Exception $error) {
                 // Possible serialization error!
                 // Unfortunately we must do pokemon-style exception catching since serialization
@@ -244,11 +248,13 @@ class ContentTypeBuilder
             $providerExtensionName
         );
 
+        /*
         // Flush the cache entry that was generated; make sure any TypoScript overrides will take place once
         // all TypoScript is finally loaded.
-        $this->getRuntimeCache()->remove(
+        $this->cacheService->remove(
             'viewpaths_' . ExtensionNamingUtility::getExtensionKey($providerExtensionName)
         );
+        */
     }
 
     protected function addIcon(Form $form, string $contentType): string
@@ -360,30 +366,6 @@ class ContentTypeBuilder
             )
         );
         $groups[$groupName] = true;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getRuntimeCache(): FrontendInterface
-    {
-        /** @var CacheManager $cacheManager */
-        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-        return $cacheManager->getCache('runtime');
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getCache(): FrontendInterface
-    {
-        /** @var CacheManager $cacheManager */
-        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-        try {
-            return $cacheManager->getCache('flux');
-        } catch (NoSuchCacheException $error) {
-            return $cacheManager->getCache('runtime');
-        }
     }
 
     /**

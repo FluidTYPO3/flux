@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Form\Conversion\FormToFluidTemplateConverter;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyContentTypeManager;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -29,14 +30,13 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
     protected ?array $record = null;
     protected ContentTypeDefinitionInterface $contentTypeDefinition;
     protected ContentTypeManager $contentTypeManager;
+    protected CacheService $cacheService;
     protected TemplateValidationService $validationService;
     protected TemplateView $templateView;
     protected ContentTypeFluxTemplateDumper $subject;
 
     protected function setUp(): void
     {
-        $this->contentTypeManager = new ContentTypeManager();
-
         $this->record = [
             'uid' => 123,
             'title' => 'Test form',
@@ -51,6 +51,14 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
             ->getMock();
         $this->contentTypeDefinition->method('getContentConfiguration')->willReturn([]);
         $this->contentTypeDefinition->method('getGridConfiguration')->willReturn([]);
+
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->getMock();
+        $this->cacheService->method('getFromCaches')->willReturn([$this->contentTypeDefinition]);
+
+        $this->contentTypeManager = new ContentTypeManager($this->cacheService);
 
         $this->contentTypeManager->registerTypeDefinition($this->contentTypeDefinition);
 

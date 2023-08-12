@@ -7,6 +7,16 @@ services:
   FluidTYPO3\Flux\:
     resource: '../Classes/*'
 
+  cache.flux:
+    class: TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
+    factory: ['TYPO3\CMS\Core\Core\Bootstrap', 'createCache']
+    arguments: ['flux']
+
+  cache.runtime:
+    class: TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
+    factory: ['TYPO3\CMS\Core\Core\Bootstrap', 'createCache']
+    arguments: ['runtime']
+
   TYPO3\CMS\Backend\View\BackendViewFactory:
     public: true
 
@@ -58,6 +68,9 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems:
     public: true
+  FluidTYPO3\Flux\Service\CacheService:
+    public: true
+    arguments: ['@cache.flux', '@cache.runtime']
 
   FluidTYPO3\Flux\Integration\Event\ModifyNewContentElementWizardItemsEventListener:
     public: true
