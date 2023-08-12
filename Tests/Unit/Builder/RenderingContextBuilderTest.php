@@ -32,7 +32,6 @@ class RenderingContextBuilderTest extends AbstractTestCase
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['expressionNodeTypes'] = [];
         $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
-
             ->setMethods(['getEnvironmentVariable', 'getServerRequest'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -53,14 +52,9 @@ class RenderingContextBuilderTest extends AbstractTestCase
                 ->setMethods(['setRequest'])
                 ->disableOriginalConstructor()
                 ->getMock();
-            $configurationManager = $this->getMockBuilder(ConfigurationManager::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-
 
             GeneralUtility::addInstance(UriBuilder::class, $uriBuilder);
             GeneralUtility::addInstance(ControllerContext::class, $controllerContext);
-            GeneralUtility::setSingletonInstance(ConfigurationManager::class, $configurationManager);
         } else {
             $renderingContext = $this->getMockBuilder(RenderingContext::class)
                 ->setMethods(['setRequest', 'getTemplatePaths'])
