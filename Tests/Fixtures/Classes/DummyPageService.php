@@ -13,20 +13,8 @@ class DummyPageService extends PageService
 {
     public function __construct()
     {
-        $this->configurationManager = $this->createMock(ConfigurationManagerInterface::class);
-        $this->configurationService = new DummyFluxService();
         $this->workspacesAwareRecordService = $this->createMock(WorkspacesAwareRecordService::class);
         $this->runtimeCache = $this->createMock(FrontendInterface::class);
-    }
-
-    public function setConfigurationManager(ConfigurationManagerInterface $configurationManager): void
-    {
-        $this->configurationManager = $configurationManager;
-    }
-
-    public function setConfigurationService(DummyFluxService $configurationService): void
-    {
-        $this->configurationService = $configurationService;
     }
 
     public function setWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService): void

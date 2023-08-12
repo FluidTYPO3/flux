@@ -8,10 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyFluxService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
@@ -102,18 +105,12 @@ class PageServiceTest extends AbstractTestCase
         $templatePaths->method('getTemplateRootPaths')->willReturn([__DIR__ . '/../../Fixtures/Templates']);
         $templatePaths->method('ensureAbsolutePath')->willReturnArgument(0);
 
-        $fluxService = $this->getMockBuilder(DummyFluxService::class)
-            ->onlyMethods(['getPageConfiguration'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fluxService->method('getPageConfiguration')->willReturn($typoScript);
-
         $instance = $this->getMockBuilder(DummyPageService::class)
-            ->onlyMethods(['createTemplatePaths'])
+            ->onlyMethods(['createTemplatePaths', 'getPageConfiguration'])
             ->getMock();
         $instance->setLogger($this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass());
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
-        $instance->setConfigurationService($fluxService);
+        $instance->method('getPageConfiguration')->willReturn($typoScript);
 
         GeneralUtility::addInstance(TemplateView::class, $templateView);
 
@@ -143,5 +140,135 @@ class PageServiceTest extends AbstractTestCase
                 ['flux' => null]
             ],
         ];
+    }
+
+    /**
+     * @dataProvider getPageConfigurationInvalidTestValues
+     * @param mixed $input
+     * @return void
+     */
+    public function testGetPageConfigurationReturnsEmptyArrayOnInvalidInput($input)
+    {
+        $instance = new DummyPageService();
+        $result = $instance->getPageConfiguration($input);
+        $this->assertEquals([], $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getPageConfigurationInvalidTestValues()
+    {
+        return [
+            [''],
+            [0],
+        ];
+    }
+
+    public function testGetPageConfigurationReturnsEmptyArrayOnInvalidPlugAndPlayDirectorySetting(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+            = ['foo'];
+
+        $instance = new DummyPageService();
+
+        $result = $instance->getPageConfiguration('Flux');
+        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+
+        self::assertEquals([], $result);
+    }
+
+    public function testGetPageConfigurationReturnsExpectedArrayOnPlugAndPlayDirectorySetting(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+            = './';
+
+        $instance = new DummyPageService();
+
+        $result = $instance->getPageConfiguration('Flux');
+        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+
+        self::assertEquals(
+            [
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => ['/Templates/Page/'],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => ['/Partials/'],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => ['/Layouts/'],
+            ],
+            $result
+        );
+    }
+
+    public function testGetPageConfigurationReturnsExpectedArrayOnPlugAndPlayDirectorySettingWithForeignExt(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+            = './';
+
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+            ->onlyMethods(['toArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $templatePaths->method('toArray')->willReturn(['foo' => 'bar']);
+
+        $instance = $this->getMockBuilder(PageService::class)
+            ->onlyMethods(['createTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+
+        Core::registerProviderExtensionKey('FluidTYPO3.Testing', 'Page');
+        $result = $instance->getPageConfiguration(null);
+        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+        AccessibleCore::resetQueuedRegistrations();
+
+        self::assertEquals(
+            [
+                'FluidTYPO3.Testing' => ['foo' => 'bar'],
+                'FluidTYPO3.Flux' => [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => ['/Templates/Page/'],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => ['/Partials/'],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => ['/Layouts/'],
+                ],
+            ],
+            $result
+        );
+    }
+
+    public function testGetPageConfigurationReturnsDefaultTemplatePaths(): void
+    {
+        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+            ->onlyMethods(['toArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $templatePaths->method('toArray')->willReturn(['foo' => 'bar']);
+
+        $instance = $this->getMockBuilder(PageService::class)
+            ->onlyMethods(['createTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+
+        $result = $instance->getPageConfiguration('Flux');
+
+        self::assertEquals(['foo' => 'bar'], $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetPageConfigurationWithoutExtensionNameReadsRegisteredProviders()
+    {
+        $templatePaths = new TemplatePaths();
+        $instance = $this->getMockBuilder(PageService::class)
+            ->onlyMethods(['createTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+        Core::registerProviderExtensionKey('foo', 'Page');
+        Core::registerProviderExtensionKey('bar', 'Page');
+        $result = $instance->getPageConfiguration();
+        $this->assertCount(2, $result);
     }
 }
