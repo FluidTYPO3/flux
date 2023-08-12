@@ -3,16 +3,12 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\RecordService;
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use PHPUnit\Framework\MockObject\Generator;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class DummyFluxService extends FluxService
 {

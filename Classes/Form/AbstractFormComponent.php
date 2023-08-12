@@ -17,7 +17,6 @@ use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\SectionObject;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;

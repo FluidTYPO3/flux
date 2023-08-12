@@ -9,9 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  */
 
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyFluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 

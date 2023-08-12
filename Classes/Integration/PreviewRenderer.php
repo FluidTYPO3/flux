@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PreviewRenderer
 {

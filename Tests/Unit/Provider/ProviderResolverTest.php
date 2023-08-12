@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyBasicProvider;

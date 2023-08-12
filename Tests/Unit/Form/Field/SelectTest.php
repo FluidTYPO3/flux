@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Form\Field;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
