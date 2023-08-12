@@ -39,8 +39,8 @@ class ContentIconTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '>')) {
-            $this->markTestSkipped('Skipping test with no v12 implementation');
+        if (!class_exists(LanguageService::class)) {
+            $this->markTestSkipped('Skipping test with LanguageService dependency');
         }
         $this->cache = $this->getMockBuilder(FrontendInterface::class)
             ->onlyMethods(['get', 'set'])
