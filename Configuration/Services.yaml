@@ -37,6 +37,8 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor:
     public: true
+  FluidTYPO3\Flux\Integration\FormEngine\SiteConfigurationProviderItems:
+    public: true
   FluidTYPO3\Flux\Builder\ContentTypeBuilder:
     public: true
   FluidTYPO3\Flux\Builder\FlexFormBuilder:
