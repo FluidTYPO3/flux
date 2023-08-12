@@ -9,19 +9,19 @@ namespace FluidTYPO3\Flux\Integration;
  */
 
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
 class PreviewRenderer
 {
     protected static bool $assetsIncluded = false;
     private PageRenderer $pageRenderer;
-    private FluxService $fluxService;
+    private ProviderResolver $providerResolver;
 
-    public function __construct(PageRenderer $pageRenderer, FluxService $fluxService)
+    public function __construct(PageRenderer $pageRenderer, ProviderResolver $providerResolver)
     {
         $this->pageRenderer = $pageRenderer;
-        $this->fluxService = $fluxService;
+        $this->providerResolver = $providerResolver;
     }
 
     public function renderPreview(array $row): ?array
@@ -31,7 +31,7 @@ class PreviewRenderer
         $headerContent = null;
         $drawItem = true;
         $itemContent = '<a name="c' . $row['uid'] . '"></a>';
-        $providers = $this->fluxService->resolveConfigurationProviders('tt_content', $fieldName, $row);
+        $providers = $this->providerResolver->resolveConfigurationProviders('tt_content', $fieldName, $row);
         foreach ($providers as $provider) {
             /** @var ProviderInterface $provider */
             [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);

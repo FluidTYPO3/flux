@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Integration\NormalizedData\Converter\InlineRecordDataConverter;
 use FluidTYPO3\Flux\Integration\NormalizedData\FlexFormImplementation;
 use FluidTYPO3\Flux\Integration\NormalizedData\ImplementationRegistry;
+use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -47,6 +48,8 @@ class DataAccessTraitTest extends AbstractTestCase
     protected RequestBuilder $requestBuilder;
 
     protected TypoScriptService $typoScriptService;
+    protected ProviderResolver $providerResolver;
+    protected Resolver $resolver;
 
     protected function setUp(): void
     {
@@ -55,13 +58,14 @@ class DataAccessTraitTest extends AbstractTestCase
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getForm')->willReturn(Form::create());
 
-        $providerResolver = $this->getMockBuilder(ProviderResolver::class)
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
             ->onlyMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
-        $providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
-        $this->singletonInstances[ProviderResolver::class] = $providerResolver;
+        $this->singletonInstances[ProviderResolver::class] = $this->providerResolver;
+
         $this->renderingContextBuilder = $this->getMockBuilder(RenderingContextBuilder::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -76,6 +80,8 @@ class DataAccessTraitTest extends AbstractTestCase
             ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->resolver = new Resolver();
 
         $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequest::class)->getMockForAbstractClass();
 
@@ -95,6 +101,8 @@ class DataAccessTraitTest extends AbstractTestCase
             $this->requestBuilder,
             $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
             $this->typoScriptService,
+            $this->providerResolver,
+            $this->resolver,
         ];
     }
 

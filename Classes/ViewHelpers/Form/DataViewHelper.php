@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -54,6 +55,7 @@ class DataViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     protected static ?FluxService $configurationService = null;
+    protected static ?ProviderResolver $providerResolver = null;
     protected static ?WorkspacesAwareRecordService $recordService = null;
 
     public function initializeArguments(): void
@@ -107,7 +109,7 @@ class DataViewHelper extends AbstractViewHelper
                     1358679983
                 );
             }
-            $providers = static::getFluxService()->resolveConfigurationProviders($table, $field, $record);
+            $providers = static::getProviderResolver()->resolveConfigurationProviders($table, $field, $record);
             $dataArray = static::readDataArrayFromProvidersOrUsingDefaultMethod($providers, $record, $field);
         } else {
             throw new Exception(
@@ -159,6 +161,19 @@ class DataViewHelper extends AbstractViewHelper
             }
         }
         return $dataArray;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected static function getProviderResolver(): ProviderResolver
+    {
+        if (!isset(static::$providerResolver)) {
+            /** @var ProviderResolver $providerResolver */
+            $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+            static::$providerResolver = $providerResolver;
+        }
+        return static::$providerResolver;
     }
 
     /**

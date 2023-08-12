@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
 
 use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -158,9 +158,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 
     protected function resolvePrimaryProviderForRecord(string $table, array $record): ?GridProviderInterface
     {
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
-        return $fluxService->resolvePrimaryConfigurationProvider(
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        return $providerResolver->resolvePrimaryConfigurationProvider(
             $table,
             null,
             $record,

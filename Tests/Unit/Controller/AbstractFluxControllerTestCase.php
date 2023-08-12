@@ -13,9 +13,11 @@ use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -66,10 +68,13 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
     protected TypoScriptService $typoScriptService;
 
+    protected ProviderResolver $providerResolver;
+
+    protected Resolver $resolver;
+
     protected function setUp(): void
     {
         $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -91,6 +96,13 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->onlyMethods(['resolvePrimaryConfigurationProvider'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->resolver = new Resolver();
+
         parent::setUp();
     }
 
@@ -101,7 +113,9 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             $this->renderingContextBuilder,
             $this->requestBuilder,
             $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
-            $this->typoScriptService
+            $this->typoScriptService,
+            $this->providerResolver,
+            $this->resolver,
         ];
     }
 
@@ -428,7 +442,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testInitializeProvider(): void
     {
         $provider = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock();
-        $this->fluxService->expects($this->once())
+        $this->providerResolver->expects($this->once())
             ->method('resolvePrimaryConfigurationProvider')
             ->willReturn($provider);
         $mock = $this->getMockBuilder(AbstractFluxController::class)
@@ -445,7 +459,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
     public function testInitializeProviderThrowsExceptionIfNoProviderResolved(): void
     {
-        $this->fluxService->expects($this->once())
+        $this->providerResolver->expects($this->once())
             ->method('resolvePrimaryConfigurationProvider')
             ->willReturn(null);
         $mock = $this->getMockBuilder(AbstractFluxController::class)
@@ -626,7 +640,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->getMock();
         $provider->method('getFlexFormValues')->willReturn(['settings' => ['useTypoScript' => 1]]);
         $this->typoScriptService->method('getSettingsForExtensionName')->willReturn(['foo' => 'bar']);
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $settings = [
             'useTypoScript' => true
         ];
@@ -650,7 +664,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $configurationManager->method('getContentObject')->willReturn($contentObjectRenderer);
         $instance->injectConfigurationManager($configurationManager);
 
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn(
             $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
         );
         $settings = [

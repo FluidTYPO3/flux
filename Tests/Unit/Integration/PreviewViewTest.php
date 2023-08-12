@@ -26,6 +26,7 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -375,6 +376,9 @@ class PreviewViewTest extends AbstractTestCase
 
     public function testGetInitializedPageLayoutViewWithFluidPageModuleFeatureDisabled(): void
     {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '>')) {
+            $this->markTestSkipped('Skipping test with PageLayoutView dependency');
+        }
         $singletonInstances = GeneralUtility::getSingletonInstances();
 
         $record = [

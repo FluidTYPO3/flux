@@ -10,14 +10,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
 
 use FluidTYPO3\Flux\Integration\PreviewRenderer;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
 class PreviewRendererTest extends AbstractTestCase
 {
     private PageRenderer $pageRenderer;
-    private FluxService $fluxService;
+    private ProviderResolver $providerResolver;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ class PreviewRendererTest extends AbstractTestCase
             ->onlyMethods(['loadRequireJsModule'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
             ->onlyMethods(['resolveConfigurationProviders'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -38,13 +38,13 @@ class PreviewRendererTest extends AbstractTestCase
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getPreview')->willReturn(['header', 'content', false]);
 
-        $this->fluxService->method('resolveConfigurationProviders')->willReturn([$provider]);
+        $this->providerResolver->method('resolveConfigurationProviders')->willReturn([$provider]);
 
         $record = ['uid' => 123];
 
         $subject = $this->getMockBuilder(PreviewRenderer::class)
             ->onlyMethods(['attachAssets'])
-            ->setConstructorArgs([$this->pageRenderer, $this->fluxService])
+            ->setConstructorArgs([$this->pageRenderer, $this->providerResolver])
             ->getMock();
 
         [$headerContent, $itemContent, $drawItem] = $subject->renderPreview($record);
@@ -57,7 +57,7 @@ class PreviewRendererTest extends AbstractTestCase
     public function testAttachAssets(): void
     {
         $this->pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
-        $subject = new PreviewRenderer($this->pageRenderer, $this->fluxService);
+        $subject = new PreviewRenderer($this->pageRenderer, $this->providerResolver);
         $this->callInaccessibleMethod($subject, 'attachAssets');
     }
 }

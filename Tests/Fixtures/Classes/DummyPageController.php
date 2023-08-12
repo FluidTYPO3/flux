@@ -11,7 +11,9 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Controller\PageController;
+use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
@@ -30,7 +32,18 @@ class DummyPageController extends PageController
         $requestBuilder = $this->createMock(RequestBuilder::class);
         $recordService = $this->createMock(WorkspacesAwareRecordService::class);
         $typoScriptService = $this->createMock(TypoScriptService::class);
-        parent::__construct($fluxService, $renderingContextBuilder, $requestBuilder, $recordService, $typoScriptService);
+        $providerResolver = $this->createMock(ProviderResolver::class);
+        $resolver = $this->createMock(Resolver::class);
+
+        parent::__construct(
+            $fluxService,
+            $renderingContextBuilder,
+            $requestBuilder,
+            $recordService,
+            $typoScriptService,
+            $providerResolver,
+            $resolver
+        );
     }
 
     public function setView(ViewInterface $view): void

@@ -5,7 +5,7 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
@@ -14,18 +14,18 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class WizardItemsManipulator
 {
-    protected FluxService $configurationService;
+    protected ProviderResolver $providerResolver;
     protected WorkspacesAwareRecordService $recordService;
     protected ContentTypeManager $contentTypeManager;
     protected SiteFinder $siteFinder;
 
     public function __construct(
-        FluxService $fluxService,
+        ProviderResolver $providerResolver,
         WorkspacesAwareRecordService $recordService,
         ContentTypeManager $contentTypeManager,
         SiteFinder $siteFinder
     ) {
-        $this->configurationService = $fluxService;
+        $this->providerResolver = $providerResolver;
         $this->recordService = $recordService;
         $this->contentTypeManager = $contentTypeManager;
         $this->siteFinder = $siteFinder;
@@ -103,7 +103,7 @@ class WizardItemsManipulator
         // returned contains a Column which matches the desired colPos value, attempt to read a list
         // of allowed/denied content element types from it.
         $pageRecord = (array) $this->recordService->getSingle('pages', '*', $pageUid);
-        $pageProviders = $this->configurationService->resolveConfigurationProviders('pages', null, $pageRecord);
+        $pageProviders = $this->providerResolver->resolveConfigurationProviders('pages', null, $pageRecord);
         $parentRecordUid = ColumnNumberUtility::calculateParentUid($columnPosition);
         $pageColumnPosition = $parentRecordUid > 0
             ? $this->findParentColumnPosition($parentRecordUid)
@@ -127,7 +127,7 @@ class WizardItemsManipulator
         // a page template like above; it's the same principle).
         if ($parentRecordUid > 0) {
             $parentRecord = (array) $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
-            $contentProviders = $this->configurationService->resolveConfigurationProviders(
+            $contentProviders = $this->providerResolver->resolveConfigurationProviders(
                 'tt_content',
                 null,
                 $parentRecord

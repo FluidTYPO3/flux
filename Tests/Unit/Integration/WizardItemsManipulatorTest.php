@@ -16,7 +16,7 @@ use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Integration\WizardItemsManipulator;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
@@ -25,7 +25,7 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 
 class WizardItemsManipulatorTest extends AbstractTestCase
 {
-    private FluxService $fluxService;
+    private ProviderResolver $providerResolver;
     private WorkspacesAwareRecordService $recordService;
     private SiteFinder $siteFinder;
     private Site $site;
@@ -34,7 +34,7 @@ class WizardItemsManipulatorTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
             ->onlyMethods(['resolveConfigurationProviders'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -63,7 +63,7 @@ class WizardItemsManipulatorTest extends AbstractTestCase
     protected function getConstructorArguments(): array
     {
         return [
-            $this->fluxService,
+            $this->providerResolver,
             $this->recordService,
             $this->contentTypeManager,
             $this->siteFinder,
@@ -109,7 +109,7 @@ class WizardItemsManipulatorTest extends AbstractTestCase
             ->getMock();
         $provider2->expects($this->once())->method('getGrid')->will($this->returnValue(Grid::create()));
 
-        $this->fluxService->expects($this->once())
+        $this->providerResolver->expects($this->once())
             ->method('resolveConfigurationProviders')
             ->will($this->returnValue([$provider1, $provider2]));
 
@@ -249,7 +249,7 @@ class WizardItemsManipulatorTest extends AbstractTestCase
                 ['tt_content', '*', $parentRecordUid, $contentRecord],
             ]
         );
-        $this->fluxService->method('resolveConfigurationProviders')->willReturnOnConsecutiveCalls(
+        $this->providerResolver->method('resolveConfigurationProviders')->willReturnOnConsecutiveCalls(
             [$pageProvider],
             [$contentProvider]
         );

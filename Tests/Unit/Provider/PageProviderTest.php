@@ -16,7 +16,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -42,7 +41,6 @@ class PageProviderTest extends AbstractTestCase
             ->onlyMethods(
                 [
                     'convertFlexFormContentToArray',
-                    'resolvePrimaryConfigurationProvider',
                 ]
             )
             ->disableOriginalConstructor()
@@ -214,23 +212,13 @@ class PageProviderTest extends AbstractTestCase
             $this->getBasicRecord(),
             $this->getBasicRecord()
         ];
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->createField('Input', 'foo');
         $record = $this->getBasicRecord();
-        $dummyProvider1 = new DummyPageProvider(...$this->getConstructorArguments());
-        $dummyProvider2 = new DummyPageProvider(...$this->getConstructorArguments());
-        $dummyProvider1->setForm($form);
-        $dummyProvider1->setFlexFormValues(['foo' => 'bar']);
+
         /** @var PageProvider|MockObject $provider */
         $provider = $this->getMockBuilder(PageProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
             ->onlyMethods(['getInheritanceTree', 'unsetInheritedValues', 'getForm'])
             ->getMock();
-
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturnOnConsecutiveCalls(
-            $dummyProvider1,
-            $dummyProvider2
-        );
 
         $provider->method('getInheritanceTree')->will($this->returnValue($tree));
         $provider->method('unsetInheritedValues');
@@ -249,27 +237,18 @@ class PageProviderTest extends AbstractTestCase
             $this->getBasicRecord(),
             $this->getBasicRecord()
         ];
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->getMock();
         $form->createField('Input', 'foo');
         $record = $this->getBasicRecord();
         // use a new uid to prevent caching issues
         $record['uid'] = $record['uid'] + 1;
-        $dummyProvider1 = new DummyPageProvider(...$this->getConstructorArguments());
-        $dummyProvider2 = new DummyPageProvider(...$this->getConstructorArguments());
-        $dummyProvider1->setForm($form);
-        $dummyProvider1->setFlexFormValues(['foo' => 'bar']);
-        $form2 = $this->getMockBuilder(Form::class)->getMock();
-        $dummyProvider2->setForm($form2);
+
         /** @var PageProvider|MockObject $provider */
         $provider = $this->getMockBuilder(PageProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
             ->onlyMethods(['getInheritanceTree', 'unsetInheritedValues', 'getForm'])
             ->getMock();
 
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturnOnConsecutiveCalls(
-            $dummyProvider1,
-            $dummyProvider2
-        );
         $this->fluxService->method('convertFlexFormContentToArray')->willReturn([]);
 
         $provider->method('getInheritanceTree')->will($this->returnValue($tree));

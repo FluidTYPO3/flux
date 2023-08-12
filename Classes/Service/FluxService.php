@@ -13,10 +13,6 @@ use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefin
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
-use FluidTYPO3\Flux\Integration\Resolver;
-use FluidTYPO3\Flux\Provider\PageProvider;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Psr\Log\LoggerAwareInterface;
@@ -41,75 +37,19 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
 
     protected ServerRequest $serverRequest;
     protected ResourceFactory $resourceFactory;
-    protected ProviderResolver $providerResolver;
     protected FormDataTransformer $transformer;
     protected FlexFormService $flexFormService;
 
     public function __construct(
         ServerRequest $serverRequest,
         ResourceFactory $resourceFactory,
-        ProviderResolver $providerResolver,
         FormDataTransformer $transformer,
         FlexFormService $flexFormService
     ) {
         $this->serverRequest = $serverRequest;
         $this->resourceFactory = $resourceFactory;
-        $this->providerResolver = $providerResolver;
         $this->transformer = $transformer;
         $this->flexFormService = $flexFormService;
-    }
-
-    /**
-     * ResolveUtility the top-priority ConfigurationPrivider which can provide
-     * a working FlexForm configuration baed on the given parameters.
-     *
-     * @template T
-     * @param class-string<T>[] $interfaces
-     * @return T|null
-     */
-    public function resolvePrimaryConfigurationProvider(
-        ?string $table,
-        ?string $fieldName,
-        array $row = null,
-        ?string $extensionKey = null,
-        array $interfaces = [ProviderInterface::class]
-    ) {
-        return $this->providerResolver->resolvePrimaryConfigurationProvider(
-            $table,
-            $fieldName,
-            $row,
-            $extensionKey,
-            $interfaces
-        );
-    }
-
-    /**
-     * Resolves a ConfigurationProvider which can provide a working FlexForm
-     * configuration based on the given parameters.
-     *
-     * @template T
-     * @param class-string<T>[] $interfaces
-     * @return T[]
-     */
-    public function resolveConfigurationProviders(
-        ?string $table,
-        ?string $fieldName,
-        array $row = null,
-        ?string $extensionKey = null,
-        array $interfaces = [ProviderInterface::class]
-    ): array {
-        return $this->providerResolver->resolveConfigurationProviders(
-            $table,
-            $fieldName,
-            $row,
-            $extensionKey,
-            $interfaces
-        );
-    }
-
-    public function getResolver(): Resolver
-    {
-        return new Resolver();
     }
 
     /**
@@ -247,18 +187,6 @@ class FluxService implements SingletonInterface, LoggerAwareInterface
             );
         }
         return $configurations;
-    }
-
-    /**
-     * Resolve fluidpages specific configuration provider. Always
-     * returns the main PageProvider type which needs to be used
-     * as primary PageProvider when processing a complete page
-     * rather than just the "sub configuration" field value.
-     */
-    public function resolvePageProvider(array $row): ?ProviderInterface
-    {
-        $provider = $this->resolvePrimaryConfigurationProvider('pages', PageProvider::FIELD_NAME_MAIN, $row);
-        return $provider;
     }
 
     /**

@@ -13,9 +13,19 @@ use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class PageLayoutViewTest extends AbstractTestCase
 {
+    protected function setUp(): void
+    {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '>')) {
+            $this->markTestSkipped('Skipping test with PageLayoutView dependency');
+        }
+
+        parent::setUp();
+    }
+
     public function testSetAndGetPageInfo(): void
     {
         $instance = $this->getMockBuilder(PageLayoutView::class)

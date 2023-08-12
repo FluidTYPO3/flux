@@ -11,21 +11,23 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class FlexFormBuilder
 {
-    protected FluxService $configurationService;
     protected CacheService $cacheService;
+    protected ProviderResolver $providerResolver;
 
-    public function __construct(FluxService $fluxService, CacheService $cacheService)
-    {
-        $this->configurationService = $fluxService;
+    public function __construct(
+        CacheService $cacheService,
+        ProviderResolver $providerResolver
+    ) {
         $this->cacheService = $cacheService;
+        $this->providerResolver = $providerResolver;
     }
 
     public function resolveDataStructureIdentifier(
@@ -62,7 +64,7 @@ class FlexFormBuilder
             $limitedRecordData = array_intersect_key($record, $fields);
             $limitedRecordData[$fieldName] = $record[$fieldName];
         }
-        $provider = $this->configurationService->resolvePrimaryConfigurationProvider($tableName, $fieldName, $record);
+        $provider = $this->providerResolver->resolvePrimaryConfigurationProvider($tableName, $fieldName, $record);
         if (!$provider) {
             return [];
         }
@@ -101,7 +103,7 @@ class FlexFormBuilder
         }
         $fieldName = $identifier['fieldName'];
         $dataStructArray = [];
-        $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
+        $provider = $this->providerResolver->resolvePrimaryConfigurationProvider(
             $identifier['tableName'],
             $fieldName,
             $record,

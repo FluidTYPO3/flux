@@ -13,9 +13,11 @@ use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
+use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -60,6 +62,8 @@ abstract class AbstractFluxController extends ActionController
     protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
     protected TypoScriptService $typoScriptService;
+    protected ProviderResolver $providerResolver;
+    protected Resolver $resolver;
     protected ?ControllerProviderInterface $provider = null;
 
     public function __construct(
@@ -67,13 +71,17 @@ abstract class AbstractFluxController extends ActionController
         RenderingContextBuilder $renderingContextBuilder,
         RequestBuilder $requestBuilder,
         WorkspacesAwareRecordService $recordService,
-        TypoScriptService $typoScriptService
+        TypoScriptService $typoScriptService,
+        ProviderResolver $providerResolver,
+        Resolver $resolver
     ) {
         $this->configurationService = $fluxService;
         $this->renderingContextBuilder = $renderingContextBuilder;
         $this->requestBuilder = $requestBuilder;
         $this->recordService = $recordService;
         $this->typoScriptService = $typoScriptService;
+        $this->providerResolver = $providerResolver;
+        $this->resolver = $resolver;
 
         /** @var Arguments $arguments */
         $arguments = GeneralUtility::makeInstance(Arguments::class);
@@ -155,7 +163,7 @@ abstract class AbstractFluxController extends ActionController
         $row = $this->getRecord();
         $table = (string) $this->getFluxTableName();
         $field = $this->getFluxRecordField();
-        $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
+        $provider = $this->providerResolver->resolvePrimaryConfigurationProvider(
             $table,
             $field,
             $row,
@@ -244,7 +252,7 @@ abstract class AbstractFluxController extends ActionController
 
         $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionName,
-            $this->configurationService->getResolver()->resolveControllerNameFromControllerClassName(get_class($this)),
+            $this->resolver->resolveControllerNameFromControllerClassName(get_class($this)),
             $controllerActionName,
             $this->provider->getPluginName() ?? $this->provider->getControllerNameFromRecord($record)
         );
@@ -395,9 +403,7 @@ abstract class AbstractFluxController extends ActionController
             }
             $content = $this->view->render();
         } else {
-            $foreignControllerClass = $this->configurationService
-                ->getResolver()
-                ->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
+            $foreignControllerClass = $this->resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
                     $extensionName,
                     $controllerName
                 );
@@ -430,8 +436,7 @@ abstract class AbstractFluxController extends ActionController
         string $controllerName,
         string $actionName
     ): bool {
-        $potentialControllerClassName = $this->configurationService->getResolver()
-            ->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
+        $potentialControllerClassName = $this->resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
                 $extensionName,
                 $controllerName
             );
@@ -457,7 +462,7 @@ abstract class AbstractFluxController extends ActionController
         $arguments = $this->getServerRequest()->getQueryParams()[$pluginSignature] ?? [];
         $request = $this->requestBuilder->buildRequestFor(
             $extensionName,
-            $this->configurationService->getResolver()->resolveControllerNameFromControllerClassName(
+            $this->resolver->resolveControllerNameFromControllerClassName(
                 $controllerClassName
             ),
             $controllerActionName,

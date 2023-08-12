@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
@@ -38,15 +38,15 @@ class ContentIcon
                         </div></div><div>',
     ];
 
-    protected FluxService $fluxService;
+    protected ProviderResolver $providerResolver;
     protected IconFactory $iconFactory;
     protected FrontendInterface $cache;
 
     public function __construct()
     {
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
-        $this->fluxService = $fluxService;
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        $this->providerResolver = $providerResolver;
 
         /** @var IconFactory $iconFactory */
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
@@ -92,7 +92,7 @@ class ContentIcon
             // filter 2: table must have one field defined as "flex" and record must include it.
             if ($field && array_key_exists($field, $record)) {
                 /** @var GridProviderInterface $provider */
-                $provider = $this->fluxService->resolvePrimaryConfigurationProvider(
+                $provider = $this->providerResolver->resolvePrimaryConfigurationProvider(
                     $table,
                     $field,
                     $record,

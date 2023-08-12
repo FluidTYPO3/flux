@@ -11,18 +11,18 @@ namespace FluidTYPO3\Flux\Tests\Unit\Builder;
 use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class FlexFormBuilderTest extends AbstractTestCase
 {
-    protected FluxService $fluxService;
+    protected ProviderResolver $providerResolver;
     protected CacheService $cacheService;
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
             ->onlyMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -45,8 +45,8 @@ class FlexFormBuilderTest extends AbstractTestCase
     private function getConstructorArguments(): array
     {
         return [
-            $this->fluxService,
             $this->cacheService,
+            $this->providerResolver,
         ];
     }
 
@@ -55,7 +55,7 @@ class FlexFormBuilderTest extends AbstractTestCase
      */
     public function testReturnsEmptyDataStructureIdentifierForNonMatchingTableAndField()
     {
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(null);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn(null);
 
         $subject = new FlexFormBuilder(...$this->getConstructorArguments());
 
@@ -129,7 +129,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         $provider->method('getForm')->willReturn($form);
 
         $this->cacheService->expects(self::once())->method('setInCaches');
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
         $subject = new FlexFormBuilder(...$this->getConstructorArguments());
 
@@ -153,7 +153,7 @@ class FlexFormBuilderTest extends AbstractTestCase
 
         $subject = new FlexFormBuilder(...$this->getConstructorArguments());
 
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
         $result = $subject->parseDataStructureByIdentifier(
             [

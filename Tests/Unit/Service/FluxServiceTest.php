@@ -10,8 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
-use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
@@ -21,7 +19,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Service\FlexFormService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 /**
@@ -285,22 +282,6 @@ class FluxServiceTest extends AbstractTestCase
 
     /**
      * @test
-     */
-    public function canResolvePrimaryConfigurationProviderWithEmptyArray()
-    {
-        $service = $this->createFluxServiceInstance();
-
-        GeneralUtility::setSingletonInstance(
-            ProviderResolver::class,
-            $this->getMockBuilder(ProviderResolver::class)->disableOriginalConstructor()->getMock()
-        );
-
-        $result = $service->resolvePrimaryConfigurationProvider('foobar', null);
-        $this->assertNull($result);
-    }
-
-    /**
-     * @test
      * @dataProvider getConvertFlexFormContentToArrayTestValues
      * @param string $flexFormContent
      * @param Form|NULL $form
@@ -370,30 +351,5 @@ class FluxServiceTest extends AbstractTestCase
 
         $result = $instance->convertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer);
         $this->assertEquals($expected, $result);
-    }
-
-
-    public function testResolveConfigurationProviders(): void
-    {
-        $subject = $this->createFluxServiceInstance();
-
-        $resolver = $this->getMockBuilder(ProviderResolver::class)
-            ->setMethods(['resolveConfigurationProviders'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $resolver->expects(self::once())
-            ->method('resolveConfigurationProviders')
-            ->with('table', 'field', ['uid' => 123], 'ext', [GridProviderInterface::class])
-            ->willReturn([]);
-
-        $subject->setProviderResolver($resolver);
-
-        $subject->resolveConfigurationProviders(
-            'table',
-            'field',
-            ['uid' => 123],
-            'ext',
-            [GridProviderInterface::class]
-        );
     }
 }

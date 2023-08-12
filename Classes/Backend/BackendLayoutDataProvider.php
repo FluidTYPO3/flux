@@ -11,7 +11,7 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
@@ -22,14 +22,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class BackendLayoutDataProvider extends DefaultDataProvider implements DataProviderInterface
 {
-    protected FluxService $configurationService;
+    protected ProviderResolver $providerResolver;
     protected WorkspacesAwareRecordService $recordService;
 
     public function __construct()
     {
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
-        $this->configurationService = $fluxService;
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        $this->providerResolver = $providerResolver;
 
         /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
         $workspacesAwareRecordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);
@@ -76,7 +76,7 @@ class BackendLayoutDataProvider extends DefaultDataProvider implements DataProvi
             return null;
         }
 
-        return $this->configurationService->resolvePageProvider($record);
+        return $this->providerResolver->resolvePageProvider($record);
     }
 
     /**

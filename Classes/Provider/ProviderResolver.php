@@ -33,6 +33,18 @@ class ProviderResolver implements SingletonInterface
     }
 
     /**
+     * Resolve fluidpages specific configuration provider. Always
+     * returns the main PageProvider type which needs to be used
+     * as primary PageProvider when processing a complete page
+     * rather than just the "sub configuration" field value.
+     */
+    public function resolvePageProvider(array $row): ?ProviderInterface
+    {
+        $provider = $this->resolvePrimaryConfigurationProvider('pages', PageProvider::FIELD_NAME_MAIN, $row);
+        return $provider;
+    }
+
+    /**
      * ResolveUtility the top-priority ConfigurationPrivider which can provide
      * a working FlexForm configuration baed on the given parameters.
      *

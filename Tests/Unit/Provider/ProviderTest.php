@@ -141,7 +141,6 @@ class ProviderTest extends AbstractTestCase
     public function canReturnExtensionKey()
     {
         $record = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $service = $this->createFluxServiceInstance();
         $provider = new Provider(...$this->getConstructorArguments());
         $provider->setExtensionKey('test');
         $resolver = $this->getMockBuilder(ProviderResolver::class)
@@ -150,9 +149,7 @@ class ProviderTest extends AbstractTestCase
             ->getMock();
         $resolver->expects($this->once())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
-        $service->setProviderResolver($resolver);
-
-        $result = $service->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', [], 'flux');
+        $result = $resolver->resolvePrimaryConfigurationProvider('tt_content', 'pi_flexform', [], 'flux');
         $this->assertSame($provider, $result);
         $extensionKey = $result->getExtensionKey($record);
         $this->assertNotEmpty($extensionKey);
