@@ -22,6 +22,8 @@ services:
 
   FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:
     public: true
+  FluidTYPO3\Flux\Backend\PageLayoutDataProvider:
+    public: true
   FluidTYPO3\Flux\Content\ContentTypeManager:
     public: true
   FluidTYPO3\Flux\Content\ContentTypeValidator:

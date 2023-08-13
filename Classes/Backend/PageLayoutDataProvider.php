@@ -23,18 +23,18 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class PageLayoutDataProvider
 {
-    protected ConfigurationManagerInterface $configurationManager;
-    protected PageService $pageService;
+    private ConfigurationManagerInterface $configurationManager;
+    private PageService $pageService;
+    private SiteFinder $siteFinder;
 
-    public function __construct()
-    {
-        /** @var ConfigurationManagerInterface $configurationManager */
-        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    public function __construct(
+        ConfigurationManagerInterface $configurationManager,
+        PageService $pageService,
+        SiteFinder $siteFinder
+    ) {
         $this->configurationManager = $configurationManager;
-
-        /** @var PageService $pageService */
-        $pageService = GeneralUtility::makeInstance(PageService::class);
         $this->pageService = $pageService;
+        $this->siteFinder = $siteFinder;
     }
 
     public function addItems(array $parameters): array
@@ -65,10 +65,8 @@ class PageLayoutDataProvider
         $allowedTemplates = [];
         $pageUid = (int) ($parameters['row']['uid'] ?? 0);
         if ($pageUid > 0) {
-            /** @var SiteFinder $resolver */
-            $resolver = GeneralUtility::makeInstance(SiteFinder::class);
             try {
-                $site = $resolver->getSiteByPageId($pageUid);
+                $site = $this->siteFinder->getSiteByPageId($pageUid);
                 $siteConfiguration = $site->getConfiguration();
                 $allowedTemplates = GeneralUtility::trimExplode(
                     ',',

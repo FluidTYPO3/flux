@@ -12,31 +12,42 @@ use FluidTYPO3\Flux\Backend\PageLayoutDataProvider;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class PageLayoutDataProviderTest extends AbstractTestCase
 {
-    protected ?PageService $pageService = null;
-    protected ?ConfigurationManagerInterface $configurationManager = null;
+    private ConfigurationManagerInterface $configurationManager;
+    private PageService $pageService;
+    private SiteFinder $siteFinder;
 
     protected function setUp(): void
     {
         $this->pageService = $this->getMockBuilder(PageService::class)
-            ->setMethods(['getAvailablePageTemplateFiles'])
+            ->onlyMethods(['getAvailablePageTemplateFiles'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->configurationManager = $this->getMockBuilder(ConfigurationManager::class)
-            ->setMethods(['getConfiguration'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
+            ->getMockForAbstractClass();
         $this->configurationManager->method('getConfiguration')->willReturn([]);
 
-        $this->singletonInstances[PageService::class] = $this->pageService;
-        $this->singletonInstances[ConfigurationManager::class] = $this->configurationManager;
+        $this->siteFinder = $this->getMockBuilder(SiteFinder::class)
+            ->onlyMethods(['getSiteByPageId'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         parent::setUp();
+    }
+
+    protected function getConstructorArguments(): array
+    {
+        return [
+            $this->configurationManager,
+            $this->pageService,
+            $this->siteFinder,
+        ];
     }
 
     /**
@@ -54,7 +65,10 @@ class PageLayoutDataProviderTest extends AbstractTestCase
             ->willReturn(['flux' => [$form]]);
 
         $parameters['items'] = &$items;
-        $instance = $this->getMockBuilder(PageLayoutDataProvider::class)->setMethods(['isExtensionLoaded'])->getMock();
+        $instance = $this->getMockBuilder(PageLayoutDataProvider::class)
+            ->onlyMethods(['isExtensionLoaded'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->getMock();
         $instance->method('isExtensionLoaded')->willReturn(false);
 
         $instance->addItems($parameters);
@@ -68,7 +82,9 @@ class PageLayoutDataProviderTest extends AbstractTestCase
     {
         $label = 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default';
 
-        $formWithoutTemplateFile = $form = $this->getMockBuilder(Form::class)->setMethods(['getOption'])->getMock();
+        $formWithoutTemplateFile = $form = $this->getMockBuilder(Form::class)
+            ->onlyMethods(['getOption'])
+            ->getMock();
         $formWithTemplateFile = clone $formWithoutTemplateFile;
         $formWithTemplateFile->method('getOption')->willReturn('Tests/Fixtures/Templates/Page/Dummy.html');
 
