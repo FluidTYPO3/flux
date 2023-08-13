@@ -1166,7 +1166,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -1181,12 +1181,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -1196,17 +1196,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -1216,22 +1216,22 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
         </xsd:annotation>
@@ -1251,7 +1251,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -1588,7 +1588,7 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
@@ -1603,17 +1603,17 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
@@ -1638,7 +1638,7 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -2045,7 +2045,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -2060,12 +2060,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -2075,17 +2075,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -2095,22 +2095,22 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
         </xsd:annotation>
@@ -2130,7 +2130,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -2571,7 +2571,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -2586,12 +2586,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -2601,17 +2601,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -2621,22 +2621,22 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
         </xsd:annotation>
@@ -2656,7 +2656,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -3146,7 +3146,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -3161,12 +3161,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -3176,17 +3176,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -3196,22 +3196,22 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
         </xsd:annotation>
@@ -3231,7 +3231,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -3439,12 +3439,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -3454,17 +3454,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -3474,22 +3474,22 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
         </xsd:annotation>
