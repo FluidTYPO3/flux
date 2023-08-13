@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
@@ -276,5 +277,15 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             array_push($items, [ObjectAccess::getProperty($result, $propertyName), $uid]);
         }
         return $items;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getTypoScriptService(): TypoScriptService
+    {
+        /** @var TypoScriptService $typoScriptService */
+        $typoScriptService = GeneralUtility::makeInstance(TypoScriptService::class);
+        return $typoScriptService;
     }
 }

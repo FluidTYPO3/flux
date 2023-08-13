@@ -18,7 +18,6 @@ use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\SectionObject;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -417,16 +416,6 @@ abstract class AbstractFormComponent implements FormInterface
             ['component' => $this, 'modififications' => $structure]
         );
         return $this;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getTypoScriptService(): TypoScriptService
-    {
-        /** @var TypoScriptService $typoScriptService */
-        $typoScriptService = GeneralUtility::makeInstance(TypoScriptService::class);
-        return $typoScriptService;
     }
 
     /**
