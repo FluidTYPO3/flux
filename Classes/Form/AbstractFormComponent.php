@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Container;
@@ -120,7 +121,7 @@ abstract class AbstractFormComponent implements FormInterface
         if ($transform) {
             $root = $this->getRoot();
             if ($root instanceof Form) {
-                $root->setOption(Form::OPTION_TRANSFORM, true);
+                $root->setOption(FormOption::TRANSFORM, true);
             }
         }
         return $this;

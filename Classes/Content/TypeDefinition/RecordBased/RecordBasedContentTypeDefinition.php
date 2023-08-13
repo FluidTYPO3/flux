@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\SerializeSafeInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\SerializeSafeTrait;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -103,9 +104,9 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
     {
         $instance = Form::create();
         $instance->remove('options');
-        $instance->setOption(Form::OPTION_ICON, $this->getIconReference());
-        $instance->setOption(Form::OPTION_GROUP, 'fluxContent');
-        $instance->setOption(Form::OPTION_SORTING, $this->record['sorting']);
+        $instance->setOption(FormOption::ICON, $this->getIconReference());
+        $instance->setOption(FormOption::GROUP, 'fluxContent');
+        $instance->setOption(FormOption::SORTING, $this->record['sorting']);
         $instance->setLabel($this->record['title']);
         $instance->setDescription($this->record['description']);
         foreach ($this->getContentConfiguration() as $item) {

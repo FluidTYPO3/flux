@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  */
 
 use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Section;
@@ -889,7 +890,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     public function testExtractConfigurationCachesStaticForms(): void
     {
         $form = Form::create();
-        $form->setOption(Form::OPTION_STATIC, true);
+        $form->setOption(FormOption::STATIC, true);
 
         $view = $this->prepareTemplateViewMock();
         $view->getRenderingContext()->getViewHelperVariableContainer()->add(

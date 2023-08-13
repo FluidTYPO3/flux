@@ -9,12 +9,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
@@ -167,8 +167,8 @@ class PageServiceTest extends AbstractTestCase
 
     public function testGetPageConfigurationReturnsEmptyArrayOnInvalidPlugAndPlayDirectorySetting(): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY]
             = ['foo'];
 
         $instance = new DummyPageService();
@@ -181,8 +181,8 @@ class PageServiceTest extends AbstractTestCase
 
     public function testGetPageConfigurationReturnsExpectedArrayOnPlugAndPlayDirectorySetting(): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY]
             = './';
 
         $instance = new DummyPageService();
@@ -202,8 +202,8 @@ class PageServiceTest extends AbstractTestCase
 
     public function testGetPageConfigurationReturnsExpectedArrayOnPlugAndPlayDirectorySettingWithForeignExt(): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY]
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY] = true;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY]
             = './';
 
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)

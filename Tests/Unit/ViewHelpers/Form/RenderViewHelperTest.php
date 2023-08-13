@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleFormRenderViewHelper;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
@@ -25,8 +26,8 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeResolver'] = [];
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->setOption(Form::OPTION_RECORD, ['uid' => 123, 'test' => '']);
-        $form->setOption(Form::OPTION_RECORD_FIELD, 'test');
+        $form->setOption(FormOption::RECORD, ['uid' => 123, 'test' => '']);
+        $form->setOption(FormOption::RECORD_FIELD, 'test');
         $nodeFactory = $this->getMockBuilder(NodeFactory::class)->setMethods(['create'])->getMock();
         $nodeFactory->expects($this->once())->method('create')->willReturn($this->getMockBuilder(NodeInterface::class)->disableOriginalConstructor()->getMock());
         $instance = new AccessibleFormRenderViewHelper();

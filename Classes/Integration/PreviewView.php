@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
@@ -32,15 +33,6 @@ use TYPO3Fluid\Fluid\View\TemplateView;
 
 class PreviewView extends TemplateView
 {
-    const OPTION_PREVIEW = 'preview';
-    const OPTION_MODE = 'mode';
-    const MODE_APPEND = 'append';
-    const MODE_PREPEND = 'prepend';
-    const MODE_NONE = 'none';
-    const OPTION_TOGGLE = 'toggle';
-    const PREVIEW_SECTION = 'Preview';
-    const CONTROLLER_NAME = 'Content';
-
     protected array $templates = [
         'gridToggle' => '<div class="grid-visibility-toggle" data-toggle-uid="%s">%s</div>',
         'link' => '<a href="%s" title="%s" class="btn btn-default btn-sm">%s %s</a>'
@@ -69,7 +61,7 @@ class PreviewView extends TemplateView
         $mode = $this->getOptionMode($options);
         $previewContent = (string) $this->renderPreviewSection($provider, $row, $form);
 
-        if (static::MODE_NONE === $mode || !is_object($form)) {
+        if (PreviewOption::MODE_NONE === $mode || !is_object($form)) {
             return $previewContent;
         }
 
@@ -84,9 +76,9 @@ class PreviewView extends TemplateView
             $row['uid'],
             $gridContent
         );
-        if (static::MODE_APPEND === $mode) {
+        if (PreviewOption::MODE_APPEND === $mode) {
             $previewContent = $previewContent . $gridContent;
-        } elseif (static::MODE_PREPEND === $mode) {
+        } elseif (PreviewOption::MODE_PREPEND === $mode) {
             $previewContent = $gridContent . $previewContent;
         }
 
@@ -100,32 +92,24 @@ class PreviewView extends TemplateView
 
     protected function getPreviewOptions(Form $form = null): array
     {
-        if (!is_object($form) || !$form->hasOption(static::OPTION_PREVIEW)) {
+        if (!is_object($form) || !$form->hasOption(PreviewOption::PREVIEW)) {
             return [
-                static::OPTION_MODE => $this->getOptionMode(),
-                static::OPTION_TOGGLE => $this->getOptionToggle()
+                PreviewOption::MODE => $this->getOptionMode(),
+                PreviewOption::TOGGLE => $this->getOptionToggle()
             ];
         }
 
-        return (array) $form->getOption(static::OPTION_PREVIEW);
+        return (array) $form->getOption(PreviewOption::PREVIEW);
     }
 
     protected function getOptionMode(array $options = []): string
     {
-        if (isset($options[static::OPTION_MODE])) {
-            if (static::MODE_APPEND === $options[static::OPTION_MODE] ||
-                static::MODE_PREPEND === $options[static::OPTION_MODE] ||
-                static::MODE_NONE === $options[static::OPTION_MODE]) {
-                return $options[static::OPTION_MODE];
-            }
-        }
-
-        return static::MODE_APPEND;
+        return $options[PreviewOption::MODE] ?? PreviewOption::MODE_APPEND;
     }
 
     protected function getOptionToggle(array $options = []): bool
     {
-        return (boolean) ($options[static::OPTION_TOGGLE] ?? true);
+        return (boolean) ($options[PreviewOption::TOGGLE] ?? true);
     }
 
     protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null): ?string

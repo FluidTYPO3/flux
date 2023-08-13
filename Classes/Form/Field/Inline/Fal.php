@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Form\Field\Inline;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\InlineFieldControls;
 use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 
 class Fal extends AbstractInlineFormField
@@ -92,13 +92,13 @@ class Fal extends AbstractInlineFormField
      * @var array
      */
     protected $enabledControls = [
-        Form::CONTROL_INFO => false,
-        Form::CONTROL_NEW => false,
-        Form::CONTROL_DRAGDROP => true,
-        Form::CONTROL_SORT => true,
-        Form::CONTROL_HIDE => true,
-        Form::CONTROL_DELETE => true,
-        Form::CONTROL_LOCALISE => true,
+        InlineFieldControls::INFO => false,
+        InlineFieldControls::NEW => false,
+        InlineFieldControls::DRAGDROP => true,
+        InlineFieldControls::SORT => true,
+        InlineFieldControls::HIDE => true,
+        InlineFieldControls::DELETE => true,
+        InlineFieldControls::LOCALIZE => true,
     ];
 
     /**

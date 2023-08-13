@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\Service;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
@@ -153,10 +155,10 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         }
 
         $plugAndPlayEnabled = ExtensionConfigurationUtility::getOption(
-            ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY
+            ExtensionOption::OPTION_PLUG_AND_PLAY
         );
         $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(
-            ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY
+            ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY
         );
         if (!is_scalar($plugAndPlayDirectory)) {
             return [];
@@ -278,8 +280,8 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                         }
                         continue;
                     }
-                    $form->setOption(Form::OPTION_TEMPLATEFILE, $file->getPathname());
-                    $form->setOption(Form::OPTION_TEMPLATEFILE_RELATIVE, substr($file->getRelativePathname(), 5, -5));
+                    $form->setOption(FormOption::TEMPLATE_FILE, $file->getPathname());
+                    $form->setOption(FormOption::TEMPLATE_FILE_RELATIVE, substr($file->getRelativePathname(), 5, -5));
                     $form->setExtensionName($extensionName);
                     $output[$extensionName][$filename] = $form;
                 } catch (InvalidSectionException | ChildNotFoundException $error) {

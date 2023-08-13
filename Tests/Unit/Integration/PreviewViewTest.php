@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\BackendLayoutRenderer;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
@@ -76,10 +77,10 @@ class PreviewViewTest extends AbstractTestCase
     {
         $form = Form::create();
         $form->setOption(
-            PreviewView::OPTION_PREVIEW,
+            PreviewOption::PREVIEW,
             [
-                PreviewView::OPTION_MODE => PreviewView::MODE_NONE,
-                PreviewView::OPTION_TOGGLE => false,
+                PreviewOption::MODE => PreviewOption::MODE_NONE,
+                PreviewOption::TOGGLE => false,
             ]
         );
 
@@ -105,10 +106,10 @@ class PreviewViewTest extends AbstractTestCase
     {
         $form = Form::create();
         $form->setOption(
-            PreviewView::OPTION_PREVIEW,
+            PreviewOption::PREVIEW,
             [
-                PreviewView::OPTION_MODE => $mode,
-                PreviewView::OPTION_TOGGLE => false,
+                PreviewOption::MODE => $mode,
+                PreviewOption::TOGGLE => false,
             ]
         );
 
@@ -134,11 +135,11 @@ class PreviewViewTest extends AbstractTestCase
         return [
             'mode prepend' => [
                 '<div class="flux-collapse flux-grid-hidden" data-grid-uid="123">grid</div>preview',
-                PreviewView::MODE_PREPEND,
+                PreviewOption::MODE_PREPEND,
             ],
             'mode append' => [
                 'preview<div class="flux-collapse flux-grid-hidden" data-grid-uid="123">grid</div>',
-                PreviewView::MODE_APPEND,
+                PreviewOption::MODE_APPEND,
             ],
         ];
     }
@@ -183,9 +184,9 @@ class PreviewViewTest extends AbstractTestCase
     public function testGetOptionModeReturnsDefaultIfNoValidOptionsFound(): void
     {
         $instance = $this->createInstance();
-        $options = [PreviewView::OPTION_MODE => 'someinvalidvalue'];
+        $options = [];
         $result = $this->callInaccessibleMethod($instance, 'getOptionMode', $options);
-        $this->assertEquals(PreviewView::MODE_APPEND, $result);
+        $this->assertEquals(PreviewOption::MODE_APPEND, $result);
     }
 
     public function testRenderGridWithoutChildren(): void
@@ -446,8 +447,8 @@ class PreviewViewTest extends AbstractTestCase
         $instance = $this->createInstance();
         $result = $this->callInaccessibleMethod($instance, 'getPreviewOptions');
         $this->assertEquals([
-            PreviewView::OPTION_MODE => PreviewView::MODE_APPEND,
-            PreviewView::OPTION_TOGGLE => true,
+            PreviewOption::MODE => PreviewOption::MODE_APPEND,
+            PreviewOption::TOGGLE => true,
         ], $result);
     }
 

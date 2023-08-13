@@ -21,35 +21,6 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface, Form\OptionCarryingInterface
 {
-    const OPTION_STATIC = 'static';
-    const OPTION_SORTING = 'sorting';
-    const OPTION_GROUP = 'group';
-    const OPTION_ICON = 'icon';
-    const OPTION_TCA_LABELS = 'labels';
-    const OPTION_TCA_HIDE = 'hide';
-    const OPTION_TCA_START = 'start';
-    const OPTION_TCA_END = 'end';
-    const OPTION_TCA_DELETE = 'delete';
-    const OPTION_TCA_FEGROUP = 'frontendUserGroup';
-    const OPTION_TEMPLATEFILE = 'templateFile';
-    const OPTION_TEMPLATEFILE_RELATIVE = 'templateFileRelative';
-    const OPTION_RECORD = 'record';
-    const OPTION_RECORD_FIELD = 'recordField';
-    const OPTION_RECORD_TABLE = 'recordTable';
-    const OPTION_DEFAULT_VALUES = 'defaultValues';
-    const OPTION_TRANSFORM = 'transform';
-    const OPTION_HIDE_NATIVE_FIELDS = 'hideNativeFields';
-    const POSITION_TOP = 'top';
-    const POSITION_BOTTOM = 'bottom';
-    const POSITION_BOTH = 'both';
-    const POSITION_NONE = 'none';
-    const CONTROL_INFO = 'info';
-    const CONTROL_NEW = 'new';
-    const CONTROL_DRAGDROP = 'dragdrop';
-    const CONTROL_SORT = 'sort';
-    const CONTROL_HIDE = 'hide';
-    const CONTROL_DELETE = 'delete';
-    const CONTROL_LOCALISE = 'localize';
     const DEFAULT_LANGUAGEFILE = '/Resources/Private/Language/locallang.xlf';
 
     /**

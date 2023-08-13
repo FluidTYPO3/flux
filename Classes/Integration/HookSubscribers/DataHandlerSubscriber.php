@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
 use FluidTYPO3\Flux\Provider\PageProvider;
@@ -174,9 +175,7 @@ class DataHandlerSubscriber
     {
         $isNewRecord = strpos((string) $id, 'NEW') === 0;
         $isTranslatedRecord = ($fieldArray['l10n_source'] ?? 0) > 0;
-        $pageIntegrationEnabled = ExtensionConfigurationUtility::getOption(
-            ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION
-        );
+        $pageIntegrationEnabled = ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_PAGE_INTEGRATION);
         $isPageRecord = $table === 'pages';
         if ($pageIntegrationEnabled && $isPageRecord && $isNewRecord && $isTranslatedRecord) {
             // Record is a newly created page and is a translation of a page. In all likelyhood (but we can't actually

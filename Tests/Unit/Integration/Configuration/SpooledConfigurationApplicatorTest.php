@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\Configuration\ConfigurationContext;
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
@@ -40,7 +41,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     protected function setUp(): void
     {
         $form = Form::create();
-        $form->setOption(Form::OPTION_SORTING, 1);
+        $form->setOption(FormOption::SORTING, 1);
 
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getForm')->willReturn($form);

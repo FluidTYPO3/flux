@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form\Transformation;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
@@ -63,7 +64,7 @@ class FormDataTransformer
             $languagePointer,
             $valuePointer
         );
-        if (null !== $form && $form->getOption(Form::OPTION_TRANSFORM)) {
+        if (null !== $form && $form->getOption(FormOption::TRANSFORM)) {
             $settings = $this->transformAccordingToConfiguration($settings, $form);
         }
         return $settings;
@@ -148,9 +149,9 @@ class FormDataTransformer
     {
         if (in_array($dataType, ['file', 'files', 'filereference', 'filereferences'], true)) {
             /** @var string $table */
-            $table = $form->getOption(Form::OPTION_RECORD_TABLE);
+            $table = $form->getOption(FormOption::RECORD_TABLE);
             /** @var array $record */
-            $record = $form->getOption(Form::OPTION_RECORD);
+            $record = $form->getOption(FormOption::RECORD);
             $references = $this->fileRepository->findByRelation($table, $fieldName, $record['uid']);
             switch ($dataType) {
                 case 'file':

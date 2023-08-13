@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
@@ -17,7 +17,7 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class SortingViewHelper extends OptionViewHelper
 {
-    public static string $option = Form::OPTION_SORTING;
+    public static string $option = FormOption::SORTING;
 
     public function initializeArguments(): void
     {

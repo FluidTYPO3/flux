@@ -16,7 +16,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
     \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::initialize($conf);
 
-    if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
+    if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_PAGE_INTEGRATION)) {
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
             'Flux',
             'Page',
@@ -29,7 +29,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageProvider::class);
 
-        if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_AUTOLOAD)) {
+        if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_AUTOLOAD)) {
             \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptConstants(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/constants.txt')));
             \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/setup.txt')));
         } else {

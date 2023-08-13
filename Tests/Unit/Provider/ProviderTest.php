@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  */
 
 use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Field\Input;
@@ -311,7 +312,7 @@ class ProviderTest extends AbstractTestCase
         ];
 
         $form = Form::create();
-        $form->setOption(Form::OPTION_HIDE_NATIVE_FIELDS, 'native');
+        $form->setOption(FormOption::HIDE_NATIVE_FIELDS, 'native');
 
         $instance = $this->getMockBuilder(AbstractProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())

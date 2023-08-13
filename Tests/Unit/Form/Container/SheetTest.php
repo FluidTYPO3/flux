@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 
 class SheetTest extends AbstractContainerTest
@@ -28,9 +29,9 @@ class SheetTest extends AbstractContainerTest
         $sheet = $form->createContainer(Form\Container\Sheet::class, 'sheet');
         $child = new Form\Field\Input();
         $child->setTransform('string');
-        self::assertFalse($form->hasOption(Form::OPTION_TRANSFORM));
+        self::assertFalse($form->hasOption(FormOption::TRANSFORM));
         $sheet->add($child);
-        self::assertTrue($form->hasOption(Form::OPTION_TRANSFORM));
+        self::assertTrue($form->hasOption(FormOption::TRANSFORM));
     }
 
     /**

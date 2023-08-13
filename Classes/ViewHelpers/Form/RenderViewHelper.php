@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -43,11 +44,11 @@ class RenderViewHelper extends AbstractViewHelper
         /** @var Form $form */
         $form = $arguments['form'];
         /** @var array $record */
-        $record = $form->getOption(Form::OPTION_RECORD);
+        $record = $form->getOption(FormOption::RECORD);
         /** @var string $table */
-        $table = $form->getOption(Form::OPTION_RECORD_TABLE);
+        $table = $form->getOption(FormOption::RECORD_TABLE);
         /** @var string $field */
-        $field = $form->getOption(Form::OPTION_RECORD_FIELD);
+        $field = $form->getOption(FormOption::RECORD_FIELD);
         $node = static::getNodeFactory()->create([
             'type' => 'flex',
             'renderType' => 'flex',

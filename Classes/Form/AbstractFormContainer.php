@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 
@@ -46,7 +47,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
             if ($child->getTransform()) {
                 $root = $this->getRoot();
                 if ($root instanceof Form) {
-                    $root->setOption(Form::OPTION_TRANSFORM, true);
+                    $root->setOption(FormOption::TRANSFORM, true);
                 }
             }
         }

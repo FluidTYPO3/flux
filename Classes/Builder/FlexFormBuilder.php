@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Builder;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
@@ -126,7 +126,7 @@ class FlexFormBuilder
             $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
         }
 
-        if ($form && $form->getOption(Form::OPTION_STATIC)) {
+        if ($form && $form->getOption(FormOption::STATIC)) {
             // This provider has requested static DS caching; stop attempting
             // to process any other DS, cache and return this DS as final result:
             $this->cacheService->setInCaches($dataStructArray, true, $cacheKey);

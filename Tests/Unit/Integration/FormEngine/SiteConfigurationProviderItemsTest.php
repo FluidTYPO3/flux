@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\FormEngine;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\FormEngine\SiteConfigurationProviderItems;
 use FluidTYPO3\Flux\Service\PageService;
@@ -60,7 +61,7 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
     {
         $form1 = Form::create();
         $form2 = Form::create();
-        $form2->setOption(Form::OPTION_TEMPLATEFILE, 'test.html');
+        $form2->setOption(FormOption::TEMPLATE_FILE, 'test.html');
 
         $this->pageService->method('getAvailablePageTemplateFiles')->willReturn(
             [

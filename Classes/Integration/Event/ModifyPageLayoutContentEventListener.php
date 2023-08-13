@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Integration\Event;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -37,8 +37,8 @@ class ModifyPageLayoutContentEventListener
         }
 
         // Force the preview to *not* generate content column HTML in preview
-        $form->setOption(PreviewView::OPTION_PREVIEW, [
-            PreviewView::OPTION_MODE => PreviewView::MODE_NONE
+        $form->setOption(PreviewOption::PREVIEW, [
+            PreviewOption::MODE => PreviewOption::MODE_NONE
         ]);
 
         [, $previewContent, ] = $this->pageProvider->getPreview($row);

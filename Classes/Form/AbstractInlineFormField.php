@@ -8,7 +8,8 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\InlineFieldControls;
+use FluidTYPO3\Flux\Enum\InlineFieldNewRecordButtonPosition;
 
 /**
  * AbstractInlineFormField
@@ -44,7 +45,7 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
      *
      * @var string
      */
-    protected $newRecordLinkPosition = Form::POSITION_TOP;
+    protected $newRecordLinkPosition = InlineFieldNewRecordButtonPosition::TOP;
 
     /**
      * For use on bidirectional relations using an intermediary table.
@@ -99,13 +100,13 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
      * @var array
      */
     protected $enabledControls = [
-        Form::CONTROL_INFO => false,
-        Form::CONTROL_NEW => true,
-        Form::CONTROL_DRAGDROP => true,
-        Form::CONTROL_SORT => true,
-        Form::CONTROL_HIDE => true,
-        Form::CONTROL_DELETE => false,
-        Form::CONTROL_LOCALISE => false,
+        InlineFieldControls::INFO => false,
+        InlineFieldControls::NEW => true,
+        InlineFieldControls::DRAGDROP => true,
+        InlineFieldControls::SORT => true,
+        InlineFieldControls::HIDE => true,
+        InlineFieldControls::DELETE => false,
+        InlineFieldControls::LOCALIZE => false,
     ];
 
     /**

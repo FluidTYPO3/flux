@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
@@ -66,7 +66,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
                 $key = ($index + 1) . '.';
                 $columns[$key] = [
                     'name' => $column->getLabel(),
-                    'icon' => $column->getVariable(Form::OPTION_ICON),
+                    'icon' => $column->getVariable(FormOption::ICON),
                     'colPos' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                         $parentRecordUid,
                         $column->getColumnPosition()

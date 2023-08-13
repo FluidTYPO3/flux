@@ -9,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
@@ -28,7 +28,7 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class IconViewHelper extends OptionViewHelper
 {
-    public static string $option = Form::OPTION_ICON;
+    public static string $option = FormOption::ICON;
 
     public function initializeArguments(): void
     {

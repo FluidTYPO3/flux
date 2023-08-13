@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Builder;
  */
 
 use FluidTYPO3\Flux\Builder\FlexFormBuilder;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
@@ -123,7 +124,7 @@ class FlexFormBuilderTest extends AbstractTestCase
     public function testParseDataStructureForIdentifierCachesStaticDataSourceFromProvider()
     {
         $form = Form::create();
-        $form->setOption(Form::OPTION_STATIC, true);
+        $form->setOption(FormOption::STATIC, true);
 
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getForm')->willReturn($form);

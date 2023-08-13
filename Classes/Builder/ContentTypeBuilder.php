@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Builder;
  */
 
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
@@ -271,7 +272,7 @@ class ContentTypeBuilder
         // Icons required solely for use in the "new content element" wizard
         $formId = $form->getId() ?: $contentType;
         /** @var string|null $group */
-        $group = $form->getOption(Form::OPTION_GROUP);
+        $group = $form->getOption(FormOption::GROUP);
         $groupName = $this->sanitizeString($group ?? 'fluxContent');
         $extensionName = $form->getExtensionName() ?? 'FluidTYPO3.Flux';
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);

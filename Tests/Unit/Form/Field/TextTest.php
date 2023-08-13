@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Text;
 
@@ -51,7 +52,7 @@ class TextTest extends InputTest
         $subject->setRenderType('rte');
 
         $form = Form::create();
-        $form->setOption(Form::OPTION_RECORD, ['pid' => 123]);
+        $form->setOption(FormOption::RECORD, ['pid' => 123]);
         $form->add($subject);
 
         $expected = [

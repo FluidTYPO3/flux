@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
@@ -128,7 +129,7 @@ class FormDataTransformerTest extends AbstractTestCase
         $valuePointer = null;
 
         $form = Form::create();
-        $form->setOption(Form::OPTION_TRANSFORM, true);
+        $form->setOption(FormOption::TRANSFORM, true);
 
         $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
 
@@ -215,8 +216,8 @@ class FormDataTransformerTest extends AbstractTestCase
         $this->fileRepository->method('findByRelation')->willReturn($files);
 
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->setOption(Form::OPTION_RECORD_TABLE, 'tt_content');
-        $form->setOption(Form::OPTION_RECORD, ['uid' => 1]);
+        $form->setOption(FormOption::RECORD_TABLE, 'tt_content');
+        $form->setOption(FormOption::RECORD, ['uid' => 1]);
 
         $form->createField(Form\Field\Input::class, 'field')->setTransform($type);
         $transformed = $this->subject->transformAccordingToConfiguration(['field' => '1'], $form);

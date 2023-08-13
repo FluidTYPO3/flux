@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Tests\Unit;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
-use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;

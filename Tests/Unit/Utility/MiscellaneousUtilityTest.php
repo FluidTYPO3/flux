@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
@@ -80,7 +81,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         $formOptionsFixture = $this->getFormOptionsFixture();
         /** @var Form $form */
         $form = $this->getFormInstance();
-        $form->setOption($form::OPTION_ICON, $formOptionsFixture['iconOption']);
+        $form->setOption(FormOption::ICON, $formOptionsFixture['iconOption']);
         $icon = MiscellaneousUtility::getIconForTemplate($form);
         $this->assertEquals($formOptionsFixture['iconOption'], $icon);
     }
@@ -103,7 +104,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         $mockExtensionUrl = $this->getMockExtension();
         /** @var Form $form */
         $form = $this->getFormInstance();
-        $form->setOption($form::OPTION_TEMPLATEFILE, $mockExtensionUrl . '/' . $formOptionsFixture['extensionName'] . '/Resources/Private/Templates/Content/TestFalse.html');
+        $form->setOption(FormOption::TEMPLATE_FILE, $mockExtensionUrl . '/' . $formOptionsFixture['extensionName'] . '/Resources/Private/Templates/Content/TestFalse.html');
         $form->setExtensionName($formOptionsFixture['extensionName']);
         $icon = MiscellaneousUtility::getIconForTemplate($form);
         $this->assertNull($icon);

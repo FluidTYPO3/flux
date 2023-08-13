@@ -12,6 +12,7 @@ namespace FluidTYPO3\Flux\Utility;
 use DOMElement;
 use DOMNode;
 use DOMNodeList;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
@@ -32,13 +33,13 @@ class MiscellaneousUtility
      */
     public static function getIconForTemplate(Form $form): ?string
     {
-        if (true === $form->hasOption(Form::OPTION_ICON)) {
-            $iconOptionValue = $form->getOption(Form::OPTION_ICON);
+        if (true === $form->hasOption(FormOption::ICON)) {
+            $iconOptionValue = $form->getOption(FormOption::ICON);
             return is_scalar($iconOptionValue) ? (string) $iconOptionValue : null;
         }
-        if (true === $form->hasOption(Form::OPTION_TEMPLATEFILE)) {
+        if (true === $form->hasOption(FormOption::TEMPLATE_FILE)) {
             $extensionKey = ExtensionNamingUtility::getExtensionKey((string) $form->getExtensionName());
-            $fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
+            $fullTemplatePathAndName = $form->getOption(FormOption::TEMPLATE_FILE);
             $templatePathParts = is_scalar($fullTemplatePathAndName)
                 ? explode('/', (string) $fullTemplatePathAndName)
                 : [];

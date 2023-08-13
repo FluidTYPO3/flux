@@ -1,6 +1,6 @@
 <?php
 (function () {
-    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') || !\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
+    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') || !\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_PAGE_INTEGRATION)) {
         return;
     }
 
@@ -78,7 +78,7 @@
     $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform_sub';
 
     $doktypes = '0,1,4';
-    $doktypesOptionValue = \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES);
+    $doktypesOptionValue = \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_DOKTYPES);
     if (is_scalar($doktypesOptionValue)) {
         $additionalDoktypes = trim((string) $doktypesOptionValue, ',');
         if (false === empty($additionalDoktypes)) {

@@ -8,7 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\InlineFieldControls;
+use FluidTYPO3\Flux\Enum\InlineFieldNewRecordButtonPosition;
 
 class InlineTest extends AbstractFieldTest
 {
@@ -16,7 +17,7 @@ class InlineTest extends AbstractFieldTest
         'collapseAll' => false,
         'expandSingle' => false,
         'newRecordLinkAddTitle' => false,
-        'newRecordLinkPosition' => Form::POSITION_TOP,
+        'newRecordLinkPosition' => InlineFieldNewRecordButtonPosition::TOP,
         'useCombination' => false,
         'useSortable' => false,
         'showPossibleLocalizationRecords' => false,
@@ -24,13 +25,13 @@ class InlineTest extends AbstractFieldTest
         'showAllLocalizationLink' => false,
         'showSynchronizationLink' => false,
         'enabledControls' => [
-            Form::CONTROL_INFO => false,
-            Form::CONTROL_NEW => true,
-            Form::CONTROL_DRAGDROP => true,
-            Form::CONTROL_SORT => true,
-            Form::CONTROL_HIDE => true,
-            Form::CONTROL_DELETE => false,
-            Form::CONTROL_LOCALISE => false,
+            InlineFieldControls::INFO => false,
+            InlineFieldControls::NEW => true,
+            InlineFieldControls::DRAGDROP => true,
+            InlineFieldControls::SORT => true,
+            InlineFieldControls::HIDE => true,
+            InlineFieldControls::DELETE => false,
+            InlineFieldControls::LOCALIZE => false,
         ],
         'foreignTypes' => [
             0 => [

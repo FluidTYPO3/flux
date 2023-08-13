@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -220,11 +221,11 @@ class SpooledConfigurationApplicator
     {
         $sortingOptionValue = 0;
         if ($form instanceof Form\FormInterface) {
-            if ($form->hasOption(Form::OPTION_SORTING)) {
-                $sortingOptionValue = $form->getOption(Form::OPTION_SORTING);
-            } elseif ($form->hasOption(Form::OPTION_TEMPLATEFILE)) {
+            if ($form->hasOption(FormOption::SORTING)) {
+                $sortingOptionValue = $form->getOption(FormOption::SORTING);
+            } elseif ($form->hasOption(FormOption::TEMPLATE_FILE)) {
                 /** @var string $templateFilename */
-                $templateFilename = $form->getOption(Form::OPTION_TEMPLATEFILE);
+                $templateFilename = $form->getOption(FormOption::TEMPLATE_FILE);
                 $sortingOptionValue = basename($templateFilename);
             } else {
                 $sortingOptionValue = $form->getId();

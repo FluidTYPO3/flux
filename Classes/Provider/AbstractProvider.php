@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
@@ -198,9 +199,9 @@ class AbstractProvider implements ProviderInterface
             ?? $this->createCustomFormInstance($row, $forField)
             ?? $this->extractConfiguration($row, 'form', $forField)
             ?? Form::create();
-        $form->setOption(Form::OPTION_RECORD, $row);
-        $form->setOption(Form::OPTION_RECORD_TABLE, $this->getTableName($row));
-        $form->setOption(Form::OPTION_RECORD_FIELD, $forField ?? $this->getFieldName($row));
+        $form->setOption(FormOption::RECORD, $row);
+        $form->setOption(FormOption::RECORD_TABLE, $this->getTableName($row));
+        $form->setOption(FormOption::RECORD_FIELD, $forField ?? $this->getFieldName($row));
         return $form;
     }
 
@@ -329,10 +330,10 @@ class AbstractProvider implements ProviderInterface
         $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class, []);
         if (isset($variables['form'])) {
             $variables['form']->setOption(
-                Form::OPTION_TEMPLATEFILE,
+                FormOption::TEMPLATE_FILE,
                 $this->getTemplatePathAndFilename($row, $forField)
             );
-            if ($variables['form']->getOption(Form::OPTION_STATIC)) {
+            if ($variables['form']->getOption(FormOption::STATIC)) {
                 $this->cacheService->setInCaches($variables, true, $cacheKeyAll);
             }
         }
@@ -620,7 +621,7 @@ class AbstractProvider implements ProviderInterface
 
         // Remove any fields listed in the "hideNativeFields" Flux form option
         /** @var string|array $hideFieldsOption */
-        $hideFieldsOption = $form->getOption(Form::OPTION_HIDE_NATIVE_FIELDS);
+        $hideFieldsOption = $form->getOption(FormOption::HIDE_NATIVE_FIELDS);
         if (!empty($hideFieldsOption)) {
             $hideFields = is_array($hideFieldsOption)
                 ? $hideFieldsOption

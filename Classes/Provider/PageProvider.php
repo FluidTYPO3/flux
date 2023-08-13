@@ -10,9 +10,9 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
-use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
@@ -98,7 +98,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         }
 
         if ($form) {
-            $form->setOption(PreviewView::OPTION_PREVIEW, [PreviewView::OPTION_MODE => 'none']);
+            $form->setOption(PreviewOption::PREVIEW, [PreviewOption::MODE => 'none']);
         }
 
         return $form;

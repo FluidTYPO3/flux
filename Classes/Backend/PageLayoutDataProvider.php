@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -122,7 +123,7 @@ class PageLayoutDataProvider
             $thumbnail = $thumbnail ? MiscellaneousUtility::createIcon($thumbnail) : null;
         }
         /** @var string|null $template */
-        $template = $form->getOption(Form::OPTION_TEMPLATEFILE_RELATIVE);
+        $template = $form->getOption(FormOption::TEMPLATE_FILE_RELATIVE);
         if ($template === null) {
             return [];
         }
