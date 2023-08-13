@@ -58,22 +58,6 @@ class CoreTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canRegisterFormInstanceForTable()
-    {
-        $table = 'this_table_does_not_exist';
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        AccessibleCore::registerFormForTable($table, $form);
-        $forms = AccessibleCore::getRegisteredFormsForTables();
-        $this->assertArrayHasKey($table, $forms);
-        $returnedForm = AccessibleCore::getRegisteredFormForTable($table);
-        $incorrectReturnedForm = AccessibleCore::getRegisteredFormForTable($table . 'badname');
-        $this->assertSame($form, $returnedForm);
-        $this->assertNull($incorrectReturnedForm);
-    }
-
-    /**
-     * @test
-     */
     public function canRegisterProviderExtensionKey()
     {
         $fakeExtensionKey = 'flux';
@@ -244,18 +228,5 @@ class CoreTest extends AbstractTestCase
         AccessibleCore::unregisterConfigurationProvider($fakeClass);
         AccessibleCore::registerConfigurationProvider($fakeClass);
         $this->assertNotContains($fakeClass, AccessibleCore::getRegisteredFlexFormProviders());
-    }
-
-    /**
-     * @test
-     */
-    public function registerFormForTableSetsExtensionNameFromExtensionKeyGlobal()
-    {
-        $GLOBALS['_EXTKEY'] = 'test';
-        $form = $this->getMockBuilder(Form::class)->setMethods(['setExtensionName', 'getExtensionName'])->getMock();
-        $form->method('getExtensionName')->willReturn(null);
-        $form->expects($this->once())->method('setExtensionName')->with('Test');
-        AccessibleCore::registerFormForTable('foobar', $form);
-        unset($GLOBALS['_EXTKEY']);
     }
 }

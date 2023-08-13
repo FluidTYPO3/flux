@@ -27,9 +27,6 @@ class Core
     const CONTROLLER_ALL = '_all';
 
     protected static array $providers = [];
-    private static array $forms = [
-        'tables' => [],
-    ];
     private static array $unregisteredProviders = [];
     protected static array $extensions = [
         self::CONTROLLER_ALL => []
@@ -44,17 +41,6 @@ class Core
     public static function clearQueuedContentTypeRegistrations(): void
     {
         self::$queuedContentTypeRegistrations = [];
-    }
-
-    public static function registerFormForTable(string $table, Form $form): void
-    {
-        if (null === $form->getName()) {
-            $form->setName($table);
-        }
-        if (null === $form->getExtensionName() && isset($GLOBALS['_EXTKEY'])) {
-            $form->setExtensionName(GeneralUtility::underscoredToUpperCamelCase($GLOBALS['_EXTKEY']));
-        }
-        self::$forms['tables'][$table] = $form;
     }
 
     public static function registerProviderExtensionKey(
@@ -290,22 +276,6 @@ class Core
     {
         reset(self::$providers);
         return self::$providers;
-    }
-
-    /**
-     * @return Form[]
-     */
-    public static function getRegisteredFormsForTables(): array
-    {
-        return self::$forms['tables'];
-    }
-
-    public static function getRegisteredFormForTable(string $table): ?Form
-    {
-        if (true === isset(self::$forms['tables'][$table])) {
-            return self::$forms['tables'][$table];
-        }
-        return null;
     }
 
     protected static function getAbsolutePathForFilename(string $filename): string
