@@ -56,9 +56,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getForm(array $record = []): Form
     {
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
-        $provider = $providerResolver->resolvePrimaryConfigurationProvider(
+        $provider = $this->getProviderResolver()->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record
@@ -74,9 +72,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getGrid(array $record = []): Form\Container\Grid
     {
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
-        $provider = $providerResolver->resolvePrimaryConfigurationProvider(
+        $provider = $this->getProviderResolver()->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record
@@ -131,5 +127,12 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
     public function getTemplatePathAndFilename(): string
     {
         return $this->basePath . $this->relativeFilePath;
+    }
+
+    protected function getProviderResolver(): ProviderResolver
+    {
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        return $providerResolver;
     }
 }
