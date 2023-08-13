@@ -270,7 +270,7 @@ class FormDataTransformerTest extends AbstractTestCase
         $identifiers = ['foobar', 'foobar2'];
 
         $result = $this->callInaccessibleMethod(
-            new FormDataTransformer($this->fileRepository),
+            new FormDataTransformer(...$this->getConstructorArguments()),
             'loadObjectsFromRepository',
             $repository,
             $identifiers
