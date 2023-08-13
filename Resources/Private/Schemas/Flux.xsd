@@ -237,8 +237,6 @@ Defines a single field data structure.
   <xsd:element name="field.checkbox">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Checkbox FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -392,8 +390,6 @@ To use the field just place it in your Flux form (but in almost all
 cases leave out the "name" argument which is required on all other
 field types at the time of writing this). Where the field is placed
 is not important; the order and the sheet location don't matter.
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -608,8 +604,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.custom">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Custom FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -721,8 +715,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.dateTime">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Input FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -830,8 +822,6 @@ Then use `<f:image>` to render the image in the frontend:
 
 `alt` and `title` tags are not loaded from the file's meta data record.
 Use `<flux:field.inline.fal>` if you want this feature.
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -1018,8 +1008,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.inline">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Inline-style FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -1745,8 +1733,6 @@ The crop configuration can now be passed to the image viewhelper:
   <xsd:element name="field.input">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Input FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -1897,8 +1883,6 @@ Add a wizard to search for content elements, instead of opening a popup:
                               maxItems="5">
         <flux:wizard.suggest />
     </flux:field.multiRelation>
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2143,8 +2127,6 @@ DEPRECATED - use flux:field instead
 
 Makes a read-only component which supports a default value
 but which cannot be edited.
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2241,8 +2223,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.radio">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Radio FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2423,8 +2403,6 @@ allows selecting a content element from the current page:
 A list of allowed markers for the `condition` can be found in the documentation at:
 
 https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#foreign-table-where
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2692,8 +2670,6 @@ You can translate those labels by putting a LLL reference in the first property:
 ### Links
 
 * [TCA Reference: type "select"](https://docs.typo3.org/typo3cms/TCAReference/stable/Reference/Columns/Select/)
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2855,8 +2831,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.text">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Textarea FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2998,8 +2972,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.tree">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Tree (select supertype) FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -3276,8 +3248,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.tree.category">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Tree preset for sys_category
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -3554,8 +3524,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.userFunc">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Flexform Userfunc field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
