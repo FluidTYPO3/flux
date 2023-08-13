@@ -15,8 +15,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Inline-style FlexForm field ViewHelper
- *
- * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper
 {

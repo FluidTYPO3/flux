@@ -25,9 +25,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * `alt` and `title` tags are not loaded from the file's meta data record.
  * Use `<flux:field.inline.fal>` if you want this feature.
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class FileViewHelper extends AbstractMultiValueFieldViewHelper
 {

@@ -72,9 +72,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  * cases leave out the "name" argument which is required on all other
  * field types at the time of writing this). Where the field is placed
  * is not important; the order and the sheet location don't matter.
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class ControllerActionsViewHelper extends SelectViewHelper
 {

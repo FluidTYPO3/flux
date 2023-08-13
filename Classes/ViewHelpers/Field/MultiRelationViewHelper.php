@@ -39,9 +39,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *                               maxItems="5">
  *         <flux:wizard.suggest />
  *     </flux:field.multiRelation>
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class MultiRelationViewHelper extends AbstractRelationFieldViewHelper
 {

@@ -17,9 +17,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * Makes a read-only component which supports a default value
  * but which cannot be edited.
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class NoneViewHelper extends AbstractFieldViewHelper
 {

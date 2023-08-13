@@ -14,9 +14,6 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Textarea FlexForm field ViewHelper
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class TextViewHelper extends AbstractFieldViewHelper
 {
