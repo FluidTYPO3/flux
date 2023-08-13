@@ -22,10 +22,8 @@ class FlexFormBuilder
     protected CacheService $cacheService;
     protected ProviderResolver $providerResolver;
 
-    public function __construct(
-        CacheService $cacheService,
-        ProviderResolver $providerResolver
-    ) {
+    public function __construct(CacheService $cacheService, ProviderResolver $providerResolver)
+    {
         $this->cacheService = $cacheService;
         $this->providerResolver = $providerResolver;
     }
