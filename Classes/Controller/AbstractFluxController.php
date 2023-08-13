@@ -38,6 +38,7 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Abstract Flux-enabled controller
@@ -178,7 +179,7 @@ abstract class AbstractFluxController extends ActionController
         $this->provider = $provider;
     }
 
-    protected function initializeViewVariables(\TYPO3Fluid\Fluid\View\ViewInterface $view): void
+    protected function initializeViewVariables(ViewInterface $view): void
     {
         $row = $this->getRecord();
         if ($this->provider instanceof FluidProviderInterface) {
@@ -223,7 +224,7 @@ abstract class AbstractFluxController extends ActionController
         $this->initializeOverriddenSettings();
     }
 
-    protected function resolveView(): \TYPO3Fluid\Fluid\View\ViewInterface
+    protected function resolveView(): ViewInterface
     {
         if (!$this->provider instanceof ControllerProviderInterface) {
             throw new \RuntimeException(
