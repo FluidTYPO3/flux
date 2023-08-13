@@ -10,9 +10,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
@@ -25,7 +27,8 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class FormDataTransformerTest extends AbstractTestCase
 {
-    private ?FileRepository $fileRepository = null;
+    private FileRepository $fileRepository;
+    private FlexFormService $flexFormService;
     private ?FrontendUserRepository $frontendUserRepository = null;
     private ?FrontendUser $frontendUser = null;
     private ?FormDataTransformer $subject = null;
@@ -41,9 +44,14 @@ class FormDataTransformerTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->flexFormService = $this->getMockBuilder(FlexFormService::class)
+            ->onlyMethods(['convertFlexFormContentToArray'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->subject = $this->getMockBuilder(FormDataTransformer::class)
             ->onlyMethods(['loadObjectsFromRepository'])
-            ->setConstructorArgs([$this->fileRepository])
+            ->setConstructorArgs($this->getConstructorArguments())
             ->getMock();
 
         parent::setUp();
@@ -64,9 +72,74 @@ class FormDataTransformerTest extends AbstractTestCase
         GeneralUtility::setSingletonInstance(FrontendUserRepository::class, $this->frontendUserRepository);
     }
 
+    private function getConstructorArguments(): array
+    {
+        return [
+            $this->fileRepository,
+            $this->flexFormService,
+        ];
+    }
+
     public function fixtureTransformToFooString(): string
     {
         return 'foo';
+    }
+
+
+    /**
+     * @test
+     * @dataProvider getConvertFlexFormContentToArrayTestValues
+     * @param string $flexFormContent
+     * @param Form|NULL $form
+     * @param string|NULL $languagePointer
+     * @param string|NULL $valuePointer
+     * @param array $expected
+     */
+    public function testConvertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer, $expected)
+    {
+        $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
+        $instance = new FormDataTransformer(...$this->getConstructorArguments());
+
+        $result = $instance->convertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getConvertFlexFormContentToArrayTestValues()
+    {
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        return [
+            ['', null, '', '', []],
+            ['', $form, '', '', []],
+            [Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, $form, '', '', ['settings' => ['input' => 0]]]
+        ];
+    }
+
+    public function testConvertFlexFormContentToArrayWithTransform(): void
+    {
+        $expected = [
+            'foo' => 'bar',
+        ];
+
+        $flexFormContent = 'abc';
+        $languagePointer = null;
+        $valuePointer = null;
+
+        $form = Form::create();
+        $form->setOption(Form::OPTION_TRANSFORM, true);
+
+        $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
+
+        $instance = $this->getMockBuilder(FormDataTransformer::class)
+            ->onlyMethods(['transformAccordingToConfiguration'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->getMock();
+        $instance->method('transformAccordingToConfiguration')->willReturnArgument(0);
+
+        $result = $instance->convertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer);
+        $this->assertEquals($expected, $result);
     }
 
     /**

@@ -12,7 +12,6 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -186,12 +185,5 @@ class ProviderResolver implements SingletonInterface
     protected function loadCoreRegisteredProviders(): array
     {
         return Core::getRegisteredFlexFormProviders();
-    }
-
-    protected function getFluxService(): FluxService
-    {
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
-        return $fluxService;
     }
 }

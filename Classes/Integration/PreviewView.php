@@ -12,7 +12,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -48,7 +47,6 @@ class PreviewView extends TemplateView
     ];
 
     protected ConfigurationManagerInterface $configurationManager;
-    protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $workspacesAwareRecordService;
 
     public function __construct(RenderingContextInterface $context = null)
@@ -58,10 +56,6 @@ class PreviewView extends TemplateView
         /** @var ConfigurationManagerInterface $configurationManager */
         $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
         $this->configurationManager = $configurationManager;
-
-        /** @var FluxService $configurationService */
-        $configurationService = GeneralUtility::makeInstance(FluxService::class);
-        $this->configurationService = $configurationService;
 
         /** @var WorkspacesAwareRecordService $workspacesAwareRecordService */
         $workspacesAwareRecordService = GeneralUtility::makeInstance(WorkspacesAwareRecordService::class);

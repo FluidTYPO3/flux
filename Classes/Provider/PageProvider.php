@@ -11,9 +11,9 @@ namespace FluidTYPO3\Flux\Provider;
 
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -53,14 +53,14 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     protected PageService $pageService;
 
     public function __construct(
-        FluxService $configurationService,
+        FormDataTransformer $formDataTransformer,
         WorkspacesAwareRecordService $recordService,
         ViewBuilder $viewBuilder,
         CacheService $cacheService,
         TypoScriptService $typoScriptService,
         PageService $pageService
     ) {
-        parent::__construct($configurationService, $recordService, $viewBuilder, $cacheService, $typoScriptService);
+        parent::__construct($formDataTransformer, $recordService, $viewBuilder, $cacheService, $typoScriptService);
         $this->pageService = $pageService;
     }
 
@@ -185,7 +185,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     {
         $fieldName = $forField ?? $this->getFieldName($row);
         $form = $this->getForm($row, $forField);
-        $immediateConfiguration = $this->configurationService->convertFlexFormContentToArray(
+        $immediateConfiguration = $this->formDataTransformer->convertFlexFormContentToArray(
             $row[$fieldName] ?? '',
             $form,
             null,

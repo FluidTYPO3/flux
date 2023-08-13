@@ -8,26 +8,15 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems;
 use FluidTYPO3\Flux\Integration\WizardItemsManipulator;
-use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
-use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Site\SiteFinder;
 
 class WizardItemsTest extends AbstractTestCase
 {
     private WizardItemsManipulator $wizardItemsManipulator;
-
-    private FluxService $fluxService;
-    private WorkspacesAwareRecordService $recordService;
-    private SiteFinder $siteFinder;
-    private Site $site;
-    private ContentTypeManager $contentTypeManager;
 
     protected function setUp(): void
     {

@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyFluxService;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -224,15 +223,6 @@ abstract class AbstractTestCase extends TestCase
     protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath)
     {
         return realpath(str_replace('EXT:flux/', './', $shorthandTemplatePath));
-    }
-
-    protected function createFluxServiceInstance($methods = ['dummy']): DummyFluxService
-    {
-        /** @var DummyFluxService $fluxService */
-        $fluxService = $this->getMockBuilder(DummyFluxService::class)
-            ->addMethods($methods)
-            ->getMock();
-        return $fluxService;
     }
 
     protected function createInstanceClassName(): string

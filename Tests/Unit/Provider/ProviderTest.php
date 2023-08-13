@@ -12,11 +12,11 @@ use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
@@ -24,7 +24,7 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class ProviderTest extends AbstractTestCase
 {
-    protected FluxService $fluxService;
+    protected FormDataTransformer $formDataTransformer;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
     protected CacheService $cacheService;
@@ -74,7 +74,7 @@ class ProviderTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
+        $this->formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
             ->onlyMethods(
                 [
                     'convertFlexFormContentToArray',
@@ -104,7 +104,7 @@ class ProviderTest extends AbstractTestCase
     protected function getConstructorArguments(): array
     {
         return [
-            $this->fluxService,
+            $this->formDataTransformer,
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
             $this->cacheService,

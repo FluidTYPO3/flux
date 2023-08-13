@@ -12,12 +12,12 @@ use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Section;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\CustomForm;
@@ -38,7 +38,7 @@ use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 
 abstract class AbstractProviderTest extends AbstractTestCase
 {
-    protected FluxService $fluxService;
+    protected FormDataTransformer $formDataTransformer;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
     protected CacheService $cacheService;
@@ -65,7 +65,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
+        $this->formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
             ->onlyMethods(
                 [
                     'convertFlexFormContentToArray',
@@ -95,7 +95,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
     protected function getConstructorArguments(): array
     {
         return [
-            $this->fluxService,
+            $this->formDataTransformer,
             $this->recordService,
             $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
             $this->cacheService,
@@ -416,7 +416,7 @@ abstract class AbstractProviderTest extends AbstractTestCase
             ->onlyMethods(['getForm'])
             ->getMock();
 
-        $this->fluxService->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(['test' => 'test']));
+        $this->formDataTransformer->expects($this->once())->method('convertFlexFormContentToArray')->will($this->returnValue(['test' => 'test']));
 
         $provider->expects($this->once())->method('getForm')->will($this->returnValue($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock()));
         $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));

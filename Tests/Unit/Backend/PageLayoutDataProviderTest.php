@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
 
 use FluidTYPO3\Flux\Backend\PageLayoutDataProvider;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -18,17 +17,11 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class PageLayoutDataProviderTest extends AbstractTestCase
 {
-    protected ?FluxService $fluxService = null;
     protected ?PageService $pageService = null;
     protected ?ConfigurationManagerInterface $configurationManager = null;
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolvePageProvider'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->pageService = $this->getMockBuilder(PageService::class)
             ->setMethods(['getAvailablePageTemplateFiles'])
             ->disableOriginalConstructor()
@@ -40,7 +33,6 @@ class PageLayoutDataProviderTest extends AbstractTestCase
             ->getMock();
         $this->configurationManager->method('getConfiguration')->willReturn([]);
 
-        $this->singletonInstances[FluxService::class] = $this->fluxService;
         $this->singletonInstances[PageService::class] = $this->pageService;
         $this->singletonInstances[ConfigurationManager::class] = $this->configurationManager;
 

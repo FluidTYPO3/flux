@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
@@ -33,15 +32,11 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 class PreviewViewTest extends AbstractTestCase
 {
-    private FluxService $configurationService;
     private ConfigurationManager $configurationManager;
     private WorkspacesAwareRecordService $recordService;
 
     protected function setUp(): void
     {
-        $this->configurationService
-            = $this->singletonInstances[FluxService::class]
-            = $this->getMockBuilder(FluxService::class)->disableOriginalConstructor()->getMock();
         $this->configurationManager
             = $this->singletonInstances[ConfigurationManager::class]
             = $this->getMockBuilder(ConfigurationManager::class)
@@ -69,11 +64,6 @@ class PreviewViewTest extends AbstractTestCase
             $this->configurationManager,
             $this->getInaccessiblePropertyValue($subject, 'configurationManager'),
             'ConfigurationManager was not injected'
-        );
-        self::assertSame(
-            $this->configurationService,
-            $this->getInaccessiblePropertyValue($subject, 'configurationService'),
-            'FluxService was not injected'
         );
         self::assertSame(
             $this->recordService,

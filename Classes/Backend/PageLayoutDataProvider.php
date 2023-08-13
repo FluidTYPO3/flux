@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\Backend;
  */
 
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
@@ -24,7 +23,6 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 class PageLayoutDataProvider
 {
     protected ConfigurationManagerInterface $configurationManager;
-    protected FluxService $configurationService;
     protected PageService $pageService;
 
     public function __construct()
@@ -32,10 +30,6 @@ class PageLayoutDataProvider
         /** @var ConfigurationManagerInterface $configurationManager */
         $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
         $this->configurationManager = $configurationManager;
-
-        /** @var FluxService $fluxService */
-        $fluxService = GeneralUtility::makeInstance(FluxService::class);
-        $this->configurationService = $fluxService;
 
         /** @var PageService $pageService */
         $pageService = GeneralUtility::makeInstance(PageService::class);

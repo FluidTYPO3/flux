@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
@@ -63,7 +62,6 @@ class GetViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
-    protected static ?FluxService $configurationService = null;
     protected static ?ConfigurationManagerInterface $configurationManager = null;
     protected static ?WorkspacesAwareRecordService $recordService = null;
 

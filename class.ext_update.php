@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\Database\Query\Restriction\FrontendWorkspaceRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
@@ -291,7 +291,7 @@ class ext_update
      */
     protected function loadProvidersForRecord(array $record): array
     {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(FluxService::class)->resolveConfigurationProviders(
+        return GeneralUtility::makeInstance(ProviderResolver::class)->resolveConfigurationProviders(
             'tt_content',
             null,
             $record,

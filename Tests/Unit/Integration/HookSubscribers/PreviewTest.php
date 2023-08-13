@@ -9,9 +9,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Integration\HookSubscribers\Preview;
 use FluidTYPO3\Flux\Integration\PreviewRenderer;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
@@ -27,12 +27,12 @@ class PreviewTest extends AbstractTestCase
         if (!class_exists(PageLayoutViewDrawItemHookInterface::class)) {
             $this->markTestSkipped('Skipping test with PageLayoutViewDrawItemHookInterface dependency');
         }
-        $fluxService = $this->getMockBuilder(FluxService::class)
+        $formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
             ->setMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->singletonInstances[FluxService::class] = $fluxService;
+        $this->singletonInstances[FormDataTransformer::class] = $formDataTransformer;
 
         $tempFiles = (array) glob('typo3temp/flux-preview-*.tmp');
         foreach ($tempFiles as $tempFile) {

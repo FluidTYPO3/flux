@@ -9,10 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -54,7 +54,7 @@ class DataViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
-    protected static ?FluxService $configurationService = null;
+    protected static ?FormDataTransformer $formDataTransformer = null;
     protected static ?ProviderResolver $providerResolver = null;
     protected static ?WorkspacesAwareRecordService $recordService = null;
 
@@ -151,7 +151,7 @@ class DataViewHelper extends AbstractViewHelper
         string $field
     ): array {
         if (0 === count($providers)) {
-            $dataArray = static::getFluxService()->convertFlexFormContentToArray($record[$field]);
+            $dataArray = static::getFormDataTransformer()->convertFlexFormContentToArray($record[$field]);
         } else {
             $dataArray = [];
             /** @var ProviderInterface $provider */
@@ -179,14 +179,14 @@ class DataViewHelper extends AbstractViewHelper
     /**
      * @codeCoverageIgnore
      */
-    protected static function getFluxService(): FluxService
+    protected static function getFormDataTransformer(): FormDataTransformer
     {
-        if (!isset(static::$configurationService)) {
-            /** @var FluxService $fluxService */
-            $fluxService = GeneralUtility::makeInstance(FluxService::class);
-            static::$configurationService = $fluxService;
+        if (!isset(static::$formDataTransformer)) {
+            /** @var FormDataTransformer $formDataTransformer */
+            $formDataTransformer = GeneralUtility::makeInstance(FormDataTransformer::class);
+            static::$formDataTransformer = $formDataTransformer;
         }
-        return static::$configurationService;
+        return static::$formDataTransformer;
     }
 
     /**

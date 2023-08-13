@@ -1,13 +1,10 @@
 <?php
 namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use PHPUnit\Framework\MockObject\Generator;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class DummyPageService extends PageService
 {

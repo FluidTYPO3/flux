@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -27,7 +26,6 @@ class DummyPageController extends PageController
 
     public function __construct()
     {
-        $fluxService = $this->createMock(FluxService::class);
         $renderingContextBuilder = $this->createMock(RenderingContextBuilder::class);
         $requestBuilder = $this->createMock(RequestBuilder::class);
         $recordService = $this->createMock(WorkspacesAwareRecordService::class);
@@ -36,7 +34,6 @@ class DummyPageController extends PageController
         $resolver = $this->createMock(Resolver::class);
 
         parent::__construct(
-            $fluxService,
             $renderingContextBuilder,
             $requestBuilder,
             $recordService,

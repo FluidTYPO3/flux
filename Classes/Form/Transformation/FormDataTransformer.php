@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
@@ -21,10 +22,51 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 class FormDataTransformer
 {
     private FileRepository $fileRepository;
+    private FlexFormService $flexFormService;
 
-    public function __construct(FileRepository $fileRepository)
+    public function __construct(FileRepository $fileRepository, FlexFormService $flexFormService)
     {
         $this->fileRepository = $fileRepository;
+        $this->flexFormService = $flexFormService;
+    }
+
+    /**
+     * Parses the flexForm content and converts it to an array
+     * The resulting array will be multi-dimensional, as a value "bla.blubb"
+     * results in two levels, and a value "bla.blubb.bla" results in three levels.
+     *
+     * Note: multi-language flexForms are not supported yet
+     *
+     * @param string $flexFormContent flexForm xml string
+     * @param Form $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this
+     *                   configuration they are applied after conversion to array
+     * @param string|null $languagePointer language pointer used in the flexForm
+     * @param string|null $valuePointer value pointer used in the flexForm
+     */
+    public function convertFlexFormContentToArray(
+        string $flexFormContent,
+        Form $form = null,
+        ?string $languagePointer = 'lDEF',
+        ?string $valuePointer = 'vDEF'
+    ): array {
+        if (true === empty($flexFormContent)) {
+            return [];
+        }
+        if (true === empty($languagePointer)) {
+            $languagePointer = 'lDEF';
+        }
+        if (true === empty($valuePointer)) {
+            $valuePointer = 'vDEF';
+        }
+        $settings = $this->flexFormService->convertFlexFormContentToArray(
+            $flexFormContent,
+            $languagePointer,
+            $valuePointer
+        );
+        if (null !== $form && $form->getOption(Form::OPTION_TRANSFORM)) {
+            $settings = $this->transformAccordingToConfiguration($settings, $form);
+        }
+        return $settings;
     }
 
     /**

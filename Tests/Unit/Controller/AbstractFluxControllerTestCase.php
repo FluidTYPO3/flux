@@ -18,7 +18,6 @@ use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
@@ -52,11 +51,6 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     protected string $shortExtensionName = 'Flux';
 
     /**
-     * @var FluxService&MockObject
-     */
-    protected FluxService $fluxService;
-
-    /**
      * @var RenderingContextBuilder&MockObject
      */
     protected RenderingContextBuilder $renderingContextBuilder;
@@ -74,10 +68,6 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $renderingContext = new RenderingContext();
 
         $this->renderingContextBuilder = $this->getMockBuilder(RenderingContextBuilder::class)
@@ -109,7 +99,6 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     protected function getConstructorArguments(): array
     {
         return [
-            $this->fluxService,
             $this->renderingContextBuilder,
             $this->requestBuilder,
             $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),

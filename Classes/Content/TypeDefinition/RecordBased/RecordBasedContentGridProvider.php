@@ -15,10 +15,10 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -40,14 +40,14 @@ class RecordBasedContentGridProvider extends AbstractProvider implements GridPro
     protected ContentTypeManager $contentTypeDefinitions;
 
     public function __construct(
-        FluxService $configurationService,
+        FormDataTransformer $formDataTransformer,
         WorkspacesAwareRecordService $recordService,
         ViewBuilder $viewBuilder,
         CacheService $cacheService,
         TypoScriptService $typoScriptService,
         ContentTypeManager $contentTypeManager
     ) {
-        parent::__construct($configurationService, $recordService, $viewBuilder, $cacheService, $typoScriptService);
+        parent::__construct($formDataTransformer, $recordService, $viewBuilder, $cacheService, $typoScriptService);
         $this->contentTypeDefinitions = $contentTypeManager;
     }
 

@@ -18,7 +18,6 @@ use FluidTYPO3\Flux\Integration\NormalizedData\ImplementationRegistry;
 use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
@@ -33,9 +32,9 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 class DataAccessTraitTest extends AbstractTestCase
 {
     /**
-     * @var FluxService&MockObject
+     * @var FormDataTransformer&MockObject
      */
-    protected FluxService $fluxService;
+    protected FormDataTransformer $formDataTransformer;
 
     /**
      * @var RenderingContextBuilder&MockObject
@@ -69,7 +68,7 @@ class DataAccessTraitTest extends AbstractTestCase
         $this->renderingContextBuilder = $this->getMockBuilder(RenderingContextBuilder::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
+        $this->formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->requestBuilder = $this->getMockBuilder(RequestBuilder::class)
@@ -96,7 +95,7 @@ class DataAccessTraitTest extends AbstractTestCase
     protected function getControllerConstructorArguments(): array
     {
         return [
-            $this->fluxService,
+            $this->formDataTransformer,
             $this->renderingContextBuilder,
             $this->requestBuilder,
             $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),

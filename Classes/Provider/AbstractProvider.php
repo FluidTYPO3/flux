@@ -12,9 +12,9 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Service\CacheService;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -72,20 +72,20 @@ class AbstractProvider implements ProviderInterface
     protected ?Form $form = null;
     protected ?Grid $grid = null;
 
-    protected FluxService $configurationService;
+    protected FormDataTransformer $formDataTransformer;
     protected WorkspacesAwareRecordService $recordService;
     protected ViewBuilder $viewBuilder;
     protected CacheService $cacheService;
     protected TypoScriptService $typoScriptService;
 
     public function __construct(
-        FluxService $configurationService,
+        FormDataTransformer $formDataTransformer,
         WorkspacesAwareRecordService $recordService,
         ViewBuilder $viewBuilder,
         CacheService $cacheService,
         TypoScriptService $typoScriptService
     ) {
-        $this->configurationService = $configurationService;
+        $this->formDataTransformer = $formDataTransformer;
         $this->recordService = $recordService;
         $this->viewBuilder = $viewBuilder;
         $this->cacheService = $cacheService;
@@ -182,7 +182,7 @@ class AbstractProvider implements ProviderInterface
         // Flux (essentially: no Form instance which means no inheritance, transformation or
         // form options can be dependended upon at this stage).
         if (isset($row[$fieldName]) && !is_array($row[$fieldName])) {
-            $recordVariables = $this->configurationService->convertFlexFormContentToArray($row[$fieldName]);
+            $recordVariables = $this->formDataTransformer->convertFlexFormContentToArray($row[$fieldName]);
             $variables = RecursiveArrayUtility::mergeRecursiveOverrule($variables, $recordVariables);
         }
 
@@ -416,7 +416,7 @@ class AbstractProvider implements ProviderInterface
     {
         $fieldName = $forField ?? $this->getFieldName($row);
         $form = $this->getForm($row);
-        return $this->configurationService->convertFlexFormContentToArray($row[$fieldName] ?? '', $form);
+        return $this->formDataTransformer->convertFlexFormContentToArray($row[$fieldName] ?? '', $form);
     }
 
     /**

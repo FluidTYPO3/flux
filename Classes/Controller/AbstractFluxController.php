@@ -18,7 +18,6 @@ use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FluidProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -59,7 +58,6 @@ abstract class AbstractFluxController extends ActionController
 
     protected RenderingContextBuilder $renderingContextBuilder;
     protected RequestBuilder $requestBuilder;
-    protected FluxService $configurationService;
     protected WorkspacesAwareRecordService $recordService;
     protected TypoScriptService $typoScriptService;
     protected ProviderResolver $providerResolver;
@@ -67,7 +65,6 @@ abstract class AbstractFluxController extends ActionController
     protected ?ControllerProviderInterface $provider = null;
 
     public function __construct(
-        FluxService $fluxService,
         RenderingContextBuilder $renderingContextBuilder,
         RequestBuilder $requestBuilder,
         WorkspacesAwareRecordService $recordService,
@@ -75,7 +72,6 @@ abstract class AbstractFluxController extends ActionController
         ProviderResolver $providerResolver,
         Resolver $resolver
     ) {
-        $this->configurationService = $fluxService;
         $this->renderingContextBuilder = $renderingContextBuilder;
         $this->requestBuilder = $requestBuilder;
         $this->recordService = $recordService;
