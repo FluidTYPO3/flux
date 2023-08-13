@@ -418,34 +418,6 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
     }
 
     /**
-     * @param array $foreignSelectorFieldTcaOverride
-     * @return RelationFieldInterface
-     * @deprecated Please switch to overrideChildTca
-     * @codeCoverageIgnore
-     */
-    public function setForeignSelectorFieldTcaOverride($foreignSelectorFieldTcaOverride)
-    {
-        $this->overrideChildTca = [
-            'columns' => [
-                'uid_local' => $foreignSelectorFieldTcaOverride
-            ]
-        ];
-        return $this;
-    }
-
-    /**
-     * @return array
-     * @deprecated Please switch to overrideChildTca
-     * @codeCoverageIgnore
-     */
-    public function getForeignSelectorFieldTcaOverride()
-    {
-        return isset($this->overrideChildTca['columns']['uid_local'])
-            ? $this->overrideChildTca['columns']['uid_local']
-            : null;
-    }
-
-    /**
      * @param array $overrideChildTca
      * @return RelationFieldInterface
      */
