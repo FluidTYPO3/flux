@@ -412,7 +412,7 @@ table
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Define foreign table name to turn selector into a record selector for that table
 
