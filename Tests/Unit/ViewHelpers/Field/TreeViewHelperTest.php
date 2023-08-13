@@ -10,4 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 class TreeViewHelperTest extends SelectViewHelperTest
 {
+    protected array $defaultArguments = [
+        'table' => 'tt_content',
+        'name' => 'field',
+    ];
 }

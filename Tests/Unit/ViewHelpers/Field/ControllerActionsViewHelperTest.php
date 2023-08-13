@@ -14,10 +14,7 @@ use TYPO3\CMS\Extbase\Mvc\Request;
 
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-    /**
-     * @var array
-     */
-    protected $defaultArguments = [
+    protected array $defaultArguments = [
         'label' => 'Test field',
         'controllerExtensionName' => '',
         'pluginName' => 'Flux',

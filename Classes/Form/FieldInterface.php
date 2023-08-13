@@ -8,9 +8,6 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * FieldInterface
- */
 interface FieldInterface extends FormInterface
 {
     public function buildConfiguration(): array;

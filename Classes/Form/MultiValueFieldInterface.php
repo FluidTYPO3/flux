@@ -8,9 +8,6 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * MultiValueFieldInterface
- */
 interface MultiValueFieldInterface extends FieldInterface
 {
     public function setSize(int $size): self;
@@ -25,4 +22,14 @@ interface MultiValueFieldInterface extends FieldInterface
     public function getItemListStyle(): ?string;
     public function setSelectedListStyle(?string $selectedListStyle): self;
     public function getSelectedListStyle(): ?string;
+
+    /**
+     * @param boolean|string $emptyOption
+     */
+    public function setEmptyOption($emptyOption): self;
+
+    /**
+     * @return boolean|string
+     */
+    public function getEmptyOption();
 }

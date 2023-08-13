@@ -10,10 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 class TextViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-    /**
-     * @var array
-     */
-    protected $defaultArguments = [
+    protected array $defaultArguments = [
         'name' => 'test',
     ];
 

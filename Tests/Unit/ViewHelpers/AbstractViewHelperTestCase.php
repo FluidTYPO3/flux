@@ -45,10 +45,7 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
     protected array $templateProcessors = [];
     protected array $expressionTypes = [];
 
-    /**
-     * @var array
-     */
-    protected $defaultArguments = [
+    protected array $defaultArguments = [
         'name' => 'test'
     ];
 

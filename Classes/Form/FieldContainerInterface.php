@@ -8,14 +8,10 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * FieldContainerInterface
- */
 interface FieldContainerInterface extends ContainerInterface
 {
-
     /**
      * @return FieldInterface[]
      */
-    public function getFields();
+    public function getFields(): iterable;
 }

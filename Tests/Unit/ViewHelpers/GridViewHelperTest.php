@@ -12,7 +12,7 @@ use FluidTYPO3\Flux\ViewHelpers\GridViewHelper;
 
 class GridViewHelperTest extends AbstractViewHelperTestCase
 {
-    protected $defaultArguments = [
+    protected array $defaultArguments = [
         'name' => 'grid',
         'label' => 'Foo Bar',
         'variables' => [],

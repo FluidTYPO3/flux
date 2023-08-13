@@ -10,11 +10,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 class InlineViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-    /**
-     * @var array
-     */
-    protected $defaultArguments = [
+    protected array $defaultArguments = [
         'name' => 'test',
+        'table' => 'tt_content',
         'enabledControls' => [
             'new' => true,
             'hide' => true

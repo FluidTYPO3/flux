@@ -14,9 +14,6 @@ use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * AbstractMultiValueFormField
- */
 abstract class AbstractMultiValueFormField extends AbstractFormField implements MultiValueFieldInterface
 {
     protected int $size = 1;

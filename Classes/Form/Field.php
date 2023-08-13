@@ -8,20 +8,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Field extends AbstractFormField
 {
-    /**
-     * @var string
-     */
-    protected $type = 'input';
-
-    /**
-     * @var string|null
-     */
-    protected $displayCond;
-
-    /**
-     * @var string|null
-     */
-    protected $onChange;
+    protected string $type = 'input';
+    protected ?string $displayCond = null;
+    protected ?string $onChange = null;
 
     public function buildConfiguration(): array
     {
