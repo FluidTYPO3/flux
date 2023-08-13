@@ -35,8 +35,6 @@ Add a wizard to search for content elements, instead of opening a popup:
         <flux:wizard.suggest />
     </flux:field.multiRelation>
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

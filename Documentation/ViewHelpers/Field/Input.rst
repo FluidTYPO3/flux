@@ -9,8 +9,6 @@ field.input
 
 Input FlexForm field ViewHelper
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

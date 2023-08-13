@@ -29,8 +29,6 @@ A list of allowed markers for the `condition` can be found in the documentation 
 
 https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#foreign-table-where
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

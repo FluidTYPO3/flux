@@ -9,8 +9,6 @@ field.checkbox
 
 Checkbox FlexForm field ViewHelper
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

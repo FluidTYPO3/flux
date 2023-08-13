@@ -9,8 +9,6 @@ field.tree.category
 
 Tree preset for sys_category
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

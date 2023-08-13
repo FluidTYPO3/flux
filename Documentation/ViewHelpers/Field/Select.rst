@@ -38,8 +38,6 @@ Links
 
 * [TCA Reference: type "select"](https://docs.typo3.org/typo3cms/TCAReference/stable/Reference/Columns/Select/)
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

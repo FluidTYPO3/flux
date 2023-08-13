@@ -9,8 +9,6 @@ field.inline
 
 Inline-style FlexForm field ViewHelper
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

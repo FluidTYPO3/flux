@@ -12,8 +12,6 @@ None field ViewHelper
 Makes a read-only component which supports a default value
 but which cannot be edited.
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

@@ -9,8 +9,6 @@ field.userFunc
 
 Flexform Userfunc field ViewHelper
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

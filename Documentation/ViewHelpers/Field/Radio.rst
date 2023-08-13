@@ -9,8 +9,6 @@ field.radio
 
 Radio FlexForm field ViewHelper
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

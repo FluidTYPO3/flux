@@ -9,8 +9,6 @@ field.tree
 
 Tree (select supertype) FlexForm field ViewHelper
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

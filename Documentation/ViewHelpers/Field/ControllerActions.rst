@@ -66,8 +66,6 @@ cases leave out the "name" argument which is required on all other
 field types at the time of writing this). Where the field is placed
 is not important; the order and the sheet location don't matter.
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 

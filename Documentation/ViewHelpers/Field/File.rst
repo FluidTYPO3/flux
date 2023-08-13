@@ -21,8 +21,6 @@ Then use `<f:image>` to render the image in the frontend:
 `alt` and `title` tags are not loaded from the file's meta data record.
 Use `<flux:field.inline.fal>` if you want this feature.
 
-DEPRECATED - use flux:field instead
-
 Arguments
 =========
 
