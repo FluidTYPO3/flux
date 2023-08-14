@@ -206,14 +206,23 @@ class SpooledConfigurationApplicator
             return $fromCache;
         }
 
+        $store = true;
         $sortingValues = [];
         foreach ($providers as $provider) {
             $contentObjectType = $provider->getContentObjectType();
-            $form = $provider->getForm(['CType' => $contentObjectType]);
-            $sortingValues[$contentObjectType] = $this->resolveSortingValue($form);
+            try {
+                $form = $provider->getForm(['CType' => $contentObjectType]);
+                $sortingValues[$contentObjectType] = $this->resolveSortingValue($form);
+            } catch (\Exception $exception) {
+                // A raised exception is ignored and causes sorting value to be "0", but disables storing to cache.
+                $store = false;
+            }
         }
 
-        $this->cacheService->setInCaches($sortingValues, true, self::CACHE_ID_SORTINGS);
+        if ($store) {
+            $this->cacheService->setInCaches($sortingValues, true, self::CACHE_ID_SORTINGS);
+        }
+
         return $sortingValues;
     }
 
