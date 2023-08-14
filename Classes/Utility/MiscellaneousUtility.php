@@ -83,6 +83,16 @@ class MiscellaneousUtility
      */
     public static function createIcon(string $originalFile, ?string $identifier = null): string
     {
+        /** @var IconRegistry $iconRegistry */
+        $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
+        if ($iconRegistry->isRegistered($originalFile)) {
+            return $originalFile;
+        }
+
+        if (strpos($originalFile, 'EXT:') === 0 || $originalFile[0] !== '/') {
+            $originalFile = GeneralUtility::getFileAbsFileName($originalFile);
+        }
+
         $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
         switch (strtolower($extension)) {
             case 'svg':
@@ -92,13 +102,12 @@ class MiscellaneousUtility
             default:
                 $iconProvider = BitmapIconProvider::class;
         }
+
         $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
-        /** @var IconRegistry $iconRegistry */
-        $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
         $iconRegistry->registerIcon(
             $iconIdentifier,
             $iconProvider,
-            ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]
+            ['source' => $originalFile, 'size' => Icon::SIZE_DEFAULT]
         );
         return $iconIdentifier;
     }

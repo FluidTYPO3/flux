@@ -242,11 +242,6 @@ class ContentTypeBuilder
             return $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType];
         }
         $icon = MiscellaneousUtility::getIconForTemplate($form);
-        if (!empty($icon)) {
-            if (strpos($icon, 'EXT:') === 0 || $icon[0] !== '/') {
-                $icon = GeneralUtility::getFileAbsFileName($icon);
-            }
-        }
         if (!$icon) {
             $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Extension.svg');
         }

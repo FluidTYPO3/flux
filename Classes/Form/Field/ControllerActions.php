@@ -378,6 +378,9 @@ class ControllerActions extends Select
         return $items;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function resolvePathToFileInExtension(string $extensionKey, string $path): string
     {
         return ExtensionManagementUtility::extPath($extensionKey, $path);
