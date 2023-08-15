@@ -20,9 +20,6 @@ use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Lang\LanguageService;
 
-/**
- * ContentTypeBuilderTest
- */
 class ContentTypeBuilderTest extends AbstractTestCase
 {
     protected function setUp(): void

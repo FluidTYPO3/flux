@@ -58,7 +58,9 @@ class RenderingContextBuilder implements SingletonInterface
                     'Controller class ' . $request->getControllerObjectName() . ' caused error: ' . $error->getMessage()
                 );
             }
-        } elseif (method_exists($renderingContext, 'setRequest')) {
+        }
+
+        if (method_exists($renderingContext, 'setRequest')) {
             $renderingContext->setRequest($request);
         }
 
@@ -82,7 +84,7 @@ class RenderingContextBuilder implements SingletonInterface
     /**
      * @codeCoverageIgnore
      */
-    private function createRenderingContextInstance(): RenderingContextInterface
+    protected function createRenderingContextInstance(): RenderingContextInterface
     {
         if (class_exists(RenderingContextFactory::class)) {
             /** @var RenderingContextFactory $renderingContextFactory */
@@ -96,6 +98,9 @@ class RenderingContextBuilder implements SingletonInterface
         return $renderingContext;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function buildControllerContext(RequestInterface $request): ?ControllerContext
     {
         /** @var RequestInterface&Request $request */
