@@ -63,3 +63,4 @@ if ($currentVendorDir && file_exists($currentVendorDir)) {
 
 $command('cp -R ' . $directory . 'composer.lock ./composer.lock');
 $command('cp -R ' . $directory . 'vendor ./vendor');
+$command('composer install' . (isset($composerArguments[$version]) ? ' ' . $composerArguments[$version] : ''));
