@@ -24,7 +24,7 @@ class ModifyPageLayoutContentEventListenerTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        if (!class_exists(ModifyPageLayoutContentEventListener::class)) {
+        if (!class_exists(ModifyPageLayoutContentEvent::class)) {
             $this->markTestSkipped('Skipping test for non-existing event class');
         }
         parent::setUp();

@@ -7,6 +7,11 @@ if (empty($version)) {
     exit(1);
 }
 
+$command = function (string $command): void {
+    echo $command . PHP_EOL;
+    system($command);
+};
+
 $composerArguments = [
     '10.4' => '--ignore-platform-reqs',
 ];
@@ -30,34 +35,31 @@ if (!file_exists($directory)) {
     mkdir($directory);
 }
 
-echo 'Current lockfile: . ' . $currentLockFile . PHP_EOL;
-echo 'Current vendor dir: . ' . $currentVendorDir . PHP_EOL;
-
 $versionSpecificVendorDirectory = $directory . 'vendor';
 if (!file_exists($versionSpecificVendorDirectory)) {
     if ($currentLockFile && file_exists($currentLockFile)) {
-        system('rm -rf ' . $currentLockFile);
+        $command('rm -rf ' . $currentLockFile);
     }
     if ($currentVendorDir && file_exists($currentVendorDir)) {
-        system('rm -rf ' . $currentVendorDir);
+        $command('rm -rf ' . $currentVendorDir);
     }
-    system(
+    $command(
         'composer req typo3/cms-core:^'
         . $version
         . (isset($composerArguments[$version]) ? ' ' . $composerArguments[$version] : '')
     );
-    copy('composer.lock', $directory . 'composer.lock');
-    system('git checkout composer.json');
-    system('mv vendor ' . $directory);
+    $command('cp composer.lock ' . $directory . 'composer.lock');
+    $command('git checkout composer.json');
+    $command('mv vendor ' . $directory);
 }
 
 if ($currentLockFile && file_exists($currentLockFile)) {
-    system('rm -rf ' . $currentLockFile);
+    $command('rm -rf ' . $currentLockFile);
 }
 
-if ($currentLockFile && file_exists($currentLockFile)) {
-    system('rm -rf ' . $currentVendorDir);
+if ($currentVendorDir && file_exists($currentVendorDir)) {
+    $command('rm -rf ' . $currentVendorDir);
 }
 
-system('cp -R ' . $directory . 'composer.lock ./composer.lock');
-system('cp -R ' . $directory . 'vendor ./vendor');
+$command('cp -R ' . $directory . 'composer.lock ./composer.lock');
+$command('cp -R ' . $directory . 'vendor ./vendor');

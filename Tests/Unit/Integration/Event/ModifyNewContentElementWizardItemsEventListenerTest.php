@@ -17,7 +17,7 @@ class ModifyNewContentElementWizardItemsEventListenerTest extends AbstractTestCa
 {
     protected function setUp(): void
     {
-        if (!class_exists(ModifyNewContentElementWizardItemsEventListener::class)) {
+        if (!class_exists(ModifyNewContentElementWizardItemsEvent::class)) {
             $this->markTestSkipped('Skipping test for non-existing event class');
         }
         parent::setUp();

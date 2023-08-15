@@ -17,8 +17,8 @@ class IsContentUsedOnPageLayoutEventListenerTest extends AbstractTestCase
 {
     protected function setUp(): void
     {
-        if (!class_exists(IsContentUsedOnPageLayoutEventListener::class)) {
-            $this->markTestSkipped('Skipping test for non-existing event class');
+        if (!class_exists(IsContentUsedOnPageLayoutEvent::class)) {
+            self::markTestSkipped('Skipping test for non-existing event class');
         }
         parent::setUp();
     }

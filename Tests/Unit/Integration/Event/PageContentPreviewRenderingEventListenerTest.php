@@ -35,7 +35,7 @@ class PageContentPreviewRenderingEventListenerTest extends AbstractTestCase
         $event = new PageContentPreviewRenderingEvent($table, [], $context);
 
         $previewRenderer = $this->getMockBuilder(PreviewRenderer::class)
-            ->setMethods(['renderPreview'])
+            ->onlyMethods(['renderPreview'])
             ->disableOriginalConstructor()
             ->getMock();
         $previewRenderer->method('renderPreview')->willReturn(['', $preview, true]);

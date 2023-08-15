@@ -34,7 +34,6 @@ class RenderingContextBuilderTest extends AbstractTestCase
             $request->method('getAttribute')->with('extbase')->willReturn($extbaseParameters);
         }
 
-
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['expressionNodeTypes'] = [];
         $requestBuilder = $this->getMockBuilder(RequestBuilder::class)
@@ -44,16 +43,24 @@ class RenderingContextBuilderTest extends AbstractTestCase
         $requestBuilder->method('getEnvironmentVariable')->willReturn('foobar');
         $requestBuilder->method('getServerRequest')->willReturn($request);
 
+        $methods = ['getTemplatePaths'];
+        if (method_exists(RenderingContext::class, 'setRequest')) {
+            $methods[] = 'setRequest';
+        }
+        if (method_exists(RenderingContext::class, 'setControllerContext')) {
+            $methods[] = 'setControllerContext';
+        }
+
         if (class_exists(ControllerContext::class)) {
             $renderingContext = $this->getMockBuilder(RenderingContext::class)
-                ->onlyMethods(['setControllerContext', 'getTemplatePaths', 'setRequest'])
+                ->onlyMethods($methods)
                 ->disableOriginalConstructor()
                 ->getMock();
             $uriBuilder = $this->getMockBuilder(UriBuilder::class)
                 ->disableOriginalConstructor()
                 ->getMock();
             $controllerContext = $this->getMockBuilder(ControllerContext::class)
-                ->setMethods(['setRequest'])
+                ->onlyMethods(['setRequest'])
                 ->disableOriginalConstructor()
                 ->getMock();
 
@@ -61,7 +68,7 @@ class RenderingContextBuilderTest extends AbstractTestCase
             GeneralUtility::addInstance(ControllerContext::class, $controllerContext);
         } else {
             $renderingContext = $this->getMockBuilder(RenderingContext::class)
-                ->onlyMethods(['setRequest', 'getTemplatePaths'])
+                ->onlyMethods($methods)
                 ->disableOriginalConstructor()
                 ->getMock();
         }
