@@ -23,9 +23,6 @@ use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
-/**
- * FormDataTransformerTest
- */
 class FormDataTransformerTest extends AbstractTestCase
 {
     private FileRepository $fileRepository;
@@ -86,18 +83,16 @@ class FormDataTransformerTest extends AbstractTestCase
         return 'foo';
     }
 
-
     /**
-     * @test
      * @dataProvider getConvertFlexFormContentToArrayTestValues
-     * @param string $flexFormContent
-     * @param Form|NULL $form
-     * @param string|NULL $languagePointer
-     * @param string|NULL $valuePointer
-     * @param array $expected
      */
-    public function testConvertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer, $expected)
-    {
+    public function testConvertFlexFormContentToArray(
+        string $flexFormContent,
+        ?Form $form,
+        ?string $languagePointer,
+        ?string $valuePointer,
+        array $expected
+    ) : void {
         $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
         $instance = new FormDataTransformer(...$this->getConstructorArguments());
 
@@ -105,12 +100,9 @@ class FormDataTransformerTest extends AbstractTestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getConvertFlexFormContentToArrayTestValues()
+    public function getConvertFlexFormContentToArrayTestValues(): array
     {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         return [
             ['', null, '', '', []],
             ['', $form, '', '', []],
@@ -189,7 +181,7 @@ class FormDataTransformerTest extends AbstractTestCase
 
         $this->initializeFrontendUserFixtures();
         $this->subject->method('loadObjectsFromRepository')->willReturn([]);
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $form->createField(Form\Field\Input::class, 'field')->setTransform($transformation);
         $transformed = $this->subject->transformAccordingToConfiguration(['field' => $value], $form);
         $this->assertNotSame(
@@ -215,7 +207,7 @@ class FormDataTransformerTest extends AbstractTestCase
     {
         $this->fileRepository->method('findByRelation')->willReturn($files);
 
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $form->setOption(FormOption::RECORD_TABLE, 'tt_content');
         $form->setOption(FormOption::RECORD, ['uid' => 1]);
 
@@ -263,7 +255,7 @@ class FormDataTransformerTest extends AbstractTestCase
             $this->markTestSkipped('Skipping test with FrontendUser dependency');
         }
         $repository = $this->getMockBuilder(FrontendUserGroupRepository::class)
-            ->setMethods(['findByUid'])
+            ->onlyMethods(['findByUid'])
             ->disableOriginalConstructor()
             ->getMock();
         $repository->expects($this->exactly(2))->method('findByUid')->willReturnArgument(0);

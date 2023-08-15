@@ -50,14 +50,9 @@ class PageLayoutDataProviderTest extends AbstractTestCase
     }
 
     /**
-     * @param Form $form
-     * @param array $parameters
-     * @param array $items
-     * @param array $expected
-     * @test
      * @dataProvider getAddItemsTestValues
      */
-    public function testAddItems(Form $form, array $parameters, array $items, array $expected)
+    public function testAddItems(Form $form, array $parameters, array $items, array $expected): void
     {
         $this->pageService->expects($this->once())
             ->method('getAvailablePageTemplateFiles')
@@ -74,10 +69,7 @@ class PageLayoutDataProviderTest extends AbstractTestCase
         $this->assertSame($expected, $items);
     }
 
-    /**
-     * @return array
-     */
-    public function getAddItemsTestValues()
+    public function getAddItemsTestValues(): array
     {
         $label = 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action.default';
 

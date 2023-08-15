@@ -76,5 +76,4 @@ class TypoScriptServiceTest extends AbstractTestCase
         $result = $service->getTypoScriptByPath('plugin.tx_test.settings');
         $this->assertEquals(['test_var' => 'test_val'], $result);
     }
-
 }

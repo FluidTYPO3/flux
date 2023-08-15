@@ -19,7 +19,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canGetAndSetInheritEmpty()
+    public function canGetAndSetInheritEmpty(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $this->assertFalse($instance->setInheritEmpty(false)->getInheritEmpty());
@@ -29,7 +29,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canGetAndSetInherit()
+    public function canGetAndSetInherit(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $this->assertFalse($instance->setInherit(false)->getInherit());
@@ -39,7 +39,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canUseClearableProperty()
+    public function canUseClearableProperty(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $this->assertFalse($instance->setClearable(false)->getClearable());
@@ -49,7 +49,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsEmptyArrayForDisabledVersionOfField()
+    public function returnsEmptyArrayForDisabledVersionOfField(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $instance->setEnabled(false);
@@ -61,10 +61,10 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsEmptyLabelIfFormExtensionNameIsEmpty()
+    public function returnsEmptyLabelIfFormExtensionNameIsEmpty(): void
     {
         $instance = $this->createInstance();
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $form->add($instance);
         $form->setExtensionName(null);
         $this->assertEmpty($form->getLabel());
@@ -73,7 +73,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canCreateFromDefinition()
+    public function canCreateFromDefinition(): void
     {
         $properties = $this->chainProperties;
         $class = $this->getObjectClassName();
@@ -85,7 +85,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function throwsExceptionOnInvalidFieldTypeWhenCreatingFromDefinition()
+    public function throwsExceptionOnInvalidFieldTypeWhenCreatingFromDefinition(): void
     {
         $properties = $this->chainProperties;
         $properties['type'] = 'InvalidType';
@@ -96,7 +96,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canCreateFromSettingsUsingFullClassName()
+    public function canCreateFromSettingsUsingFullClassName(): void
     {
         $properties = $this->chainProperties;
         $properties['type'] = $this->getObjectClassName();
@@ -107,7 +107,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canCreateSectionUsingShortcutMethod()
+    public function canCreateSectionUsingShortcutMethod(): void
     {
         $definition = [
             'name' => 'test',
@@ -122,7 +122,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function prefixesParentObjectNameToAutoLabelIfInsideObject()
+    public function prefixesParentObjectNameToAutoLabelIfInsideObject(): void
     {
         $instance = $this->createInstance();
         $parent = Form\Container\SectionObject::create();
@@ -136,7 +136,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canBuildWithClearableFlag()
+    public function canBuildWithClearableFlag(): void
     {
         $instance = $this->createInstance();
         $instance->setClearable(true);

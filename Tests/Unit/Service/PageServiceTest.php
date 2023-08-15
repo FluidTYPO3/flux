@@ -40,7 +40,10 @@ class PageServiceTest extends AbstractTestCase
      */
     public function testGetPageTemplateConfiguration(array $records, ?array $expected): void
     {
-        $runtimeCache = new VariableFrontend('runtime', $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass());
+        $runtimeCache = new VariableFrontend(
+            'runtime',
+            $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass()
+        );
         $instance = $this->getMockBuilder(DummyPageService::class)
             ->onlyMethods(['getRootLine'])
             ->getMock();
@@ -59,8 +62,14 @@ class PageServiceTest extends AbstractTestCase
         return [
             'no pages in tree returns null' => [[[]], null],
             'empty selections in tree returns null' => [[[$m => '', $s => '']], null],
-            'both actions defined returns both' => [[$bothDefined], $bothDefined + ['record_main' => null, 'record_sub' => $bothDefined]],
-            'sub action defined returns both' => [[[$m => ''], $subDefined], [$m => 'test2->test2', $s => 'test2->test2', 'record_main' => $subDefined, 'record_sub' => $subDefined]],
+            'both actions defined returns both' => [
+                [$bothDefined],
+                $bothDefined + ['record_main' => null, 'record_sub' => $bothDefined]
+            ],
+            'sub action defined returns both' => [
+                [[$m => ''], $subDefined],
+                [$m => 'test2->test2', $s => 'test2->test2', 'record_main' => $subDefined, 'record_sub' => $subDefined]
+            ],
         ];
     }
 
@@ -145,19 +154,15 @@ class PageServiceTest extends AbstractTestCase
     /**
      * @dataProvider getPageConfigurationInvalidTestValues
      * @param mixed $input
-     * @return void
      */
-    public function testGetPageConfigurationReturnsEmptyArrayOnInvalidInput($input)
+    public function testGetPageConfigurationReturnsEmptyArrayOnInvalidInput($input): void
     {
         $instance = new DummyPageService();
         $result = $instance->getPageConfiguration($input);
         $this->assertEquals([], $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getPageConfigurationInvalidTestValues()
+    public function getPageConfigurationInvalidTestValues(): array
     {
         return [
             [''],
@@ -255,10 +260,7 @@ class PageServiceTest extends AbstractTestCase
         self::assertEquals(['foo' => 'bar'], $result);
     }
 
-    /**
-     * @return void
-     */
-    public function testGetPageConfigurationWithoutExtensionNameReadsRegisteredProviders()
+    public function testGetPageConfigurationWithoutExtensionNameReadsRegisteredProviders(): void
     {
         $templatePaths = new TemplatePaths();
         $instance = $this->getMockBuilder(PageService::class)

@@ -18,18 +18,17 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class RenderViewHelperTest extends AbstractViewHelperTestCase
 {
-    /**
-     * @test
-     */
-    public function testRender()
+    public function testRender(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeResolver'] = [];
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $form->setOption(FormOption::RECORD, ['uid' => 123, 'test' => '']);
         $form->setOption(FormOption::RECORD_FIELD, 'test');
-        $nodeFactory = $this->getMockBuilder(NodeFactory::class)->setMethods(['create'])->getMock();
-        $nodeFactory->expects($this->once())->method('create')->willReturn($this->getMockBuilder(NodeInterface::class)->disableOriginalConstructor()->getMock());
+        $nodeFactory = $this->getMockBuilder(NodeFactory::class)->onlyMethods(['create'])->getMock();
+        $nodeFactory->expects($this->once())
+            ->method('create')
+            ->willReturn($this->getMockBuilder(NodeInterface::class)->disableOriginalConstructor()->getMock());
         $instance = new AccessibleFormRenderViewHelper();
         GeneralUtility::addInstance(NodeFactory::class, $nodeFactory);
         $instance->setArguments(['form' => $form]);

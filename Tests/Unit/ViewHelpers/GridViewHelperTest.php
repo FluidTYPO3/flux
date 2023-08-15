@@ -20,7 +20,9 @@ class GridViewHelperTest extends AbstractViewHelperTestCase
 
     public function testRenderStatic(): void
     {
-        GridViewHelper::renderStatic($this->defaultArguments, function () { return ''; }, $this->renderingContext);
+        GridViewHelper::renderStatic($this->defaultArguments, function () {
+            return '';
+        }, $this->renderingContext);
 
         self::assertNotEmpty(
             $this->viewHelperVariableContainer->get(GridViewHelper::SCOPE, GridViewHelper::SCOPE_VARIABLE_GRIDS)

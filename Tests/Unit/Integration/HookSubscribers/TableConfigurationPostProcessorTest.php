@@ -28,6 +28,7 @@ class TableConfigurationPostProcessorTest extends AbstractTestCase
             ->getMock();
         $applicator->expects(self::once())->method('processData');
         $subject = new TableConfigurationPostProcessor($applicator);
-        $subject->processData();;
+        $subject->processData();
+        ;
     }
 }

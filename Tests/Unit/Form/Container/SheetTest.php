@@ -37,11 +37,13 @@ class SheetTest extends AbstractContainerTest
     /**
      * @test
      */
-    public function modifyCreatesFields()
+    public function modifyCreatesFields(): void
     {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $sheet = $form->createContainer('Sheet', 'testsheet');
-        $form->modify(['fields' => ['test' => ['name' => 'test', 'label' => 'Test', 'type' => Form\Field\Input::class]]]);
+        $form->modify(
+            ['fields' => ['test' => ['name' => 'test', 'label' => 'Test', 'type' => Form\Field\Input::class]]]
+        );
         $fields  = $sheet->getFields();
         $this->assertArrayHasKey('test', $fields);
     }
@@ -49,9 +51,9 @@ class SheetTest extends AbstractContainerTest
     /**
      * @test
      */
-    public function modifyModifiesFields()
+    public function modifyModifiesFields(): void
     {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $sheet = $form->createContainer('Sheet', 'testsheet');
         $field = $sheet->createField('Input', 'testfield', 'Testfield');
         $sheet->modify(['fields' => ['testfield' => ['label' => 'Test']]]);

@@ -84,7 +84,10 @@ class ContentIconTest extends AbstractTestCase
     public function testCreatesInstancesInConstructor(): void
     {
         $subject = new ContentIcon();
-        self::assertInstanceOf(ProviderResolver::class, $this->getInaccessiblePropertyValue($subject, 'providerResolver'));
+        self::assertInstanceOf(
+            ProviderResolver::class,
+            $this->getInaccessiblePropertyValue($subject, 'providerResolver')
+        );
         self::assertInstanceOf(FrontendInterface::class, $this->getInaccessiblePropertyValue($subject, 'cache'));
     }
 
@@ -126,7 +129,10 @@ class ContentIconTest extends AbstractTestCase
 
         $subject = new ContentIcon();
         $result = $this->callInaccessibleMethod($subject, 'drawGridToggle', ['uid' => 123]);
-        $this->assertStringContainsString('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content', $result);
+        $this->assertStringContainsString(
+            'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content',
+            $result
+        );
         $this->assertStringContainsString('foobar', $result);
     }
 
@@ -151,7 +157,9 @@ class ContentIconTest extends AbstractTestCase
         $this->cache->method('get')->willReturn(null);
         $this->cache->method('set')->with($this->anything());
 
-        $this->providerResolver->expects($this->any())->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $this->providerResolver->expects($this->any())
+            ->method('resolvePrimaryConfigurationProvider')
+            ->willReturn($provider);
 
         $instance = new ContentIcon();
 
@@ -164,15 +172,26 @@ class ContentIconTest extends AbstractTestCase
 
     public function getAddSubIconTestValues(): array
     {
-        $formWithoutIcon = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $formWithoutIcon = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $formWithIcon = Form::create(['options' => ['icon' => 'icon']]);
-        $providerWithoutForm = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(['getForm', 'getGrid'])->getMock();
+        $providerWithoutForm = $this->getMockBuilder(Provider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getForm', 'getGrid'])
+            ->getMock();
         $providerWithoutForm->expects($this->any())->method('getForm')->willReturn(null);
         $providerWithoutForm->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
-        $providerWithFormWithoutIcon = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(['getForm', 'getGrid'])->getMock();
+        $providerWithFormWithoutIcon = $this->getMockBuilder(Provider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getForm', 'getGrid'])
+            ->getMock();
         $providerWithFormWithoutIcon->expects($this->any())->method('getForm')->willReturn($formWithoutIcon);
-        $providerWithFormWithoutIcon->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
-        $providerWithFormWithIcon = $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->setMethods(['getForm', 'getGrid'])->getMock();
+        $providerWithFormWithoutIcon->expects($this->any())
+            ->method('getGrid')
+            ->willReturn(Form\Container\Grid::create());
+        $providerWithFormWithIcon = $this->getMockBuilder(Provider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getForm', 'getGrid'])
+            ->getMock();
         $providerWithFormWithIcon->expects($this->any())->method('getForm')->willReturn($formWithIcon);
         $providerWithFormWithIcon->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
         return [
@@ -193,6 +212,12 @@ class ContentIconTest extends AbstractTestCase
     public function testReturnsEmptyStringWithInvalidTable(): void
     {
         $subject = new ContentIcon();
-        self::assertSame('', $subject->addSubIcon(['foo', '', ''], $this->getMockBuilder(GridColumnItem::class)->disableOriginalConstructor()->getMock()));
+        self::assertSame(
+            '',
+            $subject->addSubIcon(
+                ['foo', '', ''],
+                $this->getMockBuilder(GridColumnItem::class)->disableOriginalConstructor()->getMock()
+            )
+        );
     }
 }

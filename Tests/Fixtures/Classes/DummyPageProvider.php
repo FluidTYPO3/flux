@@ -11,9 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\PageProvider;
 
-/**
- * Class DummyPageProvider
- */
 class DummyPageProvider extends PageProvider
 {
     protected array $values = [];

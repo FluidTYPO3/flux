@@ -10,9 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 
-/**
- * DummyConfigurationProvider
- */
 class DummyConfigurationProvider extends AbstractProvider
 {
     protected ?string $tableName = 'test';

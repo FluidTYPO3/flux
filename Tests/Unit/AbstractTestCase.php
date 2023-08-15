@@ -46,8 +46,9 @@ abstract class AbstractTestCase extends TestCase
         if (!defined('TYPO3_REQUESTTYPE_FE')) {
             define('TYPO3_REQUESTTYPE_FE', 1);
         }
-        if (!defined('TYPO3_version')) {
-            define('TYPO3_version', '9.5.0');
+
+        if (!defined('TYPO3_version')) { // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
+            define('TYPO3_version', '9.5.0'); // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
         }
 
         $GLOBALS['EXEC_TIME'] = time();
@@ -76,12 +77,10 @@ abstract class AbstractTestCase extends TestCase
     /**
      * Helper function to call protected or private methods
      *
-     * @param object $object The object to be invoked
-     * @param string $name the name of the method to call
      * @param mixed $arguments
      * @return mixed
      */
-    protected function callInaccessibleMethod($object, $name, ...$arguments)
+    protected function callInaccessibleMethod(object $object, string $name, ...$arguments)
     {
         $reflectionObject = new \ReflectionObject($object);
         $reflectionMethod = $reflectionObject->getMethod($name);
@@ -90,10 +89,7 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param object $object
-     * @param string $propertyName
      * @param mixed $value
-     * @return void
      */
     protected function setInaccessiblePropertyValue(object $object, string $propertyName, $value): void
     {
@@ -103,8 +99,6 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param object $object
-     * @param string $propertyName
      * @return mixed
      */
     protected function getInaccessiblePropertyValue(object $object, string $propertyName)
@@ -115,14 +109,16 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param string $propertyName
      * @param mixed $value
      * @param mixed $expectedValue
      * @param mixed $expectsChaining
-     * @return void
      */
-    protected function assertGetterAndSetterWorks($propertyName, $value, $expectedValue = null, $expectsChaining = false)
-    {
+    protected function assertGetterAndSetterWorks(
+        string $propertyName,
+        $value,
+        $expectedValue = null,
+        $expectsChaining = false
+    ): void {
         $instance = $this->createInstance();
         $setter = 'set' . ucfirst($propertyName);
         $getter = 'get' . ucfirst($propertyName);
@@ -162,7 +158,7 @@ abstract class AbstractTestCase extends TestCase
      * @param mixed $value
      * @return void
      */
-    protected function assertIsInteger($value)
+    protected function assertIsInteger($value): void
     {
         $isIntegerConstraint = new IsType(IsType::TYPE_INT);
         $this->assertThat($value, $isIntegerConstraint);
@@ -172,7 +168,7 @@ abstract class AbstractTestCase extends TestCase
      * @param mixed $value
      * @return void
      */
-    protected function assertIsBoolean($value)
+    protected function assertIsBoolean($value): void
     {
         $isBooleanConstraint = new IsType(IsType::TYPE_BOOL);
         $this->assertThat($value, $isBooleanConstraint);
@@ -181,7 +177,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @param mixed $value
      */
-    protected function assertIsValidAndWorkingFormObject($value)
+    protected function assertIsValidAndWorkingFormObject($value): void
     {
         $this->assertInstanceOf(Form::class, $value);
         $this->assertInstanceOf(Form\FormInterface::class, $value);
@@ -202,7 +198,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @param mixed $value
      */
-    protected function assertIsValidAndWorkingGridObject($value)
+    protected function assertIsValidAndWorkingGridObject($value): void
     {
         $this->assertInstanceOf(Form\Container\Grid::class, $value);
         $this->assertInstanceOf(Form\ContainerInterface::class, $value);
@@ -216,11 +212,7 @@ abstract class AbstractTestCase extends TestCase
         return self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
     }
 
-    /**
-     * @param string $shorthandTemplatePath
-     * @return string
-     */
-    protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath)
+    protected function getAbsoluteFixtureTemplatePathAndFilename(string $shorthandTemplatePath): string
     {
         return realpath(str_replace('EXT:flux/', './', $shorthandTemplatePath));
     }
@@ -237,7 +229,7 @@ abstract class AbstractTestCase extends TestCase
     {
         $instanceClassName = $this->createInstanceClassName();
         return $this->getMockBuilder($instanceClassName)
-            ->setMethods(['dummy'])
+            ->addMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
     }

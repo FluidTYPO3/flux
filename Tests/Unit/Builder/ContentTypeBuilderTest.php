@@ -31,10 +31,16 @@ class ContentTypeBuilderTest extends AbstractTestCase
 
         $GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'] = '';
 
-        $package = $this->getMockBuilder(Package::class)->setMethods(['getPackagePath'])->disableOriginalConstructor()->getMock();
+        $package = $this->getMockBuilder(Package::class)
+            ->onlyMethods(['getPackagePath'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $package->method('getPackagePath')->willReturn('.');
 
-        $packageManager = $this->getMockBuilder(PackageManager::class)->setMethods(['getPackage', 'isPackageActive'])->disableOriginalConstructor()->getMock();
+        $packageManager = $this->getMockBuilder(PackageManager::class)
+            ->onlyMethods(['getPackage', 'isPackageActive'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $packageManager->method('getPackage')->willReturn($package);
         $packageManager->method('isPackageActive')->willReturn(true);
 

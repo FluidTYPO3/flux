@@ -57,7 +57,8 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
             ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->singletonInstances[RecordBasedContentTypeDefinitionRepository::class] = $this->getMockBuilder(RecordBasedContentTypeDefinitionRepository::class)
+        $this->singletonInstances[RecordBasedContentTypeDefinitionRepository::class]
+            = $this->getMockBuilder(RecordBasedContentTypeDefinitionRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
 

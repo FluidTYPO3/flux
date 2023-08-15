@@ -148,7 +148,9 @@ class SelectTest extends AbstractFieldTest
             ->disableOriginalConstructor()
             ->getMock();
         $service->expects($this->once())->method('getTypoScriptByPath')->willReturn($table . 'suffix');
-        $instance = $this->getMockBuilder($this->createInstanceClassName())->onlyMethods(['getTypoScriptService'])->getMock();
+        $instance = $this->getMockBuilder($this->createInstanceClassName())
+            ->onlyMethods(['getTypoScriptService'])
+            ->getMock();
         $instance->expects($this->once())->method('getTypoScriptService')->willReturn($service);
         $GLOBALS['TCA'][$table . 'suffix']['ctrl']['label'] = $table . 'label';
         $propertyName = $this->callInaccessibleMethod($instance, 'getLabelPropertyName', $table, $type);

@@ -25,7 +25,8 @@ class OptionViewHelperTest extends AbstractFormViewHelperTestCase
         $this->expectExceptionCode(1602693000);
         OptionViewHelper::renderStatic(
             ['value' => 'test'],
-            function () {},
+            function () {
+            },
             $this->renderingContext
         );
     }

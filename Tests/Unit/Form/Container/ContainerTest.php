@@ -10,16 +10,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 
 use FluidTYPO3\Flux\Form\Container\Container;
 
-/**
- * ContainerTest
- */
 class ContainerTest extends AbstractContainerTest
 {
-
     /**
      * @test
      */
-    public function getFieldsGetsFields()
+    public function getFieldsGetsFields(): void
     {
         $container = Container::create(['name' => 'test']);
         $container->createField('Input', 'test');
@@ -29,12 +25,17 @@ class ContainerTest extends AbstractContainerTest
     /**
      * @test
      */
-    public function ifObjectIsFieldContainerItSupportsFetchingFields()
+    public function ifObjectIsFieldContainerItSupportsFetchingFields(): void
     {
         $instance = $this->createInstance();
         $field = $instance->createField('Input', 'test');
         $instance->add($field);
         $fields = $instance->getFields();
-        $this->assertNotEmpty($fields, 'The class ' . $this->getObjectClassName() . ' does not appear to support the required FieldContainerInterface implementation');
+        $this->assertNotEmpty(
+            $fields,
+            'The class ' .
+            $this->getObjectClassName() .
+            ' does not appear to support the required FieldContainerInterface implementation'
+        );
     }
 }

@@ -12,44 +12,41 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Hooks\HookSubscriberInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
-/**
- * Class HookHandlerTest
- */
 class HookHandlerTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
-    public function testSubscribeAndUnsubscribe()
+    public function testSubscribeAndUnsubscribe(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = [];
         $dummy = $this->getMockBuilder(HookSubscriberInterface::class)->getMockForAbstractClass();
         $dummyClass = get_class($dummy);
         HookHandler::subscribe(HookHandler::PROVIDER_REGISTERED, $dummyClass);
-        $this->assertSame($dummyClass, $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'][HookHandler::PROVIDER_REGISTERED][$dummyClass]);
+        $this->assertSame(
+            $dummyClass,
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'][HookHandler::PROVIDER_REGISTERED][$dummyClass]
+        );
         $existed = HookHandler::unsubscribe(HookHandler::PROVIDER_REGISTERED, $dummyClass);
         $this->assertTrue($existed);
-        $this->assertNotContains($dummyClass, $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'][HookHandler::PROVIDER_REGISTERED]);
+        $this->assertNotContains(
+            $dummyClass,
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'][HookHandler::PROVIDER_REGISTERED]
+        );
     }
 
-    /**
-     * @test
-     */
-    public function testTriggerWithInvalidHookThrowsException()
+    public function testTriggerWithInvalidHookThrowsException(): void
     {
         $dummy = $this->getMockBuilder(HookHandler::class)->getMock();
         $dummyClass = get_class($dummy);
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'][HookHandler::PROVIDER_REGISTERED][$dummyClass] = $dummyClass;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'][HookHandler::PROVIDER_REGISTERED][$dummyClass]
+            = $dummyClass;
         $this->expectException(\InvalidArgumentException::class);
         HookHandler::trigger(HookHandler::PROVIDER_REGISTERED);
     }
 
-    /**
-     * @test
-     */
-    public function testTriggerWithValidHookSubscriberReturnsDataArgument()
+    public function testTriggerWithValidHookSubscriberReturnsDataArgument(): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = [HookHandler::PROVIDER_REGISTERED => [HookSubscriberFixture::class => HookSubscriberFixture::class]];
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['hooks'] = [
+            HookHandler::PROVIDER_REGISTERED => [HookSubscriberFixture::class => HookSubscriberFixture::class]
+        ];
         $data = ['foo' => 'bar'];
         $returned = HookHandler::trigger(HookHandler::PROVIDER_REGISTERED, $data);
         $this->assertSame($data, $returned);

@@ -35,7 +35,9 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
         $packageManager->method('isPackageActive')->willReturn(true);
 
         $this->queryBuilder = $this->createQueryBuilderMock();
-        $this->connectionPool = $this->getMockBuilder(ConnectionPool::class)->onlyMethods(['getQueryBuilderForTable'])->getMock();
+        $this->connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->onlyMethods(['getQueryBuilderForTable'])
+            ->getMock();
         $this->connectionPool->method('getQueryBuilderForTable')->willReturn($this->queryBuilder);
 
         AccessibleExtensionManagementUtility::setPackageManager($packageManager);

@@ -10,12 +10,8 @@ namespace FluidTYPO3\Flux\Domain\Repository;
 
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
-/**
- * DummyRepository
- */
 class DummyRepository extends Repository
 {
-
     /**
      * @param array $identifiers
      * @return array

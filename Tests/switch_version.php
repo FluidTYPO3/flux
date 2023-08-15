@@ -41,7 +41,11 @@ if (!file_exists($versionSpecificVendorDirectory)) {
     if ($currentVendorDir && file_exists($currentVendorDir)) {
         system('rm -rf ' . $currentVendorDir);
     }
-    system('composer req typo3/cms-core:^' . $version . (isset($composerArguments[$version]) ? ' ' . $composerArguments[$version] : ''));
+    system(
+        'composer req typo3/cms-core:^'
+        . $version
+        . (isset($composerArguments[$version]) ? ' ' . $composerArguments[$version] : '')
+    );
     copy('composer.lock', $directory . 'composer.lock');
     system('git checkout composer.json');
     system('mv vendor ' . $directory);

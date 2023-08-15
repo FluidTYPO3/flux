@@ -56,7 +56,8 @@ class ContentTypeManagerTest extends AbstractTestCase
         }
 
         $this->subject->method('fetchDropInContentTypes')->willThrowException($exception);
-        $this->subject->method('fetchFileBasedContentTypes')->willThrowException(new NoSuchCacheException('some error'));
+        $this->subject->method('fetchFileBasedContentTypes')
+            ->willThrowException(new NoSuchCacheException('some error'));
         self::assertSame([], $this->subject->fetchContentTypes());
     }
 
@@ -86,8 +87,6 @@ class ContentTypeManagerTest extends AbstractTestCase
 
     /**
      * @dataProvider getDetermineContentTypeForRecordTestValues
-     * @param string $field
-     * @param string $expectedValue
      */
     public function testDetermineContentTypeForRecord(string $field, string $expectedValue): void
     {
@@ -116,7 +115,9 @@ class ContentTypeManagerTest extends AbstractTestCase
 
     public function testRegenerateSetsCacheValue(): void
     {
-        $this->cacheService->expects(self::once())->method('setInCaches')->with([], true, ContentTypeManager::CACHE_IDENTIFIER);
+        $this->cacheService->expects(self::once())
+            ->method('setInCaches')
+            ->with([], true, ContentTypeManager::CACHE_IDENTIFIER);
 
         $subject = $this->getMockBuilder(ContentTypeManager::class)
             ->onlyMethods(['fetchContentTypes'])

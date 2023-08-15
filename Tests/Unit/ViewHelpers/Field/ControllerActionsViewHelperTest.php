@@ -30,7 +30,7 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function acceptsTraversableListOfActions()
+    public function acceptsTraversableListOfActions(): void
     {
         $array = ['foo', 'bar'];
         $traversable = new \ArrayIterator($array);
@@ -57,7 +57,7 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function throwsExceptionOnInvalidExtensionPluginNameAndActionsCombination()
+    public function throwsExceptionOnInvalidExtensionPluginNameAndActionsCombination(): void
     {
         $arguments = [
             'label' => 'Test field',
@@ -72,14 +72,21 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
             'prefixOnRequiredArguments' => '*',
             'subActions' => []
         ];
-        $instance = $this->buildViewHelperInstance($arguments, [], null, $arguments['extensionName'], $arguments['pluginName']);
+        $instance = $this->buildViewHelperInstance(
+            $arguments,
+            [],
+            null,
+            $arguments['extensionName'],
+            $arguments['pluginName']
+        );
         $this->expectExceptionCode(1346514748);
         $instance->initializeArgumentsAndRender();
     }
+
     /**
      * @test
      */
-    public function supportsUseOfControllerAndActionSeparator()
+    public function supportsUseOfControllerAndActionSeparator(): void
     {
         $arguments = [
             'label' => 'Test field',
@@ -95,8 +102,13 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
             'subActions' => [],
             'separator' => ' :: '
         ];
-        $instance = $this->buildViewHelperInstance($arguments, [], null, $arguments['extensionName'], $arguments['pluginName']);
-        ;
+        $instance = $this->buildViewHelperInstance(
+            $arguments,
+            [],
+            null,
+            $arguments['extensionName'],
+            $arguments['pluginName']
+        );
         $instance->initializeArgumentsAndRender();
         $component = $instance->getComponent(
             $this->renderingContext,
@@ -108,7 +120,7 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function canGetCombinedExtensionKeyFromRequest()
+    public function canGetCombinedExtensionKeyFromRequest(): void
     {
         $arguments = [
             'label' => 'Test field',

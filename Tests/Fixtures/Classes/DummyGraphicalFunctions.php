@@ -5,7 +5,6 @@ use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 
 class DummyGraphicalFunctions extends GraphicalFunctions
 {
-
     public function init()
     {
         return null;

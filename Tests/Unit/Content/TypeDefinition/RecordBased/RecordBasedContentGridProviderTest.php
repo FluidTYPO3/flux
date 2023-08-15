@@ -97,8 +97,10 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
                 'grid' => [
                     'ROOT' => [
                         'sheetTitle' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..sheets.grid',
-                        'sheetDescription' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..sheets.grid.description',
-                        'sheetShortDescr' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..sheets.grid.shortDescription',
+                        'sheetDescription' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..' .
+                            'sheets.grid.description',
+                        'sheetShortDescr' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..' .
+                            'sheets.grid.shortDescription',
                         'type' => 'array',
                         'el' => [
                             'gridMode' => [
@@ -118,7 +120,8 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
                                 ],
                             ],
                             'autoColumns' => [
-                                'label' => 'Automatic content columns (adds automatic columns AFTER those defined below, until this number of total columns is reached)',
+                                'label' => 'Automatic content columns (adds automatic columns AFTER those defined ' .
+                                    'below, until this number of total columns is reached)',
                                 'exclude' => 0,
                                 'config' => [
                                     'type' => 'input',
@@ -132,7 +135,8 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
                                 'section' => '1',
                                 'el' => [
                                     'column' => [
-                                        'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..objects.column',
+                                        'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..' .
+                                            'objects.column',
                                         'type' => 'array',
                                         'el' => [
                                             'colPos' => [

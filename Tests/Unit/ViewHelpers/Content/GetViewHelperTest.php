@@ -19,17 +19,14 @@ use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class GetViewHelperTest extends AbstractViewHelperTestCase
 {
-    /**
-     * Setup
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -45,7 +42,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         $GLOBALS['TSFE']->cObj->method('cObjGetSingle')->willReturn('object');
         $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)
             ->disableOriginalConstructor()
-            ->setMethods(['enableFields'])
+            ->onlyMethods(['enableFields'])
             ->getMock();
         $GLOBALS['TCA']['tt_content']['ctrl'] = [];
 
@@ -64,11 +61,11 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
         );
 
         $provider = $this->getMockBuilder(Provider::class)
-            ->setMethods(['dummy'])
+            ->addMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
         $provider->setGrid($grid);
-        $provider->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
+        $provider->setForm($this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock());
 
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'provider', $provider);
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
@@ -98,7 +95,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canRenderViewHelper()
+    public function canRenderViewHelper(): void
     {
         $arguments = [
             'area' => 'void',
@@ -118,7 +115,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canRenderViewHelperWithLoadRegister()
+    public function canRenderViewHelperWithLoadRegister(): void
     {
         $arguments = [
             'area' => 'void',
@@ -140,7 +137,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup()
+    public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup(): void
     {
         $arguments = [
             'area' => 'void',
@@ -160,7 +157,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canRenderViewHelperWithNonExistingAsArgument()
+    public function canRenderViewHelperWithNonExistingAsArgument(): void
     {
         $arguments = [
             'area' => 'void',
@@ -179,7 +176,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canReturnArrayOfUnrenderedContentElements()
+    public function canReturnArrayOfUnrenderedContentElements(): void
     {
         $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = [
@@ -198,7 +195,7 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canReturnArrayOfRenderedContentElements()
+    public function canReturnArrayOfRenderedContentElements(): void
     {
         $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = [
@@ -217,9 +214,12 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canProcessRecords()
+    public function canProcessRecords(): void
     {
-        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\Page\\PageRepository')->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance = $this->createInstance();
         $records = [
             ['uid' => 0],

@@ -165,7 +165,11 @@ class PageProviderTest extends AbstractTestCase
                 [[PageProvider::FIELD_ACTION_MAIN => 'testmain']]
             ],
             'defined sub action halts reading' => [
-                [[PageProvider::FIELD_ACTION_MAIN => ''], [PageProvider::FIELD_ACTION_SUB => 'testsub'], [PageProvider::FIELD_ACTION_SUB => 'notincluded']],
+                [
+                    [PageProvider::FIELD_ACTION_MAIN => ''],
+                    [PageProvider::FIELD_ACTION_SUB => 'testsub'],
+                    [PageProvider::FIELD_ACTION_SUB => 'notincluded']
+                ],
                 [[PageProvider::FIELD_ACTION_MAIN => ''], [PageProvider::FIELD_ACTION_SUB => 'testsub']],
             ],
         ];
@@ -210,7 +214,7 @@ class PageProviderTest extends AbstractTestCase
     {
         $tree = [
             $this->getBasicRecord(),
-            $this->getBasicRecord()
+            $this->getBasicRecord(),
         ];
         $record = $this->getBasicRecord();
 
@@ -223,7 +227,9 @@ class PageProviderTest extends AbstractTestCase
         $provider->method('getInheritanceTree')->will($this->returnValue($tree));
         $provider->method('unsetInheritedValues');
         $provider->method('getForm')->willReturn($this->getMockBuilder(Form::class)->getMock());
-        $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
+        $provider->setTemplatePathAndFilename(
+            $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL)
+        );
         $values = $provider->getFlexformValues($record);
         $this->assertEquals($values, []);
     }
@@ -235,7 +241,7 @@ class PageProviderTest extends AbstractTestCase
     {
         $tree = [
             $this->getBasicRecord(),
-            $this->getBasicRecord()
+            $this->getBasicRecord(),
         ];
         $form = $this->getMockBuilder(Form::class)->getMock();
         $form->createField('Input', 'foo');
@@ -254,7 +260,9 @@ class PageProviderTest extends AbstractTestCase
         $provider->method('getInheritanceTree')->will($this->returnValue($tree));
         $provider->method('unsetInheritedValues');
         $provider->method('getForm')->willReturn($this->getMockBuilder(Form::class)->getMock());
-        $provider->setTemplatePathAndFilename($this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL));
+        $provider->setTemplatePathAndFilename(
+            $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL)
+        );
         $values = $provider->getFlexformValues($record);
         $this->assertEquals($values, []);
     }
@@ -264,8 +272,12 @@ class PageProviderTest extends AbstractTestCase
      * @dataProvider getRemoveInheritedTestValues
      * @param mixed $testValue
      */
-    public function removesInheritedValuesFromFields($testValue, bool $inherit, bool $inheritEmpty, bool $expectsOverride): void
-    {
+    public function removesInheritedValuesFromFields(
+        $testValue,
+        bool $inherit,
+        bool $inheritEmpty,
+        bool $expectsOverride
+    ): void {
         $instance = $this->createInstance();
         $field = Form\Field\Input::create(['type' => 'Input']);
         $field->setName('test');
@@ -456,7 +468,10 @@ DATA;
 
         GeneralUtility::addInstance(RootlineUtility::class, $rootLineUtility);
 
-        self::assertSame([['uid' => 456]], $this->callInaccessibleMethod($subject, 'loadRecordTreeFromDatabase', ['uid' => 1]));
+        self::assertSame(
+            [['uid' => 456]],
+            $this->callInaccessibleMethod($subject, 'loadRecordTreeFromDatabase', ['uid' => 1])
+        );
     }
 
     public function testGetFormReturnsNullIfRecordIsDeleted(): void

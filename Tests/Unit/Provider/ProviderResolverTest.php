@@ -56,7 +56,13 @@ class ProviderResolverTest extends AbstractTestCase
             ]
         );
 
-        $resolved = $subject->resolveConfigurationProviders('tt_content', null, null, null, [RecordProviderInterface::class]);
+        $resolved = $subject->resolveConfigurationProviders(
+            'tt_content',
+            null,
+            null,
+            null,
+            [RecordProviderInterface::class]
+        );
         self::assertSame([], $resolved);
 
         AccessibleCore::setRegisteredProviders([]);
@@ -93,7 +99,9 @@ class ProviderResolverTest extends AbstractTestCase
 
         $instance = new ProviderResolver($this->typoScriptService);
 
-        $dummyProvider = $this->getMockBuilder(DummyConfigurationProvider::class)->disableOriginalConstructor()->getMock();
+        $dummyProvider = $this->getMockBuilder(DummyConfigurationProvider::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         GeneralUtility::addInstance(DummyConfigurationProvider::class, $dummyProvider);
 
         $providers = $instance->loadTypoScriptConfigurationProviderInstances();
@@ -106,11 +114,13 @@ class ProviderResolverTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider getValidateAndInstantiateProvidersTestValues
-     * @param array $providers
      */
     public function validateAndInstantiateProvidersCreatesInstances(array $providers)
     {
-        GeneralUtility::addInstance(Provider::class, $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock());
+        GeneralUtility::addInstance(
+            Provider::class,
+            $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
+        );
         $instance = $this->createInstance();
         $result = $this->callInaccessibleMethod($instance, 'validateAndInstantiateProviders', $providers);
         $this->assertSameSize($providers, $result);
@@ -119,10 +129,7 @@ class ProviderResolverTest extends AbstractTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getValidateAndInstantiateProvidersTestValues()
+    public function getValidateAndInstantiateProvidersTestValues(): array
     {
         return [
             [[]],
@@ -134,7 +141,6 @@ class ProviderResolverTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider getValidateAndInstantiateProvidersErrorTestValues
-     * @param array $providers
      */
     public function validateAndInstantiateProvidersThrowsExceptionOnInvalidClasses(array $providers)
     {
@@ -143,10 +149,7 @@ class ProviderResolverTest extends AbstractTestCase
         $this->callInaccessibleMethod($instance, 'validateAndInstantiateProviders', $providers);
     }
 
-    /**
-     * @return array
-     */
-    public function getValidateAndInstantiateProvidersErrorTestValues()
+    public function getValidateAndInstantiateProvidersErrorTestValues(): array
     {
         return [
             [[InvalidConfigurationProvider::class]],
@@ -157,7 +160,6 @@ class ProviderResolverTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider getProviderTestValues
-     * @param array $providers
      */
     public function resolveConfigurationProvidersReturnsExpectedProviders(array $providers)
     {
@@ -173,7 +175,6 @@ class ProviderResolverTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider getProviderTestValues
-     * @param array $providers
      */
     public function resolvePrimaryConfigurationProvidersReturnsExpectedProvider(array $providers)
     {
@@ -189,7 +190,7 @@ class ProviderResolverTest extends AbstractTestCase
     /**
      * @return array
      */
-    public function getProviderTestValues()
+    public function getProviderTestValues(): array
     {
         $priority50 = $this->getMockBuilder(Provider::class)
             ->onlyMethods(['getPriority', 'trigger'])

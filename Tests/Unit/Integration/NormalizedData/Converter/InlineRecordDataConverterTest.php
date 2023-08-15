@@ -293,5 +293,4 @@ class InlineRecordDataConverterTest extends AbstractTestCase
             'new array dotted path' => [['a' => ['b' => 'new value']], [], 'a.b', 'new value'],
         ];
     }
-
 }

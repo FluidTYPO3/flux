@@ -35,7 +35,9 @@ class WizardItemsTest extends AbstractTestCase
     {
         $pageUid = 123;
         $columnPosition = 12;
-        $controller = $this->getMockBuilder(NewContentElementController::class)->disableOriginalConstructor()->getMock();
+        $controller = $this->getMockBuilder(NewContentElementController::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $items = [];
         $this->wizardItemsManipulator->expects(self::once())->method('manipulateWizardItems')->with(
             $items,

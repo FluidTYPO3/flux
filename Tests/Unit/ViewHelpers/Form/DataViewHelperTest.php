@@ -53,9 +53,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         AccessibleDataViewHelper::setRecordService(null);
     }
 
-    /**
-     * @return void
-     */
     public static function setUpBeforeClass(): void
     {
         $GLOBALS['TCA'] = [
@@ -72,9 +69,6 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         ];
     }
 
-    /**
-     * @return void
-     */
     public static function tearDownAfterClass(): void
     {
         unset($GLOBALS['TCA']);
@@ -83,7 +77,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function failsWithInvalidTable()
+    public function failsWithInvalidTable(): void
     {
         $arguments = [
             'table' => 'invalid',
@@ -93,7 +87,11 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         $viewHelper = $this->buildViewHelperInstance($arguments);
 
         $this->expectViewHelperException(
-            'Invalid table:field "' . $arguments['table'] . ':' . $arguments['field'] . '" - does not exist in TYPO3 TCA.'
+            'Invalid table:field "' .
+            $arguments['table'] .
+            ':' .
+            $arguments['field'] .
+            '" - does not exist in TYPO3 TCA.'
         );
 
         $viewHelper->initializeArgumentsAndRender();
@@ -102,7 +100,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function failsWithMissingArguments()
+    public function failsWithMissingArguments(): void
     {
         $arguments = [
             'table' => 'tt_content',
@@ -138,7 +136,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function failsWithInvalidField()
+    public function failsWithInvalidField(): void
     {
         $arguments = [
             'table' => 'tt_content',
@@ -152,7 +150,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canExecuteViewHelper()
+    public function canExecuteViewHelper(): void
     {
         $this->providerResolver->method('resolveConfigurationProviders')->willReturn([]);
         $arguments = [
@@ -173,7 +171,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canUseRecordAsArgument()
+    public function canUseRecordAsArgument(): void
     {
         $this->providerResolver->method('resolveConfigurationProviders')->willReturn([]);
         $record = Records::$contentRecordIsParentAndHasChildren;
@@ -190,7 +188,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canUseChildNodeAsRecord()
+    public function canUseChildNodeAsRecord(): void
     {
         $this->providerResolver->method('resolveConfigurationProviders')->willReturn([]);
         $arguments = [
@@ -209,7 +207,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function supportsAsArgument()
+    public function supportsAsArgument(): void
     {
         $this->providerResolver->method('resolveConfigurationProviders')->willReturn([]);
         $this->formDataTransformer->method('convertFlexFormContentToArray')->willReturn([]);
@@ -228,7 +226,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function supportsAsArgumentAndBacksUpExistingVariable()
+    public function supportsAsArgumentAndBacksUpExistingVariable(): void
     {
         $this->templateVariableContainer->add('test', 'test');
         $this->supportsAsArgument();
@@ -238,7 +236,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function readDataArrayFromProvidersOrUsingDefaultMethodCallsConfigurationServiceConvertOnEmptyProviderArray()
+    public function readDataArrayCallsConfigurationServiceConvertOnEmptyProviderArray(): void
     {
         $this->providerResolver->method('resolveConfigurationProviders')->willReturn([]);
         $this->formDataTransformer->method('convertFlexFormContentToArray')->willReturn([]);
@@ -259,7 +257,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function readDataArrayFromProvidersOrUsingDefaultMethodUsesProvidersToReadData()
+    public function readDataArrayFromProvidersOrUsingDefaultMethodUsesProvidersToReadData(): void
     {
         $mock = $this->createInstance();
         $provider1 = $this->getMockBuilder(Provider::class)

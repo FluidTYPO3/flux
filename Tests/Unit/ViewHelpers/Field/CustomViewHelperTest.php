@@ -16,7 +16,7 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function canGenerateAndExecuteClosureWithoutArgumentCollision()
+    public function canGenerateAndExecuteClosureWithoutArgumentCollision(): void
     {
         $this->executeViewHelperClosure();
     }
@@ -24,7 +24,7 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function canGenerateAndExecuteClosureWithArgumentCollisionAndBackups()
+    public function canGenerateAndExecuteClosureWithArgumentCollisionAndBackups(): void
     {
         $arguments = [
             'parameters' => 'Fake parameter'
@@ -33,8 +33,9 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
         $this->assertSame($container->get('parameters'), $arguments['parameters']);
     }
 
-    protected function executeViewHelperClosure(array $templateVariableContainerArguments = []): StandardVariableProvider
-    {
+    protected function executeViewHelperClosure(
+        array $templateVariableContainerArguments = []
+    ): StandardVariableProvider {
         $instance = $this->buildViewHelperInstance();
         $renderingContext = $this->renderingContext;
         $arguments = [

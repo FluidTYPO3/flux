@@ -16,10 +16,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
 {
     protected array $chainProperties = ['name' => 'test', 'label' => 'Test field', 'transform' => 'string'];
 
-    /**
-     * @return ContainerInterface
-     */
-    protected function createInstance()
+    protected function createInstance(): ContainerInterface
     {
         $className = $this->getObjectClassName();
         $instance = new $className();
@@ -29,7 +26,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsFalseIfChildObjectNameDoesNotExist()
+    public function returnsFalseIfChildObjectNameDoesNotExist(): void
     {
         $instance = $this->createInstance();
         $result = $instance->get('doesNotExist');
@@ -39,7 +36,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canGetAndSetInheritEmpty()
+    public function canGetAndSetInheritEmpty(): void
     {
         $instance = $this->createInstance();
         $instance->setInheritEmpty(true);
@@ -49,7 +46,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canGetAndSetInherit()
+    public function canGetAndSetInherit(): void
     {
         $instance = $this->createInstance();
         $instance->setInherit(false);
@@ -59,7 +56,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsFalseIfChildObjectNameDoesNotExistRecursively()
+    public function returnsFalseIfChildObjectNameDoesNotExistRecursively(): void
     {
         $instance = $this->createInstance();
         $subContainer = $instance->createContainer('Container', 'testcontainer');
@@ -73,7 +70,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canCreateFromDefinitionContainingFields()
+    public function canCreateFromDefinitionContainingFields(): void
     {
         $properties = $this->chainProperties;
         $properties['fields'] = [

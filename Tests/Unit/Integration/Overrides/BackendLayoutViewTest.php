@@ -35,7 +35,10 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     public function testCanSetProvider()
     {
-        $instance = $this->getMockBuilder(BackendLayoutView::class)->addMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder(BackendLayoutView::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $instance->setProvider($provider);
         $this->assertSame($provider, $this->getInaccessiblePropertyValue($instance, 'provider'));
@@ -43,7 +46,10 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     public function testCanSetRecord()
     {
-        $instance = $this->getMockBuilder(BackendLayoutView::class)->addMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $instance = $this->getMockBuilder(BackendLayoutView::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $record = ['foo' => 'bar'];
         $instance->setRecord($record);
         $this->assertSame($record, $this->getInaccessiblePropertyValue($instance, 'record'));
@@ -153,7 +159,6 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     /**
      * @param int|array $uid
-     * @return void
      * @dataProvider getColPosListItemProcFuncWithDelegateProviderTestValues
      */
     public function testColPosListItemProcFuncWithDelegateProvider($uid): void

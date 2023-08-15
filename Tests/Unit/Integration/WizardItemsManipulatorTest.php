@@ -122,10 +122,7 @@ class WizardItemsManipulatorTest extends AbstractTestCase
         $this->assertEquals($expectedList, $items);
     }
 
-    /**
-     * @return array
-     */
-    public function getTestElementsWhiteAndBlackListsAndExpectedList()
+    public function getTestElementsWhiteAndBlackListsAndExpectedList(): array
     {
         $items = [
             'plugins' => ['title' => 'Nice header'],
@@ -166,9 +163,6 @@ class WizardItemsManipulatorTest extends AbstractTestCase
         ];
     }
 
-    /**
-     * @test
-     */
     public function testManipulateWizardItemsWithDefaultValues()
     {
         $items = [
@@ -185,7 +179,9 @@ class WizardItemsManipulatorTest extends AbstractTestCase
             ->getMock();
 
         $lists = [[], []];
-        $instance->expects($this->once())->method('getWhiteAndBlackListsFromPageAndContentColumn')->will($this->returnValue($lists));
+        $instance->expects($this->once())
+            ->method('getWhiteAndBlackListsFromPageAndContentColumn')
+            ->will($this->returnValue($lists));
         $instance->expects($this->once())->method('applyWhitelist')->will($this->returnValue($items));
         $instance->expects($this->once())->method('applyBlacklist')->will($this->returnValue($items));
         $instance->expects($this->once())->method('trimItems')->will($this->returnValue($items));

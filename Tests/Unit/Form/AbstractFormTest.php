@@ -18,10 +18,7 @@ abstract class AbstractFormTest extends AbstractTestCase
 {
     protected array $chainProperties = ['name' => 'test', 'label' => 'Test field', 'enabled' => true];
 
-    /**
-     * @return FormInterface
-     */
-    protected function createInstance()
+    protected function createInstance(): FormInterface
     {
         $className = $this->getObjectClassName();
         $instance = new $className();
@@ -31,7 +28,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canGetAndSetExtensionName()
+    public function canGetAndSetExtensionName(): void
     {
         $form = $this->createInstance();
         $form->setExtensionName('Flux');
@@ -41,7 +38,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canGetAndSetVariables()
+    public function canGetAndSetVariables(): void
     {
         $variables = ['test' => 'foobar'];
         $this->assertGetterAndSetterWorks('variables', $variables, $variables, true);
@@ -50,7 +47,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canGetAndSetSingleVariable()
+    public function canGetAndSetSingleVariable(): void
     {
         $test = 'foobar';
         $instance = $this->createInstance();
@@ -61,7 +58,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canGetLabel()
+    public function canGetLabel(): void
     {
         $className = $this->getObjectClassName();
         $instance = new $className();
@@ -74,7 +71,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canGenerateRawLabelWhenLanguageLabelsDisabled()
+    public function canGenerateRawLabelWhenLanguageLabelsDisabled(): void
     {
         $instance = $this->createInstance();
         $instance->setLabel(null);
@@ -85,7 +82,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canGenerateLocalisableLabel()
+    public function canGenerateLocalisableLabel(): void
     {
         $instance = $this->createInstance();
         $instance->setLabel(null);
@@ -108,10 +105,7 @@ abstract class AbstractFormTest extends AbstractTestCase
         $this->assertStringStartsWith('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux', $label);
     }
 
-    /**
-     * @return string
-     */
-    protected function getObjectClassName()
+    protected function getObjectClassName(): string
     {
         $class = get_class($this);
         $class = substr($class, 0, -4);
@@ -121,10 +115,8 @@ abstract class AbstractFormTest extends AbstractTestCase
 
     /**
      * @test
-     * @param array $chainPropertiesAndValues
-     * @return FieldInterface
      */
-    public function canChainAllChainableSetters($chainPropertiesAndValues = null)
+    public function canChainAllChainableSetters(array $chainPropertiesAndValues = null): FormInterface
     {
         if (null === $chainPropertiesAndValues) {
             $chainPropertiesAndValues = $this->chainProperties;
@@ -133,7 +125,11 @@ abstract class AbstractFormTest extends AbstractTestCase
         foreach ($chainPropertiesAndValues as $propertyName => $propertValue) {
             $setterMethodName = 'set' . ucfirst($propertyName);
             $chained = call_user_func_array([$instance, $setterMethodName], [$propertValue]);
-            $this->assertSame($instance, $chained, 'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.');
+            $this->assertSame(
+                $instance,
+                $chained,
+                'The setter ' . $setterMethodName . ' on ' . $this->getObjectClassName() . ' does not support chaining.'
+            );
             if ($chained === $instance) {
                 $instance = $chained;
             }
@@ -144,7 +140,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function returnsNameInsteadOfEmptyLabelWhenFormsExtensionKeyAndLabelAreBothEmpty()
+    public function returnsNameInsteadOfEmptyLabelWhenFormsExtensionKeyAndLabelAreBothEmpty(): void
     {
         $name = true === isset($this->chainProperties['name']) ? $this->chainProperties['name'] : 'test';
         $instance = $this->createInstance();
@@ -157,7 +153,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canCallAllGetterCounterpartsForChainableSetters()
+    public function canCallAllGetterCounterpartsForChainableSetters(): void
     {
         $instance = $this->createInstance();
         foreach ($this->chainProperties as $propertyName => $propertValue) {
@@ -168,11 +164,7 @@ abstract class AbstractFormTest extends AbstractTestCase
         }
     }
 
-    /**
-     * @param Form\FormInterface $instance
-     * @return array
-     */
-    protected function performTestBuild(FormInterface $instance)
+    protected function performTestBuild(FormInterface $instance): array
     {
         $configuration = $instance->build();
         $this->assertIsArray($configuration);
@@ -182,7 +174,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canBuildConfiguration()
+    public function canBuildConfiguration(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $this->performTestBuild($instance);
@@ -191,7 +183,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canCreateFromDefinition()
+    public function canCreateFromDefinition(): void
     {
         $properties = $this->chainProperties;
         $class = $this->getObjectClassName();
@@ -204,24 +196,26 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canUseShorthandLanguageLabel()
+    public function canUseShorthandLanguageLabel(): void
     {
         $className = $this->getObjectClassName();
-        $instance = $this->getMockBuilder($className)->setMethods(['getExtensionKey', 'getName', 'getRoot'])->getMock();
-        $instance->expects($this->never())->method('getExtensionKey');
+        $instance = $this->getMockBuilder($className)->onlyMethods(['getName', 'getRoot'])->getMock();
         $instance->expects($this->any())->method('getRoot')->will($this->returnValue(null));
         $instance->expects($this->once())->method('getName')->will($this->returnValue('form'));
         $instance->setLabel('LLL:tt_content.tx_flux_container');
         $result = $instance->getLabel();
-        $this->assertSame('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container', $result);
+        $this->assertSame(
+            'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.tx_flux_container',
+            $result
+        );
     }
 
     /**
      * @test
      */
-    public function canModifyProperties()
+    public function canModifyProperties(): void
     {
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['dummy'])->getMock();
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->addMethods(['dummy'])->getMock();
         $properties = ['enabled' => false];
         $mock->modify($properties);
         $result = $mock->getEnabled();
@@ -233,7 +227,7 @@ abstract class AbstractFormTest extends AbstractTestCase
      */
     public function canModifyVariablesSelectively()
     {
-        $mock = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['dummy'])->getMock();
+        $mock = $this->getMockBuilder($this->createInstanceClassName())->addMethods(['dummy'])->getMock();
         $mock->setVariables(['foo' => 'baz', 'abc' => 'xyz']);
         $properties = ['options' => ['foo' => 'bar']];
         $mock->modify($properties);

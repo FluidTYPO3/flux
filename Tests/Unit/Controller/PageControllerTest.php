@@ -11,19 +11,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
 use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
-/**
- * Class PageControllerTest
- */
 class PageControllerTest extends AbstractTestCase
 {
-    /**
-     * @return void
-     */
-    public function testGetRecordReadsFromTypoScriptFrontendController()
+    public function testGetRecordReadsFromTypoScriptFrontendController(): void
     {
         $GLOBALS['TSFE'] = (object) ['page' => ['foo' => 'bar']];
         /** @var PageController $subject */
-        $subject = $this->getMockBuilder(PageController::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $subject = $this->getMockBuilder(PageController::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $record = $subject->getRecord();
         $this->assertSame(['foo' => 'bar'], $record);
     }

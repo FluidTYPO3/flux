@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateProcessor\NamespaceDetectionTemplateProcessor;
@@ -26,9 +27,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 use TYPO3Fluid\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
-/**
- * GridTest
- */
 class GridTest extends AbstractContainerTest
 {
     public function testBuildColumnPositionValues(): void
@@ -113,8 +111,10 @@ STRING;
     {
         return [
             'usedColumns' => [
-                1 + $colPosModifier => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column1',
-                2 + $colPosModifier => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column2'
+                1 + $colPosModifier => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.' .
+                    'test.columns.column1',
+                2 + $colPosModifier => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.' .
+                    'test.columns.column2',
             ],
             '__config' => [
                 'backend_layout.' => [
@@ -124,7 +124,8 @@ STRING;
                         '1.' => [
                             'columns.' => [
                                 '1.' => [
-                                    'name' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column1',
+                                    'name' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.' .
+                                        'test.columns.column1',
                                     'icon' => null,
                                     'colPos' => 1 + $colPosModifier,
                                     'colspan' => 1,
@@ -135,7 +136,8 @@ STRING;
                         '2.' => [
                             'columns.' => [
                                 '1.' => [
-                                    'name' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column2',
+                                    'name' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.' .
+                                        'test.columns.column2',
                                     'icon' => null,
                                     'colPos' => 2 + $colPosModifier,
                                     'colspan' => 1,
@@ -152,7 +154,7 @@ STRING;
             ],
             '__items' => [
                 (new SelectOption(
-                                    'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column1',
+                    'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column1',
                     1 + $colPosModifier,
                     null,
                 ))->toArray(),
@@ -181,13 +183,10 @@ STRING;
         return $subject;
     }
 
-    /**
-     * @param string $gridName
-     * @param string $template
-     * @return Grid
-     */
-    protected function getDummyGridFromTemplate($gridName = 'grid', $template = self::FIXTURE_TEMPLATE_BASICGRID)
-    {
+    protected function getDummyGridFromTemplate(
+        string $gridName = 'grid',
+        string $template = self::FIXTURE_TEMPLATE_BASICGRID
+    ): Grid {
         $templateCompiler = $this->getMockBuilder(TemplateCompiler::class)->getMock();
         $templateParser = new TemplateParser();
         $viewHelperVariableContainer = new ViewHelperVariableContainer();
@@ -208,7 +207,7 @@ STRING;
             ->getMock();
         $request->method('getControllerExtensionName')->willReturn('Flux');
 
-        $renderingContext = $this->getMockBuilder(\TYPO3\CMS\Fluid\Core\Rendering\RenderingContext::class)->setMethods(
+        $renderingContext = $this->getMockBuilder(RenderingContext::class)->setMethods(
             [
                 'getTemplatePaths',
                 'getViewHelperVariableContainer',
@@ -248,13 +247,15 @@ STRING;
         $view = new TemplateView($renderingContext);
 
         $view->renderSection('Configuration', [], true);
-        return $view->getRenderingContext()->getViewHelperVariableContainer()->get(FormViewHelper::class, 'grids')[$gridName] ?? Grid::create();
+        return $view->getRenderingContext()
+            ->getViewHelperVariableContainer()
+            ->get(FormViewHelper::class, 'grids')[$gridName] ?? Grid::create();
     }
 
     /**
      * @test
      */
-    public function canRetrieveStoredGrid()
+    public function canRetrieveStoredGrid(): void
     {
         $grid = $this->getDummyGridFromTemplate();
         $this->assertIsValidAndWorkingGridObject($grid);
@@ -263,7 +264,7 @@ STRING;
     /**
      * @test
      */
-    public function canReturnGridObjectWithoutGridPresentInTemplate()
+    public function canReturnGridObjectWithoutGridPresentInTemplate(): void
     {
         $grid = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_WITHOUTFORM);
         $this->assertIsValidAndWorkingGridObject($grid);
@@ -272,7 +273,7 @@ STRING;
     /**
      * @test
      */
-    public function canReturnFallbackGridObjectWhenUsingIncorrectGridName()
+    public function canReturnFallbackGridObjectWhenUsingIncorrectGridName(): void
     {
         $grid = $this->getDummyGridFromTemplate('doesnotexist', self::FIXTURE_TEMPLATE_BASICGRID);
         $this->assertIsValidAndWorkingGridObject($grid);
@@ -281,7 +282,7 @@ STRING;
     /**
      * @test
      */
-    public function canReturnGridObjectWithDualGridsPresentInTemplate()
+    public function canReturnGridObjectWithDualGridsPresentInTemplate(): void
     {
         $grid1 = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_DUALGRID);
         $grid2 = $this->getDummyGridFromTemplate('grid2', self::FIXTURE_TEMPLATE_DUALGRID);
@@ -292,7 +293,7 @@ STRING;
     /**
      * @test
      */
-    public function canReturnGridObjectOneFallbackWithDualGridsPresentInTemplate()
+    public function canReturnGridObjectOneFallbackWithDualGridsPresentInTemplate(): void
     {
         $grid1 = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_DUALGRID);
         $grid2 = $this->getDummyGridFromTemplate('doesnotexist', self::FIXTURE_TEMPLATE_DUALGRID);
@@ -303,7 +304,7 @@ STRING;
     /**
      * @test
      */
-    public function canReturnOneGridWithTwoRowsFromTemplateWithDualGridsWithSameNameAndOneRowEach()
+    public function canReturnOneGridWithTwoRowsFromTemplateWithDualGridsWithSameNameAndOneRowEach(): void
     {
         $grid = $this->getDummyGridFromTemplate('grid', self::FIXTURE_TEMPLATE_COLLIDINGGRID);
         $this->assertIsValidAndWorkingGridObject($grid);
@@ -313,7 +314,7 @@ STRING;
     /**
      * @test
      */
-    public function canUseGetRowsMethod()
+    public function canUseGetRowsMethod(): void
     {
         /** @var Grid $instance */
         $instance = $this->createInstance();
@@ -322,20 +323,15 @@ STRING;
 
     /**
      * @dataProvider getEnsureDottedKeysTestValues
-     * @param array $input
-     * @param array $expected
      */
-    public function testEnsureDottedKeys(array $input, array $expected)
+    public function testEnsureDottedKeys(array $input, array $expected): void
     {
         $instance = new Grid();
         $result = $this->callInaccessibleMethod($instance, 'ensureDottedKeys', $input);
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getEnsureDottedKeysTestValues()
+    public function getEnsureDottedKeysTestValues(): array
     {
         return [
             [
