@@ -39,7 +39,7 @@ jobs:
         uses: ramsey/composer-install@v2
 
       - name: Run phpcs
-        run: vendor/bin/phpcs Classes --standard=PSR2
+        run: vendor/bin/phpcs Classes Tests --standard=PSR2
 
   phpstan:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
