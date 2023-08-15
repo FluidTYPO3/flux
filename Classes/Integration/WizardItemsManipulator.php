@@ -46,7 +46,7 @@ class WizardItemsManipulator
                 $items = array_filter(
                     $items,
                     function (array $item) use ($enabledContentTypes) {
-                        return in_array($item['tt_content_defValues']['CType'], $enabledContentTypes, true);
+                        return in_array($item['tt_content_defValues']['CType'] ?? null, $enabledContentTypes, true);
                     }
                 );
             }
