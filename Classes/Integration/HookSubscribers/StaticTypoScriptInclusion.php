@@ -11,9 +11,6 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
 
-/**
- * @codeCoverageIgnore
- */
 class StaticTypoScriptInclusion
 {
     protected static bool $recursed = false;

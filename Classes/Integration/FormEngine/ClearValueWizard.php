@@ -27,9 +27,17 @@ class ClearValueWizard extends AbstractNode
 
         $result['html'] = '<label style="opacity: 0.65; margin-top: 1em;">'
             . '<input type="checkbox" class="form-check-input" name="' . $fieldName . '" value="1" /> '
-            . LocalizationUtility::translate('flux.clearValue', 'Flux')
+            . $this->translate('flux.clearValue')
             . '</label>';
 
         return $result;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function translate(string $label): ?string
+    {
+        return LocalizationUtility::translate($label, 'Flux');
     }
 }
