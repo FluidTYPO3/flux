@@ -22,6 +22,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Exception\Page\PageNotFoundException;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3Fluid\Fluid\Exception;
 
@@ -177,8 +178,11 @@ class SpooledConfigurationApplicator
 
             try {
                 $this->contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider);
+            } catch (PageNotFoundException $error) {
+                // Suppressed: Flux bootstrap does not care if a page can be resolved or not.
             } catch (Exception $error) {
                 if (!$applicationContext->isProduction()) {
+                    $GLOBALS['TYPO3_REQUEST'] = $backup;
                     throw $error;
                 }
             }
