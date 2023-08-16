@@ -52,7 +52,7 @@ class ProviderProcessor implements FormDataProviderInterface
                     $fluidContentTypeNames = (array) $this->contentTypeManager->fetchContentTypeNames();
                     $currentItems = $result['processedTca']['columns']['CType']['config']['items'];
                     foreach ($currentItems as $index => $optionArray) {
-                        $contentTypeName = $optionArray[1];
+                        $contentTypeName = $optionArray['value'] ?? $optionArray[1];
                         if (in_array($contentTypeName, $fluidContentTypeNames, true)
                             && !in_array($contentTypeName, $enabledContentTypes, true)
                         ) {
