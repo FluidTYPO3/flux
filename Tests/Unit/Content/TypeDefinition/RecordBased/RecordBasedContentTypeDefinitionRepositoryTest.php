@@ -16,12 +16,16 @@ use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDef
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Package\PackageManager;
 
 class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
 {
+    protected QueryBuilder $queryBuilder;
+    protected ConnectionPool $connectionPool;
+
     protected function setUp(): void
     {
         $packageManager = $this->getMockBuilder(PackageManager::class)
@@ -30,29 +34,23 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
             ->getMock();
         $packageManager->method('isPackageActive')->willReturn(true);
 
+        $this->queryBuilder = $this->createQueryBuilderMock();
+        $this->connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->onlyMethods(['getQueryBuilderForTable'])
+            ->getMock();
+        $this->connectionPool->method('getQueryBuilderForTable')->willReturn($this->queryBuilder);
+
         AccessibleExtensionManagementUtility::setPackageManager($packageManager);
 
         parent::setUp();
     }
 
-    protected function tearDown(): void
-    {
-        AccessibleExtensionManagementUtility::setPackageManager(null);
-
-        parent::tearDown();
-    }
-
     public function testReturnsEmptySetOfDefinitionsOnTableNotExists(): void
     {
-        $queryBuilder = $this->createQueryBuilderMock();
-        $queryBuilder->method('select')->willThrowException(
+        $this->queryBuilder->method('select')->willThrowException(
             $this->getMockBuilder(TableNotFoundException::class)->disableOriginalConstructor()->getMock()
         );
-        $subject = $this->getMockBuilder(RecordBasedContentTypeDefinitionRepository::class)
-            ->setMethods(['createQueryBuilder'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('createQueryBuilder')->willReturn($queryBuilder);
+        $subject = new RecordBasedContentTypeDefinitionRepository($this->connectionPool);
 
         self::assertSame([], $subject->fetchContentTypeDefinitions());
     }
@@ -73,14 +71,9 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
 
         ];
 
-        $queryBuilder = $this->createQueryBuilderMock();
-        $subject = $this->getMockBuilder(RecordBasedContentTypeDefinitionRepository::class)
-            ->setMethods(['createQueryBuilder'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subject->method('createQueryBuilder')->willReturn($queryBuilder);
+        $subject = new RecordBasedContentTypeDefinitionRepository($this->connectionPool);
 
-        $queryBuilder->execute()->method('fetchAll')->willReturn($definitionRecords);
+        $this->queryBuilder->execute()->method('fetchAll')->willReturn($definitionRecords);
 
         $definitions = $subject->fetchContentTypeDefinitions();
         self::assertCount(2, $definitions);

@@ -12,29 +12,31 @@ use FluidTYPO3\Flux\Provider\Interfaces\BasicProviderInterface;
 
 class DummyBasicProvider implements BasicProviderInterface
 {
-    public function loadSettings(array $settings)
+    public function loadSettings(array $settings): void
     {
     }
 
-    public function getExtensionKey(array $row)
+    public function getExtensionKey(array $row): string
     {
         return 'ext';
     }
 
-    public function setExtensionKey($extensionKey)
+    public function setExtensionKey(string $extensionKey): self
     {
+        return $this;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'foo';
     }
 
-    public function setName($name)
+    public function setName(string $name): self
     {
+        return $this;
     }
 
-    public function getPriority(array $row)
+    public function getPriority(array $row): int
     {
         return 1;
     }

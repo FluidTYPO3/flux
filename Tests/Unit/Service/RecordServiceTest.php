@@ -13,7 +13,9 @@ use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -32,6 +34,7 @@ class RecordServiceTest extends AbstractTestCase
         if (empty($methods)) {
             $methods[] = 'dummy';
         }
+        $methods[] = 'isBackendOrPreviewContext';
         return $this->getMockBuilder($this->createInstanceClassName())->setMethods($methods)->getMock();
     }
 
@@ -44,6 +47,8 @@ class RecordServiceTest extends AbstractTestCase
             ->setMethods(['fetchAll'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $expressionBuilder = $this->getMockBuilder(ExpressionBuilder::class)->disableOriginalConstructor()->getMock();
 
         $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
             ->setMethods(
@@ -60,6 +65,9 @@ class RecordServiceTest extends AbstractTestCase
                     'setParameters',
                     'execute',
                     'set',
+                    'getRestrictions',
+                    'expr',
+                    'createNamedParameter',
                 ]
             )
             ->disableOriginalConstructor()
@@ -75,6 +83,11 @@ class RecordServiceTest extends AbstractTestCase
         $queryBuilder->method('setFirstResult')->willReturnSelf();
         $queryBuilder->method('setParameters')->willReturnSelf();
         $queryBuilder->method('execute')->willReturn($this->statement);
+        $queryBuilder->method('expr')->willReturn($expressionBuilder);
+        $queryBuilder->method('createNamedParameter')->willReturn('param');
+        $queryBuilder->method('getRestrictions')->willReturn(
+            $this->getMockBuilder(QueryRestrictionContainerInterface::class)->getMockForAbstractClass()
+        );
 
         $prophecy = $this->getMockBuilder(ConnectionPool::class)
             ->setMethods(['getQueryBuilderForTable'])
@@ -134,7 +147,7 @@ class RecordServiceTest extends AbstractTestCase
     {
         $table = 'test';
         $uid = 123;
-        $fields = array('foo' => 'bar', 'uid' => $uid);
+        $fields = ['foo' => 'bar', 'uid' => $uid];
         $mock = $this->getMockServiceInstance();
 
         $this->createAndRegisterMockForQueryBuilder();
@@ -167,7 +180,7 @@ class RecordServiceTest extends AbstractTestCase
     public function deleteMethodCallsExpectedDatabaseMethodWithRecord()
     {
         $table = 'test';
-        $record = array('uid' => 123);
+        $record = ['uid' => 123];
         $mock = $this->getMockServiceInstance();
 
         $this->createAndRegisterMockForQueryBuilder();

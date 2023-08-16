@@ -11,9 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractFormViewHelperTestCase;
 
-/**
- * AbstractFieldViewHelperTestCase
- */
 abstract class AbstractFieldViewHelperTestCase extends AbstractFormViewHelperTestCase
 {
     /**

@@ -8,16 +8,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * RowTest
- */
 class RowTest extends AbstractContainerTest
 {
-
     /**
      * @test
      */
-    public function canUseGetColumnsMethod()
+    public function canUseGetColumnsMethod(): void
     {
         /** @var Row $instance */
         $instance = $this->createInstance();
@@ -30,7 +26,7 @@ class RowTest extends AbstractContainerTest
      *
      * @disabledtest
      */
-    public function canAutoWriteLabel()
+    public function canAutoWriteLabel(): void
     {
     }
 
@@ -40,7 +36,7 @@ class RowTest extends AbstractContainerTest
      *
      * @disabledtest
      */
-    public function canUseShorthandLanguageLabel()
+    public function canUseShorthandLanguageLabel(): void
     {
     }
 }

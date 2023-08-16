@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -16,32 +17,71 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\TextNode;
 
-/**
- * RenderViewHelperTest
- */
 class RenderViewHelperTest extends AbstractViewHelperTestCase
 {
-    /**
-     * Setup
-     */
     protected function setUp(): void
     {
         parent::setUp();
-        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)->disableOriginalConstructor()->getMock();
-        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->setMethods(['getRecords'])->getMock();
+        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRecords', 'cObjGetSingle'])
+            ->getMock();
         $GLOBALS['TSFE']->cObj->method('getRecords')->willReturn([]);
+        $GLOBALS['TSFE']->cObj->method('cObjGetSingle')->willReturn('object');
+
         $GLOBALS['TCA']['tt_content']['ctrl'] = [];
 
-        $provider = new Provider();
-        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
+        $grid = Grid::create(
+            [
+                'children' => [
+                    [
+                        'type' => Row::class,
+                        'children' => [
+                            [
+                                'type' => Column::class,
+                                'name' => 'void'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        );
+
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $provider->setGrid($grid);
         $provider->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
 
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'provider', $provider);
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
+
+        $expressionBuilder = $this->getMockBuilder(ExpressionBuilder::class)
+            ->onlyMethods(['eq'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->onlyMethods(['getQueryBuilderForTable'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->onlyMethods(['expr'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder->method('expr')->willReturn($expressionBuilder);
+
+        GeneralUtility::addInstance(ConnectionPool::class, $connectionPool);
     }
 
     /**

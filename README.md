@@ -3,7 +3,7 @@
 Flux
 ====
 
-[![Build Status](https://img.shields.io/travis/FluidTYPO3/flux.svg?style=flat-square&label=package)](https://travis-ci.org/FluidTYPO3/flux/) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/flux/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/flux)  [![Documentation](http://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://fluidtypo3.org/documentation/templating-manual/introduction.html) [![Build Status](https://img.shields.io/travis/FluidTYPO3/fluidtypo3-testing.svg?style=flat-square&label=framework)](https://travis-ci.org/FluidTYPO3/fluidtypo3-testing/) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/fluidtypo3-testing/master.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/fluidtypo3-testing)
+[![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/flux/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/flux)  [![Documentation](http://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://fluidtypo3.org/documentation/templating-manual/introduction.html) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/fluidtypo3-testing/master.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/fluidtypo3-testing)
 
 > Flux automates integration of Fluid with TYPO3 and makes Fluid the entry point for developers. The name "Flux" has
 > multiple meanings but in this context, it mainly refers to the gel-like fluid used when soldering components together
@@ -17,6 +17,13 @@ Flux has two main purposes:
    content or page template, and more.
    
 Bonus feature: nested content areas to create content grids.
+
+
+Documentation
+-------------
+
+* [ViewHelper Reference for Flux](https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/)
+* [How to use the Flux APIs](https://fluidtypo3.org/documentation/templating-manual/templating/creating-templates/flux-fields.html)
 
 
 How it works
@@ -237,17 +244,20 @@ Flux feature highlights
 * Possibility for custom components of your own - with the same API support any other Flux component has.
 * Several Utility-type classes for advanced integrations with Fluid in particular.
 
-Known issues
-------------
+
+Caveats
+-------
 
 * Keep In mind to have your PHP/HTTP configured correctly to accept a fairly large number of input fields. When nesting
   sections / objects the number of fields submitted, rises drastically. The `php.ini` configuration setting to think about is
   `max_input_vars`. If this number is too small then the TYPO3 Backend (being PHP) will decline the submission of the
   backend editing form and will exit with an "Invalid CSRF Token" message because of incomplete (truncated) `POST` data.
-
-
-Documentation
--------------
-
-* [ViewHelper Reference for Flux](https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/)
-* [How to use the Flux APIs](https://fluidtypo3.org/documentation/templating-manual/templating/creating-templates/flux-fields.html)
+* When working with custom Provider classes: 1) make sure you declare each Provider class as `public: true` in Service
+  config of your extension. And 2) if the Provider needs to be used for more than one specific page/content/record type,
+  make sure you also declare the Provider as `shared: false`. You can find an example of such configuration in the
+  `Configuration/Services.yaml` file in Flux.
+* When working with custom Controller classes, make sure you declare each Controller class as `public: true` in Service
+  config of your extension.
+* Note that both Providers and Controllers use constructor injection of dependencies. If you use custom Controllers and/or
+  Providers and these override the `__construct` method, make sure that they take the same arguments as the parent class and
+  that you call `parent::__construct()` with those arguments from your overridden `__construct` method.

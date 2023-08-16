@@ -8,17 +8,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * NoneTest
- */
 class NoneTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'none',
         'size' => 10
-    );
+    ];
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
 
 /*
@@ -8,7 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form\Option;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
 
 /**
@@ -16,17 +17,9 @@ use FluidTYPO3\Flux\ViewHelpers\Form\OptionViewHelper;
  */
 class SortingViewHelper extends OptionViewHelper
 {
+    public static string $option = FormOption::SORTING;
 
-    /**
-     * @var string
-     */
-    public static $option = Form::OPTION_SORTING;
-
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'value',

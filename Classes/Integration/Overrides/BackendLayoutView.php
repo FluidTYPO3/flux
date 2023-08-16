@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\Overrides;
 
 /*
@@ -8,45 +9,25 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 {
-    /**
-     * @var GridProviderInterface|null
-     */
-    protected $provider;
+    protected ?GridProviderInterface $provider = null;
+    protected array $record = [];
+    protected bool $addingItemsForContent = false;
 
-    /**
-     * @var array
-     */
-    protected $record;
-
-    /**
-     * @var boolean
-     */
-    protected $addingItemsForContent = false;
-
-    /**
-     * @param GridProviderInterface $provider
-     * @return void
-     */
-    public function setProvider(GridProviderInterface $provider)
+    public function setProvider(GridProviderInterface $provider): void
     {
         $this->provider = $provider;
     }
 
-    /**
-     * @param array $record
-     * @return void
-     */
-    public function setRecord(array $record)
+    public function setRecord(array $record): void
     {
         $this->record = $record;
     }
@@ -55,11 +36,8 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      * Gets colPos items to be shown in the forms engine.
      * This method is called as "itemsProcFunc" with the accordant context
      * for tt_content.colPos.
-     *
-     * @param array $parameters
-     * @return void
      */
-    public function colPosListItemProcFunc(array $parameters)
+    public function colPosListItemProcFunc(array $parameters): void
     {
         $this->record = $parameters['row'];
         $this->addingItemsForContent = true;
@@ -68,10 +46,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     }
 
     /**
-     * @param $pageId
-     * @return array|null
+     * @param int $pageId
      */
-    public function getSelectedBackendLayout($pageId)
+    public function getSelectedBackendLayout($pageId): ?array
     {
         if ($this->addingItemsForContent) {
             $identifier = $this->getSelectedCombinedIdentifier($pageId);
@@ -105,9 +82,6 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     /**
      * Extracts the UID to use as parent UID, based on properties of the record
      * and composition of the values within it, to ensure an integer UID.
-     *
-     * @param array $record
-     * @return int
      */
     protected function resolveParentRecordUid(array $record): int
     {
@@ -133,16 +107,15 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      *
      * @param int $pageId
      * @param array $items
-     * @return array
      */
-    protected function addColPosListLayoutItems($pageId, $items)
+    protected function addColPosListLayoutItems($pageId, $items): array
     {
         $layout = $this->getSelectedBackendLayout($pageId);
         if (isset($layout, $layout['__items'])) {
             $items = $layout['__items'];
         }
         if ($this->addingItemsForContent) {
-            $parentRecordUid = ColumnNumberUtility::calculateParentUid($this->record['colPos']);
+            $parentRecordUid = ColumnNumberUtility::calculateParentUid((integer) $this->record['colPos']);
             if ($parentRecordUid > 0) {
                 $parentRecord = $this->loadRecordFromTable('tt_content', $parentRecordUid);
                 if (!$parentRecord) {
@@ -156,10 +129,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
                     $items = array_merge(
                         $items,
                         [
-                            [
-                                $label,
-                                '--div--'
-                            ]
+                            (new SelectOption($label, '--div--'))->toArray()
                         ],
                         $provider->getGrid($parentRecord)->buildExtendedBackendLayoutArray($parentRecordUid)['__items']
                     );
@@ -170,12 +140,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     }
 
     /**
-     * @param string $table
-     * @param int $uid
-     * @return array|null
      * @codeCoverageIgnore
      */
-    protected function loadRecordFromTable(string $table, int $uid)
+    protected function loadRecordFromTable(string $table, int $uid): ?array
     {
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -189,24 +156,16 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         return $results[0] ?? null;
     }
 
-    /**
-     * @param string $table
-     * @param array $record
-     * @return \FluidTYPO3\Flux\Provider\ProviderInterface|null
-     * @throws \TYPO3\CMS\Extbase\Object\Exception
-     */
-    protected function resolvePrimaryProviderForRecord(string $table, array $record)
+    protected function resolvePrimaryProviderForRecord(string $table, array $record): ?GridProviderInterface
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var FluxService $fluxService */
-        $fluxService = $objectManager->get(FluxService::class);
-        return $fluxService->resolvePrimaryConfigurationProvider(
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        return $providerResolver->resolvePrimaryConfigurationProvider(
             $table,
             null,
             $record,
             null,
-            GridProviderInterface::class
+            [GridProviderInterface::class]
         );
     }
 }

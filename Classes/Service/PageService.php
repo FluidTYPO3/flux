@@ -8,19 +8,24 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
+use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\PageProvider;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Component\Error\ChildNotFoundException;
@@ -32,66 +37,19 @@ use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
  * Service for interacting with Pages - gets content elements and page configuration
  * options.
  */
-class PageService implements SingletonInterface
+class PageService implements SingletonInterface, LoggerAwareInterface
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    use LoggerAwareTrait;
 
-    /**
-     * @var ConfigurationManagerInterface
-     */
-    protected $configurationManager;
+    protected WorkspacesAwareRecordService $workspacesAwareRecordService;
+    protected FrontendInterface $runtimeCache;
 
-    /**
-     * @var FluxService
-     */
-    protected $configurationService;
-
-    /**
-     * @var WorkspacesAwareRecordService
-     */
-    protected $workspacesAwareRecordService;
-
-    /**
-     * @codeCoverageIgnore
-     * @param ObjectManagerInterface $objectManager
-     * @return void
-     */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @param ConfigurationManagerInterface $configurationManager
-     * @return void
-     */
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
-    {
-        $this->configurationManager = $configurationManager;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @param FluxService $configurationService
-     * @return void
-     */
-    public function injectConfigurationService(FluxService $configurationService)
-    {
-        $this->configurationService = $configurationService;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @param WorkspacesAwareRecordService $workspacesAwareRecordService
-     * @return void
-     */
-    public function injectWorkspacesAwareRecordService(WorkspacesAwareRecordService $workspacesAwareRecordService)
-    {
-        $this->workspacesAwareRecordService = $workspacesAwareRecordService;
+    public function __construct(
+        WorkspacesAwareRecordService $recordService,
+        CacheManager $cacheManager
+    ) {
+        $this->workspacesAwareRecordService = $recordService;
+        $this->runtimeCache = $cacheManager->getCache('runtime');
     }
 
     /**
@@ -99,84 +57,157 @@ class PageService implements SingletonInterface
      * WARNING: do NOT use the output of this feature to overwrite $row - the
      * record returned may or may not be the same record as defined in $id.
      *
-     * @param integer $pageUid
-     * @return array|null
      * @api
      */
-    public function getPageTemplateConfiguration($pageUid)
+    public function getPageTemplateConfiguration(int $pageUid): ?array
     {
         $pageUid = (integer) $pageUid;
-        if (1 > $pageUid) {
+        if (!$pageUid) {
             return null;
         }
         $cacheId = 'flux-template-configuration-' . $pageUid;
-        $runtimeCache = $this->getRuntimeCache();
         /** @var array|null $fromCache */
-        $fromCache = $runtimeCache->get($cacheId);
+        $fromCache = $this->runtimeCache->get($cacheId);
         if ($fromCache) {
             return $fromCache;
         }
 
-
         $resolvedMainTemplateIdentity = null;
         $resolvedSubTemplateIdentity = null;
-        $rootLineUtility = $this->getRootLineUtility($pageUid);
+        $recordDefiningMain = null;
+        $recordDefiningSub = null;
+        $rootLine = $this->getRootLine($pageUid);
 
         // Initialize with possibly-empty values and loop root line
         // to fill values as they are detected.
-        foreach ($rootLineUtility->get() as $page) {
-            $resolvedMainTemplateIdentity = is_array($page['tx_fed_page_controller_action'] ?? null)
-                ? $page['tx_fed_page_controller_action'][0]
-                : $page['tx_fed_page_controller_action'] ?? null;
-            $resolvedSubTemplateIdentity = is_array($page['tx_fed_page_controller_action_sub'] ?? null)
-                ? $page['tx_fed_page_controller_action_sub'][0]
-                : $page['tx_fed_page_controller_action_sub'] ?? null;
-            $containsSubDefinition = (false !== strpos($page['tx_fed_page_controller_action_sub'] ?? '', '->'));
+        foreach ($rootLine as $page) {
+            $mainFieldValue = $page[PageProvider::FIELD_ACTION_MAIN] ?? null;
+            $subFieldValue = $page[PageProvider::FIELD_ACTION_SUB] ?? null;
+            $resolvedMainTemplateIdentity = is_array($mainFieldValue) ? $mainFieldValue[0] : $mainFieldValue;
+            $resolvedSubTemplateIdentity = is_array($subFieldValue) ? $subFieldValue[0] : $subFieldValue;
+            $containsSubDefinition = (strpos($subFieldValue ?? '', '->') !== false);
             $isCandidate = ((integer) ($page['uid'] ?? 0) !== $pageUid);
-            if (true === $containsSubDefinition && true === $isCandidate) {
-                $resolvedSubTemplateIdentity = $page['tx_fed_page_controller_action_sub'] ?? null;
-                if (true === empty($resolvedMainTemplateIdentity)) {
+            if ($containsSubDefinition && $isCandidate) {
+                $resolvedSubTemplateIdentity = $subFieldValue;
+                $recordDefiningSub = $page;
+                if (empty($resolvedMainTemplateIdentity)) {
                     // Conditions met: current page is not $pageUid, original page did not
                     // contain a "this page" layout, current rootline page has "sub" selection.
                     // Then, set our "this page" value to use the "sub" selection that was detected.
                     $resolvedMainTemplateIdentity = $resolvedSubTemplateIdentity;
+                    $recordDefiningMain = $page;
                 }
                 break;
             }
         };
-        if (true === empty($resolvedMainTemplateIdentity) && true === empty($resolvedSubTemplateIdentity)) {
+        if (empty($resolvedMainTemplateIdentity) && empty($resolvedSubTemplateIdentity)) {
             // Neither directly configured "this page" nor inherited "sub" contains a valid value;
             // no configuration was detected at all.
             return null;
         }
         $configuration = [
             'tx_fed_page_controller_action' => $resolvedMainTemplateIdentity,
-            'tx_fed_page_controller_action_sub' => $resolvedSubTemplateIdentity
+            'tx_fed_page_controller_action_sub' => $resolvedSubTemplateIdentity,
+            'record_main' => $recordDefiningMain,
+            'record_sub' => $recordDefiningSub,
         ];
-        $runtimeCache->set($cacheId, $configuration);
+        $this->runtimeCache->set($cacheId, $configuration);
         return $configuration;
     }
 
     /**
      * Get a usable page configuration flexform from rootline
      *
-     * @param integer $pageUid
-     * @return string|null
      * @api
      */
-    public function getPageFlexFormSource($pageUid)
+    public function getPageFlexFormSource(int $pageUid): ?string
     {
         $pageUid = (integer) $pageUid;
-        if (1 > $pageUid) {
+        if (!$pageUid) {
             return null;
         }
         $fieldList = 'uid,pid,t3ver_oid,tx_fed_page_flexform';
         $page = $this->workspacesAwareRecordService->getSingle('pages', $fieldList, $pageUid);
-        while (null !== $page && 0 !== (integer) $page['uid'] && true === empty($page['tx_fed_page_flexform'])) {
+        while ($page !== null && 0 !== (integer) $page['uid'] && empty($page['tx_fed_page_flexform'])) {
             $resolveParentPageUid = (integer) (0 > $page['pid'] ? $page['t3ver_oid'] : $page['pid']);
             $page = $this->workspacesAwareRecordService->getSingle('pages', $fieldList, $resolveParentPageUid);
         }
         return $page['tx_fed_page_flexform'] ?? null;
+    }
+
+    public function getPageConfiguration(?string $extensionName = null): array
+    {
+        if (null !== $extensionName && true === empty($extensionName)) {
+            // Note: a NULL extensionName means "fetch ALL defined collections" whereas
+            // an empty value that is not null indicates an incorrect caller. Instead
+            // of returning ALL paths here, an empty array is the proper return value.
+            // However, dispatch a debug message to inform integrators of the problem.
+            if ($this->logger instanceof LoggerInterface) {
+                $this->logger->log(
+                    'notice',
+                    'Template paths have been attempted fetched using an empty value that is NOT NULL in ' .
+                    get_class($this) . '. This indicates a potential problem with your TypoScript configuration - a ' .
+                    'value which is expected to be an array may be defined as a string. This error is not fatal but ' .
+                    'may prevent the affected collection (which cannot be identified here) from showing up'
+                );
+            }
+            return [];
+        }
+
+        $plugAndPlayEnabled = ExtensionConfigurationUtility::getOption(
+            ExtensionOption::OPTION_PLUG_AND_PLAY
+        );
+        $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(
+            ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY
+        );
+        if (!is_scalar($plugAndPlayDirectory)) {
+            return [];
+        }
+        $plugAndPlayTemplatesDirectory = trim((string) $plugAndPlayDirectory, '/.') . '/';
+        if ($plugAndPlayEnabled && $extensionName === 'Flux') {
+            return [
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [
+                    $plugAndPlayTemplatesDirectory
+                    . DropInContentTypeDefinition::TEMPLATES_DIRECTORY
+                    . DropInContentTypeDefinition::PAGE_DIRECTORY
+                ],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => [
+                    $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY
+                ],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [
+                    $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY
+                ],
+            ];
+        }
+        if (null !== $extensionName) {
+            $templatePaths = $this->createTemplatePaths($extensionName);
+            return $templatePaths->toArray();
+        }
+        $configurations = [];
+        $registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Page');
+        foreach ($registeredExtensionKeys as $registeredExtensionKey) {
+            $templatePaths = $this->createTemplatePaths($registeredExtensionKey);
+            $configurations[$registeredExtensionKey] = $templatePaths->toArray();
+        }
+        if ($plugAndPlayEnabled) {
+            $configurations['FluidTYPO3.Flux'] = array_replace(
+                $configurations['FluidTYPO3.Flux'] ?? [],
+                [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [
+                        $plugAndPlayTemplatesDirectory
+                        . DropInContentTypeDefinition::TEMPLATES_DIRECTORY
+                        . DropInContentTypeDefinition::PAGE_DIRECTORY
+                    ],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [
+                        $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::PARTIALS_DIRECTORY
+                    ],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [
+                        $plugAndPlayTemplatesDirectory . DropInContentTypeDefinition::LAYOUTS_DIRECTORY
+                    ],
+                ]
+            );
+        }
+        return $configurations;
     }
 
     /**
@@ -186,19 +217,21 @@ class PageService implements SingletonInterface
      * @return Form[][]
      * @api
      */
-    public function getAvailablePageTemplateFiles()
+    public function getAvailablePageTemplateFiles(): array
     {
-        $cache = $this->getRuntimeCache();
         $cacheKey = 'page_templates';
         /** @var array|null $fromCache */
-        $fromCache = $cache->get($cacheKey);
+        $fromCache = $this->runtimeCache->get($cacheKey);
         if ($fromCache) {
             return $fromCache;
         }
-        $typoScript = $this->configurationService->getPageConfiguration();
+        $typoScript = $this->getPageConfiguration();
         $output = [];
+
+        /** @var TemplateView $view */
+        $view = GeneralUtility::makeInstance(TemplateView::class);
         foreach ((array) $typoScript as $extensionName => $group) {
-            if (true === isset($group['enable']) && 1 > $group['enable']) {
+            if (!($group['enable'] ?? true)) {
                 continue;
             }
             $output[$extensionName] = [];
@@ -206,7 +239,7 @@ class PageService implements SingletonInterface
             $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
                 /** @var \SplFileInfo $file */
-                if ('.' === substr($file->getBasename(), 0, 1)) {
+                if (substr($file->getBasename(), 0, 1) === '.') {
                     continue;
                 }
                 if (strpos($file->getPath(), DIRECTORY_SEPARATOR . 'Page') === false) {
@@ -217,8 +250,6 @@ class PageService implements SingletonInterface
                     continue;
                 }
 
-                /** @var TemplateView $view */
-                $view = $this->objectManager->get(TemplateView::class);
                 $view->getRenderingContext()->setTemplatePaths($templatePaths);
                 $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
                     FormViewHelper::SCOPE,
@@ -232,31 +263,35 @@ class PageService implements SingletonInterface
                         ->getViewHelperVariableContainer()
                         ->get(FormViewHelper::class, 'form');
 
-                    if (false === $form instanceof Form) {
-                        $this->getLogger()->log(
-                            'error',
-                            'Template file ' . $file . ' contains an unparsable Form definition'
-                        );
+                    if (!$form instanceof Form) {
+                        if ($this->logger instanceof LoggerInterface) {
+                            $this->logger->log(
+                                'error',
+                                'Template file ' . $file . ' contains an unparsable Form definition'
+                            );
+                        }
                         continue;
-                    } elseif (false === $form->getEnabled()) {
-                        $this->getLogger()->log(
-                            'notice',
-                            'Template file ' . $file . ' is disabled by configuration'
-                        );
+                    } elseif (!$form->getEnabled()) {
+                        if ($this->logger instanceof LoggerInterface) {
+                            $this->logger->log(
+                                'notice',
+                                'Template file ' . $file . ' is disabled by configuration'
+                            );
+                        }
                         continue;
                     }
-                    $form->setOption(Form::OPTION_TEMPLATEFILE, $file->getPathname());
-                    $form->setOption(Form::OPTION_TEMPLATEFILE_RELATIVE, substr($file->getRelativePathname(), 5, -5));
+                    $form->setOption(FormOption::TEMPLATE_FILE, $file->getPathname());
+                    $form->setOption(FormOption::TEMPLATE_FILE_RELATIVE, substr($file->getRelativePathname(), 5, -5));
                     $form->setExtensionName($extensionName);
                     $output[$extensionName][$filename] = $form;
-                } catch (InvalidSectionException $error) {
-                    $this->getLogger()->log('error', $error->getMessage());
-                } catch (ChildNotFoundException $error) {
-                    $this->getLogger()->log('error', $error->getMessage());
+                } catch (InvalidSectionException | ChildNotFoundException $error) {
+                    if ($this->logger instanceof LoggerInterface) {
+                        $this->logger->log('error', $error->getMessage());
+                    }
                 }
             }
         }
-        $cache->set($cacheKey, $output);
+        $this->runtimeCache->set($cacheKey, $output);
         return $output;
     }
 
@@ -276,32 +311,10 @@ class PageService implements SingletonInterface
     /**
      * @codeCoverageIgnore
      */
-    protected function getLogger(): LoggerInterface
-    {
-        /** @var LogManager $logManager */
-        $logManager = GeneralUtility::makeInstance(LogManager::class);
-        $logger = $logManager->getLogger(__CLASS__);
-        return $logger;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @return FrontendInterface
-     */
-    protected function getRuntimeCache()
-    {
-        /** @var CacheManager $cacheManager */
-        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-        return $cacheManager->getCache('cache_runtime');
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function getRootLineUtility(int $pageUid): RootlineUtility
+    protected function getRootLine(int $pageUid): array
     {
         /** @var RootlineUtility $rootLineUtility */
         $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
-        return $rootLineUtility;
+        return $rootLineUtility->get();
     }
 }

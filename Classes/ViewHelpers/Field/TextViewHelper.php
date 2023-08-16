@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -13,17 +14,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Textarea FlexForm field ViewHelper
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class TextViewHelper extends AbstractFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -83,12 +77,7 @@ class TextViewHelper extends AbstractFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Text
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Text
     {
         /** @var array $arguments */
         /** @var Text $text */
@@ -97,7 +86,7 @@ class TextViewHelper extends AbstractFieldViewHelper
         $text->setColumns($arguments['cols']);
         $text->setRows($arguments['rows']);
         $text->setEnableRichText($arguments['enableRichText']);
-        $text->setRichtextConfiguration($arguments['richtextConfiguration']);
+        $text->setRichtextConfiguration($arguments['richtextConfiguration'] ?? '');
         $text->setRenderType($arguments['renderType']);
         $text->setFormat($arguments['format']);
         $text->setPlaceholder($arguments['placeholder']);

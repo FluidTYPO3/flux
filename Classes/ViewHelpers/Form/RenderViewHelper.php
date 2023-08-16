@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -8,6 +9,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -29,29 +31,24 @@ class RenderViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
-    /**
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('form', Form::class, 'Form instance to render as HTML', true);
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
+        /** @var Form $form */
         $form = $arguments['form'];
-        $record = $form->getOption(Form::OPTION_RECORD);
-        $table = $form->getOption(Form::OPTION_RECORD_TABLE);
-        $field = $form->getOption(Form::OPTION_RECORD_FIELD);
+        /** @var array $record */
+        $record = $form->getOption(FormOption::RECORD);
+        /** @var string $table */
+        $table = $form->getOption(FormOption::RECORD_TABLE);
+        /** @var string $field */
+        $field = $form->getOption(FormOption::RECORD_FIELD);
         $node = static::getNodeFactory()->create([
             'type' => 'flex',
             'renderType' => 'flex',

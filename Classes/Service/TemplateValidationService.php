@@ -12,8 +12,6 @@ use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
@@ -30,11 +28,11 @@ class TemplateValidationService implements SingletonInterface
 
     public function validateTemplateSource(string $source): ?string
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var TemplateView $templateView */
-        $templateView = $objectManager->get(TemplateView::class);
-        $parser = $templateView->getRenderingContext()->getTemplateParser();
+        $templateView = GeneralUtility::makeInstance(TemplateView::class);
+        $renderingContext = $templateView->getRenderingContext();
+        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName('flux');
+        $parser = $renderingContext->getTemplateParser();
         try {
             $parser->parse(class_exists(Sequencer::class) ? new Source($source) : $source);
         } catch (\Exception $error) {

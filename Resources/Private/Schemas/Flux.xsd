@@ -182,6 +182,11 @@ Defines a single field data structure.
           <xsd:documentation><![CDATA[Label for field]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="exclude" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set to FALSE if field is not an "exclude" field]]></xsd:documentation>
@@ -217,6 +222,11 @@ Defines a single field data structure.
           <xsd:documentation><![CDATA[If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="clear" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
@@ -227,8 +237,6 @@ Defines a single field data structure.
   <xsd:element name="field.checkbox">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Checkbox FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -248,6 +256,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -372,8 +390,6 @@ To use the field just place it in your Flux form (but in almost all
 cases leave out the "name" argument which is required on all other
 field types at the time of writing this). Where the field is placed
 is not important; the order and the sheet location don't matter.
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -393,6 +409,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -578,8 +604,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.custom">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Custom FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -599,6 +623,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -681,8 +715,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.dateTime">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Input FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -702,6 +734,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -780,8 +822,6 @@ Then use `<f:image>` to render the image in the frontend:
 
 `alt` and `title` tags are not loaded from the file's meta data record.
 Use `<flux:field.inline.fal>` if you want this feature.
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -801,6 +841,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -958,8 +1008,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.inline">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Inline-style FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -979,6 +1027,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -1096,7 +1154,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -1111,12 +1169,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -1126,17 +1184,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -1146,29 +1204,24 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="localizeChildrenAtParentLocalization" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="disableMovingChildrenWithParent" default="false">
@@ -1186,7 +1239,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -1363,6 +1416,16 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this attribute must be filled when editing the FCE]]></xsd:documentation>
@@ -1513,7 +1576,7 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
@@ -1528,17 +1591,17 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
@@ -1546,11 +1609,6 @@ The crop configuration can now be passed to the image viewhelper:
       <xsd:attribute type="xsd:string" name="localizationMode" default="'select'">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="localizeChildrenAtParentLocalization" default="true">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="disableMovingChildrenWithParent" default="false">
@@ -1568,7 +1626,7 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -1675,8 +1733,6 @@ The crop configuration can now be passed to the image viewhelper:
   <xsd:element name="field.input">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Input FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -1696,6 +1752,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -1817,8 +1883,6 @@ Add a wizard to search for content elements, instead of opening a popup:
                               maxItems="5">
         <flux:wizard.suggest />
     </flux:field.multiRelation>
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -1838,6 +1902,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -1955,7 +2029,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -1970,12 +2044,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -1985,17 +2059,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -2005,29 +2079,24 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="localizeChildrenAtParentLocalization" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="disableMovingChildrenWithParent" default="false">
@@ -2045,7 +2114,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -2058,8 +2127,6 @@ DEPRECATED - use flux:field instead
 
 Makes a read-only component which supports a default value
 but which cannot be edited.
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2079,6 +2146,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2146,8 +2223,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.radio">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Radio FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2167,6 +2242,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2318,8 +2403,6 @@ allows selecting a content element from the current page:
 A list of allowed markers for the `condition` can be found in the documentation at:
 
 https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#foreign-table-where
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2339,6 +2422,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2456,7 +2549,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -2471,12 +2564,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -2486,17 +2579,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -2506,29 +2599,24 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="localizeChildrenAtParentLocalization" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="disableMovingChildrenWithParent" default="false">
@@ -2546,7 +2634,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -2582,8 +2670,6 @@ You can translate those labels by putting a LLL reference in the first property:
 ### Links
 
 * [TCA Reference: type "select"](https://docs.typo3.org/typo3cms/TCAReference/stable/Reference/Columns/Select/)
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2603,6 +2689,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2735,8 +2831,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.text">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Textarea FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2756,6 +2850,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -2868,8 +2972,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.tree">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Tree (select supertype) FlexForm field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -2889,6 +2991,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -3006,7 +3118,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Function for serving items. See TCA "select" field "itemsProcFunc" attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
+      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Define foreign table name to turn selector into a record selector for that table]]></xsd:documentation>
         </xsd:annotation>
@@ -3021,12 +3133,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -3036,17 +3148,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -3056,29 +3168,24 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="localizeChildrenAtParentLocalization" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="disableMovingChildrenWithParent" default="false">
@@ -3096,7 +3203,7 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="oppositeField" default="''">
+      <xsd:attribute type="xsd:string" name="oppositeField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the opposite field related to a proper mm relation]]></xsd:documentation>
         </xsd:annotation>
@@ -3141,8 +3248,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.tree.category">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Tree preset for sys_category
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -3162,6 +3267,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -3294,12 +3409,12 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Optional name of MM table to use for record selection]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignLabel" default="''">
+      <xsd:attribute type="xsd:string" name="foreignLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.]]></xsd:documentation>
         </xsd:annotation>
@@ -3309,17 +3424,17 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Field on the child record (or on the intermediate table) that stores the manual sorting information.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="''">
+      <xsd:attribute type="xsd:string" name="foreignDefaultSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="foreignTableField" default="''">
+      <xsd:attribute type="xsd:string" name="foreignTableField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.]]></xsd:documentation>
         </xsd:annotation>
@@ -3329,29 +3444,24 @@ DEPRECATED - use flux:field instead
           <xsd:documentation><![CDATA[Field which must be uniue for all children of a parent record.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricField" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricField" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricLabel" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricLabel" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If set, this overrides the default label of the selected `symmetric_field`.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="symmetricSortby" default="''">
+      <xsd:attribute type="xsd:string" name="symmetricSortby" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="localizationMode" default="''">
+      <xsd:attribute type="xsd:string" name="localizationMode" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Set whether children can be localizable ('select') or just inherit from default language ('keep').]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="localizeChildrenAtParentLocalization" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Defines whether children should be localized when the localization of the parent gets created.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="disableMovingChildrenWithParent" default="false">
@@ -3414,8 +3524,6 @@ DEPRECATED - use flux:field instead
   <xsd:element name="field.userFunc">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Flexform Userfunc field ViewHelper
-
-DEPRECATED - use flux:field instead
 /]]></xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -3435,6 +3543,16 @@ DEPRECATED - use flux:field instead
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="native" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="position" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="required" default="false">
@@ -3525,7 +3643,7 @@ DEPRECATED - use flux:field instead
       </xsd:sequence>
       <xsd:attribute type="xsd:string" name="id" default="NULL" use="required">
         <xsd:annotation>
-          <xsd:documentation><![CDATA[Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed]]></xsd:documentation>
+          <xsd:documentation><![CDATA[Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:string" name="label" default="NULL">
@@ -4081,14 +4199,14 @@ Groups FlexForm fields into sheets.
       <xsd:sequence>
         <xsd:any minOccurs="0" maxOccurs="1"/>
       </xsd:sequence>
+      <xsd:attribute type="xsd:anySimpleType" name="value" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Value of the option]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:string" name="name" default="NULL" use="required">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Name of the option - valid values and their behaviours depend entirely on the consumer that will handle the Form instance]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="value" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Value of the option]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
     </xsd:complexType>
@@ -4291,944 +4409,6 @@ to templates, as an alternative to creating new partial templates.
       <xsd:attribute type="xsd:string" name="code" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Fluid code to be rendered as if it were part of the template rendering it. Can be passed as inline argument or tag content]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="outlet">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[ViewHelper to configure outlets
-
-see `<flux:outlet.argument>` and `<flux:outlet.validate>` ViewHelpers for more information
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:boolean" name="enabled" default="true">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[if the outlet is enabled]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="outlet.argument">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[ViewHelper to define Outlet arguments
-
-Use `<flux:outlet.argument>` in conjunction with the `<flux:outlet>` and `<flux.outlet.validate>` viewHelpers.
-You can define any number of arguments including validations that will be applied to the outlet action.
-To call the outlet action use the action "outlet" in your form action.
-
-### Example
-
-    <f:section name="Configuration">
-         <flux:outlet>
-              <flux:outlet.argument name="name">
-                   <flux:outlet.validate type="NotEmpty" />
-              </flux:outlet.argument>
-         </flux:outlet>
-    </f:section>
-
-    <f:section name="Main">
-        <f:form action="outlet" noCache="1">
-            <f:form.textfield name="name" value="{name}" />
-        </f:form>
-    </f:section>
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="name" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[name of the argument]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="type" default="'string'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[type of the argument]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="outlet.form">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Outlet Form Renderer
-
-Specialised version of `f:form` which adds three vital behaviors:
-
-- Automatic resolving of the correct extension name and plugin name
-- Automatic use of "outletAction" on controller
-- Addition of table name and UID as to prevent calling "outletAction"
-  on any other instance than the one which rendered the form.
-
-Together these specialised behaviors mean that the form data will
-only be processed by the exact instance from which the form was
-rendered, and will always target the correct plugin namespace for
-the arguments to be recognised.
-
-To customise handling of this form, add an "outletAction" to your
-Flux controller with which your template is associated, e.g.
-your "ContentController", "PageController" etc.
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:anySimpleType" name="additionalAttributes" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Additional tag attributes. They will be added directly to the resulting HTML tag.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="data" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Additional data-* attributes. They will each be added with a "data-" prefix.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="aria" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Additional aria-* attributes. They will each be added with a "aria-" prefix.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="action" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target action]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="arguments" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Arguments]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="controller" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target controller]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target Extension Name (without "tx_" prefix and no underscores). If NULL the current extension name is used]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="pluginName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target plugin. If empty, the current plugin name is used]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="pageUid" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target page uid]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="object" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Object to use for the form. Use in conjunction with the "property" attribute on the sub tags]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="pageType" default="0">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target page type]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="noCache" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[set this to disable caching for the target page. You should not need this.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="section" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[The anchor to be added to the action URI (only active if $actionUri is not set)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="format" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[The requested format (e.g. ".html") of the target page (only active if $actionUri is not set)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="additionalParams" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[additional action URI query parameters that won't be prefixed like $arguments (overrule $arguments) (only active if $actionUri is not set)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="absolute" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If set, an absolute action URI is rendered (only active if $actionUri is not set)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="addQueryString" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If set, the current query parameters will be kept in the action URI (only active if $actionUri is not set)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="argumentsToBeExcludedFromQueryString" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[arguments to be removed from the action URI. Only active if $addQueryString = TRUE and $actionUri is not set]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="addQueryStringMethod" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[This argument is not evaluated anymore and will be removed in TYPO3 v12.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="fieldNamePrefix" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Prefix that will be added to all field names within this form. If not set the prefix will be tx_yourExtension_plugin]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="actionUri" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[can be used to overwrite the "action" attribute of the form tag]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="objectName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[name of the object that is bound to this form. If this argument is not specified, the name attribute of this form is used to determine the FormObjectName]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="hiddenFieldClassName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[hiddenFieldClassName]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="enctype" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[MIME type with which the form is submitted]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="method" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Transfer type (GET or POST)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="name" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Name of form]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="onreset" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[JavaScript: On reset of the form]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="onsubmit" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[JavaScript: On submit of the form]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="target" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target attribute of the form]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="novalidate" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Indicate that the form is not to be validated on submit.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="class" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[CSS class(es) for this element]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="dir" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Text direction for this HTML element. Allowed strings: "ltr" (left to right), "rtl" (right to left)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="id" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Unique (in this file) identifier for this HTML element.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="lang" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Language for this element. Use short names specified in RFC 1766]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="style" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Individual CSS styles for this element]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="title" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Tooltip text of element]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="accesskey" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Keyboard shortcut to access this element]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="tabindex" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Specifies the tab order of this element]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="onclick" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[JavaScript evaluated for the onclick event]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="outlet.validate">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[ViewHelper to validate Outlet arguments
-
-Use `<flux:outlet.validate>` inside the `<flux.outlet.argument>` viewHelper.
-You can add any number of validations to the arguments. After submission
-validation errors will be available inside the validationResults variable.
-
-### Example
-
-    <f:section name="Configuration">
-         <flux:outlet>
-              <flux:outlet.argument name="name">
-                   <flux:outlet.validate type="NotEmpty" />
-              </flux:outlet.argument>
-         </flux:outlet>
-    </f:section>
-
-    <f:section name="Main">
-        <f:form noCache="1">
-            <f:form.textfield name="name" value="{name}" />
-            <f:if condition="{validationResults.name}">
-                <f:for each="{validationResults.name}" as="error">
-                    <span class="error">{error.code}: {error.message}</span>
-                </f:for>
-            </f:if>
-        </f:form>
-    </f:section>
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="type" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[validator to apply]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="options" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[additional validator arguments]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="pipe.controller">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Controller Action Outlet Pipe ViewHelper
-
-Adds a ControllerPipe to the Form's Outlet.
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="direction" default="'out'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="action" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Action to call on the controller, minus the "Action" suffix]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="controller" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Class name of controller to call. If empty, uses current controller]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Extension name of controller to call. If empty, uses current extension name]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="pipe.email">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Email Outlet Pipe ViewHelper
-
-Adds an EmailPipe to the Form's Outlet
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="direction" default="'out'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="body" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Message body. Can also be inserted as tag content]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="bodySection" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Section to use for the body]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="subject" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Message subject]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="recipient" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Message recipient address or name+address as "Name <add@ress>"]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="sender" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Message sender address or name+address as "Name <add@ress>"]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="pipe.flashMessage">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[FlashMessage Outlet Pipe ViewHelper
-
-Adds a FlashMessagePipe to the Form's Outlet
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="direction" default="'out'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="message" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[FlashMessage message body]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="title" default="'Message'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[FlashMessage title to use]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="severity" default="0">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Severity level, as integer]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="storeInSession" default="true">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Store message in sesssion. If FALSE, message only lives in POST. Default TRUE.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="pipe.typeConverter">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Type Converter Outlet Pipe ViewHelper
-
-Adds a TypeConverterPipe to the Form's Outlet.
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="direction" default="'out'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Which endpoint to attach the Pipe to - either "in" or "out". See documentation about Outlets and Pipes]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="targetType" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Target type (class name, integer, array, etc.)]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="typeConverter" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Class or instance of type converter. Can be a short name of a system type converter, minus "Converter" suffix, e.g. PersistentObject, Array etc.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="property" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional property which needs to be converted in data. If empty, uses entire form data array as input.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.add">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: Add
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="'Add new record'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Table name that records are added to]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="pid" default="'###CURRENT_PID###'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Storage page UID or (as is default) ###CURRENT_PID###]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="setValue" default="'prepend'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[How to treat the record once created]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.colorPicker">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: Color Picker
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="'Choose color'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="dim" default="'20x20'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Dimensions (WxH, e.g. 20x20) of color picker]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="width" default="450">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Width of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="height" default="720">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[height of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="exampleImg" default="'EXT:flux/Resources/Public/Icons/ColorWheel.png'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Example image from which to pick colors]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.edit">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: Edit
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="width" default="580">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Width of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="height" default="580">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[height of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="openOnlyIfSelected" default="true">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Only open the edit dialog if an item is selected]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.link">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: Link
-
-#### Link input field with link wizard
-
-    <flux:field.input name="link">
-        <flux:wizard.link/>
-    </flux:field.input>
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="'Select link'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="activeTab" default="'file'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Active tab of the link popup]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="width" default="500">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Width of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="height" default="500">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[height of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="allowedExtensions" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Comma-separated list of extensions that are allowed to be selected. Default is all types.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="blindLinkOptions" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Blind link options]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="blindLinkFields" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Blind link fields]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.list">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: List
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Table name that records are added to]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="pid" default="'###CURRENT_PID###'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Storage page UID or (as is default) ###CURRENT_PID###]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="width" default="500">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Width of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="height" default="500">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[height of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.select">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: Edit
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="mode" default="'substitution'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Selection mode - substitution, append or prepend]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="items" default="NULL" use="required">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Comma-separated, comma-and-semicolon-separated or array list of possible values]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.slider">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: Slider
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="'Slider'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="step" default="1">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Increment slider values by this much for each step]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="width" default="32">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Width of the popup window]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="wizard.suggest">
-    <xsd:annotation>
-      <xsd:documentation><![CDATA[Field Wizard: Suggest
-
-See https://docs.typo3.org/typo3cms/TCAReference/AdditionalFeatures/CoreWizardScripts/Index.html
-for details about the behaviors that are controlled by arguments.
-
-DEPRECATED - use flux:field with custom "config" with renderMode and/or fieldWizard attributes
-/]]></xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType mixed="true">
-      <xsd:sequence>
-        <xsd:any minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="label" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Optional title of this Wizard]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="hideParent" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, hides the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="table" default="NULL">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Table to search. If left out will use the table defined by the parent field]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="pidList" default="'0'">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[List of storage page UIDs]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="pidDepth" default="99">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Depth of recursive storage page UID lookups]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="minimumCharacters" default="1">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Minimum number of characters that must be typed before search begins]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:integer" name="maxPathTitleLength" default="15">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Maximum path segment length - crops titles over this length]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="searchWholePhrase" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[A match requires a full word that matches the search value]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="searchCondition" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Search condition - for example, if table is pages "doktype = 1" to only allow standard pages]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="cssClass" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Use this CSS class for all list items]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="receiverClass" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Class reference, target class should be derived from "t3lib_tceforms_suggest_defaultreceiver"]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:string" name="renderFunc" default="''">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Reference to function which processes all records displayed in results]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
     </xsd:complexType>

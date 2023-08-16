@@ -12,6 +12,9 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
+use TYPO3\CMS\Extbase\Mvc\Request;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateProcessor\NamespaceDetectionTemplateProcessor;
@@ -56,8 +59,13 @@ class FormTest extends AbstractTestCase
                 'layoutRootPaths' => ['Tests/Fixtures/Layouts/'],
             ]
         );
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getControllerExtensionName'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->method('getControllerExtensionName')->willReturn('Flux');
 
-        $renderingContext = $this->getMockBuilder(\TYPO3\CMS\Fluid\Core\Rendering\RenderingContext::class)->setMethods(
+        $renderingContext = $this->getMockBuilder(RenderingContext::class)->setMethods(
             [
                 'getTemplatePaths',
                 'getViewHelperVariableContainer',
@@ -70,6 +78,7 @@ class FormTest extends AbstractTestCase
                 'getExpressionNodeTypes',
                 'getControllerName',
                 'getControllerAction',
+                'getControllerContext',
             ]
         )->disableOriginalConstructor()->getMock();
         $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
@@ -83,6 +92,11 @@ class FormTest extends AbstractTestCase
         $renderingContext->method('getExpressionNodeTypes')->willReturn([]);
         $renderingContext->method('getControllerName')->willReturn('Content');
         $renderingContext->method('getControllerAction')->willReturn(basename($template, '.html'));
+        if (class_exists(ControllerContext::class)) {
+            $controllerContext = new ControllerContext();
+            $controllerContext->setRequest($request);
+            $renderingContext->method('getControllerContext')->willReturn($controllerContext);
+        }
 
         $namespaceDetectionTemplateProcessor->setRenderingContext($renderingContext);
 
@@ -214,10 +228,10 @@ class FormTest extends AbstractTestCase
     public function canAddMultipleFieldsToContainer()
     {
         $form = $this->getEmptyDummyForm();
-        $fields = array(
+        $fields = [
             $form->createField('Input', 'test1'),
             $form->createField('Input', 'test2'),
-        );
+        ];
         $form->addAll($fields);
         $this->assertTrue($form->last()->has($fields[0]));
         $this->assertTrue($form->last()->has($fields[1]));
@@ -253,7 +267,7 @@ class FormTest extends AbstractTestCase
     public function canRemoveBadFieldByNameWithoutErrorAndReturnFalse()
     {
         $form = $this->getEmptyDummyForm();
-        $this->assertFalse($form->last()->remove('test'));
+        $this->assertNull($form->last()->remove('test'));
     }
 
     /**
@@ -262,9 +276,9 @@ class FormTest extends AbstractTestCase
     public function canRemoveBadFieldByInstanceWithoutErrorAndReturnFalse()
     {
         $form = $this->getEmptyDummyForm();
-        $field = Input::create(array('type' => 'Input', 'name' => 'badname'));
+        $field = Input::create(['type' => 'Input', 'name' => 'badname']);
         $child = $form->last()->remove($field);
-        $this->assertFalse($child);
+        $this->assertNull($child);
     }
 
     /**
@@ -294,19 +308,6 @@ class FormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canCreateAndAddWizard()
-    {
-        $form = $this->getEmptyDummyForm();
-        $field = $form->createField('Input', 'input');
-        $wizard = $form->createWizard('Add', 'add');
-        $field->add($wizard);
-        $form->add($field);
-        $this->assertIsValidAndWorkingFormObject($form);
-    }
-
-    /**
-     * @test
-     */
     public function supportsFormComponentsPlacedInPartialTemplates()
     {
         $template = $this->getAbsoluteFixtureTemplatePathAndFilename(self::FIXTURE_TEMPLATE_USESPARTIAL);
@@ -319,10 +320,10 @@ class FormTest extends AbstractTestCase
      */
     public function canCreateFromDefinition()
     {
-        $properties = array(
+        $properties = [
             'name' => 'test',
             'label' => 'Test field'
-        );
+        ];
         $instance = Form::create($properties);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
     }
@@ -332,18 +333,18 @@ class FormTest extends AbstractTestCase
      */
     public function canCreateFromDefinitionWithSheets()
     {
-        $properties = array(
+        $properties = [
             'name' => 'test',
             'label' => 'Test field',
-            'sheets' => array(
-                'sheet' => array(
-                    'fields' => array()
-                ),
-                'anotherSheet' => array(
-                    'fields' => array()
-                ),
-            )
-        );
+            'sheets' => [
+                'sheet' => [
+                    'fields' => []
+                ],
+                'anotherSheet' => [
+                    'fields' => []
+                ],
+            ]
+        ];
         $instance = Form::create($properties);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form', $instance);
     }
@@ -377,7 +378,7 @@ class FormTest extends AbstractTestCase
         $this->assertSame('testing', $instance->getOption('test'));
         $this->assertIsArray($instance->getOptions());
         $this->assertArrayHasKey('test', $instance->getOptions());
-        $options = array('foo' => 'bar');
+        $options = ['foo' => 'bar'];
         $instance->setOptions($options);
         $this->assertSame('bar', $instance->getOption('foo'));
         $this->assertArrayHasKey('foo', $instance->getOptions());
@@ -387,22 +388,10 @@ class FormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canSetAndGetOutlet()
-    {
-        /** @var StandardOutlet $outlet */
-        $outlet = $this->getMockBuilder('FluidTYPO3\Flux\Outlet\StandardOutlet')->getMock();
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->setOutlet($outlet);
-        $this->assertSame($outlet, $form->getOutlet());
-    }
-
-    /**
-     * @test
-     */
     public function modifySetsProperty()
     {
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->modify(array('name' => 'test'));
+        $form->modify(['name' => 'test']);
         $this->assertEquals('test', $form->getName());
     }
 
@@ -412,7 +401,7 @@ class FormTest extends AbstractTestCase
     public function modifySetsOptions()
     {
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->modify(array('options' => array('test' => 'testvalue')));
+        $form->modify(['options' => ['test' => 'testvalue']]);
         $this->assertEquals('testvalue', $form->getOption('test'));
     }
 
@@ -422,7 +411,7 @@ class FormTest extends AbstractTestCase
     public function modifyCreatesSheets()
     {
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->modify(array('sheets' => array('test' => array('name' => 'test', 'label' => 'Test'))));
+        $form->modify(['sheets' => ['test' => ['name' => 'test', 'label' => 'Test']]]);
         $sheets = $form->getSheets(true);
         $this->assertArrayHasKey('test', $sheets);
     }
@@ -433,7 +422,7 @@ class FormTest extends AbstractTestCase
     public function modifyModifiesSheets()
     {
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $form->modify(array('sheets' => array('options' => array('label' => 'Test'))));
+        $form->modify(['sheets' => ['options' => ['label' => 'Test']]]);
         $sheets = $form->getSheets(true);
         $this->assertEquals('Test', reset($sheets)->getLabel());
     }
@@ -454,20 +443,6 @@ class FormTest extends AbstractTestCase
         $form->setOption('foo.new', 'new-value');
 
         self::assertSame(['foo' => ['bar' => ['baz' => 'value'], 'new' => 'new-value']], $form->getOptions());
-    }
-
-    public function testModifyCanCreateOutlet(): void
-    {
-        $structure = [
-            'outlet' => [
-                'type' => StandardOutlet::class,
-            ]
-        ];
-
-        $form = new Form();
-        $form->modify($structure);
-
-        self::assertInstanceOf(StandardOutlet::class, $form->getOutlet());
     }
 
     public function testModifyCanModifyExistingSheet(): void

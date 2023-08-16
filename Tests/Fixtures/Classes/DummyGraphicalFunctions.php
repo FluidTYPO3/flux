@@ -5,7 +5,6 @@ use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 
 class DummyGraphicalFunctions extends GraphicalFunctions
 {
-
     public function init()
     {
         return null;
@@ -18,9 +17,9 @@ class DummyGraphicalFunctions extends GraphicalFunctions
         $h = '',
         $params = '',
         $frame = '',
-        $options = array(),
+        $options = [],
         $mustCreate = false
     ) {
-        return array('foobar-0', 'foobar-1', 'foobar-2', 'foobar-3');
+        return ['foobar-0', 'foobar-1', 'foobar-2', 'foobar-3'];
     }
 }

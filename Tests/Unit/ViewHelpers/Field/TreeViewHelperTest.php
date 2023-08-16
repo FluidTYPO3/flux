@@ -8,10 +8,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * TreeViewHelperTest
- */
 class TreeViewHelperTest extends SelectViewHelperTest
 {
-
+    protected array $defaultArguments = [
+        'table' => 'tt_content',
+        'name' => 'field',
+    ];
 }

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\SerializeSafeInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\SerializeSafeTrait;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
@@ -31,25 +32,10 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
 {
     use SerializeSafeTrait;
 
-    /**
-     * @var array
-     */
-    protected $record = [];
-
-    /**
-     * @var string
-     */
-    protected $contentTypeName = '';
-
-    /**
-     * @var Grid|null
-     */
-    protected $grid;
-
-    /**
-     * @var iterable
-     */
-    protected static $types = [];
+    protected array $record = [];
+    protected string $contentTypeName = '';
+    protected ?Grid $grid;
+    protected static array $types = [];
 
     public function __construct(array $record)
     {
@@ -85,7 +71,11 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
      */
     protected function getContentConfiguration(): array
     {
-        return (array) GeneralUtility::xml2array($this->record['content_configuration'] ?? '');
+        $configuration = $this->record['content_configuration'] ?? [];
+        if (is_array($configuration)) {
+            return $configuration;
+        }
+        return (array) GeneralUtility::xml2array($configuration);
     }
 
     /**
@@ -93,7 +83,11 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
      */
     protected function getGridConfiguration(): array
     {
-        return (array) GeneralUtility::xml2array($this->record['grid'] ?? '');
+        $configuration = $this->record['grid'] ?? [];
+        if (is_array($configuration)) {
+            return $configuration;
+        }
+        return (array) GeneralUtility::xml2array($configuration);
     }
 
     public function getSheetNamesAndLabels(): \Generator
@@ -110,8 +104,9 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
     {
         $instance = Form::create();
         $instance->remove('options');
-        $instance->setOption(Form::OPTION_ICON, $this->getIconReference());
-        $instance->setOption(Form::OPTION_GROUP, 'fluxContent');
+        $instance->setOption(FormOption::ICON, $this->getIconReference());
+        $instance->setOption(FormOption::GROUP, 'fluxContent');
+        $instance->setOption(FormOption::SORTING, $this->record['sorting']);
         $instance->setLabel($this->record['title']);
         $instance->setDescription($this->record['description']);
         foreach ($this->getContentConfiguration() as $item) {
@@ -152,6 +147,8 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         foreach ($this->getGridConfiguration() as $item) {
             $gridMode = $item['grid']['lDEF']['gridMode']['vDEF'] ?? Section::GRID_MODE_ROWS;
             $autoColumns = (int)($item['grid']['lDEF']['autoColumns']['vDEF'] ?? 0);
+
+            /** @var Grid $grid */
             $grid = Grid::create();
 
             $currentNumberOfColumns = 0;
@@ -231,7 +228,11 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
             if (!($grid instanceof Grid)) {
                 return '';
             }
-            $template = '<div class="flux-grid">' . PHP_EOL;
+            $template = '';
+            if (!empty($this->record['template_source'])) {
+                $template .= $this->record['template_source'] . PHP_EOL;
+            }
+            $template .= '<div class="flux-grid">' . PHP_EOL;
             foreach ($grid->getRows() as $row) {
                 $template .= '<div class="flux-grid-row">' . PHP_EOL;
                 foreach ($row->getColumns() as $column) {
@@ -245,19 +246,12 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
         return $this->record['template_source'];
     }
 
-    /**
-     * @param Grid $grid
-     * @param int $currentNumberOfColumns
-     * @param int $totalNumberOfColumns
-     * @param string $mode
-     * @return void
-     */
     protected function createAutomaticGridColumns(
         Grid $grid,
         int $currentNumberOfColumns,
         int $totalNumberOfColumns,
         string $mode
-    ) {
+    ): void {
         if ($mode === Section::GRID_MODE_ROWS) {
             for ($i = $currentNumberOfColumns; $i < $totalNumberOfColumns; ++$i) {
                 $grid->createContainer(Row::class, 'row' . $i)

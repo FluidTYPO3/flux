@@ -8,33 +8,24 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Field extends AbstractFormField
 {
-    /**
-     * @var string
-     */
-    protected $type = 'input';
+    protected string $type = 'input';
+    protected ?string $displayCond = null;
+    protected ?string $onChange = null;
 
-    /**
-     * @var string|null
-     */
-    protected $displayCond;
-
-    /**
-     * @var string|null
-     */
-    protected $onChange;
-
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
-        // void, not required by generic field type
-        return [];
+        $config = [
+            'default' => $this->getDefault(),
+        ];
+        if ($this->getClearable()) {
+            $config['fieldWizard']['fluxClearValue'] = [
+                'renderType' => 'fluxClearValue',
+            ];
+        }
+        return $config;
     }
 
-    /**
-     * @param array $settings
-     * @return FieldInterface
-     * @throws \RuntimeException
-     */
-    public static function create(array $settings = [])
+    public static function create(array $settings = []): FieldInterface
     {
         if (!isset($settings['config']['type']) && !isset($settings['type'])) {
             throw new \UnexpectedValueException(
@@ -50,7 +41,9 @@ class Field extends AbstractFormField
         $field = GeneralUtility::makeInstance(static::class);
         foreach ($settings as $propertyName => $value) {
             $setterMethodName = 'set' . ucfirst($propertyName);
-            $field->$setterMethodName($value);
+            if (method_exists($field, $setterMethodName)) {
+                $field->$setterMethodName($value);
+            }
         }
         return $field;
     }
@@ -61,19 +54,20 @@ class Field extends AbstractFormField
      * expected-to-be-overridden stub method getConfiguration()
      * to return the TCE field configuration - see that method
      * for information about how to implement that method.
-     *
-     * @return array
      */
-    public function build()
+    public function build(): array
     {
         $filterClosure = function ($value) {
             return $value !== null && $value !== '';
         };
 
+        $configuration = array_replace($this->buildConfiguration(), $this->getConfig());
+
         $fieldStructureArray = [
             'label' => $this->getLabel(),
+            'description' => $this->getDescription(),
             'exclude' => intval($this->getExclude()),
-            'config' => array_filter($this->getConfig(), $filterClosure),
+            'config' => array_filter($configuration, $filterClosure),
             'displayCond' => $this->getDisplayCondition(),
             'onChange' => $this->getOnChange(),
         ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 /*
@@ -43,12 +44,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class ColumnViewHelper extends AbstractFormViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'name',
@@ -79,12 +75,7 @@ class ColumnViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Column
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Column
     {
         /** @var array $arguments */
         $column = static::getContainerFromRenderingContext($renderingContext)
@@ -92,10 +83,10 @@ class ColumnViewHelper extends AbstractFormViewHelper
         $column->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
-        $column->setColspan($arguments['colspan']);
-        $column->setRowspan($arguments['rowspan']);
+        $column->setColspan((integer) ($arguments['colspan'] ?? 1));
+        $column->setRowspan((integer) ($arguments['rowspan'] ?? 1));
         $column->setStyle($arguments['style']);
-        $column->setColumnPosition($arguments['colPos']);
+        $column->setColumnPosition((integer) $arguments['colPos']);
         $column->setVariables($arguments['variables']);
         return $column;
     }

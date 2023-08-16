@@ -10,10 +10,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
 
-/**
- * DateTimeViewHelperTest
- */
 class DateTimeViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-
 }

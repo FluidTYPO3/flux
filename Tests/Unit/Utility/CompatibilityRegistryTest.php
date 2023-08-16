@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
 
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class CompatibilityRegistryTest
@@ -26,6 +28,12 @@ class CompatibilityRegistryTest extends AbstractTestCase
      */
     public function testRegisterAndRetieve(array $versionedValues, $version, $default, $expected)
     {
+        $versionClass = $this->getMockBuilder(Typo3Version::class)
+            ->setMethods(['getVersion'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $versionClass->method('getVersion')->willReturn($version);
+        GeneralUtility::addInstance(Typo3Version::class, $versionClass);
         CompatibilityRegistry::register('foo', $versionedValues);
         $this->assertEquals($expected, CompatibilityRegistry::get('foo', $version, $default));
     }
@@ -35,44 +43,44 @@ class CompatibilityRegistryTest extends AbstractTestCase
      */
     public function getRegisterAndRetrieveTestValues()
     {
-        return array(
-            'compares version correctly above highest version' => array(
-                array(
+        return [
+            'compares version correctly above highest version' => [
+                [
                     '1.0.0' => 'bar',
                     '2.0.0' => 'baz'
-                ),
+                ],
                 '4.0.0',
                 null,
                 'baz'
-            ),
-            'compares version correctly (returns NULL) below lowest version' => array(
-                array(
+            ],
+            'compares version correctly (returns NULL) below lowest version' => [
+                [
                     '1.0.0' => 'bar',
                     '2.0.0' => 'baz'
-                ),
+                ],
                 '0.5.0',
                 null,
                 null
-            ),
-            'compares version correctly between versions' => array(
-                array(
+            ],
+            'compares version correctly between versions' => [
+                [
                     '1.0.0' => 'bar',
                     '2.0.0' => 'baz'
-                ),
+                ],
                 '1.5.0',
                 null,
                 'bar'
-            ),
-            'uses default if no versionable variable applies' => array(
-                array(
+            ],
+            'uses default if no versionable variable applies' => [
+                [
                     '1.0.0' => 'bar',
                     '2.0.0' => 'baz'
-                ),
+                ],
                 '0.5.0',
                 'default',
                 'default'
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -85,6 +93,12 @@ class CompatibilityRegistryTest extends AbstractTestCase
      */
     public function testRegisterAndRetrieveFeatureFlag(array $versionedValues, $version, $flag, $expected)
     {
+        $versionClass = $this->getMockBuilder(Typo3Version::class)
+            ->setMethods(['getVersion'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $versionClass->method('getVersion')->willReturn($version);
+        GeneralUtility::addInstance(Typo3Version::class, $versionClass);
         CompatibilityRegistry::registerFeatureFlags('xyz', $versionedValues);
         $this->assertEquals($expected, CompatibilityRegistry::hasFeatureFlag('xyz', $flag, $version));
     }
@@ -94,43 +108,43 @@ class CompatibilityRegistryTest extends AbstractTestCase
      */
     public function getRegisterAndRetrieveFeatureFlagTestValues()
     {
-        return array(
-            'compares version correctly above highest version' => array(
-                array(
-                    '1.0.0' => array('foo', 'bar'),
-                    '2.0.0' => array('baz')
-                ),
+        return [
+            'compares version correctly above highest version' => [
+                [
+                    '1.0.0' => ['foo', 'bar'],
+                    '2.0.0' => ['baz']
+                ],
                 '4.0.0',
                 'baz',
                 true
-            ),
-            'compares version correctly below lowest version' => array(
-                array(
-                    '1.0.0' => array('foo', 'bar'),
-                    '2.0.0' => array('baz')
-                ),
+            ],
+            'compares version correctly below lowest version' => [
+                [
+                    '1.0.0' => ['foo', 'bar'],
+                    '2.0.0' => ['baz']
+                ],
                 '0.5.0',
                 'baz',
                 false
-            ),
-            'compares version correctly (positive) between versions' => array(
-                array(
-                    '1.0.0' => array('foo', 'bar'),
-                    '2.0.0' => array('baz')
-                ),
+            ],
+            'compares version correctly (positive) between versions' => [
+                [
+                    '1.0.0' => ['foo', 'bar'],
+                    '2.0.0' => ['baz']
+                ],
                 '1.5.0',
                 'foo',
                 true
-            ),
-            'compares version correctly (negative) between versions' => array(
-                array(
-                    '1.0.0' => array('foo', 'bar'),
-                    '2.0.0' => array('baz')
-                ),
+            ],
+            'compares version correctly (negative) between versions' => [
+                [
+                    '1.0.0' => ['foo', 'bar'],
+                    '2.0.0' => ['baz']
+                ],
                 '1.5.0',
                 'baz',
                 false
-            ),
-        );
+            ],
+        ];
     }
 }

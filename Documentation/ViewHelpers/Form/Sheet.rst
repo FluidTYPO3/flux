@@ -24,7 +24,7 @@ name
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of the group, used as FlexForm sheet name, must be FlexForm XML-valid tag name string
 

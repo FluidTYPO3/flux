@@ -8,33 +8,26 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\RecordService;
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * DynamicFlexFormTest
  */
 class DynamicFlexFormTest extends AbstractTestCase
 {
-    protected ?FluxService $fluxService = null;
-    protected ?WorkspacesAwareRecordService $recordService = null;
+    protected ?FlexFormBuilder $flexFormBuilder = null;
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['getFromCaches', 'setInCaches', 'resolvePrimaryConfigurationProvider'])
+        $this->flexFormBuilder = $this->getMockBuilder(FlexFormBuilder::class)
+            ->setMethods(['resolveDataStructureIdentifier', 'parseDataStructureByIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        GeneralUtility::addInstance(FlexFormBuilder::class, $this->flexFormBuilder);
 
         parent::setUp();
     }
@@ -43,209 +36,30 @@ class DynamicFlexFormTest extends AbstractTestCase
     {
         $subject = new DynamicFlexForm();
         self::assertInstanceOf(
-            ObjectManagerInterface::class,
-            $this->getInaccessiblePropertyValue($subject, 'objectManager')
-        );
-        self::assertInstanceOf(
-            FluxService::class,
-            $this->getInaccessiblePropertyValue($subject, 'configurationService')
-        );
-        self::assertInstanceOf(
-            RecordService::class,
-            $this->getInaccessiblePropertyValue($subject, 'recordService')
+            FlexFormBuilder::class,
+            $this->getInaccessiblePropertyValue($subject, 'flexFormBuilder')
         );
     }
 
-    /**
-     * @return void
-     */
-    public function testReturnsEmptyDataStructureIdentifierForNonMatchingTableAndField()
+    public function testGetDataStructureIdentifierPreProcessDelegatesToFlexFormBuilder(): void
     {
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(null);
-
-        $subject = new DynamicFlexForm();
-
-        $result = $subject->getDataStructureIdentifierPreProcess(
-            ['foo' => 'bar'],
-            'sometable',
-            'somefield',
-            ['uid' => 123]
-        );
-        $this->assertSame([], $result);
-    }
-
-    /**
-     * @param array $identifier
-     * @dataProvider getEmptyDataStructureIdentifierTestValues
-     */
-    public function testReturnsEmptyDataStructureForIdentifier(array $identifier)
-    {
-        $subject = $this->getMockBuilder(DynamicFlexForm::class)
-            ->setMethods(['dummy'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $result = $subject->parseDataStructureByIdentifierPreProcess($identifier);
-        $this->assertSame([], $result);
-    }
-
-    public function testDataStructureForIdentifierFromCache()
-    {
-        $structure = ['foo' => 'bar'];
-        $subject = new DynamicFlexForm();
-        $this->fluxService->method('getFromCaches')->willReturn($structure);
-        $result = $subject->parseDataStructureByIdentifierPreProcess(['type' => 'flux', 'record' => ['uid' => 123]]);
-        $this->assertSame($structure, $result);
-    }
-
-    public function testParseDataStructureForIdentifierThrowsExceptionIfUnableToLoadRecord()
-    {
-        $subject = $this->getMockBuilder(DynamicFlexForm::class)
-            ->setMethods(['loadRecordWithoutRestriction'])
-            ->getMock();
-        $subject->method('loadRecordWithoutRestriction')->willReturn(null);
-
-        self::expectExceptionCode(1668011937);
-        $subject->parseDataStructureByIdentifierPreProcess(
-            ['type' => 'flux', 'tableName' => 'table', 'record' => ['uid' => 123]]
-        );
-    }
-
-    public function testReturnsEmptyDataStructureForIdentifierReturnsEmptyArrayWithoutProvider()
-    {
-        $subject = $this->getMockBuilder(DynamicFlexForm::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
-            ->getMock();
-        $subject->method('resolvePrimaryConfigurationProvider')->willReturn(null);
-
-        $result = $subject->parseDataStructureByIdentifierPreProcess(
-            [
-                'type' => 'flux',
-                'tableName' => 'table',
-                'fieldName' => 'field',
-                'record' => ['uid' => 123, 'foo' => 'bar']
-            ]
-        );
-        self::assertSame([], $result);
-    }
-
-    public function testParseDataStructureForIdentifierCachesStaticDataSourceFromProvider()
-    {
-        $form = Form::create();
-        $form->setOption(Form::OPTION_STATIC, true);
-
-        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
-        $provider->method('getForm')->willReturn($form);
-
-        $subject = new DynamicFlexForm();
-
-        $this->fluxService->expects(self::once())->method('setInCaches');
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
-
-        $result = $subject->parseDataStructureByIdentifierPreProcess(
-            [
-                'type' => 'flux',
-                'tableName' => 'table',
-                'fieldName' => 'field',
-                'record' => ['uid' => 123, 'foo' => 'bar']
-            ]
-        );
-        self::assertSame([], $result);
-    }
-
-    public function testParseDataStructureForIdentifierReturnsDataSourceFromProvider()
-    {
-        $form = Form::create();
-
-        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
-        $provider->method('getForm')->willReturn($form);
-
-        $subject = new DynamicFlexForm();
-
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
-
-        $result = $subject->parseDataStructureByIdentifierPreProcess(
-            [
-                'type' => 'flux',
-                'tableName' => 'table',
-                'fieldName' => 'field',
-                'record' => ['uid' => 123, 'foo' => 'bar']
-            ]
-        );
-        self::assertSame(['ROOT' => ['el' => []]], $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function getEmptyDataStructureIdentifierTestValues()
-    {
-        return [
-            [
-                ['type' => 'unsupported']
-            ],
-            [
-                ['type' => 'flux', 'record' => null]
-            ],
-        ];
-    }
-
-    public function testGetDataStructureIdentifierPreProcess(): void
-    {
-        $GLOBALS['TCA']['tt_content'] = [
-            'ctrl' => [
-                'type' => 'typefield',
-                'useColumnsForDefaultValues' => 'pi_flexform',
-                'typefield' => [
-                    'subtype_value_field' => 'subtypefield',
-                ],
-            ],
-            'columns' => [
-                'pi_flexform' => [
-                    'config' => [],
-                ],
-            ],
-        ];
-
-        $record = [
-            'uid' => 0,
-            'pi_flexform' => '',
-        ];
-
-        $expected = [
-            'type' => 'flux',
-            'tableName' => 'tt_content',
-            'fieldName' => 'pi_flexform',
-            'record' => [
-                'pi_flexform' => '',
-            ],
-            'originalIdentifier' => 'ds-identifier',
-        ];
-
-        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
-
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
-
+        $GLOBALS['TCA']['table']['columns']['field']['config'] = [];
         $subject = $this->getMockBuilder(DynamicFlexForm::class)
             ->setMethods(['getDataStructureIdentifier'])
             ->getMock();
-        $subject->method('getDataStructureIdentifier')->willReturn('ds-identifier');
-
-        $result = $subject->getDataStructureIdentifierPreProcess([], 'tt_content', 'pi_flexform', $record);
-
-        unset($GLOBALS['TCA']['tt_content']['ctrl']);
-
-        self::assertSame($expected, $result);
+        $subject->method('getDataStructureIdentifier')->willReturn('{"foo": "bar"}');
+        $this->flexFormBuilder->method('resolveDataStructureIdentifier')
+            ->with()
+            ->willReturn(['foo' => 'bar']);
+        $output = $subject->getDataStructureIdentifierPreProcess([], 'table', 'field', ['uid' => 1]);
+        self::assertSame(['foo' => 'bar'], $output);
     }
 
-    protected function createObjectManagerInstance(): ObjectManagerInterface
+    public function testParseDataStructureByIdentifierPreProcessDelegatesToFlexFormBuilder(): void
     {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [FluxService::class, $this->fluxService],
-                [WorkspacesAwareRecordService::class, $this->recordService]
-            ]
-        );
-        return $instance;
+        $identifier = ['foo' => 'bar'];
+        $subject = new DynamicFlexForm();
+        $this->flexFormBuilder->expects(self::once())->method('parseDataStructureByIdentifier')->with($identifier);
+        $subject->parseDataStructureByIdentifierPreProcess($identifier);
     }
 }

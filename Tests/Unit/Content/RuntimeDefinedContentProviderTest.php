@@ -8,56 +8,78 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
+use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinitionRepository;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleRecordBasedContentTypeDefinition;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\Service\CacheService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class RuntimeDefinedContentProviderTest extends AbstractTestCase
 {
-    protected ?ContentTypeManager $contentTypeManager;
-    protected ?ContentTypeDefinitionInterface $contentTypeDefinition;
+    protected FormDataTransformer $formDataTransformer;
+    protected WorkspacesAwareRecordService $recordService;
+    protected ViewBuilder $viewBuilder;
+    protected CacheService $cacheService;
+    protected ContentTypeManager $contentTypeManager;
+    protected ContentTypeDefinitionInterface $contentTypeDefinition;
 
     protected function setUp(): void
     {
         $this->contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['determineContentTypeForRecord'])
+            ->onlyMethods(['determineContentTypeForRecord'])
             ->disableOriginalConstructor()
             ->getMock();
-
         $this->contentTypeDefinition = $this->getMockBuilder(FluidRenderingContentTypeDefinitionInterface::class)
             ->getMockForAbstractClass();
-
-        AccessibleRecordBasedContentTypeDefinition::setTypes(
-            [
-                $this->getMockBuilder(RecordBasedContentTypeDefinition::class)->disableOriginalConstructor()->getMock()
-            ]
-        );
+        $this->formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->onlyMethods(['getSettingsForExtensionName', 'getTypoScriptByPath'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->singletonInstances[RecordBasedContentTypeDefinitionRepository::class]
+            = $this->getMockBuilder(RecordBasedContentTypeDefinitionRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         parent::setUp();
     }
 
-    protected function tearDown(): void
+    protected function getConstructorArguments(): array
     {
-        AccessibleRecordBasedContentTypeDefinition::setTypes([]);
-
-        parent::tearDown();
-    }
-
-    protected function createInstance(): RuntimeDefinedContentProvider
-    {
-        $instance = parent::createInstance();
-        $instance->injectContentTypes($this->contentTypeManager);
-        return $instance;
+        return [
+            $this->formDataTransformer,
+            $this->recordService,
+            $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+            $this->cacheService,
+            $this->typoScriptService,
+            $this->contentTypeManager,
+        ];
     }
 
     public function testGetControllerActionFromRecordReturnsProxy(): void
     {
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         self::assertSame('proxy', $subject->getControllerActionFromRecord([]));
     }
 
@@ -66,7 +88,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($this->contentTypeDefinition);
         $this->contentTypeDefinition->method('getExtensionIdentity')->willReturn('test');
 
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         self::assertSame('test', $subject->getExtensionKey(['CType' => 'test']));
     }
 
@@ -75,7 +97,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn(null);
 
         self::expectExceptionCode(1556109085);
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         $subject->getExtensionKey(['CType' => 'test']);
     }
 
@@ -84,7 +106,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($this->contentTypeDefinition);
         $this->contentTypeDefinition->method('getExtensionIdentity')->willReturn('test');
 
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         self::assertSame('test', $subject->getControllerExtensionKeyFromRecord(['CType' => 'test']));
     }
 
@@ -95,7 +117,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($this->contentTypeDefinition);
         $this->contentTypeDefinition->method('getForm')->willReturn($form);
 
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         self::assertSame($form, $subject->getForm(['CType' => 'test']));
     }
 
@@ -106,7 +128,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($this->contentTypeDefinition);
         $this->contentTypeDefinition->method('getGrid')->willReturn($grid);
 
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         self::assertSame($grid, $subject->getGrid(['CType' => 'test']));
     }
 
@@ -115,7 +137,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($this->contentTypeDefinition);
         $this->contentTypeDefinition->method('getTemplatePathAndFilename')->willReturn('test');
 
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         self::assertSame('test', $subject->getTemplatePathAndFilename(['CType' => 'test']));
     }
 
@@ -128,7 +150,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($this->contentTypeDefinition);
         $this->contentTypeDefinition->method('getForm')->willReturn($form);
 
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         $subject->postProcessDataStructure($record, $dataStructure, []);
 
         $expected = [
@@ -149,12 +171,13 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
     {
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($this->contentTypeDefinition);
 
-        $subject = $this->createInstance();
+        $subject = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
 
         $record = ['CType' => 'test'];
 
         $expected = [
             'record' => $record,
+            'settings' => [],
             'page' => [],
             'user' => [],
             'contentType' => $this->contentTypeDefinition,
@@ -173,7 +196,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         ?ContentTypeDefinitionInterface $contentTypeDefinition
     ): void {
         $this->contentTypeManager->method('determineContentTypeForRecord')->willReturn($contentTypeDefinition);
-        $instance = $this->createInstance();
+        $instance = new RuntimeDefinedContentProvider(...$this->getConstructorArguments());
         self::assertSame($expected, $instance->trigger([], $table, $field));
     }
 

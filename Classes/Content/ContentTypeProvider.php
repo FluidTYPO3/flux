@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Content;
 
 /*
@@ -9,6 +10,7 @@ namespace FluidTYPO3\Flux\Content;
  */
 
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Interfaces\ContentTypeProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
@@ -32,16 +34,16 @@ class ContentTypeProvider extends AbstractProvider implements
     DataStructureProviderInterface,
     FormProviderInterface
 {
-    protected $tableName = 'content_types';
-    protected $fieldName = 'content_configuration';
-    protected $extensionKey = 'FluidTYPO3.Builder';
+    protected ?string $tableName = 'content_types';
+    protected ?string $fieldName = 'content_configuration';
+    protected string $extensionKey = 'FluidTYPO3.Flux';
 
-    public function trigger(array $row, $table, $field, $extensionKey = null)
+    public function trigger(array $row, ?string $table, ?string $field, ?string $extensionKey = null): bool
     {
         return $table === $this->tableName && ($field === $this->fieldName || $field === null);
     }
 
-    public function getForm(array $row)
+    public function getForm(array $row, ?string $forField = null): ?Form
     {
         $contentType = $this->resolveContentTypeDefinition($row);
         /** @var ContentTypeForm $form */

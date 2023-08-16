@@ -12,21 +12,14 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
-/**
- * AbstractFieldTest
- */
 abstract class AbstractFieldTest extends AbstractFormTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'enabled' => true);
+    protected array $chainProperties = ['name' => 'test', 'label' => 'Test field', 'enabled' => true];
 
     /**
      * @test
      */
-    public function canGetAndSetInheritEmpty()
+    public function canGetAndSetInheritEmpty(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $this->assertFalse($instance->setInheritEmpty(false)->getInheritEmpty());
@@ -36,7 +29,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canGetAndSetInherit()
+    public function canGetAndSetInherit(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $this->assertFalse($instance->setInherit(false)->getInherit());
@@ -46,7 +39,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canUseClearableProperty()
+    public function canUseClearableProperty(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $this->assertFalse($instance->setClearable(false)->getClearable());
@@ -56,7 +49,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsEmptyArrayForDisabledVersionOfField()
+    public function returnsEmptyArrayForDisabledVersionOfField(): void
     {
         $instance = $this->canChainAllChainableSetters();
         $instance->setEnabled(false);
@@ -68,10 +61,10 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsEmptyLabelIfFormExtensionNameIsEmpty()
+    public function returnsEmptyLabelIfFormExtensionNameIsEmpty(): void
     {
         $instance = $this->createInstance();
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $form->add($instance);
         $form->setExtensionName(null);
         $this->assertEmpty($form->getLabel());
@@ -80,71 +73,47 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canUseWizards()
-    {
-        $instance = $this->canChainAllChainableSetters();
-        $wizard = $instance->createWizard('Add', 'add');
-        $added = $instance->add($wizard);
-        $this->assertSame($added, $instance);
-        $fetched = $instance->get('add');
-        $bad = $instance->get('bad');
-        $this->assertFalse($bad);
-        $this->assertSame($fetched, $wizard);
-        $removed = $instance->remove('add');
-        $this->assertSame($removed, $wizard);
-        $bad = $instance->remove('bad');
-        $this->assertTrue(false === $bad);
-        $instance->add($wizard);
-        $built = $this->performTestBuild($instance);
-        $this->assertIsArray($built);
-        $this->assertTrue($instance->hasChildren());
-    }
-
-    /**
-     * @test
-     */
-    public function canCreateFromDefinition()
+    public function canCreateFromDefinition(): void
     {
         $properties = $this->chainProperties;
         $class = $this->getObjectClassName();
         $properties['type'] = implode('/', array_slice(explode('\\', $class), 4, 1));
-        ;
-        $instance = call_user_func_array(array($class, 'create'), array($properties));
+        $instance = call_user_func_array([$class, 'create'], [$properties]);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
     }
 
     /**
      * @test
      */
-    public function throwsExceptionOnInvalidFieldTypeWhenCreatingFromDefinition()
+    public function throwsExceptionOnInvalidFieldTypeWhenCreatingFromDefinition(): void
     {
         $properties = $this->chainProperties;
         $properties['type'] = 'InvalidType';
         $this->expectExceptionCode(1375373527);
-        call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+        call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
     }
 
     /**
      * @test
      */
-    public function canCreateFromSettingsUsingFullClassName()
+    public function canCreateFromSettingsUsingFullClassName(): void
     {
         $properties = $this->chainProperties;
         $properties['type'] = $this->getObjectClassName();
-        $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+        $instance = call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
         $this->assertInstanceOf(Form\FormInterface::class, $instance);
     }
 
     /**
      * @test
      */
-    public function canCreateSectionUsingShortcutMethod()
+    public function canCreateSectionUsingShortcutMethod(): void
     {
-        $definition = array(
+        $definition = [
             'name' => 'test',
             'label' => 'Test section',
             'type' => 'Section'
-        );
+        ];
         $section = AbstractFormField::create($definition);
         $this->assertInstanceOf(Form\Container\Section::class, $section);
         $this->assertSame($definition['name'], $section->getName());
@@ -153,7 +122,7 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function prefixesParentObjectNameToAutoLabelIfInsideObject()
+    public function prefixesParentObjectNameToAutoLabelIfInsideObject(): void
     {
         $instance = $this->createInstance();
         $parent = Form\Container\SectionObject::create();
@@ -167,35 +136,11 @@ abstract class AbstractFieldTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canBuildWithClearableFlag()
+    public function canBuildWithClearableFlag(): void
     {
         $instance = $this->createInstance();
         $instance->setClearable(true);
         $result = $this->performTestBuild($instance);
-        $this->assertNotEmpty($result['config']['wizards']);
-    }
-
-    /**
-     * @test
-     */
-    public function modifyCreatesWizards()
-    {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $field = $form->createField('Input', 'testfield');
-        $this->assertFalse($field->has('add'));
-        $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
-        $this->assertTrue($field->has('add'));
-    }
-
-    /**
-     * @test
-     */
-    public function modifyModifiesWizards()
-    {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
-        $field = $form->createField('Input', 'testfield');
-        $wizard = $field->createWizard('Add', 'add', 'Original label');
-        $field->modify(array('wizards' => array('test' => array('type' => 'Add', 'name' => 'add', 'label' => 'Test'))));
-        $this->assertEquals('Test', $wizard->getLabel());
+        $this->assertNotEmpty($result['config']);
     }
 }

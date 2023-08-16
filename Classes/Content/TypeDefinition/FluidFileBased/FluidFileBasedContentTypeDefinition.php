@@ -15,8 +15,6 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Fluid File-based Content Type Definition
@@ -26,25 +24,10 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  */
 class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDefinitionInterface
 {
-    /**
-     * @var string
-     */
-    protected $extensionIdentity = '';
-
-    /**
-     * @var string
-     */
-    protected $basePath = '';
-
-    /**
-     * @var string
-     */
-    protected $relativeFilePath = '';
-
-    /**
-     * @var string
-     */
-    protected $providerClassName = Provider::class;
+    protected string $extensionIdentity = '';
+    protected string $basePath = '';
+    protected string $relativeFilePath = '';
+    protected string $providerClassName = Provider::class;
 
     /**
      * Constructs a Fluid file-based content type definition
@@ -73,11 +56,7 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getForm(array $record = []): Form
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
-        $provider = $providerResolver->resolvePrimaryConfigurationProvider(
+        $provider = $this->getProviderResolver()->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record
@@ -93,17 +72,15 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getGrid(array $record = []): Form\Container\Grid
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
-        $provider = $providerResolver->resolvePrimaryConfigurationProvider(
+        $provider = $this->getProviderResolver()->resolvePrimaryConfigurationProvider(
             'tt_content',
             'pi_flexform',
             $record
         );
         if ($provider === null) {
-            return Form\Container\Grid::create();
+            /** @var Form\Container\Grid $grid */
+            $grid = Form\Container\Grid::create();
+            return $grid;
         }
         return $provider->getGrid($record);
     }
@@ -150,5 +127,12 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
     public function getTemplatePathAndFilename(): string
     {
         return $this->basePath . $this->relativeFilePath;
+    }
+
+    protected function getProviderResolver(): ProviderResolver
+    {
+        /** @var ProviderResolver $providerResolver */
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+        return $providerResolver;
     }
 }

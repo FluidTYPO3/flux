@@ -12,46 +12,33 @@ use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
-/**
- * ResolveUtilityTest
- */
 class ResolverTest extends AbstractTestCase
 {
-    /**
-     * @test
-     */
-    public function returnsClassIfClassExists()
+    public function testReturnsClassIfClassExists(): void
     {
         $resolver = new Resolver();
-        $className = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Content');
-        $instance = new $className();
-        $this->assertInstanceOf(AbstractFluxController::class, $instance);
+        $className = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName(
+            'FluidTYPO3.Flux',
+            'Content'
+        );
+        $this->assertTrue(class_exists($className));
     }
 
-    /**
-     * @test
-     */
-    public function returnsNullIfControllerClassNameDoesNotExist()
+    public function testReturnsNullIfControllerClassNameDoesNotExist(): void
     {
         $resolver = new Resolver();
         $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Void');
         $this->assertNull($result);
     }
 
-    /**
-     * @test
-     */
-    public function throwsExceptionForClassIfSetToHardFail()
+    public function testThrowsExceptionForClassIfSetToHardFail(): void
     {
         $resolver = new Resolver();
         $this->expectExceptionCode(1364498093);
         $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('FluidTYPO3.Flux', 'Void', true);
     }
 
-    /**
-     * @test
-     */
-    public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassExists()
+    public function testCanDetectControllerPresenceFromExtensionKeyAndControllerType(): void
     {
         $resolver = new Resolver();
         class_alias(AbstractFluxController::class, 'Void\NoName\Controller\FakeController');
@@ -59,10 +46,7 @@ class ResolverTest extends AbstractTestCase
         $this->assertSame('Void\NoName\Controller\FakeController', $result);
     }
 
-    /**
-     * @test
-     */
-    public function canDetectControllerClassPresenceFromExtensionKeyAndControllerTypeWithVendorNameWhenClassDoesNotExist()
+    public function testCanDetectControllerPresenceFromExtensionKeyAndControllerTypeWhenClassDoesNotExist(): void
     {
         $resolver = new Resolver();
         $result = $resolver->resolveFluxControllerClassNameByExtensionKeyAndControllerName('Void.NoName', 'Void');

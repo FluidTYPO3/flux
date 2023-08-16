@@ -8,140 +8,93 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Enum\InlineFieldControls;
+use FluidTYPO3\Flux\Enum\InlineFieldNewRecordButtonPosition;
 
-/**
- * AbstractInlineFormField
- */
 abstract class AbstractInlineFormField extends AbstractRelationFormField implements InlineRelationFieldInterface
 {
-
     /**
      * If true, all child records are shown as collapsed.
-     *
-     * @var boolean
      */
-    protected $collapseAll = false;
+    protected bool $collapseAll = false;
 
     /**
      * Show only one expanded record at any time. If a new record is expanded,
      * all others are collapsed.
-     *
-     * @var boolean
      */
-    protected $expandSingle = false;
+    protected bool $expandSingle = false;
 
     /**
      * Add the foreign table's title to the 'Add new' link (ie. 'Add new (sometable)')
-     *
-     * @var boolean
      */
-    protected $newRecordLinkAddTitle = false;
+    protected bool $newRecordLinkAddTitle = false;
 
     /**
      * Record link position - can be either \FluidTYPO3\Flux\Form::POSITION_TOP,
      * \FluidTYPO3\Flux\Form::POSITION_BOTTOM, \FluidTYPO3\Flux\Form::POSITION_BOTH or
      * \FluidTYPO3\Flux\Form::POSITION_NONE.
-     *
-     * @var string
      */
-    protected $newRecordLinkPosition = Form::POSITION_TOP;
+    protected string $newRecordLinkPosition = InlineFieldNewRecordButtonPosition::TOP;
 
     /**
      * For use on bidirectional relations using an intermediary table.
      * In combinations, it's possible to edit attributes and the related child record.
-     *
-     * @var boolean
      */
-    protected $useCombination = false;
+    protected bool $useCombination = false;
 
     /**
      * Allow manual sorting of child objects.
-     *
-     * @var boolean
      */
-    protected $useSortable = false;
+    protected bool $useSortable = false;
 
     /**
      * Show unlocalized records which are in the original language, but not yet localized.
-     *
-     * @var boolean
      */
-    protected $showPossibleLocalizationRecords = false;
+    protected bool $showPossibleLocalizationRecords = false;
 
     /**
      * Show records which were once localized but do not exist in the original
      * language anymore.
-     *
-     * @var boolean
      */
-    protected $showRemovedLocalizationRecords = false;
+    protected bool $showRemovedLocalizationRecords = false;
 
     /**
      * Defines whether to show the 'localize all records' link to fetch untranslated
      * records from the original language.
-     *
-     * @var boolean
      */
-    protected $showAllLocalizationLink = false;
+    protected bool $showAllLocalizationLink = false;
 
     /**
      * Defines whether to show a 'synchronize' link to update to a 1:1 translation with
      * the original language.
-     *
-     * @var boolean
      */
-    protected $showSynchronizationLink = false;
+    protected bool $showSynchronizationLink = false;
 
     /**
      * Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete'
      * and 'localize'. Set either one to TRUE or FALSE to show or hide it.
-     *
-     * @var array
      */
-    protected $enabledControls = [
-        Form::CONTROL_INFO => false,
-        Form::CONTROL_NEW => true,
-        Form::CONTROL_DRAGDROP => true,
-        Form::CONTROL_SORT => true,
-        Form::CONTROL_HIDE => true,
-        Form::CONTROL_DELETE => false,
-        Form::CONTROL_LOCALISE => false,
+    protected array $enabledControls = [
+        InlineFieldControls::INFO => false,
+        InlineFieldControls::NEW => true,
+        InlineFieldControls::DRAGDROP => true,
+        InlineFieldControls::SORT => true,
+        InlineFieldControls::HIDE => true,
+        InlineFieldControls::DELETE => false,
+        InlineFieldControls::LOCALIZE => false,
     ];
 
     /**
      * Array of field=>value pairs which are always used in conditions as well as inserted into new
      * records created through this form component.
-     *
-     * @var array
      */
-    protected $foreignMatchFields = [];
+    protected array $foreignMatchFields = [];
+    protected ?array $headerThumbnail = null;
+    protected ?string $levelLinksPosition = null;
+    protected array $overrideChildTca = [];
+    protected array $foreignTypes = [];
 
-    /**
-     * @var array
-     */
-    protected $headerThumbnail = null;
-
-    /**
-     * @var string
-     */
-    protected $levelLinksPosition = null;
-
-    /**
-     * @var array
-     */
-    protected $overrideChildTca;
-
-    /**
-     * @var array
-     */
-    protected $foreignTypes = null;
-
-    /**
-     * @param string $type
-     * @return array
-     */
-    public function prepareConfiguration($type)
+    public function prepareConfiguration(string $type): array
     {
         $configuration = parent::prepareConfiguration($type);
         $configuration['foreign_match_fields'] = $this->getForeignMatchFields();
@@ -164,324 +117,183 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
         ];
         $configuration['behaviour'] = [
             'localizationMode' => $this->getLocalizationMode(),
-            'localizeChildrenAtParentLocalization' => $this->getLocalizeChildrenAtParentLocalization(),
             'disableMovingChildrenWithParent' => $this->getDisableMovingChildrenWithParent(),
         ];
         return $configuration;
     }
 
-    /**
-     * @param boolean $collapseAll
-     * @return AbstractInlineFormField
-     */
-    public function setCollapseAll($collapseAll)
+    public function setCollapseAll(bool $collapseAll): self
     {
         $this->collapseAll = $collapseAll;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getCollapseAll()
+    public function getCollapseAll(): bool
     {
         return $this->collapseAll;
     }
 
-    /**
-     * @param array $enabledControls
-     * @return AbstractInlineFormField
-     */
-    public function setEnabledControls(array $enabledControls)
+    public function setEnabledControls(array $enabledControls): self
     {
         $this->enabledControls = $enabledControls;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getEnabledControls()
+    public function getEnabledControls(): array
     {
         return $this->enabledControls;
     }
 
-    /**
-     * @param boolean $expandSingle
-     * @return AbstractInlineFormField
-     */
-    public function setExpandSingle($expandSingle)
+    public function setExpandSingle(bool $expandSingle): self
     {
         $this->expandSingle = $expandSingle;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getExpandSingle()
+    public function getExpandSingle(): bool
     {
         return $this->expandSingle;
     }
 
-    /**
-     * @param boolean $newRecordLinkAddTitle
-     * @return AbstractInlineFormField
-     */
-    public function setNewRecordLinkAddTitle($newRecordLinkAddTitle)
+    public function setNewRecordLinkAddTitle(bool $newRecordLinkAddTitle): self
     {
         $this->newRecordLinkAddTitle = $newRecordLinkAddTitle;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getNewRecordLinkAddTitle()
+    public function getNewRecordLinkAddTitle(): bool
     {
         return $this->newRecordLinkAddTitle;
     }
 
-    /**
-     * @param string $newRecordLinkPosition
-     * @return AbstractInlineFormField
-     */
-    public function setNewRecordLinkPosition($newRecordLinkPosition)
+    public function setNewRecordLinkPosition(string $newRecordLinkPosition): self
     {
         $this->newRecordLinkPosition = $newRecordLinkPosition;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getNewRecordLinkPosition()
+    public function getNewRecordLinkPosition(): string
     {
         return $this->newRecordLinkPosition;
     }
 
-    /**
-     * @param boolean $showAllLocalizationLink
-     * @return AbstractInlineFormField
-     */
-    public function setShowAllLocalizationLink($showAllLocalizationLink)
+    public function setShowAllLocalizationLink(bool $showAllLocalizationLink): self
     {
         $this->showAllLocalizationLink = $showAllLocalizationLink;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getShowAllLocalizationLink()
+    public function getShowAllLocalizationLink(): bool
     {
         return $this->showAllLocalizationLink;
     }
 
-    /**
-     * @param boolean $showPossibleLocalizationRecords
-     * @return AbstractInlineFormField
-     */
-    public function setShowPossibleLocalizationRecords($showPossibleLocalizationRecords)
+    public function setShowPossibleLocalizationRecords(bool $showPossibleLocalizationRecords): self
     {
         $this->showPossibleLocalizationRecords = $showPossibleLocalizationRecords;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getShowPossibleLocalizationRecords()
+    public function getShowPossibleLocalizationRecords(): bool
     {
         return $this->showPossibleLocalizationRecords;
     }
 
-    /**
-     * @param boolean $showRemovedLocalizationRecords
-     * @return AbstractInlineFormField
-     */
-    public function setShowRemovedLocalizationRecords($showRemovedLocalizationRecords)
+    public function setShowRemovedLocalizationRecords(bool $showRemovedLocalizationRecords): self
     {
         $this->showRemovedLocalizationRecords = $showRemovedLocalizationRecords;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getShowRemovedLocalizationRecords()
+    public function getShowRemovedLocalizationRecords(): bool
     {
         return $this->showRemovedLocalizationRecords;
     }
 
-    /**
-     * @param boolean $showSynchronizationLink
-     * @return AbstractInlineFormField
-     */
-    public function setShowSynchronizationLink($showSynchronizationLink)
+    public function setShowSynchronizationLink(bool $showSynchronizationLink): self
     {
         $this->showSynchronizationLink = $showSynchronizationLink;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getShowSynchronizationLink()
+    public function getShowSynchronizationLink(): bool
     {
         return $this->showSynchronizationLink;
     }
 
-    /**
-     * @param boolean $useCombination
-     * @return AbstractInlineFormField
-     */
-    public function setUseCombination($useCombination)
+    public function setUseCombination(bool $useCombination): self
     {
         $this->useCombination = $useCombination;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getUseCombination()
+    public function getUseCombination(): bool
     {
         return $this->useCombination;
     }
 
-    /**
-     * @param boolean $useSortable
-     * @return AbstractInlineFormField
-     */
-    public function setUseSortable($useSortable)
+    public function setUseSortable(bool $useSortable): self
     {
         $this->useSortable = $useSortable;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getUseSortable()
+    public function getUseSortable(): bool
     {
         return $this->useSortable;
     }
 
-    /**
-     * @param array $foreignMatchFields
-     * @return AbstractInlineFormField
-     */
-    public function setForeignMatchFields(array $foreignMatchFields)
+    public function setForeignMatchFields(array $foreignMatchFields): self
     {
         $this->foreignMatchFields = $foreignMatchFields;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getForeignMatchFields()
+    public function getForeignMatchFields(): array
     {
         return $this->foreignMatchFields;
     }
 
-    /**
-     * @param array $headerThumbnail
-     * @return AbstractInlineFormField
-     */
-    public function setHeaderThumbnail(array $headerThumbnail)
+    public function setHeaderThumbnail(array $headerThumbnail): self
     {
         $this->headerThumbnail = $headerThumbnail;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getHeaderThumbnail()
+    public function getHeaderThumbnail(): ?array
     {
         return $this->headerThumbnail;
     }
 
-    /**
-     * @param string $levelLinksPosition
-     * @return AbstractInlineFormField
-     */
-    public function setLevelLinksPosition($levelLinksPosition)
+    public function setLevelLinksPosition(?string $levelLinksPosition): self
     {
         $this->levelLinksPosition = $levelLinksPosition;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getLevelLinksPosition()
+    public function getLevelLinksPosition(): ?string
     {
         return $this->levelLinksPosition;
     }
 
-    /**
-     * @param array $foreignSelectorFieldTcaOverride
-     * @return RelationFieldInterface
-     * @deprecated Please switch to overrideChildTca
-     * @codeCoverageIgnore
-     */
-    public function setForeignSelectorFieldTcaOverride($foreignSelectorFieldTcaOverride)
-    {
-        $this->overrideChildTca = [
-            'columns' => [
-                'uid_local' => $foreignSelectorFieldTcaOverride
-            ]
-        ];
-        return $this;
-    }
-
-    /**
-     * @return array
-     * @deprecated Please switch to overrideChildTca
-     * @codeCoverageIgnore
-     */
-    public function getForeignSelectorFieldTcaOverride()
-    {
-        return isset($this->overrideChildTca['columns']['uid_local'])
-            ? $this->overrideChildTca['columns']['uid_local']
-            : null;
-    }
-
-    /**
-     * @param array $overrideChildTca
-     * @return RelationFieldInterface
-     */
-    public function setOverrideChildTca($overrideChildTca)
+    public function setOverrideChildTca(array $overrideChildTca): self
     {
         $this->overrideChildTca = $overrideChildTca;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getOverrideChildTca()
+    public function getOverrideChildTca():array
     {
         return $this->overrideChildTca;
     }
 
-    /**
-     * @param array|null $foreignTypes
-     * @return RelationFieldInterface
-     */
-    public function setForeignTypes($foreignTypes)
+    public function setForeignTypes(array $foreignTypes): self
     {
-        $this->foreignTypes = $foreignTypes ?? [];
+        $this->foreignTypes = $foreignTypes;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getForeignTypes()
+    public function getForeignTypes(): array
     {
         return $this->foreignTypes;
     }

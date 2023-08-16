@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -11,47 +12,18 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
-/**
- * Input
- */
 class Input extends AbstractFormField implements FieldInterface
 {
     const DEFAULT_VALIDATE = 'trim';
 
-    /**
-     * @var integer
-     */
-    protected $size = 32;
+    protected int $size = 32;
+    protected ?int $maxCharacters = null;
+    protected ?int $minimum = null;
+    protected ?int $maximum = null;
+    protected ?string $placeholder = null;
+    protected ?string $validate = self::DEFAULT_VALIDATE;
 
-    /**
-     * @var integer|null
-     */
-    protected $maxCharacters;
-
-    /**
-     * @var integer|null
-     */
-    protected $minimum;
-
-    /**
-     * @var integer|null
-     */
-    protected $maximum;
-
-    /**
-     * @var string|null
-     */
-    protected $placeholder;
-
-    /**
-     * @var string
-     */
-    protected $validate = self::DEFAULT_VALIDATE;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $minimum = $this->getMinimum();
         $maximum = $this->getMaximum();
@@ -70,92 +42,57 @@ class Input extends AbstractFormField implements FieldInterface
         return $configuration;
     }
 
-    /**
-     * @param integer $maxCharacters
-     * @return Input
-     */
-    public function setMaxCharacters($maxCharacters)
+    public function setMaxCharacters(?int $maxCharacters): self
     {
         $this->maxCharacters = $maxCharacters;
         return $this;
     }
 
-    /**
-     * @return integer|null
-     */
-    public function getMaxCharacters()
+    public function getMaxCharacters(): ?int
     {
         return $this->maxCharacters;
     }
 
-    /**
-     * @param integer $maximum
-     * @return Input
-     */
-    public function setMaximum($maximum)
+    public function setMaximum(?int $maximum): self
     {
         $this->maximum = $maximum;
         return $this;
     }
 
-    /**
-     * @return integer|null
-     */
-    public function getMaximum()
+    public function getMaximum(): ?int
     {
         return $this->maximum;
     }
 
-    /**
-     * @param integer $minimum
-     * @return Input
-     */
-    public function setMinimum($minimum)
+    public function setMinimum(?int $minimum): self
     {
         $this->minimum = $minimum;
         return $this;
     }
 
-    /**
-     * @return integer|null
-     */
-    public function getMinimum()
+    public function getMinimum(): ?int
     {
         return $this->minimum;
     }
 
-    /**
-     * @param string $placeholder
-     * @return Input
-     */
-    public function setPlaceholder($placeholder)
+    public function setPlaceholder(?string $placeholder): self
     {
         $this->placeholder = $placeholder;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getPlaceholder()
+    public function getPlaceholder(): ?string
     {
         return $this->placeholder;
     }
 
-    /**
-     * @param integer $size
-     * @return Input
-     */
-    public function setSize($size)
+    public function setSize(int $size): self
     {
         $this->size = $size;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getSize()
+    public function getSize(): int
     {
         return $this->size;
     }

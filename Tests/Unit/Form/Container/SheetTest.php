@@ -8,38 +8,42 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 
-/**
- * SheetTest
- */
 class SheetTest extends AbstractContainerTest
 {
-
-    /**
-     * @test
-     */
-    public function testDescriptionPropertyWorks()
+    public function testDescriptionPropertyWorks(): void
     {
         $this->assertGetterAndSetterWorks('description', 'foobardescription', 'foobardescription', true);
     }
 
-    /**
-     * @test
-     */
-    public function testShortDescriptionPropertyWorks()
+    public function testShortDescriptionPropertyWorks(): void
     {
         $this->assertGetterAndSetterWorks('shortDescription', 'foobarshortdescription', 'foobarshortdescription', true);
+    }
+
+    public function testAddTogglesTransformOnIfChildHasTransformProperty(): void
+    {
+        $form = Form::create();
+        $sheet = $form->createContainer(Form\Container\Sheet::class, 'sheet');
+        $child = new Form\Field\Input();
+        $child->setTransform('string');
+        self::assertFalse($form->hasOption(FormOption::TRANSFORM));
+        $sheet->add($child);
+        self::assertTrue($form->hasOption(FormOption::TRANSFORM));
     }
 
     /**
      * @test
      */
-    public function modifyCreatesFields()
+    public function modifyCreatesFields(): void
     {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $sheet = $form->createContainer('Sheet', 'testsheet');
-        $form->modify(array('fields' => array('test' => array('name' => 'test', 'label' => 'Test', 'type' => 'Input'))));
+        $form->modify(
+            ['fields' => ['test' => ['name' => 'test', 'label' => 'Test', 'type' => Form\Field\Input::class]]]
+        );
         $fields  = $sheet->getFields();
         $this->assertArrayHasKey('test', $fields);
     }
@@ -47,12 +51,12 @@ class SheetTest extends AbstractContainerTest
     /**
      * @test
      */
-    public function modifyModifiesFields()
+    public function modifyModifiesFields(): void
     {
-        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $sheet = $form->createContainer('Sheet', 'testsheet');
         $field = $sheet->createField('Input', 'testfield', 'Testfield');
-        $sheet->modify(array('fields' => array('testfield' => array('label' => 'Test'))));
+        $sheet->modify(['fields' => ['testfield' => ['label' => 'Test']]]);
         $fields = $sheet->getFields();
         $this->assertEquals('Test', reset($fields)->getLabel());
     }

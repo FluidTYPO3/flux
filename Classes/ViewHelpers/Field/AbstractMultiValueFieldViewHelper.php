@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -8,20 +9,15 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\MultiValueFieldInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
- *
- * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -77,16 +73,15 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
     /**
      * @template T
      * @param class-string<T> $type
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return T
+     * @return T&MultiValueFieldInterface
      */
     protected static function getPreparedComponent(
         $type,
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): MultiValueFieldInterface {
         /** @var array $arguments */
+        /** @var T&MultiValueFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setItems($arguments['items']);
         $component->setItemsProcFunc($arguments['itemsProcFunc']);

@@ -8,38 +8,29 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
 use FluidTYPO3\Flux\Form\FormInterface;
 
-/**
- * ControllerActionsTest
- */
 class ControllerActionsTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'switchableControllerActions',
         'label' => 'Test field',
         'enabled' => true,
         'controllerExtensionName' => 'FluidTYPO3.Flux',
         'pluginName' => 'API',
         'controllerName' => 'Flux',
-        'actions' => array(),
+        'actions' => [],
         'disableLocalLanguageLabels' => false,
-        'excludeActions' => array(),
+        'excludeActions' => [],
         'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang.xlf',
         'prefixOnRequiredArguments' => '*',
-        'subActions' => array()
-    );
+        'subActions' => []
+    ];
 
-    /**
-     * @return FormInterface
-     */
-    protected function createInstance()
+    protected function createInstance(): FormInterface
     {
         $className = $this->getObjectClassName();
         $instance = $this->getMockBuilder($className)->setMethods(['resolvePathToFileInExtension'])->getMock();
@@ -50,13 +41,13 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function canUseRawItems()
+    public function canUseRawItems(): void
     {
         $component = $this->createInstance();
-        $items = array(
-            array('foo' => 'Foo'),
-            array('bar' => 'Bar')
-        );
+        $items = [
+            ['foo' => 'Foo'],
+            ['bar' => 'Bar']
+        ];
         $component->setItems($items);
         $this->assertSame($items, $component->getItems());
     }
@@ -64,7 +55,7 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function canSetAndGetSeparator()
+    public function canSetAndGetSeparator(): void
     {
         $component = $this->createInstance();
         $separator = ' :: ';
@@ -75,10 +66,10 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function convertActionListToArrayReturnsSameValueIfAlreadyArray()
+    public function convertActionListToArrayReturnsSameValueIfAlreadyArray(): void
     {
         $component = $this->createInstance();
-        $input = array();
+        $input = [];
         $output = $this->callInaccessibleMethod($component, 'convertActionListToArray', $input);
         $this->assertEquals($input, $output);
     }
@@ -86,30 +77,38 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function returnsNullIfBuiltControllerClassNameDoesNotExist()
+    public function returnsNullIfBuiltControllerClassNameDoesNotExist(): void
     {
         $component = $this->createInstance();
         $component->setControllerExtensionName('doesnotexist');
-        $className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
+        $className = $this->callInaccessibleMethod(
+            $component,
+            'buildExpectedAndExistingControllerClassName',
+            'Content'
+        );
         $this->assertNull($className);
     }
 
     /**
      * @test
      */
-    public function acceptsNamespacedClasses()
+    public function acceptsNamespacedClasses(): void
     {
-        $expectedClassName = 'FluidTYPO3\Flux\Controller\ContentController';
+        $expectedClassName = ContentController::class;
         $component = $this->createInstance();
         $component->setControllerExtensionName('FluidTYPO3.Flux');
-        $className = $this->callInaccessibleMethod($component, 'buildExpectedAndExistingControllerClassName', 'Content');
+        $className = $this->callInaccessibleMethod(
+            $component,
+            'buildExpectedAndExistingControllerClassName',
+            'Content'
+        );
         $this->assertSame($expectedClassName, $className);
     }
 
     /**
      * @test
      */
-    public function canGenerateLabelFromLanguageFile()
+    public function canGenerateLabelFromLanguageFile(): void
     {
         $extensionKey = 'flux';
         $pluginName = 'Test';
@@ -119,7 +118,9 @@ class ControllerActionsTest extends AbstractFieldTest
         $labelPath = strtolower($pluginName . '.' . $controllerName . '.' . $actionName);
         $expectedLabel = 'LLL:EXT:' . $extensionKey . '/' . $localLanguageFileRelativePath . ':' . $labelPath;
 
-        $component = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['resolvePathToFileInExtension'])->getMock();
+        $component = $this->getMockBuilder($this->createInstanceClassName())
+            ->onlyMethods(['resolvePathToFileInExtension'])
+            ->getMock();
         $component->method('resolvePathToFileInExtension')->willReturn($localLanguageFileRelativePath);
         $component->setControllerName($controllerName);
         $component->setControllerExtensionName('FluidTYPO3.Flux');
@@ -133,14 +134,16 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function canGenerateLabelFromActionMethodAnnotation()
+    public function canGenerateLabelFromActionMethodAnnotation(): void
     {
         $controllerName = 'Content';
         $actionName = 'render';
         $expectedLabel = 'Render content';
 
         /** @var ControllerActions $component */
-        $component = $this->getMockBuilder($this->createInstanceClassName())->setMethods(['resolvePathToFileInExtension'])->getMock();
+        $component = $this->getMockBuilder($this->createInstanceClassName())
+            ->onlyMethods(['resolvePathToFileInExtension'])
+            ->getMock();
         $component->method('resolvePathToFileInExtension')->willReturn('does/not/exist');
         $component->setControllerName($controllerName);
         $component->setControllerExtensionName('FluidTYPO3.Flux');
@@ -154,7 +157,7 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function canGenerateDefaultLabelFromActionMethodWithoutHumanReadableAnnotation()
+    public function canGenerateDefaultLabelFromActionMethodWithoutHumanReadableAnnotation(): void
     {
         $controllerName = 'Content';
         $actionName = 'fakeWithoutDescription';
@@ -166,7 +169,7 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function generatesDefaultLabelForControllerActionsWhichDoNotExist()
+    public function generatesDefaultLabelForControllerActionsWhichDoNotExist(): void
     {
         $controllerName = 'Content';
         $actionName = 'fictionalaction';
@@ -178,7 +181,7 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function prefixesLabelForActionsWithRequiredArgumentsWhenLanguageLabelsDisabled()
+    public function prefixesLabelForActionsWithRequiredArgumentsWhenLanguageLabelsDisabled(): void
     {
         $extensionName = 'FluidTYPO3.Flux';
         $pluginName = 'Test';
@@ -201,14 +204,14 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function respectsExcludedActions()
+    public function respectsExcludedActions(): void
     {
-        $actions = array(
+        $actions = [
             'Content' => 'render,fake'
-        );
-        $excludedActions = array(
+        ];
+        $excludedActions = [
             'Content' => 'fake',
-        );
+        ];
         /** @var ControllerActions $component */
         $component = $this->createInstance();
         $component->setExcludeActions($excludedActions);
@@ -223,13 +226,13 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function skipsOtherControllersInActionsIfControllerSpecifiedInBothPropertyAndActions()
+    public function skipsOtherControllersInActionsIfControllerSpecifiedInBothPropertyAndActions(): void
     {
-        $actions = array(
+        $actions = [
             'Content' => 'fake',
             'Other' => 'fake'
-        );
-        class_alias('FluidTYPO3\Flux\Controller\ContentController', 'FluidTYPO3\Flux\Controller\OtherController');
+        ];
+        class_alias(ContentController::class, 'FluidTYPO3\Flux\Controller\OtherController');
         /** @var ControllerActions $component */
         $component = $this->createInstance();
         $component->setActions($actions);
@@ -244,11 +247,11 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function skipsActionsWhichDoNotHaveAssociatedControllerMethods()
+    public function skipsActionsWhichDoNotHaveAssociatedControllerMethods(): void
     {
-        $actions = array(
+        $actions = [
             'Content' => 'fake,doesNotExist'
-        );
+        ];
         /** @var ControllerActions $component */
         $component = $this->createInstance();
         $component->setActions($actions);
@@ -263,19 +266,19 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function supportsSubActions()
+    public function supportsSubActions(): void
     {
-        $actions = array(
+        $actions = [
             'Content' => 'fake'
-        );
-        $subActions = array(
-            'Content' => array(
+        ];
+        $subActions = [
+            'Content' => [
                 'fake' => 'render'
-            )
-        );
-        $expected = array(
-            array('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.fake', 'Content->fake;Content->render')
-        );
+            ]
+        ];
+        $expected = [
+            ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.fake', 'Content->fake;Content->render']
+        ];
         /** @var ControllerActions $component */
         $component = $this->createInstance();
         $component->setActions($actions);
@@ -289,43 +292,38 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function getActionsForExtensionNameAndPluginNameReturnsExpectedValue()
+    public function getActionsForExtensionNameAndPluginNameReturnsExpectedValue(): void
     {
         $instance = $this->createInstance();
         $instance->setPluginName('None');
         $instance->setControllerExtensionName('FluidTYPO3.Flux');
         $output = $this->callInaccessibleMethod($instance, 'getActionsForExtensionNameAndPluginName');
-        $expected = array();
+        $expected = [];
         $this->assertEquals($expected, $output);
     }
 
     /**
      * @test
      */
-    public function buildItemsForActionsSkipsNonExistingControllerNames()
+    public function buildItemsForActionsSkipsNonExistingControllerNames(): void
     {
         $instance = $this->createInstance();
         $instance->setControllerExtensionName('FluidTYPO3.Flux');
-        $actions = array(
+        $actions = [
             'Content' => 'render',
             'DoesNotExist' => 'render'
-        );
-        $expected = array(
-            array(
+        ];
+        $expected = [
+            [
                 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:.content.render',
                 'Content->render'
-            )
-        );
+            ]
+        ];
         $output = $this->callInaccessibleMethod($instance, 'buildItemsForActions', $actions);
         $this->assertEquals($expected, $output);
     }
 
-    /**
-     * @param ControllerActions $component
-     * @param boolean $useDefaults
-     * @return array
-     */
-    protected function buildActions(ControllerActions $component, $useDefaults = true)
+    protected function buildActions(ControllerActions $component, bool $useDefaults = true): array
     {
         $actions = $component->getActions();
         if (true === $useDefaults) {
@@ -338,14 +336,11 @@ class ControllerActionsTest extends AbstractFieldTest
         return $items;
     }
 
-    /**
-     * @param string $controllerName
-     * @param string $actionName
-     * @param string $languageFileRelativeLocation
-     * @return string
-     */
-    protected function buildLabelForControllerAndAction($controllerName, $actionName, $languageFileRelativeLocation = null)
-    {
+    protected function buildLabelForControllerAndAction(
+        string $controllerName,
+        string $actionName,
+        ?string $languageFileRelativeLocation = null
+    ): string {
         $component = $this->createInstance();
         $component->setControllerName($controllerName);
         $component->setControllerExtensionName('FluidTYPO3.Flux');
@@ -362,24 +357,24 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @disabledtest
      */
-    public function prefixesParentObjectNameToAutoLabelIfInsideObject()
+    public function prefixesParentObjectNameToAutoLabelIfInsideObject(): void
     {
     }
 
     /**
      * @test
      */
-    public function canGenerateLocalisableLabel()
+    public function canGenerateLocalisableLabel(): void
     {
         $instance = $this->createInstance();
         $instance->setLabel(null);
         $instance->setExtensionName('Flux');
         /** @var Form $form */
         $instance->setName('testFormId');
-        $form = Form::create(array(
+        $form = Form::create([
             'name' => 'test',
             'extensionName' => 'flux'
-        ));
+        ]);
         $form->add($instance);
         $label = $instance->getLabel();
         $this->assertStringContainsString('switchableControllerActions', $label);
@@ -389,14 +384,15 @@ class ControllerActionsTest extends AbstractFieldTest
     /**
      * @test
      */
-    public function getActionsForExtensionNameAndPluginNameReturnsExpectedArray()
+    public function getActionsForExtensionNameAndPluginNameReturnsExpectedArray(): void
     {
         $instance = $this->createInstance();
         $instance->setControllerExtensionName('Extension');
         $instance->setPluginName('Plugin');
-        $actions = array('Controller' => array('actions' => array('action1', 'action2')));
-        $expected = array('Controller' => array('action1', 'action2'));
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['Extension']['plugins']['Plugin']['controllers'] = $actions;
+        $actions = ['Controller' => ['actions' => ['action1', 'action2']]];
+        $expected = ['Controller' => ['action1', 'action2']];
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['Extension']['plugins']['Plugin']['controllers']
+            = $actions;
         $result = $this->callInaccessibleMethod($instance, 'getActionsForExtensionNameAndPluginName');
         $this->assertEquals($expected, $result);
         unset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']);

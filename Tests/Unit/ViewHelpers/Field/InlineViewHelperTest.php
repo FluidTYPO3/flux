@@ -8,25 +8,19 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * InlineViewHelperTest
- */
 class InlineViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-
-    /**
-     * @var array
-     */
-    protected $defaultArguments = array(
+    protected array $defaultArguments = [
         'name' => 'test',
-        'enabledControls' => array(
+        'table' => 'tt_content',
+        'enabledControls' => [
             'new' => true,
             'hide' => true
-        ),
-        'foreignTypes' => array(
-            0 => array(
+        ],
+        'foreignTypes' => [
+            0 => [
                 'showitem' => 'a,b,c'
-            )
-        )
-    );
+            ]
+        ]
+    ];
 }

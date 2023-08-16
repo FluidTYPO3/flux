@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider\Interfaces;
 
 /*
@@ -16,11 +17,7 @@ namespace FluidTYPO3\Flux\Provider\Interfaces;
 interface PreviewProviderInterface
 {
     /**
-     * Returns [$header, $content) preview chunks
-     *
-     * @abstract
-     * @param array $row The record data to be analysed for variables to use in a rendered preview
-     * @return array
+     * Returns [$header, $content, $stopOthersFromRendering] preview chunks
      */
-    public function getPreview(array $row);
+    public function getPreview(array $row): array;
 }

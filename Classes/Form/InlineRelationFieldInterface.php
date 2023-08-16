@@ -8,151 +8,32 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * InlineRelationFieldInterface
- */
 interface InlineRelationFieldInterface extends RelationFieldInterface
 {
-
-    /**
-     * @param mixed $foreignTypes
-     * @return InlineRelationFieldInterface
-     */
-    public function setForeignTypes($foreignTypes);
-
-    /**
-     * @return array
-     */
-    public function getForeignTypes();
-
-    /**
-     * @param boolean $collapseAll
-     * @return InlineRelationFieldInterface
-     */
-    public function setCollapseAll($collapseAll);
-
-    /**
-     * @return boolean
-     */
-    public function getCollapseAll();
-
-    /**
-     * @param array $enabledControls
-     * @return InlineRelationFieldInterface
-     */
-    public function setEnabledControls(array $enabledControls);
-
-    /**
-     * @return array
-     */
-    public function getEnabledControls();
-
-    /**
-     * @param boolean $expandSingle
-     * @return InlineRelationFieldInterface
-     */
-    public function setExpandSingle($expandSingle);
-
-    /**
-     * @return boolean
-     */
-    public function getExpandSingle();
-
-    /**
-     * @param boolean $newRecordLinkAddTitle
-     * @return InlineRelationFieldInterface
-     */
-    public function setNewRecordLinkAddTitle($newRecordLinkAddTitle);
-
-    /**
-     * @return boolean
-     */
-    public function getNewRecordLinkAddTitle();
-
-    /**
-     * @param string $newRecordLinkPosition
-     * @return InlineRelationFieldInterface
-     */
-    public function setNewRecordLinkPosition($newRecordLinkPosition);
-
-    /**
-     * @return string
-     */
-    public function getNewRecordLinkPosition();
-
-    /**
-     * @param boolean $showAllLocalizationLink
-     * @return InlineRelationFieldInterface
-     */
-    public function setShowAllLocalizationLink($showAllLocalizationLink);
-
-    /**
-     * @return boolean
-     */
-    public function getShowAllLocalizationLink();
-
-    /**
-     * @param boolean $showPossibleLocalizationRecords
-     * @return InlineRelationFieldInterface
-     */
-    public function setShowPossibleLocalizationRecords($showPossibleLocalizationRecords);
-
-    /**
-     * @return boolean
-     */
-    public function getShowPossibleLocalizationRecords();
-
-    /**
-     * @param boolean $showRemovedLocalizationRecords
-     * @return InlineRelationFieldInterface
-     */
-    public function setShowRemovedLocalizationRecords($showRemovedLocalizationRecords);
-
-    /**
-     * @return boolean
-     */
-    public function getShowRemovedLocalizationRecords();
-
-    /**
-     * @param boolean $showSynchronizationLink
-     * @return InlineRelationFieldInterface
-     */
-    public function setShowSynchronizationLink($showSynchronizationLink);
-
-    /**
-     * @return boolean
-     */
-    public function getShowSynchronizationLink();
-
-    /**
-     * @param boolean $useCombination
-     * @return InlineRelationFieldInterface
-     */
-    public function setUseCombination($useCombination);
-
-    /**
-     * @return boolean
-     */
-    public function getUseCombination();
-
-    /**
-     * @param boolean $useSortable
-     * @return InlineRelationFieldInterface
-     */
-    public function setUseSortable($useSortable);
-    /**
-     * @return boolean
-     */
-    public function getUseSortable();
-
-    /**
-     * @param array $foreignMatchFields
-     * @return InlineRelationFieldInterface
-     */
-    public function setForeignMatchFields(array $foreignMatchFields);
-
-    /**
-     * @return array
-     */
-    public function getForeignMatchFields();
+    public function setForeignTypes(array $foreignTypes): self;
+    public function getForeignTypes(): array;
+    public function setCollapseAll(bool $collapseAll): self;
+    public function getCollapseAll(): bool;
+    public function setEnabledControls(array $enabledControls): self;
+    public function getEnabledControls(): array;
+    public function setExpandSingle(bool $expandSingle): self;
+    public function getExpandSingle(): bool;
+    public function setNewRecordLinkAddTitle(bool $newRecordLinkAddTitle): self;
+    public function getNewRecordLinkAddTitle(): bool;
+    public function setNewRecordLinkPosition(string $newRecordLinkPosition): self;
+    public function getNewRecordLinkPosition(): string;
+    public function setShowAllLocalizationLink(bool $showAllLocalizationLink): self;
+    public function getShowAllLocalizationLink(): bool;
+    public function setShowPossibleLocalizationRecords(bool $showPossibleLocalizationRecords): self;
+    public function getShowPossibleLocalizationRecords(): bool;
+    public function setShowRemovedLocalizationRecords(bool $showRemovedLocalizationRecords): self;
+    public function getShowRemovedLocalizationRecords(): bool;
+    public function setShowSynchronizationLink(bool $showSynchronizationLink): self;
+    public function getShowSynchronizationLink(): bool;
+    public function setUseCombination(bool $useCombination): self;
+    public function getUseCombination(): bool;
+    public function setUseSortable(bool $useSortable): self;
+    public function getUseSortable(): bool;
+    public function setForeignMatchFields(array $foreignMatchFields): self;
+    public function getForeignMatchFields(): array;
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -8,11 +9,16 @@ namespace FluidTYPO3\Flux\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Integration\PreviewView;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -34,45 +40,29 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     const FIELD_ACTION_MAIN = 'tx_fed_page_controller_action';
     const FIELD_ACTION_SUB = 'tx_fed_page_controller_action_sub';
 
-    /**
-     * @var string
-     */
-    protected $tableName = 'pages';
+    protected ?string $tableName = 'pages';
+    protected ?string $parentFieldName = 'pid';
+    protected ?string $fieldName = self::FIELD_NAME_MAIN;
+    protected string $extensionKey = 'FluidTYPO3.Flux';
+    protected ?string $controllerName = 'Page';
+    protected ?string $configurationSectionName = 'Configuration';
+    protected ?string $pluginName = 'Page';
 
-    /**
-     * @var string
-     */
-    protected $parentFieldName = 'pid';
+    private static array $cache = [];
 
-    /**
-     * @var string
-     */
-    protected $fieldName = self::FIELD_NAME_MAIN;
+    protected PageService $pageService;
 
-    /**
-     * @var string
-     */
-    protected $extensionKey = 'flux';
-
-    /**
-     * @var string
-     */
-    protected $controllerName = 'Page';
-
-    /**
-     * @var string
-     */
-    protected $configurationSectionName = 'Configuration';
-
-    /**
-     * @var PageService
-     */
-    protected $pageService;
-
-    /**
-     * @var array
-     */
-    private static $cache = [];
+    public function __construct(
+        FormDataTransformer $formDataTransformer,
+        WorkspacesAwareRecordService $recordService,
+        ViewBuilder $viewBuilder,
+        CacheService $cacheService,
+        TypoScriptService $typoScriptService,
+        PageService $pageService
+    ) {
+        parent::__construct($formDataTransformer, $recordService, $viewBuilder, $cacheService, $typoScriptService);
+        $this->pageService = $pageService;
+    }
 
     /**
      * Returns TRUE that this Provider should trigger if:
@@ -80,81 +70,57 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      * - table matches 'pages'
      * - field is NULL or matches self::FIELD_NAME
      * - a selection was made in the "template for this page" field
-     *
-     * @param array $row
-     * @param string $table
-     * @param string|null $field
-     * @param string|null $extensionKey
-     * @return boolean
      */
-    public function trigger(array $row, $table, $field, $extensionKey = null)
+    public function trigger(array $row, ?string $table, ?string $field, ?string $extensionKey = null): bool
     {
         $isRightTable = ($table === $this->tableName);
-        $isRightField = (null === $field || $field === $this->fieldName);
+        $isRightField = in_array($field, [null, self::FIELD_NAME_MAIN, self::FIELD_NAME_SUB], true);
         return (true === $isRightTable && true === $isRightField);
     }
 
-    /**
-     * @param PageService $pageService
-     * @return void
-     */
-    public function injectPageService(PageService $pageService)
-    {
-        $this->pageService = $pageService;
-    }
-
-    /**
-     * @param FluxService $pageConfigurationService
-     * @return void
-     */
-    public function injectPageConfigurationService(FluxService $pageConfigurationService)
-    {
-        $this->configurationService = $pageConfigurationService;
-    }
-
-    /**
-     * @param array $row
-     * @return Form|null
-     */
-    public function getForm(array $row)
+    public function getForm(array $row, ?string $forField = null): ?Form
     {
         if ($row['deleted'] ?? false) {
             return null;
         }
-        $form = parent::getForm($row);
-        if ($form) {
-            $form->setOption(PreviewView::OPTION_PREVIEW, [PreviewView::OPTION_MODE => 'none']);
-            $form = $this->setDefaultValuesInFieldsWithInheritedValues($form, $row);
+
+        $pageTemplateConfiguration = $this->pageService->getPageTemplateConfiguration($row['uid']);
+
+        // If field is main field and "this page" has no selection or field is sub field and "subpages" has no selection
+        if (($forField === self::FIELD_NAME_MAIN && empty($row[self::FIELD_ACTION_MAIN]))
+            || ($forField === self::FIELD_NAME_SUB && empty($row[self::FIELD_ACTION_SUB]))
+        ) {
+            // The page inherits page layout from parent(s). Read the root line for the first page that defines a value
+            // in the sub-action field, then use that record and resolve the Form used in the sub-configuration field.
+            $form = parent::getForm($pageTemplateConfiguration['record_sub'] ?? $row, self::FIELD_NAME_SUB);
+        } else {
+            $form = parent::getForm($row, $forField);
         }
+
+        if ($form) {
+            $form->setOption(PreviewOption::PREVIEW, [PreviewOption::MODE => 'none']);
+        }
+
         return $form;
     }
 
-    /**
-     * @param array $row
-     * @return string
-     */
-    public function getExtensionKey(array $row)
+    public function getExtensionKey(array $row, ?string $forField = null): string
     {
-        $controllerExtensionKey = $this->getControllerExtensionKeyFromRecord($row);
-        if (false === empty($controllerExtensionKey)) {
+        $controllerExtensionKey = $this->getControllerExtensionKeyFromRecord($row, $forField);
+        if (!empty($controllerExtensionKey)) {
             return ExtensionNamingUtility::getExtensionKey($controllerExtensionKey);
         }
         return $this->extensionKey;
     }
 
-    /**
-     * @param array $row
-     * @return string|null
-     */
-    public function getTemplatePathAndFilename(array $row)
+    public function getTemplatePathAndFilename(array $row, ?string $forField = null): ?string
     {
         $templatePathAndFilename = $this->templatePathAndFilename;
-        $action = $this->getControllerActionReferenceFromRecord($row);
-        if (false === empty($action)) {
+        $action = $this->getControllerActionFromRecord($row, $forField);
+        if (!empty($action)) {
             $pathsOrExtensionKey = $this->templatePaths
-                ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row));
+                ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row, $forField));
             $templatePaths = $this->createTemplatePaths($pathsOrExtensionKey);
-            $action = $this->getControllerActionFromRecord($row);
             $action = ucfirst($action);
             $templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat(
                 $this->getControllerNameFromRecord($row),
@@ -164,28 +130,19 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return $templatePathAndFilename;
     }
 
-    /**
-     * @param array $row
-     * @return string
-     */
-    public function getControllerExtensionKeyFromRecord(array $row)
+    public function getControllerExtensionKeyFromRecord(array $row, ?string $forField = null): string
     {
-        $action = $this->getControllerActionReferenceFromRecord($row);
+        $action = $this->getControllerActionReferenceFromRecord($row, $forField);
         $offset = strpos($action, '->');
-        if (false !== $offset) {
+        if ($offset !== false) {
             return substr($action, 0, $offset);
         }
         return $this->extensionKey;
     }
 
-    /**
-     * @param array $row
-     * @throws \RuntimeException
-     * @return string
-     */
-    public function getControllerActionFromRecord(array $row)
+    public function getControllerActionFromRecord(array $row, ?string $forField = null): string
     {
-        $action = $this->getControllerActionReferenceFromRecord($row);
+        $action = $this->getControllerActionReferenceFromRecord($row, $forField);
         $parts = explode('->', $action);
         $controllerActionName = end($parts);
         if (empty($controllerActionName)) {
@@ -195,44 +152,40 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return $controllerActionName;
     }
 
-    /**
-     * @param array $row
-     * @return string
-     */
-    public function getControllerActionReferenceFromRecord(array $row)
+    public function getControllerActionReferenceFromRecord(array $row, ?string $forField = null): string
     {
-        if (!empty($row[self::FIELD_ACTION_MAIN])) {
+        if (($forField === self::FIELD_NAME_MAIN || $forField === null) && !empty($row[self::FIELD_ACTION_MAIN])) {
             return is_array($row[self::FIELD_ACTION_MAIN])
                 ? $row[self::FIELD_ACTION_MAIN][0]
                 : $row[self::FIELD_ACTION_MAIN];
+        } elseif ($forField === self::FIELD_NAME_SUB && !empty($row[self::FIELD_ACTION_SUB])) {
+            return is_array($row[self::FIELD_ACTION_SUB])
+                ? $row[self::FIELD_ACTION_SUB][0]
+                : $row[self::FIELD_ACTION_SUB];
         }
         if (isset($row['uid'])) {
-            return ($this->pageService->getPageTemplateConfiguration($row['uid'])[self::FIELD_ACTION_SUB]
-                ?? 'flux->default') ?: 'flux->default';
+            $configuration = $this->pageService->getPageTemplateConfiguration((integer) $row['uid']);
+            $fieldName = self::FIELD_ACTION_SUB;
+            if ($forField === self::FIELD_NAME_MAIN) {
+                $fieldName = self::FIELD_ACTION_MAIN;
+            }
+            return ($configuration[$fieldName] ?? 'flux->default') ?: 'flux->default';
         }
         return 'flux->default';
     }
 
-    /**
-     * @param array $row
-     * @return array
-     */
-    public function getFlexFormValues(array $row)
+    public function getFlexFormValues(array $row, ?string $forField = null): array
     {
         $immediateConfiguration = $this->getFlexFormValuesSingle($row);
         $inheritedConfiguration = $this->getInheritedConfiguration($row);
         return RecursiveArrayUtility::merge($inheritedConfiguration, $immediateConfiguration);
     }
 
-    /**
-     * @param array $row
-     * @return array
-     */
-    public function getFlexFormValuesSingle(array $row)
+    public function getFlexFormValuesSingle(array $row, ?string $forField = null): array
     {
-        $fieldName = $this->getFieldName($row);
-        $form = $this->getForm($row);
-        $immediateConfiguration = $this->configurationService->convertFlexFormContentToArray(
+        $fieldName = $forField ?? $this->getFieldName($row);
+        $form = $this->getForm($row, $forField);
+        $immediateConfiguration = $this->formDataTransformer->convertFlexFormContentToArray(
             $row[$fieldName] ?? '',
             $form,
             null,
@@ -241,102 +194,263 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return $immediateConfiguration;
     }
 
-    /**
-     * @param string $operation
-     * @param integer $id
-     * @param array $row
-     * @param DataHandler $reference
-     * @param array $removals Additional array of field names to remove from the stored Flux value
-     */
-    public function postProcessRecord($operation, $id, array &$row, DataHandler $reference, array $removals = [])
-    {
-        if ('update' === $operation) {
-            $record = $this->recordService->getSingle((string) $this->getTableName($row), '*', $id);
-            if ($record === null) {
-                return;
+    public function postProcessRecord(
+        string $operation,
+        int $id,
+        array $row,
+        DataHandler $reference,
+        array $removals = []
+    ): bool {
+        if ($operation === 'update') {
+            $stored = $this->recordService->getSingle((string) $this->getTableName($row), '*', $id);
+            if (!$stored) {
+                return false;
             }
-            if (isset($reference->datamap[$this->tableName][$id])) {
-                $record = RecursiveArrayUtility::mergeRecursiveOverrule(
-                    $record,
-                    $reference->datamap[$this->tableName][$id]
-                );
-            }
-            $form = $this->getForm($record);
-            if ($form) {
-                $tableFieldName = $this->getFieldName($record);
+            $before = $stored;
+            $tableName = $this->getTableName($stored);
+
+            $record = RecursiveArrayUtility::mergeRecursiveOverrule(
+                $stored,
+                $reference->datamap[$this->tableName][$id] ?? []
+            );
+
+            foreach ([self::FIELD_NAME_MAIN, self::FIELD_NAME_SUB] as $tableFieldName) {
+                $form = $this->getForm($record, $tableFieldName);
+                if (!$form) {
+                    continue;
+                }
+
+                $removeForField = [];
                 foreach ($form->getFields() as $field) {
+                    /** @var Form\Container\Sheet $parent */
+                    $parent = $field->getParent();
                     $fieldName = (string) $field->getName();
-                    $sheetName = (string) $field->getParent()->getName();
+                    $sheetName = (string) $parent->getName();
                     $inherit = (boolean) $field->getInherit();
                     $inheritEmpty = (boolean) $field->getInheritEmpty();
-                    if (isset($record[$tableFieldName]['data']) && is_array($record[$tableFieldName]['data'])) {
-                        $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'];
+                    if (is_array($record[$tableFieldName]['data'] ?? null)) {
+                        $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'] ?? null;
                         $inheritedConfiguration = $this->getInheritedConfiguration($record);
+                        if (!isset($inheritedConfiguration[$fieldName])) {
+                            continue;
+                        }
                         $inheritedValue = $this->getInheritedPropertyValueByDottedPath(
                             $inheritedConfiguration,
                             $fieldName
                         );
                         $empty = (true === empty($value) && $value !== '0' && $value !== 0);
-                        $same = ($inheritedValue == $value);
+                        $same = ($inheritedValue === $value);
                         if (true === $same && true === $inherit || (true === $inheritEmpty && true === $empty)) {
-                            $removals[] = $fieldName;
+                            $removeForField[] = $fieldName;
                         }
                     }
                 }
+                $removeForField = array_merge(
+                    $removeForField,
+                    $this->extractFieldNamesToClear($record, $tableFieldName)
+                );
+                $removeForField = array_unique($removeForField);
+
+                if (!empty($stored[$tableFieldName])) {
+                    $stored[$tableFieldName] = MiscellaneousUtility::cleanFlexFormXml(
+                        $stored[$tableFieldName],
+                        $removeForField
+                    );
+                }
+            }
+
+            if ($before !== $stored) {
+                $this->recordService->update((string) $tableName, $stored);
             }
         }
-        parent::postProcessRecord($operation, $id, $row, $reference, $removals);
+
+        return false;
+    }
+
+    public function processTableConfiguration(array $row, array $configuration): array
+    {
+        $currentPageRecord = $this->recordService->getSingle(
+            (string) $this->getTableName($row),
+            'uid,' . self::FIELD_NAME_MAIN . ',' . self::FIELD_NAME_SUB,
+            $configuration['vanillaUid']
+        );
+        if (!$currentPageRecord) {
+            return $configuration;
+        }
+
+        $tree = $this->getInheritanceTree($currentPageRecord);
+
+        $dataMirror = [];
+        $inheritedConfiguration = [];
+        foreach ([self::FIELD_NAME_MAIN, self::FIELD_NAME_SUB] as $field) {
+            if (!empty($currentPageRecord[$field])) {
+                $currentPageRecord[$field] = GeneralUtility::xml2array($currentPageRecord[$field]);
+            }
+            /** @var Form&Form $form */
+            $form = $this->getForm($row, $field);
+            foreach ($tree as $branch) {
+                if (!empty($branch[$field])) {
+                    /** @var array $branchData */
+                    $branchData = GeneralUtility::xml2array($branch[$field] ?? '');
+                    $inheritedConfiguration[$field] = RecursiveArrayUtility::mergeRecursiveOverrule(
+                        $inheritedConfiguration[$field] ?? [],
+                        $branchData
+                    );
+                }
+            }
+
+            $dataMirror[$field] = ['data' => []];
+            $this->extractDataStorageMirrorWithInheritableFields($form, $dataMirror[$field]['data']);
+        }
+
+        $inheritedConfigurationForMainField = $inheritedConfiguration[self::FIELD_NAME_SUB] ?? [];
+        $this->unsetUninheritableFieldsInInheritedConfiguration(
+            $inheritedConfigurationForMainField,
+            $currentPageRecord[self::FIELD_NAME_MAIN],
+            $dataMirror[self::FIELD_NAME_MAIN]
+        );
+
+        $inheritedConfigurationForSubField = $inheritedConfiguration[self::FIELD_NAME_SUB] ?? [];
+        $this->unsetUninheritableFieldsInInheritedConfiguration(
+            $inheritedConfigurationForSubField,
+            $currentPageRecord[self::FIELD_NAME_SUB],
+            $dataMirror[self::FIELD_NAME_SUB]
+        );
+
+        if (empty($configuration['databaseRow'][self::FIELD_ACTION_MAIN][0])) {
+            if (!empty($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
+                if (is_array($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
+                    $currentData = $configuration['databaseRow'][self::FIELD_NAME_MAIN];
+                } else {
+                    /** @var array $currentData */
+                    $currentData = GeneralUtility::xml2array($configuration['databaseRow'][self::FIELD_NAME_MAIN]);
+                }
+                $configuration['databaseRow'][self::FIELD_NAME_MAIN] = RecursiveArrayUtility::mergeRecursiveOverrule(
+                    $inheritedConfigurationForMainField,
+                    $currentData
+                );
+            }
+        }
+        $subData = [];
+        if (is_array($configuration['databaseRow'][self::FIELD_NAME_SUB])) {
+            $currentData = $configuration['databaseRow'][self::FIELD_NAME_SUB];
+        } else {
+            /** @var array $currentData */
+            $currentData = GeneralUtility::xml2array($configuration['databaseRow'][self::FIELD_NAME_SUB]);
+        }
+        $configuration['databaseRow'][self::FIELD_NAME_SUB] = RecursiveArrayUtility::mergeRecursiveOverrule(
+            $inheritedConfigurationForSubField,
+            $subData
+        );
+
+        return parent::processTableConfiguration($row, $configuration);
     }
 
     /**
-     * Gets an inheritance tree (ordered parent -> ... -> this record)
-     * of record arrays containing raw values.
-     *
-     * @param array $row
-     * @return array
+     * @param array|string|null $immediateConfiguration
      */
-    protected function getInheritanceTree(array $row)
+    private function unsetUninheritableFieldsInInheritedConfiguration(
+        array &$inheritedConfiguration,
+        &$immediateConfiguration,
+        array &$dataMirror
+    ): void {
+        foreach ($inheritedConfiguration as $key => &$value) {
+            if (!is_array($value)) {
+                continue;
+            }
+
+            $inheritedValueIsSection = $this->checkIsSection($inheritedConfiguration[$key] ?? []);
+            if (!isset($dataMirror[$key]) && !$inheritedValueIsSection) {
+                unset($inheritedConfiguration[$key]);
+                continue;
+            }
+            $dataMirrorItem = &$dataMirror[$key];
+            if ($dataMirrorItem instanceof Form\FieldInterface && !$dataMirrorItem->getInherit()) {
+                unset($inheritedConfiguration[$key]);
+                continue;
+            }
+            $immediateConfigurationIsArray = is_array($immediateConfiguration);
+            $immediateSubConfiguration = $immediateConfigurationIsArray ? $immediateConfiguration[$key] ?? null : null;
+            if ($immediateConfigurationIsArray
+                && is_array($immediateSubConfiguration)
+                && $inheritedValueIsSection
+                && $this->checkIsSection($immediateConfiguration[$key])
+            ) {
+                // Immediate configuration is a section, and it has items. Do not allow inheritance.
+                unset($inheritedConfiguration[$key]);
+                continue;
+            } elseif ($inheritedValueIsSection) {
+                // Do not further process an inherited section - inheritance is desired.
+                continue;
+            }
+            $this->unsetUninheritableFieldsInInheritedConfiguration(
+                $inheritedConfiguration[$key],
+                $immediateSubConfiguration,
+                $dataMirrorItem,
+            );
+        }
+    }
+
+    private function checkIsSection(array $data): bool
+    {
+        // Determine if we are working on a section object. If so, the inherited configuration will contain an extra
+        // dimension; an alpha-numeric unique key 22 chars in length. We can identify if that is the case by
+        // checking that every array key is exactly 22 chars and every element contains a "_TOGGLE" key.
+        $numberOfValues = count($data);
+        return $numberOfValues > 0
+            && strlen(implode('', array_keys($data))) === ($numberOfValues * 22)
+            && count(array_column($data, '_TOGGLE')) === $numberOfValues;
+    }
+
+    private function extractDataStorageMirrorWithInheritableFields(
+        Form\FieldContainerInterface $container,
+        array &$parentArrayPosition
+    ): void {
+        if (!$container->getInherit()) {
+            return;
+        }
+        foreach ($container->getChildren() as $child) {
+            if (!$child->getInherit()) {
+                continue;
+            }
+            $childName = $child->getName();
+            if ($child instanceof Form\Container\Section) {
+                foreach ($child->getChildren() as $sectionObject) {
+                    /** @var Form\Container\SectionObject $sectionObject */
+                    $sectionObjectName = $sectionObject->getName();
+                    $parentArrayPosition['lDEF'][$childName]['el'][$sectionObjectName]['el'] = [];
+                    $position = &$parentArrayPosition['lDEF'][$childName]['el'][$sectionObjectName]['el'];
+                    foreach ($sectionObject->getChildren() as $field) {
+                        $position[$field->getName()] = $field;
+                    }
+                }
+            } elseif (!$child instanceof Form\FieldContainerInterface) {
+                $parentArrayPosition['lDEF'][$childName]['vDEF'] = $child;
+            } else {
+                $parentArrayPosition[$childName] = [];
+                $this->extractDataStorageMirrorWithInheritableFields($child, $parentArrayPosition[$childName]);
+            }
+        }
+    }
+
+    /**
+     * Gets an inheritance tree (ordered first parent -> ... -> root record)
+     * of record arrays containing raw values, stopping at the first parent
+     * record that defines a page layout to use in "page layout - subpages".
+     */
+    protected function getInheritanceTree(array $row): array
     {
         $records = $this->loadRecordTreeFromDatabase($row);
-        if (0 === count($records)) {
-            return $records;
-        }
-        $template = $records[0][self::FIELD_ACTION_SUB];
         foreach ($records as $index => $record) {
-            $hasMainAction = false === empty($record[self::FIELD_ACTION_MAIN]);
             $hasSubAction = false === empty($record[self::FIELD_ACTION_SUB]);
-            $shouldUseMainTemplate = $template !== ($record[self::FIELD_ACTION_SUB] ?? null);
-            $shouldUseSubTemplate = $template !== ($record[self::FIELD_ACTION_MAIN] ?? null);
-            if (($hasMainAction && $shouldUseSubTemplate) || ($hasSubAction && $shouldUseMainTemplate)) {
-                return array_slice($records, $index);
+            if ($hasSubAction) {
+                return array_slice($records, 0, $index + 1);
             }
         }
         return $records;
     }
 
-    /**
-     * @param Form $form
-     * @param array $row
-     * @return Form
-     */
-    protected function setDefaultValuesInFieldsWithInheritedValues(Form $form, array $row)
-    {
-        $inheritedConfiguration = $this->getInheritedConfiguration($row);
-        foreach ($form->getFields() as $field) {
-            $name = (string) $field->getName();
-            $inheritedValue = $this->getInheritedPropertyValueByDottedPath($inheritedConfiguration, $name);
-            if (null !== $inheritedValue && true === $field instanceof Form\FieldInterface) {
-                $field->setDefault($inheritedValue);
-            }
-        }
-        return $form;
-    }
-
-    /**
-     * @param array $row
-     * @return array
-     */
-    protected function getInheritedConfiguration(array $row)
+    protected function getInheritedConfiguration(array $row): array
     {
         $tableName = $this->getTableName($row);
         $tableFieldName = $this->getFieldName($row);
@@ -346,24 +460,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $tree = $this->getInheritanceTree($row);
             $data = [];
             foreach ($tree as $branch) {
-                /** @var SubPageProvider|null $provider */
-                $provider = $this->configurationService->resolvePrimaryConfigurationProvider(
-                    $this->tableName,
-                    self::FIELD_NAME_SUB,
-                    $branch
-                );
-                if (null === $provider) {
-                    continue;
-                }
-                $form = $provider->getForm($branch);
-                if (null === $form) {
-                    continue;
-                }
-                $fields = $form->getFields();
-                $values = $provider->getFlexFormValuesSingle($branch);
-                foreach ($fields as $field) {
-                    $values = $this->unsetInheritedValues($field, $values);
-                }
+                $values = $this->getFlexFormValuesSingle($branch, self::FIELD_NAME_SUB);
                 $data = RecursiveArrayUtility::merge($data, $values);
             }
             self::$cache[$cacheKey] = $data;
@@ -372,11 +469,9 @@ class PageProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @param array $inheritedConfiguration
-     * @param string $propertyPath
      * @return mixed
      */
-    protected function getInheritedPropertyValueByDottedPath($inheritedConfiguration, $propertyPath)
+    protected function getInheritedPropertyValueByDottedPath(array $inheritedConfiguration, string $propertyPath)
     {
         if (true === empty($propertyPath)) {
             return null;
@@ -389,25 +484,20 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return ObjectAccess::getPropertyPath($inheritedConfiguration, $propertyPath);
     }
 
-    /**
-     * @param Form\FormInterface $field
-     * @param array $values
-     * @return array
-     */
-    protected function unsetInheritedValues(Form\FormInterface $field, $values)
+    protected function unsetInheritedValues(Form\FormInterface $field, array $values): array
     {
         $name = $field->getName();
-        $inherit = (boolean) $field->getInherit();
-        $inheritEmpty = (boolean) $field->getInheritEmpty();
-        $empty = (true === empty($values[$name]) && $values[$name] !== '0' && $values[$name] !== 0);
-        if (false === $inherit || (true === $inheritEmpty && true === $empty)) {
+        $inherit = $field->getInherit();
+        $inheritEmpty = $field->getInheritEmpty();
+        $value = $values[$name] ?? null;
+        $empty = empty($value) && !in_array($value, [0, '0'], true);
+        if (!$inherit || ($inheritEmpty && $empty)) {
             unset($values[$name]);
         }
         return $values;
     }
 
     /**
-     * @param array $row
      * @return mixed
      */
     protected function getParentFieldValue(array $row)
@@ -419,17 +509,13 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         return $row[$parentFieldName] ?? null;
     }
 
-    /**
-     * @param array $record
-     * @return array
-     */
-    protected function loadRecordTreeFromDatabase($record)
+    protected function loadRecordTreeFromDatabase(array $record): array
     {
         if (empty($record)) {
             return [];
         }
         /** @var RootlineUtility $rootLineUtility */
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $record['uid'] ?? null);
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, (integer) ($record['uid'] ?? 0));
         return array_slice($rootLineUtility->get(), 1);
     }
 }

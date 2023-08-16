@@ -10,34 +10,28 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
+use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
+use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * TCEMain
- */
 class DataHandlerSubscriber
 {
-    /**
-     * @var array
-     */
-    protected static $copiedRecords = [];
+    protected static array $copiedRecords = [];
 
-    /**
-     * @param array $command
-     * @return void
-     */
-    public function clearCacheCommand($command)
+    public function clearCacheCommand(array $command): void
     {
         if (($command['cacheCmd'] ?? null) === 'all' || ($command['cacheCmd'] ?? null) === 'system') {
             $this->regenerateContentTypes();
@@ -62,6 +56,28 @@ class DataHandlerSubscriber
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
             $cacheManager->flushCachesInGroup('system');
             $this->regenerateContentTypes();
+            return;
+        }
+
+        if ($GLOBALS['BE_USER']->workspace) {
+            $record = BackendUtility::getRecord($table, (integer) $id);
+        } else {
+            $record = $reference->datamap[$table][$id] ?? null;
+        }
+
+        if ($record !== null) {
+            /** @var RecordProcessingProvider[] $providers */
+            $providers = $this->getProviderResolver()->resolveConfigurationProviders(
+                $table,
+                null,
+                $record,
+                null,
+                [RecordProcessingProvider::class]
+            );
+
+            foreach ($providers as $provider) {
+                $provider->postProcessRecord($command, (integer) $id, $record, $reference, []);
+            }
         }
 
         if ($table !== 'tt_content'
@@ -157,6 +173,30 @@ class DataHandlerSubscriber
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processDatamap_preProcessFieldArray(array &$fieldArray, $table, $id, DataHandler $dataHandler)
     {
+        $isNewRecord = strpos((string) $id, 'NEW') === 0;
+        $isTranslatedRecord = ($fieldArray['l10n_source'] ?? 0) > 0;
+        $pageIntegrationEnabled = ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_PAGE_INTEGRATION);
+        $isPageRecord = $table === 'pages';
+        if ($pageIntegrationEnabled && $isPageRecord && $isNewRecord && $isTranslatedRecord) {
+            // Record is a newly created page and is a translation of a page. In all likelyhood (but we can't actually
+            // know for sure since TYPO3 uses a nested DataHandler for this...) this record is the result of a blank
+            // initial copy of the original language's record. We may want to copy the "Page Configuration" fields'
+            // values from the original record.
+            if (!isset($fieldArray[PageProvider::FIELD_NAME_MAIN], $fieldArray[PageProvider::FIELD_NAME_SUB])) {
+                // To make completely sure, we only want to copy those values if both "Page Configuration" fields are
+                // completely omitted from the incoming field array.
+                $originalLanguageRecord = $this->getSingleRecordWithoutRestrictions(
+                    'pages',
+                    $fieldArray['l10n_source'],
+                    PageProvider::FIELD_NAME_MAIN . ',' . PageProvider::FIELD_NAME_SUB
+                );
+                if ($originalLanguageRecord) {
+                    $fieldArray[PageProvider::FIELD_NAME_MAIN] = $originalLanguageRecord[PageProvider::FIELD_NAME_MAIN];
+                    $fieldArray[PageProvider::FIELD_NAME_SUB] = $originalLanguageRecord[PageProvider::FIELD_NAME_SUB];
+                }
+            }
+        }
+
         // Handle "$table.$field" named fields where $table is the valid TCA table name and $field is an existing TCA
         // field. Updated value will still be subject to permission checks.
         $resolver = $this->getProviderResolver();
@@ -532,21 +572,13 @@ class DataHandlerSubscriber
         return $firstResult ?: null;
     }
 
-    /**
-     * @param string $table
-     * @param int $parentUid
-     * @param string $fieldsToSelect
-     * @param bool $respectPid
-     * @param string|null $command
-     * @return array
-     */
     protected function getParentAndRecordsNestedInGrid(
         string $table,
         int $parentUid,
         string $fieldsToSelect,
         bool $respectPid = false,
         ?string $command = null
-    ) {
+    ):array {
         // A Provider must be resolved which implements the GridProviderInterface
         $resolver = $this->getProviderResolver();
         $originalRecord = (array) $this->getSingleRecordWithoutRestrictions($table, $parentUid, '*');
@@ -556,13 +588,14 @@ class DataHandlerSubscriber
             null,
             $originalRecord,
             null,
-            GridProviderInterface::class
+            [GridProviderInterface::class]
         );
 
         if (!$primaryProvider) {
             return [
                 $originalRecord,
-                []
+                [],
+                [],
             ];
         }
 
@@ -572,7 +605,8 @@ class DataHandlerSubscriber
         if (empty($childColPosValues)) {
             return [
                 $originalRecord,
-                []
+                [],
+                [],
             ];
         }
 
@@ -581,6 +615,8 @@ class DataHandlerSubscriber
         $queryBuilder = $this->createQueryBuilderForTable($table);
         if ($command === 'undelete') {
             $queryBuilder->getRestrictions()->removeAll();
+        } else {
+            $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
         }
 
         $query = $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
@@ -622,10 +658,8 @@ class DataHandlerSubscriber
      */
     protected function getProviderResolver(): ProviderResolver
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         return $providerResolver;
     }
 

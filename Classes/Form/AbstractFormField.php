@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form;
 
 /*
@@ -9,22 +10,11 @@ namespace FluidTYPO3\Flux\Form;
  */
 
 use FluidTYPO3\Flux\Form\Container\Section;
-use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * AbstractFormField
- *
- * @deprecated Will be removed in Flux 10.0
- */
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface
 {
-    /**
-     * @var boolean
-     */
-    protected $required = false;
-
     /**
      * @var mixed
      */
@@ -33,77 +23,38 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     /**
      * Display condition - see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
      *
-     * @var string
+     * @var array|string|null
      */
     protected $displayCondition = null;
 
-    /**
-     * @var boolean
-     */
-    protected $requestUpdate = false;
+    protected bool $native = false;
+    protected bool $required = false;
+    protected bool $requestUpdate = false;
+    protected bool $inherit = true;
+    protected bool $inheritEmpty = false;
+    protected bool $clearable = false;
+    protected bool $exclude = false;
+    protected ?string $validate = null;
+    protected ?string $position = null;
+    protected array $config = [];
 
-    /**
-     * @var boolean
-     */
-    protected $inherit = true;
-
-    /**
-     * @var boolean
-     */
-    protected $inheritEmpty = false;
-
-    /**
-     * @var boolean
-     */
-    protected $clearable = false;
-
-    /**
-     * @var boolean
-     */
-    protected $exclude = false;
-
-    /**
-     * @var string
-     */
-    protected $validate;
-
-    /**
-     * @var \SplObjectStorage|WizardInterface[]
-     */
-    protected $wizards;
-
-    /**
-     * @var array
-     */
-    protected $config = [];
-
-    /**
-     * CONSTRUCTOR
-     */
-    public function __construct()
+    public static function create(array $settings = []): FormInterface
     {
-        $this->wizards = new \SplObjectStorage();
-    }
-
-    /**
-     * @param array $settings
-     * @return FieldInterface|Section
-     * @throws \RuntimeException
-     */
-    public static function create(array $settings = [])
-    {
+        if (!isset($settings['type'])) {
+            $settings['type'] = static::class;
+        }
         if ('Section' === $settings['type']) {
             return Section::create($settings);
         } else {
             $prefix = AbstractFormComponent::NAMESPACE_FIELD . '\\';
             $type = $settings['type'];
             $className = str_replace('/', '\\', $type);
-            $className = true === class_exists($prefix . $className) ? $prefix . $className : $className;
+            $className = class_exists($prefix . $className) ? $prefix . $className : $className;
         }
-        if (false === class_exists($className)) {
+        if (!class_exists($className)) {
             $className = $settings['type'];
         }
-        if (false === class_exists($className)) {
+        if (!class_exists($className)) {
             throw new \RuntimeException(
                 sprintf(
                     'Invalid class- or type-name used in type of field "%s"; "%s" is invalid',
@@ -125,87 +76,15 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     }
 
     /**
-     * @param class-string $type
-     * @param string $name
-     * @param string $label
-     * @return WizardInterface
-     */
-    public function createWizard($type, $name, $label = null)
-    {
-        /** @var WizardInterface $wizard */
-        $wizard = parent::createWizard($type, $name, $label);
-        $this->add($wizard);
-        return $wizard;
-    }
-
-    /**
-     * @param WizardInterface $wizard
-     * @return $this
-     */
-    public function add(WizardInterface $wizard)
-    {
-        if (false === $this->wizards->contains($wizard)) {
-            $this->wizards->attach($wizard);
-            $wizard->setParent($this);
-        }
-        return $this;
-    }
-
-    /**
-     * @param string $wizardName
-     * @return WizardInterface|false
-     */
-    public function get($wizardName)
-    {
-        foreach ($this->wizards as $wizard) {
-            if ($wizardName === $wizard->getName()) {
-                return $wizard;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param string|FormInterface $childOrChildName
-     * @return boolean
-     */
-    public function has($childOrChildName)
-    {
-        $name = ($childOrChildName instanceof FormInterface)
-            ? (string) $childOrChildName->getName()
-            : $childOrChildName;
-        return (false !== $this->get($name));
-    }
-
-    /**
-     * @param string $wizardName
-     * @return WizardInterface|FALSE
-     */
-    public function remove($wizardName)
-    {
-        foreach ($this->wizards as $wizard) {
-            if ($wizardName === $wizard->getName()) {
-                $this->wizards->detach($wizard);
-                $this->wizards->rewind();
-                $wizard->setParent(null);
-                return $wizard;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Creates a TCEforms configuration array based on the
      * configuration stored in this ViewHelper. Calls the
      * expected-to-be-overridden stub method getConfiguration()
      * to return the TCE field configuration - see that method
      * for information about how to implement that method.
-     *
-     * @return array
      */
-    public function build()
+    public function build(): array
     {
-        if (false === $this->getEnabled()) {
+        if (!$this->getEnabled()) {
             return [];
         }
 
@@ -224,62 +103,54 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         if (($displayCondition = $this->getDisplayCondition())) {
             $fieldStructureArray['displayCond'] = $displayCondition;
         }
-        $wizards = $this->buildChildren($this->wizards);
-        if (true === $this->getClearable()) {
-            array_push($wizards, [
-                'type' => 'userFunc',
-                'userFunc' => UserFunctions::class . '->renderClearValueWizardField',
-                'params' => [
-                    'itemName' => $this->getName(),
-                ],
-            ]);
+
+        if ($this->getClearable()) {
+            $fieldStructureArray['config']['fieldWizard']['fluxClearValue'] = [
+                'renderType' => 'fluxClearValue',
+            ];
         }
-        if (!empty($wizards)) {
-            $fieldStructureArray['config']['wizards'] = $wizards;
-        }
-        if (true === $this->getRequestUpdate()) {
+
+        if ($this->getRequestUpdate()) {
             $fieldStructureArray['onChange'] = 'reload';
         }
         return $fieldStructureArray;
     }
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    protected function prepareConfiguration($type)
+    protected function prepareConfiguration(string $type): array
     {
-        $fieldConfiguration = [
+        return [
             'type' => $type,
             'transform' => $this->getTransform(),
             'default' => $this->getDefault(),
         ];
-        return $fieldConfiguration;
     }
 
-    /**
-     * @param boolean $required
-     * @return FieldInterface
-     */
-    public function setRequired($required)
+    public function isNative(): bool
     {
-        $this->required = (boolean) $required;
+        return $this->native;
+    }
+
+    public function setNative(bool $native): self
+    {
+        $this->native = $native;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getRequired()
+    public function setRequired(bool $required): self
     {
-        return (boolean) $this->required;
+        $this->required = $required;
+        return $this;
+    }
+
+    public function getRequired(): bool
+    {
+        return $this->required;
     }
 
     /**
      * @param mixed $default
-     * @return FieldInterface
      */
-    public function setDefault($default)
+    public function setDefault($default): self
     {
         $this->default = $default;
         return $this;
@@ -294,96 +165,67 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     }
 
     /**
-     * @param string $displayCondition
-     * @return FieldInterface
+     * @param string|array|null $displayCondition
      */
-    public function setDisplayCondition($displayCondition)
+    public function setDisplayCondition($displayCondition): self
     {
         $this->displayCondition = $displayCondition;
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|array|null
      */
     public function getDisplayCondition()
     {
         return $this->displayCondition;
     }
 
-    /**
-     * @param boolean $requestUpdate
-     * @return FieldInterface
-     */
-    public function setRequestUpdate($requestUpdate)
+    public function setRequestUpdate(bool $requestUpdate): self
     {
-        $this->requestUpdate = (boolean) $requestUpdate;
+        $this->requestUpdate = $requestUpdate;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getRequestUpdate()
+    public function getRequestUpdate(): bool
     {
-        return (boolean) $this->requestUpdate;
+        return $this->requestUpdate;
     }
 
-    /**
-     * @param boolean $exclude
-     * @return $this
-     */
-    public function setExclude($exclude)
+    public function setExclude(bool $exclude): self
     {
-        $this->exclude = (boolean) $exclude;
+        $this->exclude = $exclude;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getExclude()
+    public function getExclude(): bool
     {
-        return (boolean) $this->exclude;
+        return $this->exclude;
     }
 
-    /**
-     * @param string $validate
-     * @return $this
-     */
-    public function setValidate($validate)
+    public function setValidate(?string $validate): self
     {
         $this->validate = $validate;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
 
-    /**
-     * @param array $config
-     * @return $this
-     */
-    public function setConfig(array $config)
+    public function setConfig(array $config): self
     {
         $this->config = $config;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getValidate()
+    public function getValidate(): ?string
     {
-        if (false === (boolean) $this->getRequired()) {
+        if (!$this->getRequired()) {
             $validate = $this->validate;
         } else {
-            if (true === empty($this->validate)) {
+            if (empty($this->validate)) {
                 $validate = 'required';
             } else {
                 $validators = GeneralUtility::trimExplode(',', $this->validate);
@@ -394,55 +236,25 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         return $validate;
     }
 
-    /**
-     * @param boolean $clearable
-     * @return $this
-     */
-    public function setClearable($clearable)
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?string $position): self
+    {
+        $this->position = $position;
+        return $this;
+    }
+
+    public function setClearable(bool $clearable): self
     {
         $this->clearable = (boolean) $clearable;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getClearable()
+    public function getClearable(): bool
     {
-        return (boolean) $this->clearable;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function hasChildren()
-    {
-        return 0 < $this->wizards->count();
-    }
-
-    /**
-     * @param array $structure
-     * @return $this
-     */
-    public function modify(array $structure)
-    {
-        if (isset($structure['wizards']) || isset($structure['children'])) {
-            $data = isset($structure['children']) ? $structure['children'] : $structure['wizards'];
-            foreach ((array) $data as $index => $wizardData) {
-                $wizardName = true === isset($wizardData['name']) ? $wizardData['name'] : $index;
-                // check if field already exists - if it does, modify it. If it does not, create it.
-                if (true === $this->has($wizardName)) {
-                    /** @var WizardInterface $field */
-                    $field = $this->get($wizardName);
-                } else {
-                    $wizardType = true === isset($wizardData['type']) ? $wizardData['type'] : 'None';
-                    /** @var WizardInterface $field */
-                    $field = $this->createWizard($wizardType, $wizardName);
-                }
-                $field->modify($wizardData);
-            }
-            unset($structure['children'], $structure['wizards']);
-        }
-        return parent::modify($structure);
+        return $this->clearable;
     }
 }

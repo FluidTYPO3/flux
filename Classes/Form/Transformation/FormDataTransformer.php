@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Transformation;
 
 /*
@@ -8,47 +9,75 @@ namespace FluidTYPO3\Flux\Form\Transformation;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
-/**
- * Transforms data according to settings defined in the Form instance.
- */
 class FormDataTransformer
 {
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    private FileRepository $fileRepository;
+    private FlexFormService $flexFormService;
+
+    public function __construct(FileRepository $fileRepository, FlexFormService $flexFormService)
+    {
+        $this->fileRepository = $fileRepository;
+        $this->flexFormService = $flexFormService;
+    }
 
     /**
-     * @param ObjectManagerInterface $objectManager
-     * @return void
+     * Parses the flexForm content and converts it to an array
+     * The resulting array will be multi-dimensional, as a value "bla.blubb"
+     * results in two levels, and a value "bla.blubb.bla" results in three levels.
+     *
+     * Note: multi-language flexForms are not supported yet
+     *
+     * @param string $flexFormContent flexForm xml string
+     * @param Form $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this
+     *                   configuration they are applied after conversion to array
+     * @param string|null $languagePointer language pointer used in the flexForm
+     * @param string|null $valuePointer value pointer used in the flexForm
      */
-    public function injectObjectManager(ObjectManagerInterface $objectManager)
-    {
-        $this->objectManager = $objectManager;
+    public function convertFlexFormContentToArray(
+        string $flexFormContent,
+        Form $form = null,
+        ?string $languagePointer = 'lDEF',
+        ?string $valuePointer = 'vDEF'
+    ): array {
+        if (true === empty($flexFormContent)) {
+            return [];
+        }
+        if (true === empty($languagePointer)) {
+            $languagePointer = 'lDEF';
+        }
+        if (true === empty($valuePointer)) {
+            $valuePointer = 'vDEF';
+        }
+        $settings = $this->flexFormService->convertFlexFormContentToArray(
+            $flexFormContent,
+            $languagePointer,
+            $valuePointer
+        );
+        if (null !== $form && $form->getOption(FormOption::TRANSFORM)) {
+            $settings = $this->transformAccordingToConfiguration($settings, $form);
+        }
+        return $settings;
     }
 
     /**
      * Transforms members on $values recursively according to the provided
      * Flux configuration extracted from a Flux template. Uses "transform"
      * attributes on fields to determine how to transform values.
-     *
-     * @param array $values
-     * @param Form $form
-     * @param string $prefix
-     * @return array
      */
-    public function transformAccordingToConfiguration($values, Form $form, $prefix = '')
+    public function transformAccordingToConfiguration(array $values, Form $form, string $prefix = ''): array
     {
-        foreach ((array) $values as $index => $value) {
+        foreach ($values as $index => $value) {
             if (is_array($value)) {
                 $value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
             } else {
@@ -69,7 +98,7 @@ class FormDataTransformer
                             ]
                         )['value'];
                         if ($value === $originalValue) {
-                            $value = $this->transformValueToType($value, $transformType);
+                            $value = $this->transformValueToType($value, $transformType, $prefix . $index, $form);
                         }
                         $value = HookHandler::trigger(
                             HookHandler::VALUE_AFTER_TRANSFORM,
@@ -89,11 +118,9 @@ class FormDataTransformer
     }
 
     /**
-     * @param ContainerInterface $subject
-     * @param string $path
      * @return mixed
      */
-    protected function extractTransformableObjectByPath(ContainerInterface $subject, $path)
+    protected function extractTransformableObjectByPath(ContainerInterface $subject, string $path)
     {
         $pathAsArray = explode('.', $path);
         $subPath = array_shift($pathAsArray);
@@ -116,26 +143,47 @@ class FormDataTransformer
     /**
      * Transforms a single value to $dataType
      *
-     * @param string $value
-     * @param string $dataType
      * @return mixed
      */
-    protected function transformValueToType($value, $dataType)
+    protected function transformValueToType(string $value, string $dataType, string $fieldName, Form $form)
     {
-        if ('int' === $dataType || 'integer' === $dataType) {
+        if (in_array($dataType, ['file', 'files', 'filereference', 'filereferences'], true)) {
+            /** @var string $table */
+            $table = $form->getOption(FormOption::RECORD_TABLE);
+            /** @var array $record */
+            $record = $form->getOption(FormOption::RECORD);
+            $references = $this->fileRepository->findByRelation($table, $fieldName, $record['uid']);
+            switch ($dataType) {
+                case 'file':
+                    if (!empty($references)) {
+                        return $references[0]->getOriginalFile();
+                    }
+                    return null;
+                case 'files':
+                    $files = [];
+                    foreach ($references as $reference) {
+                        $files[] = $reference->getOriginalFile();
+                    }
+                    return $files;
+                case 'filereference':
+                    return $references[0] ?? null;
+                case 'filereferences':
+                    return $references;
+            }
+        } elseif ('int' === $dataType || 'integer' === $dataType) {
             return intval($value);
         } elseif ('float' === $dataType) {
             return floatval($value);
         } elseif ('array' === $dataType) {
-            return explode(',', $value);
+            return explode(',', (string) $value);
         } elseif ('bool' === $dataType || 'boolean' === $dataType) {
             return boolval($value);
         } elseif (strpos($dataType, '->')) {
             /** @var class-string $class */
-            list ($class, $function) = explode('->', $dataType);
+            [$class, $function] = explode('->', $dataType);
             /** @var object $object */
-            $object = $this->objectManager->get($class);
-            return $object->{$function}($value);
+            $object = GeneralUtility::makeInstance($class);
+            return $object->{$function}($value, $fieldName, $form);
         } else {
             return $this->getObjectOfType($dataType, $value);
         }
@@ -148,72 +196,62 @@ class FormDataTransformer
      * @param string|array $uids
      * @return DomainObjectInterface|DomainObjectInterface[]|object|null
      */
-    protected function getObjectOfType($dataType, $uids)
+    protected function getObjectOfType(string $dataType, $uids)
     {
-        $identifiers = true === is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), true);
+        $identifiers = is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), true);
         $identifiers = array_map('intval', $identifiers);
         $isModel = $this->isDomainModelClassName($dataType);
         if (false !== strpos($dataType, '<')) {
             /** @var class-string $container */
             /** @var class-string $object */
-            list ($container, $object) = explode('<', trim($dataType, '>'));
+            [$container, $object] = explode('<', trim($dataType, '>'));
         } else {
             $container = null;
             $object = $dataType;
         }
         $repositoryClassName = $this->resolveRepositoryClassName($object);
         // Fast decisions
-        if (true === $isModel && null === $container) {
-            if (true === class_exists($repositoryClassName)) {
+        if ($isModel && null === $container) {
+            if (class_exists($repositoryClassName)) {
                 /** @var RepositoryInterface $repository */
-                $repository = $this->objectManager->get($repositoryClassName);
+                $repository = GeneralUtility::makeInstance($repositoryClassName);
                 $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
                 /** @var DomainObjectInterface|false $firstRepositoryObject */
                 $firstRepositoryObject = reset($repositoryObjects);
                 return $firstRepositoryObject ?: null;
             }
-        } elseif (true === class_exists($dataType)) {
+        } elseif (class_exists($dataType)) {
             // using constructor value to support objects like DateTime
-            return $this->objectManager->get($dataType, $uids);
+            return GeneralUtility::makeInstance($dataType, $uids);
         }
         // slower decisions with support for type-hinted collection objects
         if ($container && $object) {
-            if (true === $isModel && true === class_exists($repositoryClassName) && 0 < count($identifiers)) {
+            if ($isModel && class_exists($repositoryClassName) && count($identifiers) > 0) {
                 /** @var RepositoryInterface $repository */
-                $repository = $this->objectManager->get($repositoryClassName);
+                $repository = GeneralUtility::makeInstance($repositoryClassName);
                 return $this->loadObjectsFromRepository($repository, $identifiers);
             } else {
-                $container = $this->objectManager->get($container);
+                $container = GeneralUtility::makeInstance($container);
                 return $container;
             }
         }
         return null;
     }
 
-    /**
-     * @param string $object
-     * @return string
-     */
-    protected function resolveRepositoryClassName($object)
+    protected function resolveRepositoryClassName(string $object): string
     {
         return str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object) . 'Repository';
     }
 
-    /**
-     * @param string $dataType
-     * @return boolean
-     */
-    protected function isDomainModelClassName($dataType)
+    protected function isDomainModelClassName(string $dataType): bool
     {
         return (false !== strpos($dataType, '\\Domain\\Model\\'));
     }
 
     /**
-     * @param RepositoryInterface $repository
-     * @param array $identifiers
      * @return DomainObjectInterface[]
      */
-    protected function loadObjectsFromRepository(RepositoryInterface $repository, array $identifiers)
+    protected function loadObjectsFromRepository(RepositoryInterface $repository, array $identifiers): iterable
     {
         /** @var DomainObjectInterface[] $objects */
         $objects = array_map([$repository, 'findByUid'], $identifiers);

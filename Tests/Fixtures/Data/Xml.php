@@ -8,12 +8,8 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Data;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * Xml
- */
 class Xml
 {
-
     const SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <T3FlexForms>
     <data>

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -8,77 +9,59 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * ControllerActions
- */
 class ControllerActions extends Select
 {
     /**
      * Name of the Extbase extension that contains the Controller
      * to parse, ex. MyExtension. In vendor based extensions use
      * dot, ex. Vendor.MyExtension.
-     *
-     * @var string
      */
-    protected $controllerExtensionName;
+    protected string $controllerExtensionName = '';
 
     /**
      * Name of the Extbase plugin that contains Controller
      * definitions to parse, ex. MyPluginName.
-     *
-     * @var string
      */
-    protected $pluginName;
+    protected string $pluginName = '';
 
     /**
      * Optional extra limiting of actions displayed - if used,
      * field only displays actions for this controller name - ex
      * Article(Controller) or FrontendUser(Controller) - the
      * Controller part is implied.
-     *
-     * @var string
      */
-    protected $controllerName;
+    protected string $controllerName = '';
 
     /**
      * Array of "ControllerName" => "csv,of,actions" which are
      * allowed. If used, does not require the use of an
      * ExtensionName and PluginName (will use the one specified
      * in your current plugin automatically).
-     *
-     * @var array
      */
-    protected $actions = [];
+    protected array $actions = [];
 
     /**
      * Array of "ControllerName" => "csv,of,actions" which must
      * be excluded.
-     *
-     * @var array
      */
-    protected $excludeActions = [];
+    protected array $excludeActions = [];
 
     /**
      * A short string denoting that the method takes arguments,
      * ex * (which should then be explained in the documentation
      * for your extension about how to setup your plugins.
-     *
-     * @var string
      */
-    protected $prefixOnRequiredArguments = '*';
+    protected string $prefixOnRequiredArguments = '*';
 
     /**
      * Separator for non-LLL action labels which have no manual
      * label set.
-     *
-     * @var string
      */
-    protected $separator = '->';
+    protected string $separator = '->';
 
     /**
      * Array of also allowed actions which will be allowed when
@@ -117,18 +100,14 @@ class ControllerActions extends Select
      * SwitchableControllerAction selection values must allow more
      * than one action to be used (which would be the case in for
      * example a new/create, edit/update pair of actions).
-     *
-     * @var array
      */
-    protected $subActions = [];
+    protected array $subActions = [];
 
     /**
      * Overridden getter: the name of a SwitchableControllerActions
      * field is enforced - the TYPO3 core depends on this name.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'switchableControllerActions';
     }
@@ -136,11 +115,8 @@ class ControllerActions extends Select
     /**
      * Overridden setter: ignores any attempt to set another name
      * for this field.
-     *
-     * @param string $name
-     * @return FormInterface
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         // intentional intermediate; avoids "unused argument"
         $name = 'switchableControllerActions';
@@ -148,153 +124,95 @@ class ControllerActions extends Select
         return $this;
     }
 
-    /**
-     * @param array $actions
-     * @return ControllerActions
-     */
-    public function setActions($actions)
+    public function setActions(array $actions): self
     {
         $this->actions = $actions;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getActions()
+    public function getActions(): array
     {
         return $this->actions;
     }
 
-    /**
-     * @param string $controllerName
-     * @return ControllerActions
-     */
-    public function setControllerName($controllerName)
+    public function setControllerName(string $controllerName): self
     {
         $this->controllerName = $controllerName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getControllerName()
+    public function getControllerName(): string
     {
         return $this->controllerName;
     }
-    /**
-     * @param array $excludeActions
-     * @return ControllerActions
-     */
-    public function setExcludeActions($excludeActions)
+
+    public function setExcludeActions(array $excludeActions): self
     {
-        $this->excludeActions = (array) $excludeActions;
+        $this->excludeActions = $excludeActions;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getExcludeActions()
+    public function getExcludeActions(): array
     {
-        return (array) $this->excludeActions;
+        return $this->excludeActions;
     }
 
-    /**
-     * @param string $extensionName
-     * @return ControllerActions
-     */
-    public function setControllerExtensionName($extensionName)
+    public function setControllerExtensionName(string $extensionName): self
     {
         $this->controllerExtensionName = $extensionName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getControllerExtensionName()
+    public function getControllerExtensionName(): string
     {
         return $this->controllerExtensionName;
     }
 
-    /**
-     * @param string $pluginName
-     * @return ControllerActions
-     */
-    public function setPluginName($pluginName)
+    public function setPluginName(string $pluginName): self
     {
         $this->pluginName = $pluginName;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return $this->pluginName;
     }
 
-    /**
-     * @param string $separator
-     * @return ControllerActions
-     */
-    public function setSeparator($separator)
+    public function setSeparator(string $separator): self
     {
         $this->separator = $separator;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSeparator()
+    public function getSeparator(): string
     {
         return $this->separator;
     }
 
-    /**
-     * @param string $prefixOnRequiredArguments
-     * @return ControllerActions
-     */
-    public function setPrefixOnRequiredArguments($prefixOnRequiredArguments)
+    public function setPrefixOnRequiredArguments(string $prefixOnRequiredArguments): self
     {
         $this->prefixOnRequiredArguments = $prefixOnRequiredArguments;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getPrefixOnRequiredArguments()
+    public function getPrefixOnRequiredArguments(): string
     {
         return $this->prefixOnRequiredArguments;
     }
 
-    /**
-     * @param array $subActions
-     * @return ControllerActions
-     */
-    public function setSubActions($subActions)
+    public function setSubActions(array $subActions): self
     {
         $this->subActions = $subActions;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getSubActions()
+    public function getSubActions(): array
     {
         return $this->subActions;
     }
 
-    /**
-     * @return array
-     */
-    public function getItems()
+    public function getItems(): array
     {
         $basicItems = parent::getItems();
         if (0 < count($basicItems)) {
@@ -308,12 +226,7 @@ class ControllerActions extends Select
         }
     }
 
-    /**
-     * Reads a list of allowed actions for $extensionName's plugin $pluginName
-     *
-     * @return array
-     */
-    protected function getActionsForExtensionNameAndPluginName()
+    protected function getActionsForExtensionNameAndPluginName(): array
     {
         $extensionName = $this->getControllerExtensionName();
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionName);
@@ -326,15 +239,13 @@ class ControllerActions extends Select
         return $actions;
     }
 
-    /**
-     * @param string $controllerName
-     * @return string|NULL
-     */
-    protected function buildExpectedAndExistingControllerClassName($controllerName)
+    protected function buildExpectedAndExistingControllerClassName(string $controllerName): ?string
     {
         $extensionName = $this->getControllerExtensionName();
-        list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
-        if (null !== $vendorName) {
+        [$vendorName, $extensionName] = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionName);
+        if (class_exists($controllerName)) {
+            $controllerClassName = $controllerName;
+        } elseif (null !== $vendorName) {
             $controllerClassName = sprintf(
                 '%s\\%s\\Controller\\%sController',
                 $vendorName,
@@ -347,18 +258,13 @@ class ControllerActions extends Select
                 $controllerClassName = 'Tx_' . $extensionName . '_Controller_' . $controllerName . 'Controller';
             }
         }
-        if (false === class_exists($controllerClassName)) {
+        if (!class_exists($controllerClassName)) {
             $controllerClassName = null;
         }
         return $controllerClassName;
     }
 
-    /**
-     * @param string $controllerName
-     * @param string $actionName
-     * @return string
-     */
-    protected function getLabelForControllerAction($controllerName, $actionName)
+    protected function getLabelForControllerAction(string $controllerName, string $actionName): string
     {
         $localLanguageFileRelativePath = $this->getLocalLanguageFileRelativePath();
         $extensionName = $this->getControllerExtensionName();
@@ -389,12 +295,7 @@ class ControllerActions extends Select
         return $label;
     }
 
-    /**
-     * @param string $controllerName
-     * @param string $actionName
-     * @return \ReflectionMethod
-     */
-    protected function reflectAction($controllerName, $actionName)
+    protected function reflectAction(string $controllerName, string $actionName): \ReflectionMethod
     {
         /** @var class-string $controllerClassName */
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
@@ -404,14 +305,7 @@ class ControllerActions extends Select
         return $methodReflection;
     }
 
-
-    /**
-     * @param string $controllerName
-     * @param string $actionName
-     * @param string $label
-     * @return string
-     */
-    protected function prefixLabel($controllerName, $actionName, $label)
+    protected function prefixLabel(string $controllerName, string $actionName, string $label): string
     {
         $controllerClassName = $this->buildExpectedAndExistingControllerClassName($controllerName);
         if (null === $controllerClassName || false === method_exists($controllerClassName, $actionName . 'Action')) {
@@ -429,9 +323,8 @@ class ControllerActions extends Select
 
     /**
      * @param mixed $actionList
-     * @return array
      */
-    protected function convertActionListToArray($actionList)
+    protected function convertActionListToArray($actionList): array
     {
         if (is_scalar($actionList)) {
             return GeneralUtility::trimExplode(',', (string) $actionList, true);
@@ -442,12 +335,9 @@ class ControllerActions extends Select
     /**
      * Renders the TCA-style items array based on the Extbase FlexForm-style
      * definitions of selectable actions (specified manually or read based on
-     * ViewHelper arguments)
-     *
-     * @param array $actions
-     * @return array
+     * ViewHelper arguments).
      */
-    protected function buildItemsForActions(array $actions)
+    protected function buildItemsForActions(array $actions): array
     {
         $separator = $this->getSeparator();
         $subActions = $this->getSubActions();
@@ -488,6 +378,9 @@ class ControllerActions extends Select
         return $items;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function resolvePathToFileInExtension(string $extensionKey, string $path): string
     {
         return ExtensionManagementUtility::extPath($extensionKey, $path);

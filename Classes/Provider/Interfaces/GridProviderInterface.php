@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider\Interfaces;
 
 /*
@@ -18,17 +19,6 @@ use FluidTYPO3\Flux\Form;
  */
 interface GridProviderInterface
 {
-    /**
-     * Returns a \FluidTYPO3\Flux\Form\Container\Grid as required by this record.
-     *
-     * @param array $row
-     * @return Form\Container\Grid
-     */
-    public function getGrid(array $row);
-
-    /**
-     * @param Form\Container\Grid $grid
-     * @return $this
-     */
-    public function setGrid(Form\Container\Grid $grid);
+    public function getGrid(array $row): Form\Container\Grid;
+    public function setGrid(Form\Container\Grid $grid): self;
 }

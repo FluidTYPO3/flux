@@ -8,42 +8,35 @@ namespace FluidTYPO3\Flux\Tests\Unit\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyGraphicalFunctions;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use org\bovigo\vfs\vfsStream;
 use TYPO3\CMS\Backend\Routing\Exception\ResourceNotFoundException;
 use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\Router;
+use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * MiscellaneousUtilityTest
- */
 class MiscellaneousUtilityTest extends AbstractTestCase
 {
-    /**
-     * @var PackageManager|null
-     */
-    protected $packageManagerBackup;
-
-    /**
-     * Setup
-     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->packageManagerBackup = AccessibleExtensionManagementUtility::getPackageManager();
-
         // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
         // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
-        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)->setMethods(['isRegistered', 'getIconConfigurationByIdentifier'])->disableOriginalConstructor()->getMock();
+        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)
+            ->onlyMethods(['isRegistered', 'getIconConfigurationByIdentifier'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $iconRegistryMock->expects($this->any())->method('isRegistered')->willReturn(true);
         $iconRegistryMock->expects($this->any())->method('getIconConfigurationByIdentifier')->willReturn([
             'provider' => SvgIconProvider::class,
@@ -52,7 +45,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
             ]
         ]);
         GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryMock);
-        $router = GeneralUtility::makeInstance(Router::class);
+        $router = $this->getMockBuilder(Router::class)->disableOriginalConstructor()->getMock();
         try {
             $router->match('tce_db');
         } catch (ResourceNotFoundException $error) {
@@ -62,26 +55,19 @@ class MiscellaneousUtilityTest extends AbstractTestCase
 
     protected function tearDown(): void
     {
-        AccessibleExtensionManagementUtility::setPackageManager($this->packageManagerBackup);
         GeneralUtility::removeSingletonInstance(IconRegistry::class, GeneralUtility::makeInstance(IconRegistry::class));
     }
 
-    /**
-     * @return array
-     */
-    protected function getFormOptionsFixture()
+    protected function getFormOptionsFixture(): array
     {
-        $formOptionsData = array(
+        $formOptionsData = [
             'extensionName' => 'flux',
             'iconOption' => 'Icons/Mock/Fixture.gif',
-        );
+        ];
         return $formOptionsData;
     }
 
-    /**
-     * @return Form
-     */
-    protected function getFormInstance()
+    protected function getFormInstance(): Form
     {
         return Form::create();
     }
@@ -89,12 +75,12 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canGetIconForTemplateIfIconOptionIsSet()
+    public function canGetIconForTemplateIfIconOptionIsSet(): void
     {
         $formOptionsFixture = $this->getFormOptionsFixture();
         /** @var Form $form */
         $form = $this->getFormInstance();
-        $form->setOption($form::OPTION_ICON, $formOptionsFixture['iconOption']);
+        $form->setOption(FormOption::ICON, $formOptionsFixture['iconOption']);
         $icon = MiscellaneousUtility::getIconForTemplate($form);
         $this->assertEquals($formOptionsFixture['iconOption'], $icon);
     }
@@ -102,12 +88,18 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     /**
      * @test
      */
-    public function returnFalseResultForGivenTemplateButNoTemplateIconIsFound()
+    public function returnFalseResultForGivenTemplateButNoTemplateIconIsFound(): void
     {
-        $package = $this->getMockBuilder(Package::class)->setMethods(['getPackagePath'])->disableOriginalConstructor()->getMock();
+        $package = $this->getMockBuilder(Package::class)
+            ->onlyMethods(['getPackagePath'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $package->method('getPackagePath')->willReturn('.');
 
-        $packageManager = $this->getMockBuilder(PackageManager::class)->setMethods(['isPackageActive', 'getPackage'])->disableOriginalConstructor()->getMock();
+        $packageManager = $this->getMockBuilder(PackageManager::class)
+            ->onlyMethods(['isPackageActive', 'getPackage'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $packageManager->method('isPackageActive')->willReturn(true);
         $packageManager->method('getPackage')->willReturn($package);
 
@@ -117,7 +109,13 @@ class MiscellaneousUtilityTest extends AbstractTestCase
         $mockExtensionUrl = $this->getMockExtension();
         /** @var Form $form */
         $form = $this->getFormInstance();
-        $form->setOption($form::OPTION_TEMPLATEFILE, $mockExtensionUrl . '/' . $formOptionsFixture['extensionName'] . '/Resources/Private/Templates/Content/TestFalse.html');
+        $form->setOption(
+            FormOption::TEMPLATE_FILE,
+            $mockExtensionUrl .
+            '/' .
+            $formOptionsFixture['extensionName'] .
+            '/Resources/Private/Templates/Content/TestFalse.html'
+        );
         $form->setExtensionName($formOptionsFixture['extensionName']);
         $icon = MiscellaneousUtility::getIconForTemplate($form);
         $this->assertNull($icon);
@@ -126,7 +124,7 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     /**
      * @test
      */
-    public function returnFalseResultIfNoTemplateAndNoIconOptionIsSet()
+    public function returnFalseResultIfNoTemplateAndNoIconOptionIsSet(): void
     {
         $form = $this->getFormInstance();
         $icon = MiscellaneousUtility::getIconForTemplate($form);
@@ -136,51 +134,48 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testCreateIcon()
+    public function testCreateIcon(): void
     {
         $graphicsClassName = 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions';
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][$graphicsClassName]['className'] =
             'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyGraphicalFunctions';
-        $this->assertEquals('icon-b7c9dc75b2c29a9a52e8c1f7a996348b', MiscellaneousUtility::createIcon('foobar-icon'));
+        $this->assertEquals('foobar-icon', MiscellaneousUtility::createIcon('foobar-icon'));
     }
 
     /**
      * @test
      */
-    public function testCreateIconWithCustomIdentifier()
+    public function testCreateIconWithCustomIdentifier(): void
     {
-        $graphicsClassName = 'TYPO3\\CMS\\Core\\Imaging\\GraphicalFunctions';
+        $graphicsClassName = GraphicalFunctions::class;
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][$graphicsClassName]['className'] =
-            'FluidTYPO3\\Flux\\Tests\\Fixtures\\Classes\\DummyGraphicalFunctions';
-        $this->assertEquals('icon-identifier', MiscellaneousUtility::createIcon('foobar-icon', 'icon-identifier'));
+            DummyGraphicalFunctions::class;
+        $this->assertEquals('foobar-icon', MiscellaneousUtility::createIcon('foobar-icon', 'icon-identifier'));
     }
 
-    /**
-     * @return string
-     */
-    protected function getMockExtension()
+    protected function getMockExtension(): string
     {
-        $structure = array(
-            'flux' => array(
-                'Resources' => array(
-                    'Private' => array(
-                        'Templates' => array(
-                            'Content' => array(
+        $structure = [
+            'flux' => [
+                'Resources' => [
+                    'Private' => [
+                        'Templates' => [
+                            'Content' => [
                                 'TestTrue.html' => 'Test template with Icon available',
                                 'TestFalse.html' => 'Test template with Icon not available'
-                            )
-                        )
-                    ),
-                    'Public' => array(
-                        'Icons' => array(
-                            'Content' => array(
+                            ]
+                        ]
+                    ],
+                    'Public' => [
+                        'Icons' => [
+                            'Content' => [
                                 'TestTrue.png' => 'Test-Icon'
-                            )
-                        )
-                    )
-                ),
-            )
-        );
+                            ]
+                        ]
+                    ]
+                ],
+            ]
+        ];
         vfsStream::setup('ext', null, $structure);
         $vfsUrl = vfsStream::url('ext');
 
@@ -188,35 +183,28 @@ class MiscellaneousUtilityTest extends AbstractTestCase
     }
 
     /**
-     * @param string $xml
-     * @param array $removals
-     * @param string $expected
      * @dataProvider getCleanFlexFormXmlTestValues
-     * @test
      */
-    public function testCleanFlexFormXml($xml, array $removals, $expected)
+    public function testCleanFlexFormXml(string $xml, array $removals, string $expected): void
     {
         $result = MiscellaneousUtility::cleanFlexFormXml($xml, $removals);
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getCleanFlexFormXmlTestValues()
+    public function getCleanFlexFormXmlTestValues(): array
     {
-        return array(
-            array('<data><fields></fields></data>', array(), ''),
-            array('<data><field index="columns">   <el index="el">   </el>   </field></data>', array(), ''),
-            array('
+        return [
+            ['<data><fields></fields></data>', [], ''],
+            ['<data><field index="columns">   <el index="el">   </el>   </field></data>', [], ''],
+            ['
                 <data>
                     <sheet index="emptySheet1"></sheet>
                     <sheet index="emptySheet2"></sheet>
                     <sheet index="emptySheet3"></sheet>
                 </data>',
-                array(),
+                [],
                 ''
-            ),
-        );
+            ],
+        ];
     }
 }

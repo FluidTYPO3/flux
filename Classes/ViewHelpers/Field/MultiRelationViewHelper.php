@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -38,20 +39,13 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *                               maxItems="5">
  *         <flux:wizard.suggest />
  *     </flux:field.multiRelation>
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class MultiRelationViewHelper extends AbstractRelationFieldViewHelper
 {
-
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return RelationFieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): RelationFieldInterface {
         return static::getPreparedComponent(MultiRelation::class, $renderingContext, $arguments);
     }
 }

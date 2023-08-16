@@ -260,9 +260,16 @@ class RecordBasedContentTypeDefinitionTest extends AbstractTestCase
     {
         $gridConfiguration = $this->dummyGridConfiguration;
 
+        $record = [
+            'content_type' => 'flux_test',
+            'icon' => '',
+            'extension_identity' => 'FluidTYPO3.Flux',
+            'template_source' => '',
+        ];
+
         $subject = $this->getMockBuilder(RecordBasedContentTypeDefinition::class)
             ->setMethods(['getGridConfiguration'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$record])
             ->getMock();
         $subject->method('getGridConfiguration')->willReturn($gridConfiguration);
         $source = $subject->getTemplateSource();
@@ -349,8 +356,6 @@ SOURCE;
         $file = $subject->getTemplatePathAndFilename();
 
         self::assertSame('./Resources/Private/Templates/Content/Proxy.html', $file);
-
-        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
     public function testGetFormReturnsExpectedFormComposition(): void
@@ -362,6 +367,7 @@ SOURCE;
             'description' => 'Test description',
             'extension_identity' => 'FluidTYPO3.Flux',
             'template_file' => '',
+            'sorting' => 123,
         ];
 
         $contentConfiguration = $this->dummyContentConfiguration;

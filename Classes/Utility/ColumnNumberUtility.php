@@ -43,21 +43,12 @@ abstract class ColumnNumberUtility
         return (int) floor($colPos / static::MULTIPLIER);
     }
 
-    /**
-     * @param int $parentUid
-     * @param int $columnNumber
-     * @return int
-     */
-    public static function calculateColumnNumberForParentAndColumn($parentUid, $columnNumber): int
+    public static function calculateColumnNumberForParentAndColumn(int $parentUid, int $columnNumber): int
     {
         return ($parentUid * static::MULTIPLIER) + $columnNumber;
     }
 
-    /**
-     * @param int $virtualColumnNumber
-     * @return array
-     */
-    public static function calculateParentUidAndColumnFromVirtualColumnNumber($virtualColumnNumber): array
+    public static function calculateParentUidAndColumnFromVirtualColumnNumber(int $virtualColumnNumber): array
     {
         return [
             static::calculateParentUid($virtualColumnNumber),
@@ -66,10 +57,9 @@ abstract class ColumnNumberUtility
     }
 
     /**
-     * @param int $parentUid
      * @return int[]
      */
-    public static function calculateMinimumAndMaximumColumnNumberWithinParent($parentUid): array
+    public static function calculateMinimumAndMaximumColumnNumberWithinParent(int $parentUid): array
     {
         return [
             $parentUid * static::MULTIPLIER,

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -14,16 +15,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Inline-style FlexForm field ViewHelper
- *
- * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -118,13 +113,10 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $this->registerArgument('levelLinksPosition', 'string', 'Level links position.');
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return InlineRelationFieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): InlineRelationFieldInterface {
         $component = static::getPreparedComponent(Inline::class, $renderingContext, $arguments);
         return $component;
     }
@@ -132,16 +124,15 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
     /**
      * @template T
      * @param class-string<T> $type
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return T
+     * @return T&InlineRelationFieldInterface
      */
     protected static function getPreparedComponent(
         $type,
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): InlineRelationFieldInterface {
         /** @var array $arguments */
+        /** @var T&InlineRelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setCollapseAll($arguments['collapseAll']);
         $component->setExpandSingle($arguments['expandSingle']);
@@ -153,16 +144,16 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $component->setShowRemovedLocalizationRecords($arguments['showRemovedLocalizationRecords']);
         $component->setShowAllLocalizationLink($arguments['showAllLocalizationLink']);
         $component->setShowSynchronizationLink($arguments['showSynchronizationLink']);
-        if (true === is_array($arguments['enabledControls'])) {
+        if (is_array($arguments['enabledControls'])) {
             $component->setEnabledControls($arguments['enabledControls']);
         }
-        if (true === is_array($arguments['headerThumbnail'])) {
+        if (is_array($arguments['headerThumbnail'])) {
             $component->setHeaderThumbnail($arguments['headerThumbnail']);
         }
-        if (true === is_array($arguments['foreignMatchFields'])) {
+        if (is_array($arguments['foreignMatchFields'])) {
             $component->setForeignMatchFields($arguments['foreignMatchFields']);
         }
-        if (true === is_array($arguments['foreignTypes'])) {
+        if (is_array($arguments['foreignTypes'])) {
             $component->setForeignTypes($arguments['foreignTypes']);
         }
         $component->setLevelLinksPosition($arguments['levelLinksPosition']);

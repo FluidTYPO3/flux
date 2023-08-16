@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
@@ -33,10 +34,10 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
     public const CONTENT_DIRECTORY = 'Content/';
     public const PAGE_DIRECTORY = 'Page/';
 
-    protected $extensionIdentity = 'FluidTYPO3.Flux';
-    protected $basePath = 'design/';
-    protected $relativeFilePath = '';
-    protected $providerClassName = Provider::class;
+    protected string $extensionIdentity = 'FluidTYPO3.Flux';
+    protected string $basePath = 'design/';
+    protected string $relativeFilePath = '';
+    protected string $providerClassName = Provider::class;
 
     /**
      * Constructs a Fluid file-based content type definition
@@ -68,7 +69,7 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
      */
     public static function fetchContentTypes(): iterable
     {
-        if (!ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY)) {
+        if (!ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_PLUG_AND_PLAY)) {
             // Do not return or auto-create any plug and play templates if the extension config option is disabled.
             // Option default value is ENABLED (hence null coalesce to TRUE if not defined)
             return [];
@@ -77,12 +78,15 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         // 1) auto-create if missing, the required file structure and dummy files
         // 2) iterate all content types found in the file structure
         $plugAndPlayDirectory = ExtensionConfigurationUtility::getOption(
-            ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY
+            ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY
         );
         if (!is_scalar($plugAndPlayDirectory)) {
             return [];
         }
         $basePath = trim((string) $plugAndPlayDirectory, '/.');
+        if (empty($basePath)) {
+            return [];
+        }
         $basePath = static::determineAbsolutePathForFilename($basePath) . '/';
         static::initializeDropInFileSystemStructure($basePath);
 

@@ -22,9 +22,9 @@ id
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
-   Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed
+   Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed.
 
 .. _form_label:
 

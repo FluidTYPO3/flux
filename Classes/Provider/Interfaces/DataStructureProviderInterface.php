@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider\Interfaces;
 
 /*
@@ -26,30 +27,20 @@ interface DataStructureProviderInterface
      * the current configuration array - and must return a complete copy
      * of the configuration array manipulated to the Provider's needs.
      *
-     * @param array $row The record being edited/created
-     * @param array $configuration
      * @return array The large FormEngine configuration array - see FormEngine documentation!
      */
-    public function processTableConfiguration(array $row, array $configuration);
+    public function processTableConfiguration(array $row, array $configuration): array;
 
     /**
      * Post-process the TCEforms DataStructure for a record associated
      * with this ConfigurationProvider
-     *
-     * @param array $row
-     * @param mixed $dataStructure Array or string; should only be processed if argument is an array
-     * @param array $conf
-     * @return void
      */
-    public function postProcessDataStructure(array &$row, &$dataStructure, array $conf);
+    public function postProcessDataStructure(array &$row, ?array &$dataStructure, array $conf): void;
 
     /**
      * Converts the contents of the provided row's Flux-enabled field,
      * at the same time running through the inheritance tree generated
      * by getInheritanceTree() in order to apply inherited values.
-     *
-     * @param array $row
-     * @return array
      */
-    public function getFlexFormValues(array $row);
+    public function getFlexFormValues(array $row, ?string $forField = null): array;
 }

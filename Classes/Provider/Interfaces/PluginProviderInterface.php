@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider\Interfaces;
 
 /*
@@ -19,14 +20,6 @@ namespace FluidTYPO3\Flux\Provider\Interfaces;
  */
 interface PluginProviderInterface
 {
-    /**
-     * @param string $listType
-     * @return void
-     */
-    public function setListType($listType);
-
-    /**
-     * @return string
-     */
-    public function getListType();
+    public function setListType(string $listType): self;
+    public function getListType(): string;
 }

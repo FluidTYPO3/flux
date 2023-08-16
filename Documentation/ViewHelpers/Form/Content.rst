@@ -57,7 +57,7 @@ name
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of the content area, FlexForm XML-valid tag name string
 

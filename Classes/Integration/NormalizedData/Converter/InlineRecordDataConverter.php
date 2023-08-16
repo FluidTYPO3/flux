@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\NormalizedData\Converter;
 
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
@@ -7,30 +8,12 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class FlexFormConverter
- */
 class InlineRecordDataConverter implements ConverterInterface
 {
-    /**
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * @var string
-     */
-    protected $field;
-
-    /**
-     * @var array
-     */
-    protected $record;
-
-    /**
-     * @var array
-     */
-    protected $original = [];
+    protected string $table;
+    protected string $field;
+    protected array $record;
+    protected array $original = [];
 
     /**
      * Constructor to receive all required parameters.
@@ -44,15 +27,12 @@ class InlineRecordDataConverter implements ConverterInterface
         $this->table = $table;
         $this->field = $field;
         $this->record = $record;
-        $this->original = $GLOBALS['TCA'][$table]['columns'][$field];
+        $this->original = $GLOBALS['TCA'][$table]['columns'][$field] ?? [];
     }
 
     /**
      * Modify the input FormEngine structure, returning
      * the modified array.
-     *
-     * @param array $structure
-     * @return array
      */
     public function convertStructure(array $structure): array
     {
@@ -69,9 +49,6 @@ class InlineRecordDataConverter implements ConverterInterface
     /**
      * Converts traditional FlexForm array data by merging in
      * the data coming from IRRE records.
-     *
-     * @param array $data
-     * @return array
      */
     public function convertData(array $data): array
     {
@@ -88,9 +65,6 @@ class InlineRecordDataConverter implements ConverterInterface
      * now has a UID value. Uses the form structure defined
      * in $dataSource (and creates records with default
      * values those were if specified in data source).
-     *
-     * @param array $dataSource
-     * @return void
      */
     protected function synchroniseConfigurationRecords(array $dataSource): void
     {
@@ -166,9 +140,6 @@ class InlineRecordDataConverter implements ConverterInterface
      * Resolves a data source definition (TCEforms array)
      * based on the properties of this converter instance
      * and the *original* TCA of the source record field.
-     *
-     * @param array $structure
-     * @return array|null
      */
     protected function resolveDataSourceDefinition(array $structure): ?array
     {
@@ -189,10 +160,7 @@ class InlineRecordDataConverter implements ConverterInterface
     }
 
     /**
-     * @param array $data
-     * @param string $name
      * @param mixed $value
-     * @return array
      */
     protected function assignVariableByDottedPath(array $data, string $name, $value): array
     {

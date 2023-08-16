@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -12,198 +13,98 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 
-/**
- * Text
- */
 class Text extends Input implements FieldInterface
 {
-    /**
-     * @var integer
-     */
-    protected $columns = 85;
+    protected int $columns = 85;
+    protected int $rows = 10;
+    protected bool $enableRichText = false;
+    protected string $richtextConfiguration = '';
+    protected ?string $renderType = null;
+    protected string $format = '';
+    protected ?string $placeholder = null;
 
-    /**
-     * @var integer
-     */
-    protected $rows = 10;
-
-    /**
-     * @var string
-     */
-    protected $defaultExtras;
-
-    /**
-     * @var boolean
-     */
-    protected $enableRichText = false;
-
-    /**
-     * @var string
-     */
-    protected $richtextConfiguration;
-
-    /**
-     * @var string
-     */
-    protected $renderType = '';
-
-    /**
-     * @var string
-     */
-    protected $format;
-
-    /**
-     * @var string
-     */
-    protected $placeholder;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('text');
         $configuration['rows'] = $this->getRows();
         $configuration['cols'] = $this->getColumns();
         $configuration['eval'] = $this->getValidate();
         $configuration['placeholder'] = $this->getPlaceholder();
-        if (true === $this->getEnableRichText()) {
+        if ($this->getEnableRichText()) {
             $configuration['enableRichtext'] = true;
             $configuration['softref'] = 'typolink_tag,images,email[subst],url';
             $configuration['richtextConfiguration'] = $this->getRichtextConfiguration();
         }
         $renderType = $this->getRenderType();
-        if (false === empty($renderType)) {
+        if (!empty($renderType)) {
             $configuration['renderType'] = $renderType;
             $configuration['format'] = $this->getFormat();
         }
         return $configuration;
     }
 
-    /**
-     * @param integer $columns
-     * @return $this
-     */
-    public function setColumns($columns)
+    public function setColumns(int $columns): self
     {
         $this->columns = $columns;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getColumns()
+    public function getColumns(): int
     {
         return $this->columns;
     }
 
-    /**
-     * @deprecated Will be removed in next major version
-     * @param string $defaultExtras
-     * @return $this
-     */
-    public function setDefaultExtras($defaultExtras)
+    public function setEnableRichText(bool $enableRichText): self
     {
-        $this->defaultExtras = $defaultExtras;
+        $this->enableRichText = $enableRichText;
         return $this;
     }
 
-    /**
-     * @deprecated Will be removed in next major version
-     * @return string
-     */
-    public function getDefaultExtras()
+    public function getEnableRichText(): bool
     {
-        return $this->defaultExtras;
+        return $this->enableRichText;
     }
 
-    /**
-     * @param boolean $enableRichText
-     * @return $this
-     */
-    public function setEnableRichText($enableRichText)
-    {
-        $this->enableRichText = (boolean) $enableRichText;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getEnableRichText()
-    {
-        return (boolean) $this->enableRichText;
-    }
-
-    /**
-     * @param integer $rows
-     * @return $this
-     */
-    public function setRows($rows)
+    public function setRows(int $rows): self
     {
         $this->rows = $rows;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getRows()
+    public function getRows(): int
     {
         return $this->rows;
     }
 
-    /**
-     * @return string
-     */
-    public function getRenderType()
+    public function getRenderType(): ?string
     {
         return $this->renderType;
     }
 
-    /**
-     * @param string $renderType
-     * @return $this
-     */
-    public function setRenderType($renderType)
+    public function setRenderType(?string $renderType): self
     {
         $this->renderType = $renderType;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFormat()
+    public function getFormat(): string
     {
         return $this->format;
     }
 
-    /**
-     * @param string $format
-     * @return $this
-     */
-    public function setFormat($format)
+    public function setFormat(string $format): self
     {
         $this->format = $format;
         return $this;
     }
 
-    /**
-     * @param string $placeholder
-     * @return Text
-     */
-    public function setPlaceholder($placeholder)
+    public function setPlaceholder(?string $placeholder): self
     {
         $this->placeholder = $placeholder;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getPlaceholder()
+    public function getPlaceholder(): ?string
     {
         return $this->placeholder;
     }
@@ -216,18 +117,13 @@ class Text extends Input implements FieldInterface
      * 1. 'richtextConfiguration' attribute of the current tag
      * 2. PageTSconfig: "RTE.tx_flux.preset"
      * 3. PageTSconfig: "RTE.default.preset"
-     *
-     * @return string
      */
-    public function getRichtextConfiguration()
+    public function getRichtextConfiguration(): string
     {
         return $this->richtextConfiguration ?: $this->getPageTsConfigForRichTextEditor();
     }
 
-    /**
-     * @return string
-     */
-    protected function getPageTsConfigForRichTextEditor()
+    protected function getPageTsConfigForRichTextEditor(): string
     {
         $pageUid = 0;
         $root = $this->getRoot();
@@ -235,20 +131,24 @@ class Text extends Input implements FieldInterface
             /** @var array|null $record */
             $record = $root->getOption('record');
             if ($record !== null) {
-                $pageUid = (integer) $record['pid'];
+                $pageUid = (integer) ($record['pid'] ?? 0);
             }
         }
 
-        return BackendUtility::getPagesTSconfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
+        return $this->fetchPageTsConfig($pageUid)['RTE.']['default.']['preset'] ?? 'default';
     }
 
-    /**
-     * @param string $richtextConfiguration
-     * @return Text
-     */
-    public function setRichtextConfiguration($richtextConfiguration)
+    public function setRichtextConfiguration(string $richtextConfiguration): self
     {
         $this->richtextConfiguration = $richtextConfiguration;
         return $this;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function fetchPageTsConfig(int $pageUid): array
+    {
+        return BackendUtility::getPagesTSconfig($pageUid);
     }
 }

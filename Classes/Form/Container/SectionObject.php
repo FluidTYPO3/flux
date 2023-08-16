@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -29,15 +30,9 @@ use FluidTYPO3\Flux\Form\FormInterface;
  */
 class SectionObject extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
 {
-    /**
-     * @var bool
-     */
-    protected $contentContainer = false;
+    protected bool $contentContainer = false;
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $label = $this->getLabel();
         $structureArray = [
@@ -48,38 +43,29 @@ class SectionObject extends AbstractFormContainer implements ContainerInterface,
         return $structureArray;
     }
 
-    /**
-     * @return bool
-     */
-    public function isContentContainer()
+    public function isContentContainer(): bool
     {
         return $this->contentContainer;
     }
 
-    /**
-     * @param bool $contentContainer
-     * @return void
-     */
-    public function setContentContainer($contentContainer)
+    public function setContentContainer(bool $contentContainer): self
     {
         $this->contentContainer = (bool) $contentContainer;
         if ($this->contentContainer && !$this->has(ColumnPosition::FIELD_NAME)) {
             $this->createContentContainerFields();
         }
+        return $this;
     }
 
     /**
      * @return FormInterface[]
      */
-    public function getFields()
+    public function getFields(): iterable
     {
-        return (array) iterator_to_array($this->children);
+        return iterator_to_array($this->children);
     }
 
-    /**
-     * @return void
-     */
-    protected function createContentContainerFields()
+    protected function createContentContainerFields(): void
     {
         $this->createField(ColumnPosition::class, ColumnPosition::FIELD_NAME);
         $this->createField(Input::class, 'label', 'Content area name/label');

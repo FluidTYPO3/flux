@@ -16,48 +16,59 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class ProviderProcessorTest
- */
 class ProviderProcessorTest extends AbstractTestCase
 {
+    protected ProviderProcessor $subject;
+
     public function testThrowsExceptionOnMissingTableName(): void
     {
-        $subject = new ProviderProcessor();
+        $subject = new ProviderProcessor(
+            $this->getMockBuilder(ProviderResolver::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContentTypeManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SiteFinder::class)->disableOriginalConstructor()->getMock()
+        );
         self::expectExceptionCode(1666816552);
         $subject->addData([]);
     }
 
     public function testThrowsExceptionOnMissingDatabaseRow(): void
     {
-        $subject = new ProviderProcessor();
+        $subject = new ProviderProcessor(
+            $this->getMockBuilder(ProviderResolver::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ContentTypeManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SiteFinder::class)->disableOriginalConstructor()->getMock()
+        );
         self::expectExceptionCode(1666816552);
         $subject->addData(['tableName' => 'test']);
     }
 
     public function testCallsProcessTableConfigurationOnProviders(): void
     {
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['processTableConfiguration'])->getMock();
-        $provider->expects($this->once())->method('processTableConfiguration')->willReturn('test');
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(['processTableConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $provider->expects($this->once())->method('processTableConfiguration')->willReturn([]);
 
-        $providerResolver = $this->getMockBuilder(ProviderResolver::class)->setMethods(['resolveConfigurationProviders'])->getMock();
+        $providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->setMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $providerResolver->expects($this->once())->method('resolveConfigurationProviders')->willReturn([$provider]);
 
-        $instance = $this->getMockBuilder(ProviderProcessor::class)->setMethods(['getProviderResolver'])->getMock();
-        $instance->expects($this->once())->method('getProviderResolver')->willReturn($providerResolver);
+        $instance = new ProviderProcessor(
+            $providerResolver,
+            $this->getMockBuilder(ContentTypeManager::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(SiteFinder::class)->disableOriginalConstructor()->getMock()
+        );
 
         $result = $instance->addData(['tableName' => 'foo', 'databaseRow' => []]);
-        $this->assertEquals('test', $result);
+        $this->assertEquals([], $result);
     }
 
     public function testSetsEnabledContentTypesFromSiteConfiguration(): void
     {
-        if (!class_exists(SiteFinder::class)) {
-            $this->markTestSkipped('Skipped on TYPO3 versions that do not contain SiteFinder');
-        }
-
         $site = $this->getMockBuilder(Site::class)
             ->setMethods(['getConfiguration'])
             ->disableOriginalConstructor()
@@ -70,10 +81,6 @@ class ProviderProcessorTest extends AbstractTestCase
             ->getMock();
         $siteFinder->method('getSiteByPageId')->willReturn($site);
 
-        GeneralUtility::addInstance(SiteFinder::class, $siteFinder);
-
-        $singletons = GeneralUtility::getSingletonInstances();
-
         $contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
             ->setMethods(['fetchContentTypeNames'])
             ->disableOriginalConstructor()
@@ -81,16 +88,23 @@ class ProviderProcessorTest extends AbstractTestCase
         $contentTypeManager->method('fetchContentTypeNames')
             ->willReturn(['flux_test', 'flux_test2', 'flux_notincluded']);
 
-        GeneralUtility::setSingletonInstance(ContentTypeManager::class, $contentTypeManager);
-
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['processTableConfiguration'])->getMock();
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(['processTableConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->expects($this->once())->method('processTableConfiguration')->willReturnArgument(1);
 
-        $providerResolver = $this->getMockBuilder(ProviderResolver::class)->setMethods(['resolveConfigurationProviders'])->getMock();
+        $providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->setMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $providerResolver->expects($this->once())->method('resolveConfigurationProviders')->willReturn([$provider]);
 
-        $instance = $this->getMockBuilder(ProviderProcessor::class)->setMethods(['getProviderResolver'])->getMock();
-        $instance->expects($this->once())->method('getProviderResolver')->willReturn($providerResolver);
+        $instance = new ProviderProcessor(
+            $providerResolver,
+            $contentTypeManager,
+            $siteFinder
+        );
 
         $input = [
             'tableName' => 'tt_content',
@@ -117,16 +131,10 @@ class ProviderProcessorTest extends AbstractTestCase
 
         $result = $instance->addData($input);
         $this->assertEquals($expected, $result);
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     public function testSetsEnabledContentTypesFromSiteConfigurationButIgnoresSiteNotFound(): void
     {
-        if (!class_exists(SiteFinder::class)) {
-            $this->markTestSkipped('Skipped on TYPO3 versions that do not contain SiteFinder');
-        }
-
         $site = $this->getMockBuilder(Site::class)
             ->setMethods(['getConfiguration'])
             ->disableOriginalConstructor()
@@ -139,16 +147,23 @@ class ProviderProcessorTest extends AbstractTestCase
             ->getMock();
         $siteFinder->method('getSiteByPageId')->willThrowException(new SiteNotFoundException('test'));
 
-        GeneralUtility::addInstance(SiteFinder::class, $siteFinder);
-
-        $provider = $this->getMockBuilder(Provider::class)->setMethods(['processTableConfiguration'])->getMock();
+        $provider = $this->getMockBuilder(Provider::class)
+            ->setMethods(['processTableConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->expects($this->once())->method('processTableConfiguration')->willReturnArgument(1);
 
-        $providerResolver = $this->getMockBuilder(ProviderResolver::class)->setMethods(['resolveConfigurationProviders'])->getMock();
+        $providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->setMethods(['resolveConfigurationProviders'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $providerResolver->expects($this->once())->method('resolveConfigurationProviders')->willReturn([$provider]);
 
-        $instance = $this->getMockBuilder(ProviderProcessor::class)->setMethods(['getProviderResolver'])->getMock();
-        $instance->expects($this->once())->method('getProviderResolver')->willReturn($providerResolver);
+        $instance = new ProviderProcessor(
+            $providerResolver,
+            $this->getMockBuilder(ContentTypeManager::class)->disableOriginalConstructor()->getMock(),
+            $siteFinder
+        );
 
         $input = [
             'tableName' => 'tt_content',

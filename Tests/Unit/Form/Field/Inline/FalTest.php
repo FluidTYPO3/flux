@@ -8,37 +8,47 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field\Inline;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\InlineFieldControls;
+use FluidTYPO3\Flux\Enum\InlineFieldNewRecordButtonPosition;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 
-/**
- * FalTest
- */
 class FalTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'collapseAll' => false,
         'expandSingle' => false,
         'newRecordLinkAddTitle' => false,
-        'newRecordLinkPosition' => Form::POSITION_TOP,
+        'newRecordLinkPosition' => InlineFieldNewRecordButtonPosition::TOP,
         'useCombination' => false,
         'useSortable' => false,
         'showPossibleLocalizationRecords' => false,
         'showRemovedLocalizationRecords' => false,
         'showAllLocalizationLink' => false,
         'showSynchronizationLink' => false,
-        'enabledControls' => array(
-            Form::CONTROL_INFO => false,
-            Form::CONTROL_NEW => true,
-            Form::CONTROL_DRAGDROP => true,
-            Form::CONTROL_SORT => true,
-            Form::CONTROL_HIDE => true,
-            Form::CONTROL_DELETE => false,
-            Form::CONTROL_LOCALISE => false,
-        )
-    );
+        'enabledControls' => [
+            InlineFieldControls::INFO => false,
+            InlineFieldControls::NEW => true,
+            InlineFieldControls::DRAGDROP => true,
+            InlineFieldControls::SORT => true,
+            InlineFieldControls::HIDE => true,
+            InlineFieldControls::DELETE => false,
+            InlineFieldControls::LOCALIZE => false,
+        ]
+    ];
+
+    public function testBuildConfigurationWithCropVariants(): void
+    {
+        $subject = new Form\Field\Inline\Fal();
+        $subject->setCropVariants(['foo' => []]);
+        $output = $subject->buildConfiguration();
+        self::assertSame(
+            [
+                'cropVariants' => [
+                    'foo' => [],
+                ],
+            ],
+            $output['overrideChildTca']['columns']['crop']['config']
+        );
+    }
 }

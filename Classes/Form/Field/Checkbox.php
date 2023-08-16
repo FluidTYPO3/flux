@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,16 +11,9 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractFormField;
 
-/**
- * Checkbox
- */
 class Checkbox extends AbstractFormField
 {
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $fieldConfiguration = $this->prepareConfiguration('check');
         return $fieldConfiguration;

@@ -24,6 +24,6 @@ form
    mixed
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Form instance to render as HTML

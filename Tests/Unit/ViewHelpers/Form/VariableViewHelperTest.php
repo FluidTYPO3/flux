@@ -12,9 +12,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 
-/**
- * VariableViewHelperTest
- */
 class VariableViewHelperTest extends AbstractViewHelperTestCase
 {
     /**
@@ -22,7 +19,7 @@ class VariableViewHelperTest extends AbstractViewHelperTestCase
      */
     public function addsVariableToContainer()
     {
-        $containerMock = $this->getMockBuilder(Form::class)->setMethods(array('setVariable'))->getMock();
+        $containerMock = $this->getMockBuilder(Form::class)->setMethods(['setVariable'])->getMock();
         $containerMock->expects($this->once())->method('setVariable')->with('test', 'testvalue');
 
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'container', $containerMock);

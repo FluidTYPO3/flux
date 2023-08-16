@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Controller;
 
 /**
@@ -9,5 +10,4 @@ namespace FluidTYPO3\Flux\Controller;
  */
 class ContentController extends AbstractFluxController
 {
-
 }

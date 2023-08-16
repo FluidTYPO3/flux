@@ -11,15 +11,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 use TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\TextNode;
 use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
 
-/**
- * CustomViewHelperTest
- */
 class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
 {
     /**
      * @test
      */
-    public function canGenerateAndExecuteClosureWithoutArgumentCollision()
+    public function canGenerateAndExecuteClosureWithoutArgumentCollision(): void
     {
         $this->executeViewHelperClosure();
     }
@@ -27,22 +24,23 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function canGenerateAndExecuteClosureWithArgumentCollisionAndBackups()
+    public function canGenerateAndExecuteClosureWithArgumentCollisionAndBackups(): void
     {
-        $arguments = array(
+        $arguments = [
             'parameters' => 'Fake parameter'
-        );
+        ];
         $container = $this->executeViewHelperClosure($arguments);
         $this->assertSame($container->get('parameters'), $arguments['parameters']);
     }
 
-    protected function executeViewHelperClosure(array $templateVariableContainerArguments = array()): StandardVariableProvider
-    {
+    protected function executeViewHelperClosure(
+        array $templateVariableContainerArguments = []
+    ): StandardVariableProvider {
         $instance = $this->buildViewHelperInstance();
         $renderingContext = $this->renderingContext;
-        $arguments = array(
+        $arguments = [
             'name' => 'custom'
-        );
+        ];
         $this->templateVariableContainer->setSource($templateVariableContainerArguments);
         $node = $this->createViewHelperNode($instance, $arguments);
         $childNode = $this->createNode('Text', 'Hello world!');
@@ -58,10 +56,10 @@ class CustomViewHelperTest extends AbstractFieldViewHelperTestCase
                 return $childNode->evaluate($renderingContext);
             }
         );
-        $parameters = array(
+        $parameters = [
             'itemFormElName' => 'test',
             'itemFormElLabel' => 'Test label',
-        );
+        ];
         $output = $closure($parameters);
         $this->assertNotEmpty($output);
         $this->assertSame('Hello world!', $output);

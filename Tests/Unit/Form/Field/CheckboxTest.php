@@ -8,20 +8,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * CheckboxTest
- */
 class CheckboxTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'enabled' => true,
         'default' => 1,
         'requestUpdate' => true,
-    );
+    ];
 }

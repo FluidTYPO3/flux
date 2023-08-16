@@ -9,48 +9,19 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  */
 
 use FluidTYPO3\Flux\Controller\PageController;
-use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 
-/**
- * Class PageControllerTest
- */
 class PageControllerTest extends AbstractTestCase
 {
-    /**
-     * @return void
-     */
-    public function testGetRecordReadsFromTypoScriptFrontendController()
+    public function testGetRecordReadsFromTypoScriptFrontendController(): void
     {
         $GLOBALS['TSFE'] = (object) ['page' => ['foo' => 'bar']];
         /** @var PageController $subject */
-        $subject = $this->getMockBuilder(PageController::class)->setMethods(['dummy'])->disableOriginalConstructor()->getMock();
+        $subject = $this->getMockBuilder(PageController::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $record = $subject->getRecord();
         $this->assertSame(['foo' => 'bar'], $record);
-    }
-
-    public function testInitializeProvider()
-    {
-        /** @var FluxService|MockObject $pageConfigurationService */
-        $pageConfigurationService = $this->getMockBuilder(
-            FluxService::class
-        )->setMethods(
-            ['resolvePrimaryConfigurationProvider']
-        )->getMock();
-        /** @var PageService $pageService */
-        $pageService = $this->getMockBuilder(
-            PageService::class
-        )->setMethods(
-            ['getPageTemplateConfiguration']
-        )->getMock();
-        $pageConfigurationService->expects($this->once())->method('resolvePrimaryConfigurationProvider');
-        /** @var PageController|MockObject $instance */
-        $instance = $this->getMockBuilder(PageController::class)->setMethods(['getRecord'])->disableOriginalConstructor()->getMock();
-        $instance->expects($this->once())->method('getRecord')->willReturn([]);
-        $instance->injectpageConfigurationService($pageConfigurationService);
-        $instance->injectPageService($pageService);
-        $this->callInaccessibleMethod($instance, 'initializeProvider');
     }
 }

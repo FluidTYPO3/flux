@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 
 class FormViewHelperTest extends AbstractViewHelperTestCase
 {
-    protected $defaultArguments = [
+    protected array $defaultArguments = [
         'icon' => 'foobar',
     ];
 

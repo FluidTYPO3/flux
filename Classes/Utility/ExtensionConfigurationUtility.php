@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -15,22 +16,17 @@ class ExtensionConfigurationUtility
     public const OPTION_PLUG_AND_PLAY = 'plugAndPlay';
     public const OPTION_PLUG_AND_PLAY_DIRECTORY = 'plugAndPlayDirectory';
     public const OPTION_PAGE_INTEGRATION = 'pageIntegration';
-    public const OPTION_PAGE_LANGUAGE_OVERLAY = 'pagesLanguageConfigurationOverlay';
     public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
-    /**
-     * @var array
-     */
-    protected static $defaults = [
-        self::OPTION_DEBUG_MODE => false,
-        self::OPTION_DOKTYPES => '0,1,4',
-        self::OPTION_HANDLE_ERRORS => false,
-        self::OPTION_AUTOLOAD => true,
-        self::OPTION_PLUG_AND_PLAY => false,
-        self::OPTION_PLUG_AND_PLAY_DIRECTORY => DropInContentTypeDefinition::DESIGN_DIRECTORY,
-        self::OPTION_PAGE_INTEGRATION => true,
-        self::OPTION_PAGE_LANGUAGE_OVERLAY => false,
-        self::OPTION_FLEXFORM_TO_IRRE => false,
+    protected static array $defaults = [
+        ExtensionOption::OPTION_DEBUG_MODE => false,
+        ExtensionOption::OPTION_DOKTYPES => '0,1,4',
+        ExtensionOption::OPTION_HANDLE_ERRORS => false,
+        ExtensionOption::OPTION_AUTOLOAD => true,
+        ExtensionOption::OPTION_PLUG_AND_PLAY => false,
+        ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY => DropInContentTypeDefinition::DESIGN_DIRECTORY,
+        ExtensionOption::OPTION_PAGE_INTEGRATION => true,
+        ExtensionOption::OPTION_FLEXFORM_TO_IRRE => false,
     ];
 
     public static function initialize(?string $extensionConfiguration): void
@@ -40,13 +36,9 @@ class ExtensionConfigurationUtility
 
         if (empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'])) {
             $legacyConfiguration = &$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'];
-            if (class_exists(ExtensionConfiguration::class)) {
-                /** @var ExtensionConfiguration $extensionConfigurationManager */
-                $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfiguration::class);
-                $legacyConfiguration = $extensionConfigurationManager->get('flux');
-            } elseif (is_string($extensionConfiguration)) {
-                $legacyConfiguration = $currentConfiguration['setup'] ?? unserialize($extensionConfiguration);
-            }
+            /** @var ExtensionConfiguration $extensionConfigurationManager */
+            $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+            $legacyConfiguration = $extensionConfigurationManager->get('flux');
         }
     }
 
@@ -56,7 +48,6 @@ class ExtensionConfigurationUtility
     }
 
     /**
-     * @param string $optionName
      * @return mixed|null
      */
     public static function getOption(string $optionName)

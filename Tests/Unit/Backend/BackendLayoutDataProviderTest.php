@@ -11,31 +11,30 @@ namespace FluidTYPO3\Flux\Tests\Unit\Backend;
 use FluidTYPO3\Flux\Backend\BackendLayoutDataProvider;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\PageProvider;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class BackendLayoutDataProviderTest
  */
 class BackendLayoutDataProviderTest extends AbstractTestCase
 {
-    protected ?WorkspacesAwareRecordService $recordService = null;
-    protected ?FluxService $fluxService = null;
+    protected WorkspacesAwareRecordService $recordService;
+    protected ProviderResolver $providerResolver;
 
     protected function setUp(): void
     {
         $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
-            ->setMethods(['getSingle'])
+            ->onlyMethods(['getSingle'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolvePageProvider'])
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->onlyMethods(['resolvePageProvider'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -48,7 +47,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testGetBackendLayoutReturnsEmptyLayoutWithoutRecord()
     {
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn(
@@ -72,7 +72,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
         );
 
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn(
@@ -91,10 +92,11 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testGetBackendLayoutReturnsEmptyLayoutWithoutProvider()
     {
         $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
-        $this->fluxService->method('resolvePageProvider')->willReturn(null);
+        $this->providerResolver->method('resolvePageProvider')->willReturn(null);
 
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn($this->createBackendLayoutMock());
@@ -108,7 +110,7 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testGetBackendLayoutReturnsBackendLayoutWithRecordAndProvider()
     {
         $backendLayout = $this->getMockBuilder(BackendLayout::class)
-            ->setMethods(['dummy'])
+            ->addMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
         $grid = $this->getMockBuilder(Grid::class)
@@ -117,14 +119,18 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
             ->getMock();
         $grid->method('buildBackendLayout')->willReturn($backendLayout);
 
-        $provider = $this->getMockBuilder(PageProvider::class)->setMethods(['getGrid'])->getMock();
+        $provider = $this->getMockBuilder(PageProvider::class)
+            ->onlyMethods(['getGrid'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider->method('getGrid')->willReturn($grid);
 
         $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
-        $this->fluxService->method('resolvePageProvider')->willReturn($provider);
+        $this->providerResolver->method('resolvePageProvider')->willReturn($provider);
 
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn($this->createBackendLayoutMock());
@@ -138,7 +144,8 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
     public function testAddBackendLayouts()
     {
         $instance = $this->getMockBuilder(BackendLayoutDataProvider::class)
-            ->setMethods(['createBackendLayoutInstance'])
+            ->onlyMethods(['createBackendLayoutInstance'])
+            ->setConstructorArgs([$this->providerResolver, $this->recordService])
             ->getMock();
         $instance->method('createBackendLayoutInstance')
             ->willReturn($this->createBackendLayoutMock());
@@ -156,17 +163,5 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
             ->setMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [WorkspacesAwareRecordService::class, $this->recordService],
-                [FluxService::class, $this->fluxService],
-            ]
-        );
-        return $instance;
     }
 }

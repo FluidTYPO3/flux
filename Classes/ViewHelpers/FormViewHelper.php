@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -17,16 +18,12 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FormViewHelper extends AbstractFormViewHelper
 {
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument(
             'id',
             'string',
-            'Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed',
+            'Identifier of this Flexible Content Element, `/[a-z0-9]/i` allowed.',
             true
         );
         $this->registerArgument(
@@ -73,38 +70,37 @@ class FormViewHelper extends AbstractFormViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return Form
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Form
     {
         return Form::create();
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
         $viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
         $extensionName = static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments);
         $form = static::getComponent($renderingContext, $arguments);
         // configure Form instance
-        $form->setId($arguments['id']);
-        $form->setName($arguments['id']);
-        $form->setLabel($arguments['label']);
-        $form->setDescription($arguments['description']);
-        $form->setEnabled($arguments['enabled']);
+        /** @var string|int $formId */
+        $formId = $arguments['id'] ?? 'form';
+        /** @var string $formId */
+        $formId = (string) $formId;
+        /** @var string|null $formLabel */
+        $formLabel = $arguments['label'];
+        /** @var string|null $formDescription */
+        $formDescription = $arguments['description'];
+        /** @var string $languageFileRelativePath */
+        $languageFileRelativePath = $arguments['localLanguageFileRelativePath'];
+        $form->setId($formId);
+        $form->setName($formId);
+        $form->setLabel($formLabel);
+        $form->setDescription($formDescription);
+        $form->setEnabled((boolean) $arguments['enabled']);
         $form->setExtensionName($extensionName);
-        $form->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
+        $form->setLocalLanguageFileRelativePath($languageFileRelativePath);
         $form->setVariables((array) $arguments['variables']);
         $form->setOptions((array) $arguments['options']);
 

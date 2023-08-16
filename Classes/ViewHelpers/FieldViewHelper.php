@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -9,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form\Field;
+use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractFieldViewHelper;
 use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
@@ -21,11 +23,12 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class FieldViewHelper extends AbstractFieldViewHelper
 {
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('type', 'string', 'TCA field type', true);
         $this->registerArgument('name', 'string', 'Name of the attribute, FlexForm XML-valid tag name string', true);
         $this->registerArgument('label', 'string', 'Label for field');
+        $this->registerArgument('description', 'string', 'Field description', false);
         $this->registerArgument('exclude', 'bool', 'Set to FALSE if field is not an "exclude" field', false, false);
         $this->registerArgument('config', 'array', 'TCA "config" array', false, []);
         $this->registerArgument(
@@ -63,6 +66,14 @@ class FieldViewHelper extends AbstractFieldViewHelper
             true
         );
         $this->registerArgument(
+            'clear',
+            'boolean',
+            'If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely ' .
+            'destroys the current field value all the way down to the stored XML value',
+            false,
+            false
+        );
+        $this->registerArgument(
             'extensionName',
             'string',
             'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
@@ -70,16 +81,21 @@ class FieldViewHelper extends AbstractFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return FieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): FieldInterface {
         /** @var array $arguments */
         $parent = static::getContainerFromRenderingContext($renderingContext);
         $field = Field::create($arguments instanceof ArgumentCollection ? $arguments->getArrayCopy() : $arguments);
+        if ($arguments['clear'] ?? false) {
+            $field->setClearable(true);
+        }
+
+        if (!$parent instanceof FieldContainerInterface) {
+            return $field;
+        }
+
         $parent->add($field);
         return $field;
     }

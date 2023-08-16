@@ -9,23 +9,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  */
 
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Tests\Unit\Form\AbstractFormTest;
 
-/**
- * AbstractContainerTest
- */
 abstract class AbstractContainerTest extends AbstractFormTest
 {
+    protected array $chainProperties = ['name' => 'test', 'label' => 'Test field', 'transform' => 'string'];
 
-    /**
-     * @var array
-     */
-    protected $chainProperties = array('name' => 'test', 'label' => 'Test field', 'transform' => 'string');
-
-    /**
-     * @return ContainerInterface
-     */
-    protected function createInstance()
+    protected function createInstance(): ContainerInterface
     {
         $className = $this->getObjectClassName();
         $instance = new $className();
@@ -35,17 +26,17 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsFalseIfChildObjectNameDoesNotExist()
+    public function returnsFalseIfChildObjectNameDoesNotExist(): void
     {
         $instance = $this->createInstance();
         $result = $instance->get('doesNotExist');
-        $this->assertSame(false, $result);
+        $this->assertSame(null, $result);
     }
 
     /**
      * @test
      */
-    public function canGetAndSetInheritEmpty()
+    public function canGetAndSetInheritEmpty(): void
     {
         $instance = $this->createInstance();
         $instance->setInheritEmpty(true);
@@ -55,7 +46,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function canGetAndSetInherit()
+    public function canGetAndSetInherit(): void
     {
         $instance = $this->createInstance();
         $instance->setInherit(false);
@@ -65,7 +56,7 @@ abstract class AbstractContainerTest extends AbstractFormTest
     /**
      * @test
      */
-    public function returnsFalseIfChildObjectNameDoesNotExistRecursively()
+    public function returnsFalseIfChildObjectNameDoesNotExistRecursively(): void
     {
         $instance = $this->createInstance();
         $subContainer = $instance->createContainer('Container', 'testcontainer');
@@ -73,24 +64,24 @@ abstract class AbstractContainerTest extends AbstractFormTest
         $subContainer->add($subField);
         $instance->add($subContainer);
         $result = $instance->get('doesNotExist', true);
-        $this->assertSame(false, $result);
+        $this->assertSame(null, $result);
     }
 
     /**
      * @test
      */
-    public function canCreateFromDefinitionContainingFields()
+    public function canCreateFromDefinitionContainingFields(): void
     {
-        $properties = array($this->chainProperties);
-        $properties['fields'] = array(
-            'foo' => array(
-                'type' => 'Input'
-            ),
-            'bar' => array(
-                'type' => 'Input'
-            ),
-        );
-        $instance = call_user_func_array(array($this->getObjectClassName(), 'create'), array($properties));
+        $properties = $this->chainProperties;
+        $properties['fields'] = [
+            'foo' => [
+                'type' => Input::class,
+            ],
+            'bar' => [
+                'type' => Input::class,
+            ],
+        ];
+        $instance = call_user_func_array([$this->getObjectClassName(), 'create'], [$properties]);
         $this->assertInstanceOf('FluidTYPO3\Flux\Form\FormInterface', $instance);
     }
 }

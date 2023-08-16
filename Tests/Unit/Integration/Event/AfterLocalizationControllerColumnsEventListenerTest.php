@@ -17,11 +17,11 @@ class AfterLocalizationControllerColumnsEventListenerTest extends AbstractTestCa
 {
     protected function setUp(): void
     {
-        parent::setUp();
-
         if (!class_exists(AfterPageColumnsSelectedForLocalizationEvent::class)) {
             self::markTestSkipped('Event implementation not available on current TYPO3 version');
         }
+
+        parent::setUp();
     }
 
     /**

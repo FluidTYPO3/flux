@@ -1,8 +1,6 @@
 <?php
-defined('TYPO3_MODE') or die('Access denied.');
-
 (function () {
-    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') || !\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_PAGE_INTEGRATION)) {
+    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('fluidpages') || !\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_PAGE_INTEGRATION)) {
         return;
     }
 
@@ -14,7 +12,9 @@ defined('TYPO3_MODE') or die('Access denied.');
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => 'FluidTYPO3\Flux\Backend\PageLayoutDataProvider->addItems',
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
                 'fieldWizard' => [
                     'selectIcons' => [
                         'disabled' => false
@@ -26,10 +26,13 @@ defined('TYPO3_MODE') or die('Access denied.');
             'exclude' => 1,
             'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action_sub',
             'onChange' => 'reload',
+
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => 'FluidTYPO3\Flux\Backend\PageLayoutDataProvider->addItems',
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
                 'fieldWizard' => [
                     'selectIcons' => [
                         'disabled' => false
@@ -59,17 +62,23 @@ defined('TYPO3_MODE') or die('Access denied.');
         ],
     ]);
 
-    $userFunctionsClass = new \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions();
-    if (is_callable([$userFunctionsClass , 'fluxFormFieldDisplayCondition'])) {
+    \FluidTYPO3\Flux\Integration\MultipleItemsProcFunc::register(
+        'pages',
+        'tx_fed_page_controller_action',
+        \FluidTYPO3\Flux\Backend\PageLayoutDataProvider::class . '->addItems'
+    );
 
-        // Flux version is recent enough to support the custom displayCond from Flux that hides the entire "flex" field
-        // if there are no fields in the DS it uses.
-        $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform';
-        $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform_sub';
-    }
+    \FluidTYPO3\Flux\Integration\MultipleItemsProcFunc::register(
+        'pages',
+        'tx_fed_page_controller_action_sub',
+        \FluidTYPO3\Flux\Backend\PageLayoutDataProvider::class . '->addItems'
+    );
+
+    $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform';
+    $GLOBALS['TCA']['pages']['columns']['tx_fed_page_flexform_sub']['displayCond'] = 'USER:' . \FluidTYPO3\Flux\Integration\FormEngine\UserFunctions::class . '->fluxFormFieldDisplayCondition:pages:tx_fed_page_flexform_sub';
 
     $doktypes = '0,1,4';
-    $doktypesOptionValue = \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_DOKTYPES);
+    $doktypesOptionValue = \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_DOKTYPES);
     if (is_scalar($doktypesOptionValue)) {
         $additionalDoktypes = trim((string) $doktypesOptionValue, ',');
         if (false === empty($additionalDoktypes)) {

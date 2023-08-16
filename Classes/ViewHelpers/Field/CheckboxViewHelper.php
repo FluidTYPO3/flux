@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -13,19 +14,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Checkbox FlexForm field ViewHelper
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class CheckboxViewHelper extends AbstractFieldViewHelper
 {
-
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return Checkbox
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): Checkbox
     {
         /** @var Checkbox $checkbox */
         $checkbox = static::getPreparedComponent(Checkbox::class, $renderingContext, $arguments);

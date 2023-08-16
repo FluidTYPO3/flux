@@ -10,16 +10,14 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\SectionObject;
+use FluidTYPO3\Flux\Form\Field\Input;
 
-/**
- * SectionTest
- */
 class SectionTest extends AbstractContainerTest
 {
     /**
      * @test
      */
-    public function canCreateFromDefinitionWithObjects()
+    public function canCreateFromDefinitionWithObjects(): void
     {
         $definition = [
             'name' => 'test',
@@ -29,7 +27,7 @@ class SectionTest extends AbstractContainerTest
                     'label' => 'Test object',
                     'fields' => [
                         'foo' => [
-                            'type' => 'Input',
+                            'type' => Input::class,
                             'label' => 'Foo input',
                         ],
                     ],
@@ -52,7 +50,8 @@ class SectionTest extends AbstractContainerTest
                     'type' => 'array',
                     'el' => [
                         'colPos' => [
-                            'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.objects.columns.colPos',
+                            'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.' .
+                                'test.objects.columns.colPos',
                             'exclude' => 0,
                             'config' => [
                                 'type' => 'user',

@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -38,8 +38,8 @@ jobs:
       - name: Composer install
         uses: ramsey/composer-install@v2
 
-      - name: Run phpstan
-        run: vendor/bin/phpcs Classes --standard=PSR2
+      - name: Run phpcs
+        run: vendor/bin/phpcs Classes Tests --standard=PSR2
 
   phpstan:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
@@ -50,21 +50,21 @@ jobs:
       matrix:
         include:
           - php: "7.4"
-            typo3: "^8.7"
-          - php: "7.4"
-            typo3: "^9.5"
-          - php: "7.4"
             typo3: "^10.4"
           - php: "8.0"
             typo3: "^11.5"
           - php: "8.1"
             typo3: "^11.5"
+          - php: "8.2"
+            typo3: "^11.5"
+          - php: "8.2"
+            typo3: "^12.1"
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -92,19 +92,21 @@ jobs:
       matrix:
         include:
           - php: "7.4"
-            typo3: "^9.5"
-          - php: "7.4"
             typo3: "^10.4"
           - php: "8.0"
             typo3: "^11.5"
           - php: "8.1"
             typo3: "^11.5"
+          - php: "8.2"
+            typo3: "^11.5"
+          - php: "8.2"
+            typo3: "^12.1"
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -121,34 +123,21 @@ jobs:
         uses: ramsey/composer-install@v2
 
       - name: Run tests
-        run: vendor/bin/phpunit
-
-  coverage:
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    name: "Coveralls upload"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "7.4"
-          extensions: mbstring, json
-          coverage: xdebug
-          ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
-
-      - name: Select TYPO3 version 9.5
-        run: "composer require typo3/cms-core:^9.5 --no-update"
-
-      - name: Composer install
-        uses: ramsey/composer-install@v2
-
-      - name: Run tests
         run: vendor/bin/phpunit --coverage-clover=build/logs/clover.xml
 
       - name: Upload test coverage
         run: vendor/bin/php-coveralls -vvv
         env:
+          COVERALLS_PARALLEL: true
+          COVERALLS_FLAG_NAME: typo3-${{ matrix.typo3 }}-php-${{ matrix.php }}
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true

@@ -9,10 +9,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content\TypeDefinition\FluidFileBased;
  */
 
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use org\bovigo\vfs\vfsStream;
 use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
@@ -49,22 +49,20 @@ class DropInContentTypeDefinitionTest extends AbstractTestCase
         parent::tearDown();
 
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'] = [];
-
-        AccessibleExtensionManagementUtility::setPackageManager(null);
     }
 
 
     public function testFetchContentTypesReturnsEmptyArrayIfPlugAndPlayConfigurationIsDisabled(): void
     {
-        $this->setup[ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = false;
+        $this->setup[ExtensionOption::OPTION_PLUG_AND_PLAY] = false;
         $result = DropInContentTypeDefinition::fetchContentTypes();
         self::assertSame([], $result);
     }
 
     public function testFetchContentTypesReturnsEmptyArrayIfPlugAndPlayDirectoryOptionValueIsNotScalar(): void
     {
-        $this->setup[ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
-        $this->setup[ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY] = [];
+        $this->setup[ExtensionOption::OPTION_PLUG_AND_PLAY] = true;
+        $this->setup[ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY] = [];
         $result = DropInContentTypeDefinition::fetchContentTypes();
         self::assertSame([], $result);
     }
@@ -74,8 +72,8 @@ class DropInContentTypeDefinitionTest extends AbstractTestCase
         vfsStream::setup('dropin');
         $vfsUrl = vfsStream::url('dropin');
 
-        $this->setup[ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
-        $this->setup[ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY] = $vfsUrl;
+        $this->setup[ExtensionOption::OPTION_PLUG_AND_PLAY] = true;
+        $this->setup[ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY] = $vfsUrl;
 
         $result = DropInContentTypeDefinition::fetchContentTypes();
         self::assertSame([], $result);
@@ -86,8 +84,8 @@ class DropInContentTypeDefinitionTest extends AbstractTestCase
         $root = vfsStream::setup('root', null, ['foo.txt' => 'bar']);
         $vfsUrl = vfsStream::url('root/templates');
 
-        $this->setup[ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY] = true;
-        $this->setup[ExtensionConfigurationUtility::OPTION_PLUG_AND_PLAY_DIRECTORY] = $vfsUrl;
+        $this->setup[ExtensionOption::OPTION_PLUG_AND_PLAY] = true;
+        $this->setup[ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY] = $vfsUrl;
 
         $result = DropInContentTypeDefinition::fetchContentTypes();
 

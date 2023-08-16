@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -11,20 +12,14 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 
-/**
- * Row
- */
 class Row extends AbstractFormContainer implements ContainerInterface
 {
     /**
      * @var Column[]|\SplObjectStorage
      */
-    protected $children;
+    protected iterable $children;
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $structure = [
             'name' => $this->getName(),
@@ -37,8 +32,8 @@ class Row extends AbstractFormContainer implements ContainerInterface
     /**
      * @return Column[]
      */
-    public function getColumns()
+    public function getColumns(): iterable
     {
-        return (array) iterator_to_array($this->children);
+        return iterator_to_array($this->children);
     }
 }

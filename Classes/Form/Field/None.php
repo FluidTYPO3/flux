@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -11,41 +12,24 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
-/**
- * None
- */
 class None extends AbstractFormField implements FieldInterface
 {
+    protected int $size = 12;
 
-    /**
-     * @var integer
-     */
-    protected $size = 12;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('none');
         $configuration['size'] = $this->getSize();
         return $configuration;
     }
 
-    /**
-     * @param integer $size
-     * @return None
-     */
-    public function setSize($size)
+    public function setSize(int $size): self
     {
         $this->size = $size;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getSize()
+    public function getSize(): int
     {
         return $this->size;
     }

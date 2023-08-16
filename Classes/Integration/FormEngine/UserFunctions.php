@@ -13,43 +13,19 @@ use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class UserFunctions
 {
     /**
-     * @param array $parameters
-     * @param object $pObj Not used
-     * @return string
-     */
-    public function renderClearValueWizardField(&$parameters, &$pObj)
-    {
-        unset($pObj);
-        $nameSegments = explode('][', $parameters['itemName']);
-        $nameSegments[count($nameSegments) - 2] .= '_clear';
-        $fieldName = implode('][', $nameSegments);
-        $html = '<label style="opacity: 0.65; padding-left: 2em"><input type="checkbox" name="' . $fieldName .
-            '_clear"  value="1" /> ' . $this->translate('flux.clearValue', 'Flux') . '</label>';
-        return $html;
-    }
-
-    /**
      * User function for TCA fields to hide a Flux-enabled "flex" type field if
      * there are no fields in the DS.
-     *
-     * @param array $parameters
-     * @param object $pObj Not used
-     * @return bool
      */
-    public function fluxFormFieldDisplayCondition(array $parameters, &$pObj)
+    public function fluxFormFieldDisplayCondition(array $parameters): bool
     {
         [$table, $field] = $parameters['conditionParameters'];
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var ProviderResolver $providerResolver */
-        $providerResolver = $objectManager->get(ProviderResolver::class);
+        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
         $provider = $providerResolver->resolvePrimaryConfigurationProvider($table, $field, $parameters['record']);
 
         if (!$provider) {
@@ -57,16 +33,12 @@ class UserFunctions
         }
         $form = $provider->getForm($parameters['record']);
         if ($form) {
-            return count($form->getFields()) > 0;
+            return count((array) $form->getFields()) > 0;
         }
         return false;
     }
 
-    /**
-     * @param array $parameters
-     * @return mixed
-     */
-    public function renderHtmlOutputField(array &$parameters)
+    public function renderHtmlOutputField(array &$parameters): string
     {
         /** @var callable $closure */
         $closure = ($parameters['fieldConf']['config']['parameters']['closure']
@@ -83,14 +55,11 @@ class UserFunctions
      * not already occupied by records.
      * The next free value cannot be computed here as we do not have access to the
      * data of all potentially unsaved section objects.
-     *
-     * @param array $parameters
-     * @param object $pObj Not used
-     * @return mixed
      */
-    public function renderColumnPositionField(array &$parameters, &$pObj = null)
+    public function renderColumnPositionField(array &$parameters): string
     {
-        $colPos = $parameters['itemFormElValue'];
+        $colPos = $parameters['parameterArray']['itemFormElValue'];
+        $inputName = $parameters['parameterArray']['itemFormElName'];
         $inputValue = (string) $colPos;
 
         $id = StringUtility::getUniqueId('formengine-flux-colPos-');
@@ -100,7 +69,7 @@ class UserFunctions
             return sprintf(
                 '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" value="%s" />'
                 . 'Column position: <strong class="flux-flex-colPos-text">%d</strong>',
-                $parameters['itemFormElName'],
+                $inputName,
                 $id,
                 $inputValue,
                 $inputValue
@@ -110,7 +79,7 @@ class UserFunctions
         // The field does not yet have a value, which means this is used for a new panel
         // and we have to fill the fields that will be used by the JavaScript module to
         // determine the value
-        $rowUid = $parameters['row']['uid'];
+        $rowUid = $parameters['databaseRow']['uid'] ?? null;
         // Unsaved records may begin with "NEW", make sure we don't have one of those
         // as we cannot look up anything in the database in that case
         if (!isset($rowUid) || !is_int($rowUid)) {
@@ -125,7 +94,7 @@ class UserFunctions
             '<input type="hidden" name="%s" id="%s" class="flux-flex-colPos-input" data-min-value="%d" '
             . 'data-max-value="%d" data-taken-values="%s" />Column position: '
             . '<strong class="flux-flex-colPos-text"></strong>',
-            $parameters['itemFormElName'],
+            $inputName,
             $id,
             $minimumColumnPosition,
             $maximumColumnPosition,

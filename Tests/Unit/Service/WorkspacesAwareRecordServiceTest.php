@@ -39,8 +39,6 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
     {
         parent::tearDown();
 
-        AccessibleExtensionManagementUtility::setPackageManager(null);
-
         unset($GLOBALS['BE_USER']);
     }
 
@@ -69,14 +67,14 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
     public function overlayRecordsCallsExpectedMethodSequence()
     {
         $mock = $this->getMockBuilder($this->createInstanceClassName())
-            ->setMethods(array('hasWorkspacesSupport', 'overlayRecordInternal'))
+            ->setMethods(['hasWorkspacesSupport', 'overlayRecordInternal'])
             ->getMock();
         $mock->expects($this->once())->method('hasWorkspacesSupport')->will($this->returnValue(true));
         $mock->expects($this->exactly(2))
             ->method('overlayRecordInternal')
-            ->willReturnOnConsecutiveCalls($this->returnValue(array('foo')), false);
-        $records = array(array(), array());
-        $expected = array(array('foo'));
+            ->willReturnOnConsecutiveCalls($this->returnValue(['foo']), false);
+        $records = [[], []];
+        $expected = [['foo']];
         $result = $this->callInaccessibleMethod($mock, 'overlayRecords', 'table', $records);
         $this->assertEquals($expected, $result);
     }
@@ -94,8 +92,8 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
             $instance,
             'getWorkspaceVersionOfRecordOrRecordItself',
             'void',
-            array('uid' => 1)
+            ['uid' => 1]
         );
-        $this->assertEquals(array('uid' => 1), $result);
+        $this->assertEquals(['uid' => 1], $result);
     }
 }

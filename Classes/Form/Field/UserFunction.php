@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -11,31 +12,13 @@ namespace FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\AbstractFormField;
 use FluidTYPO3\Flux\Form\FieldInterface;
 
-/**
- * UserFunction
- */
 class UserFunction extends AbstractFormField implements FieldInterface
 {
+    protected array $arguments = [];
+    protected string $function = '';
+    protected string $renderType = '';
 
-    /**
-     * @var array
-     */
-    protected $arguments = [];
-
-    /**
-     * @var string
-     */
-    protected $function;
-
-    /**
-     * @var string
-     */
-    protected $renderType = '';
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('user');
         $configuration['userFunc'] = $this->getFunction();
@@ -44,55 +27,36 @@ class UserFunction extends AbstractFormField implements FieldInterface
         return $configuration;
     }
 
-    /**
-     * @param string $function
-     * @return UserFunction
-     */
-    public function setFunction($function)
+    public function setFunction(string $function): self
     {
         $this->function = $function;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFunction()
+    public function getFunction(): string
     {
         return $this->function;
     }
 
-    /**
-     * @param array $arguments
-     * @return UserFunction
-     */
-    public function setArguments($arguments)
+    public function setArguments(array $arguments): self
     {
         $this->arguments = $arguments;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
 
-    /**
-     * @return string
-     */
     public function getRenderType(): string
     {
         return $this->renderType;
     }
 
-    /**
-     * @param string $renderType
-     */
-    public function setRenderType(string $renderType): void
+    public function setRenderType(string $renderType): self
     {
         $this->renderType = $renderType;
+        return $this;
     }
 }

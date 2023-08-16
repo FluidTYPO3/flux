@@ -10,7 +10,7 @@ $EM_CONF['flux'] = array (
   'priority' => 'top',
   'loadOrder' => '',
   'module' => '',
-  'state' => 'stable',
+  'state' => 'beta',
   'uploadfolder' => 0,
   'createDirs' => '',
   'modify_tables' => '',
@@ -25,11 +25,13 @@ $EM_CONF['flux'] = array (
   array (
     'depends' => 
     array (
-      'typo3' => '8.7.0-11.5.99',
+      'typo3' => '10.4.0-12.0.99',
       'php' => '7.4.0-8.1.99',
     ),
     'conflicts' => 
     array (
+        'fluidpages' => '',
+        'fluidcontent' => '',
     ),
     'suggests' => 
     array (

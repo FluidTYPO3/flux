@@ -8,17 +8,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * ColumnTest
- */
 class ColumnTest extends AbstractContainerTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'columnPosition' => 1
-    );
+    ];
 }

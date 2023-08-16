@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -14,62 +15,27 @@ use FluidTYPO3\Flux\Form\FieldContainerInterface;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Form\FormInterface;
 
-/**
- * Sheet
- */
 class Sheet extends AbstractFormContainer implements ContainerInterface, FieldContainerInterface
 {
+    protected ?string $shortDescription = null;
 
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var string
-     */
-    protected $shortDescription;
-
-    /**
-     * @param string $shortDescription
-     * @return $this
-     */
-    public function setShortDescription($shortDescription)
+    public function setShortDescription(?string $shortDescription): self
     {
         $this->shortDescription = $shortDescription;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getShortDescription()
+    public function getShortDescription(): ?string
     {
         return $this->resolveLocalLanguageValueOfLabel($this->shortDescription, $this->getPath() . '.shortDescription');
     }
 
-    /**
-     * @param string $description
-     * @return $this
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->resolveLocalLanguageValueOfLabel($this->description, $this->getPath() . '.description');
     }
 
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $sheetStructArray = [
             'ROOT' => [
@@ -86,7 +52,7 @@ class Sheet extends AbstractFormContainer implements ContainerInterface, FieldCo
     /**
      * @return FormInterface[]
      */
-    public function getFields()
+    public function getFields(): iterable
     {
         $fields = [];
         foreach ($this->children as $child) {

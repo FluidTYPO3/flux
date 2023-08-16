@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -11,36 +12,14 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
 
-/**
- * Column
- */
 class Column extends AbstractFormContainer implements ContainerInterface
 {
+    protected int $columnPosition = 0;
+    protected int $colspan = 1;
+    protected int $rowspan = 1;
+    protected ?string $style = null;
 
-    /**
-     * @var integer
-     */
-    protected $columnPosition = 0;
-
-    /**
-     * @var integer
-     */
-    protected $colspan = 1;
-
-    /**
-     * @var integer
-     */
-    protected $rowspan = 1;
-
-    /**
-     * @var string
-     */
-    protected $style = null;
-
-    /**
-     * @return array
-     */
-    public function build()
+    public function build(): array
     {
         $structure = [
             'name' => $this->getName(),
@@ -53,74 +32,46 @@ class Column extends AbstractFormContainer implements ContainerInterface
         return $structure;
     }
 
-    /**
-     * @param integer $colspan
-     * @return Column
-     */
-    public function setColspan($colspan)
+    public function setColspan(?int $colspan): self
     {
-        $this->colspan = $colspan;
+        $this->colspan = $colspan ?? 1;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getColspan()
+    public function getColspan(): int
     {
         return $this->colspan;
     }
 
-    /**
-     * @param integer $columnPosition
-     * @return Column
-     */
-    public function setColumnPosition($columnPosition)
+    public function setColumnPosition(int $columnPosition): self
     {
-        $this->columnPosition = (integer) $columnPosition;
+        $this->columnPosition = $columnPosition;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getColumnPosition()
+    public function getColumnPosition(): int
     {
         return $this->columnPosition;
     }
 
-    /**
-     * @param integer $rowspan
-     * @return Column
-     */
-    public function setRowspan($rowspan)
+    public function setRowspan(?int $rowspan): self
     {
-        $this->rowspan = $rowspan;
+        $this->rowspan = $rowspan ?? 1;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getRowspan()
+    public function getRowspan(): int
     {
         return $this->rowspan;
     }
 
-    /**
-     * @param string $style
-     * @return Column
-     */
-    public function setStyle($style)
+    public function setStyle(?string $style): self
     {
         $this->style = $style;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getStyle()
+    public function getStyle(): ?string
     {
         return $this->style;
     }

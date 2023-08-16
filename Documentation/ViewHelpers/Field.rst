@@ -24,7 +24,7 @@ type
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    TCA field type
 
@@ -37,7 +37,7 @@ name
    string
 
 :aspect:`Required`
-   false
+   true
 :aspect:`Description`
    Name of the attribute, FlexForm XML-valid tag name string
 
@@ -53,6 +53,19 @@ label
    false
 :aspect:`Description`
    Label for field
+
+.. _field_description:
+
+description
+-----------
+
+:aspect:`DataType`
+   string
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field description
 
 .. _field_exclude:
 
@@ -153,6 +166,19 @@ inheritEmpty
    false
 :aspect:`Description`
    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+
+.. _field_clear:
+
+clear
+-----
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
 
 .. _field_extensionname:
 

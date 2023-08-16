@@ -10,5 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
 
 class UserFuncViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-
+    protected array $defaultArguments = [
+        'name' => 'test',
+        'userFunc' => '',
+    ];
 }

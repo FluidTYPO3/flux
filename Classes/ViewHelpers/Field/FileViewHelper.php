@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -24,18 +25,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * `alt` and `title` tags are not loaded from the file's meta data record.
  * Use `<flux:field.inline.fal>` if you want this feature.
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class FileViewHelper extends AbstractMultiValueFieldViewHelper
 {
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('maxSize', 'integer', 'Maximum file size allowed in KB');
@@ -70,12 +63,7 @@ class FileViewHelper extends AbstractMultiValueFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return File
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
+    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments): File
     {
         /** @var array $arguments */
         /** @var File $component */

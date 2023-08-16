@@ -26,6 +26,6 @@ trait SerializeSafeTrait
     {
         $this->getForm();
         $this->getGrid();
-        return array_keys(get_class_vars(static::class));
+        return array_diff(array_keys(get_class_vars(static::class)), ['types']);
     }
 }

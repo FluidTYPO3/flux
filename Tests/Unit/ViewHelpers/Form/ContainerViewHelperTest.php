@@ -10,21 +10,17 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 
-/**
- * ContainerViewHelperTest
- */
 class ContainerViewHelperTest extends AbstractViewHelperTestCase
 {
-
     /**
      * @test
      */
     public function canExecuteViewHelper()
     {
-        $arguments = array(
+        $arguments = [
             'name' => 'test',
             'label' => 'Test container'
-        );
+        ];
         $result = $this->executeViewHelper($arguments);
         $this->assertEmpty(trim($result));
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\Overrides;
 
 /*
@@ -14,25 +15,17 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
 
 class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController
 {
     /**
-     * Get a prepared summary of records being translated
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
      * @codeCoverageIgnore
      */
     public function getRecordLocalizeSummary(
         ServerRequestInterface $request,
         ResponseInterface $response = null
     ): ResponseInterface {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0', '<=')) {
-            return parent::getRecordLocalizeSummary($request, $response);
-        }
         $params = $request->getQueryParams();
         if (!isset($params['pageId'], $params['destLanguageId'], $params['languageId'])) {
             return new JsonResponse(null, 400);

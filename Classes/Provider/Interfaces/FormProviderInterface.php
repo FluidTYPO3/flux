@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider\Interfaces;
 
 /*
@@ -18,17 +19,6 @@ use FluidTYPO3\Flux\Form;
  */
 interface FormProviderInterface
 {
-    /**
-     * Returns an instance of \FluidTYPO3\Flux\Form as required by this record.
-     *
-     * @param array $row
-     * @return Form|null
-     */
-    public function getForm(array $row);
-
-    /**
-     * @param Form $form
-     * @return void
-     */
-    public function setForm(Form $form);
+    public function getForm(array $row, ?string $forField = null): ?Form;
+    public function setForm(Form $form): self;
 }

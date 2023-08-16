@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider\Interfaces;
 
 /*
@@ -16,55 +17,23 @@ namespace FluidTYPO3\Flux\Provider\Interfaces;
  */
 interface ControllerProviderInterface
 {
-    public function setPluginName(string $pluginName): void;
-
-    public function getPluginName(): string;
-
-    /**
-     * @param string $controllerName
-     * @return $this
-     */
-    public function setControllerName($controllerName);
-
-    /**
-     * @param string $controllerAction
-     * @return $this
-     */
-    public function setControllerAction($controllerAction);
+    public function setPluginName(?string $pluginName): self;
+    public function getPluginName(): ?string;
+    public function setControllerName(string $controllerName): self;
+    public function setControllerAction(string $controllerAction): self;
+    public function getControllerExtensionKeyFromRecord(array $row, ?string $forField = null): string;
+    public function getControllerActionFromRecord(array $row, ?string $forField = null): string;
+    public function getControllerActionReferenceFromRecord(array $row, ?string $forField = null): string;
 
     /**
      * Implement to return a controller action name associated with $row.
      * Default strategy: return base name of Provider class minus the "Provider" suffix.
-     *
-     * @param array $row
-     * @return string
      */
-    public function getControllerNameFromRecord(array $row);
-
-    /**
-     * @param array $row
-     * @return string
-     */
-    public function getControllerExtensionKeyFromRecord(array $row);
+    public function getControllerNameFromRecord(array $row): string;
 
     /**
      * Implement this and return a fully qualified VendorName.PackageName
      * value based on $row.
-     *
-     * @param array $row
-     * @return string
      */
-    public function getControllerPackageNameFromRecord(array $row);
-
-    /**
-     * @param array $row
-     * @return string
-     */
-    public function getControllerActionFromRecord(array $row);
-
-    /**
-     * @param array $row
-     * @return string
-     */
-    public function getControllerActionReferenceFromRecord(array $row);
+    public function getControllerPackageNameFromRecord(array $row): string;
 }

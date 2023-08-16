@@ -1,9 +1,65 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Call to an undefined (static )?method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\(Frontend|Backend)?ConfigurationManager\\:\\:setRequest\\(\\)\\.$#"
+            count: 3
+            path: Classes/Integration/Overrides/AbstractChimeraConfigurationManager.php
+        -
+            message: "#^Instanceof between mixed and TYPO3\\\\CMS\\\\Core\\\\Http\\\\ServerRequest will always evaluate to false\\.$#"
+            count: 1
+            path: Classes/Integration/Overrides/AbstractChimeraConfigurationManager.php
+        -
+            message: "#^Access to an undefined property FluidTYPO3\\\\Flux\\\\Integration\\\\Overrides\\\\LegacyChimeraConfigurationManager\\:\\:\\$objectManager\\.$#"
+            count: 2
+            path: Classes/Integration/Overrides/LegacyChimeraConfigurationManager.php
+        -
+            message: "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\ConfigurationManager\\:\\:__construct\\(\\) invoked with 1 parameter, 2 required\\.$#"
+            count: 1
+            path: Classes/Integration/Overrides/ChimeraConfigurationManager.php
+        -
+            message: "#^Parameter \\#1 \\$objectManager of method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\ConfigurationManager\\:\\:__construct\\(\\) expects TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface, Psr\\\\Container\\\\ContainerInterface given\\.$#"
+            count: 1
+            path: Classes/Integration/Overrides/ChimeraConfigurationManager.php
+        -
+            message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\RecordService\\:\\:update\\(\\) has invalid return type Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\.$#"
+            count: 1
+            path: Classes/Service/RecordService.php
+        -
+            message: "#^Call to function property_exists\\(\\) with \\$this\\(FluidTYPO3\\\\Flux\\\\Integration\\\\BackendLayoutRenderer\\) and 'context' will always evaluate to false\\.$#"
+            count: 2
+            path: Classes/Integration/BackendLayoutRenderer.php
+        -
+            message: "#^Caught class Doctrine\\\\DBAL\\\\DBALException not found\\.$#"
+            count: 1
+            path: Classes/Content/ContentTypeManager.php
+        -
+            message: "#^Caught class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Exception\\\\StopActionException not found\\.$#"
+            count: 1
+            path: Classes/Controller/AbstractFluxController.php
+        -
+            message: "#^Method FluidTYPO3\\\\Flux\\\\Integration\\\\BackendLayoutRenderer\\:\\:getContext\\(\\) should return TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutContext but returns TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutContext\\|null\\.$#"
+            count: 1
+            path: Classes/Integration/BackendLayoutRenderer.php
+        -
+            message: "#^Call to function property_exists\\(\\) with \\$this\\(FluidTYPO3\\\\Flux\\\\Controller\\\\AbstractFluxController\\) and 'responseFactory' will always evaluate to false\\.$#"
+            count: 2
+            path: Classes/Controller/AbstractFluxController.php
+        -
+            message: "#^Call to an undefined static method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ActionController\\:\\:htmlResponse\\(\\)\\.$#"
+            count: 1
+            path: Classes/Controller/AbstractFluxController.php
+        -
+            message: "#^Property TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer\\:\\:\\$context \\(TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutContext\\) on left side of \\?\\? is not nullable\\.$#"
+            count: 1
+            path: Classes/Integration/BackendLayoutRenderer.php
+        -
             message: "#Elseif branch is unreachable because previous condition is always true\\.$#"
             count: 1
             path: Classes/ViewHelpers/AbstractFormViewHelper.php
+        -
+            message: "#Call to an undefined method TYPO3Fluid\\\\Fluid\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
+            count: 2
+            path: Classes/Provider/AbstractProvider.php
         -
             message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\FluxService\\:\\:getFlexFormService\\(\\) has invalid return type TYPO3\\\\CMS\\\\(Core|Extbase)\\\\Service\\\\FlexFormService\\.$#"
             count: 1
@@ -202,3 +258,8 @@ parameters:
             message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
             count: 1
             path: Classes/ViewHelpers/InlineViewHelper.php
+
+        -
+            message: "#^Call to an undefined method object\\:\\:setSetupArray\\(\\)\\.$#"
+            count: 1
+            path: Classes/Utility/RequestBuilder.php

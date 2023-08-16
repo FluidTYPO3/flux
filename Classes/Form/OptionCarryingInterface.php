@@ -3,33 +3,17 @@ namespace FluidTYPO3\Flux\Form;
 
 interface OptionCarryingInterface
 {
-    /**
-     * @param array $options
-     * @return self
-     */
-    public function setOptions(array $options);
+    public function setOptions(array $options): self;
+    public function getOptions(): array;
+    public function hasOption(string $name): bool;
 
     /**
-     * @return array
-     */
-    public function getOptions();
-
-    /**
-     * @param string $name
      * @param mixed $value
-     * @return self
      */
-    public function setOption($name, $value);
+    public function setOption(string $name, $value): self;
 
     /**
-     * @param string $name
      * @return mixed
      */
-    public function getOption($name);
-
-    /**
-     * @param string $name
-     * @return boolean
-     */
-    public function hasOption($name);
+    public function getOption(string $name);
 }

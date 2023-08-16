@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class UserFunctionsTest extends AbstractTestCase
 {
@@ -26,17 +25,15 @@ class UserFunctionsTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->singletonInstances[ProviderResolver::class] = $this->providerResolver;
+
         parent::setUp();
     }
 
     /**
-     * @param string $method
-     * @param array $parameters
-     * @param boolean $expectsNull
-     * @test
      * @dataProvider getUserFunctionTestValues
      */
-    public function canCallMethodAndReceiveOutput($method, array $parameters, $expectsNull)
+    public function testCanCallMethodAndReceiveOutput(string $method, array $parameters, bool $expectsNull): void
     {
         $reference = $this->getMockBuilder(UserFunctions::class)->getMock();
         $subject = $this->getMockBuilder(UserFunctions::class)->setMethods(['translate'])->getMock();
@@ -49,14 +46,9 @@ class UserFunctionsTest extends AbstractTestCase
         }
     }
 
-    public function getUserFunctionTestValues()
+    public function getUserFunctionTestValues(): array
     {
         return [
-            'clear value field' => [
-                'renderClearValueWizardField',
-                ['itemName' => 'data[tt_content][1][pi_flexform][data][options][lDEF][settings.distribution][vDEF]'],
-                false
-            ],
             'HTML output field' => [
                 'renderHtmlOutputField',
                 ['parameters' => ['closure' => function () {
@@ -114,7 +106,9 @@ class UserFunctionsTest extends AbstractTestCase
 
     public function testRenderColumnPositionFieldWithExistingColPosValue(): void
     {
-        $parameters = ['itemFormElValue' => '2', 'itemFormElName' => 'colPos'];
+        $parameters = [
+            'parameterArray' => ['itemFormElValue' => '2', 'itemFormElName' => 'colPos'], 'databaseRow' => []
+        ];
         $subject = new UserFunctions();
         $output = $subject->renderColumnPositionField($parameters);
         self::assertStringContainsString('name="colPos"', $output);
@@ -123,9 +117,12 @@ class UserFunctionsTest extends AbstractTestCase
 
     public function testRenderColumnPositionFieldWithoutExistingColPosValue(): void
     {
-        $parameters = ['itemFormElValue' => '', 'itemFormElName' => 'colPos', 'row' => ['uid' => 'NEW123']];
+        $parameters = [
+            'parameterArray' => ['itemFormElValue' => '', 'itemFormElName' => 'colPos'],
+            'databaseRow' => ['uid' => 'NEW123']
+        ];
         $subject = $this->getMockBuilder(UserFunctions::class)
-            ->setMethods(['determineTakenColumnPositionsWithinParent'])
+            ->onlyMethods(['determineTakenColumnPositionsWithinParent'])
             ->disableOriginalConstructor()
             ->getMock();
         $subject->method('determineTakenColumnPositionsWithinParent')->willReturn([1, 2]);
@@ -134,16 +131,5 @@ class UserFunctionsTest extends AbstractTestCase
         self::assertStringContainsString('data-min-value="0"', $output);
         self::assertStringContainsString('data-max-value="99"', $output);
         self::assertStringContainsString('data-taken-values="1,2"', $output);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturnMap(
-            [
-                [ProviderResolver::class, $this->providerResolver],
-            ]
-        );
-        return $instance;
     }
 }

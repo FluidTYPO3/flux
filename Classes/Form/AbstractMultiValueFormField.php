@@ -8,55 +8,28 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-/**
- * AbstractMultiValueFormField
- */
 abstract class AbstractMultiValueFormField extends AbstractFormField implements MultiValueFieldInterface
 {
-
-    /**
-     * @var integer
-     */
-    protected $size = 1;
-
-    /**
-     * @var boolean
-     */
-    protected $multiple = false;
-
-    /**
-     * @var integer
-     */
-    protected $minItems = 0;
-
-    /**
-     * @var integer
-     */
-    protected $maxItems;
-
-    /**
-     * @var string
-     */
-    protected $itemListStyle;
-
-    /**
-     * @var string
-     */
-    protected $selectedListStyle;
+    protected int $size = 1;
+    protected bool $multiple = false;
+    protected int $minItems = 0;
+    protected ?int $maxItems = null;
+    protected ?string $itemListStyle = '';
+    protected ?string $selectedListStyle = '';
 
     /**
      * Special rendering type of this component - supports all values normally
      * supported by TCA of the "select" field type.
      *
-     * @var string|null
      * @see https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Select/Index.html#rendertype
      */
-    protected $renderType = 'selectSingle';
+    protected ?string $renderType = 'selectSingle';
 
     /**
      * Mixed - string (CSV), Traversable or array of items. Format of key/value
@@ -71,10 +44,9 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
     protected $items = null;
 
     /**
-     * @var string
      * @see https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#itemsprocfunc
      */
-    protected $itemsProcFunc;
+    protected ?string $itemsProcFunc = null;
 
     /**
      * If not-FALSE, adds one empty option/value pair to the generated selector
@@ -92,16 +64,10 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
      * values for "LLL:EXT:myext/Resources/Private/Languages/locallang.xlf:foo"
      * and "LLL:EXT:myext/Resources/Private/Languages/locallang.xlf:bar" to be
      * used as value labels.
-     *
-     * @var boolean
      */
-    protected $translateCsvItems = false;
+    protected bool $translateCsvItems = false;
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    public function prepareConfiguration($type)
+    public function prepareConfiguration(string $type): array
     {
         $configuration = parent::prepareConfiguration($type);
         $configuration['size'] = $this->getSize();
@@ -116,164 +82,104 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         return $configuration;
     }
 
-    /**
-     * @param integer $size
-     * @return MultiValueFieldInterface
-     */
-    public function setSize($size)
+    public function setSize(int $size): self
     {
         $this->size = $size;
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getSize()
+    public function getSize(): int
     {
         return $this->size;
     }
 
-    /**
-     * @param boolean $multiple
-     * @return MultiValueFieldInterface
-     */
-    public function setMultiple($multiple)
+    public function setMultiple(bool $multiple): self
     {
         $this->multiple = $multiple;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getMultiple()
+    public function getMultiple(): bool
     {
         return $this->multiple;
     }
 
-    /**
-     * @param integer $maxItems
-     * @return MultiValueFieldInterface
-     */
-    public function setMaxItems($maxItems)
+    public function setMaxItems(int $maxItems): self
     {
         $this->maxItems = $maxItems;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getMaxItems()
+    public function getMaxItems(): ?int
     {
         return $this->maxItems;
     }
 
-    /**
-     * @param integer $minItems
-     * @return MultiValueFieldInterface
-     */
-    public function setMinItems($minItems)
+    public function setMinItems(int $minItems): self
     {
         $this->minItems = $minItems;
         return $this;
     }
 
-    /**
-     * @return integer
-     */
-    public function getMinItems()
+    public function getMinItems(): int
     {
         return $this->minItems;
     }
 
-    /**
-     * @param string $itemListStyle
-     * @return MultiValueFieldInterface
-     */
-    public function setItemListStyle($itemListStyle)
+    public function setItemListStyle(?string $itemListStyle): self
     {
         $this->itemListStyle = $itemListStyle;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getItemListStyle()
+    public function getItemListStyle(): ?string
     {
         return $this->itemListStyle;
     }
 
-    /**
-     * @param string $selectedListStyle
-     * @return MultiValueFieldInterface
-     */
-    public function setSelectedListStyle($selectedListStyle)
+    public function setSelectedListStyle(?string $selectedListStyle): self
     {
         $this->selectedListStyle = $selectedListStyle;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSelectedListStyle()
+    public function getSelectedListStyle(): ?string
     {
         return $this->selectedListStyle;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getRenderType()
+    public function getRenderType(): ?string
     {
         return $this->renderType;
     }
 
-    /**
-     * @param string $renderType
-     * @return MultiValueFieldInterface
-     */
-    public function setRenderType($renderType)
+    public function setRenderType(?string $renderType): self
     {
         $this->renderType = $renderType;
         return $this;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getTranslateCsvItems()
+    public function getTranslateCsvItems(): bool
     {
         return $this->translateCsvItems;
     }
 
-    /**
-     * @param boolean $translateCsvItems
-     * @return MultiValueFieldInterface
-     */
-    public function setTranslateCsvItems($translateCsvItems)
+    public function setTranslateCsvItems(bool $translateCsvItems): self
     {
         $this->translateCsvItems = $translateCsvItems;
         return $this;
     }
 
     /**
-     * @param array $items
-     * @return MultiValueFieldInterface
+     * @param array|string $items
      */
-    public function setItems($items)
+    public function setItems($items): self
     {
         $this->items = $items;
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getItems()
+    public function getItems(): array
     {
         $items = [];
         if (true === $this->items instanceof QueryInterface) {
@@ -318,29 +224,21 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         return $items;
     }
 
-    /**
-     * @param string $itemsProcFunc
-     * @return MultiValueFieldInterface
-     */
-    public function setItemsProcFunc($itemsProcFunc)
+    public function setItemsProcFunc(?string $itemsProcFunc): self
     {
         $this->itemsProcFunc = $itemsProcFunc;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getItemsProcFunc()
+    public function getItemsProcFunc(): ?string
     {
         return $this->itemsProcFunc;
     }
 
     /**
      * @param boolean|string|array $emptyOption
-     * @return MultiValueFieldInterface
      */
-    public function setEmptyOption($emptyOption)
+    public function setEmptyOption($emptyOption): self
     {
         $this->emptyOption = $emptyOption;
         return $this;
@@ -354,25 +252,16 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
         return $this->emptyOption;
     }
 
-    /**
-     * @param string $table
-     * @param string $type
-     * @return string
-     */
-    protected function getLabelPropertyName($table, $type)
+    protected function getLabelPropertyName(string $table, string $type): string
     {
         $path = sprintf('config.tx_extbase.persistence.classes.%s.mapping.tableName', $type);
-        $mappedTable = $this->getConfigurationService()->getTypoScriptByPath($path);
+        $mappedTable = $this->getTypoScriptService()->getTypoScriptByPath($path);
         $labelField = $GLOBALS['TCA'][$mappedTable ?: $table]['ctrl']['label'];
         $propertyName = GeneralUtility::underscoredToLowerCamelCase($labelField);
         return $propertyName;
     }
 
-    /**
-     * @param QueryInterface $query
-     * @return array
-     */
-    protected function addOptionsFromResults(QueryInterface $query)
+    protected function addOptionsFromResults(QueryInterface $query): array
     {
         $items = [];
         $results = $query->execute();
@@ -385,5 +274,15 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             array_push($items, [ObjectAccess::getProperty($result, $propertyName), $uid]);
         }
         return $items;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getTypoScriptService(): TypoScriptService
+    {
+        /** @var TypoScriptService $typoScriptService */
+        $typoScriptService = GeneralUtility::makeInstance(TypoScriptService::class);
+        return $typoScriptService;
     }
 }

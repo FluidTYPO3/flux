@@ -8,59 +8,63 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
+use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Controller\PageController;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Integration\Resolver;
+use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Service\TypoScriptService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use PHPUnit\Framework\MockObject\Generator;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
-/**
- * Class DummyPageController
- */
 class DummyPageController extends PageController
 {
+    protected array $record = [];
 
-    /**
-     * @var array
-     */
-    protected $record = array();
+    public function __construct()
+    {
+        $renderingContextBuilder = $this->createMock(RenderingContextBuilder::class);
+        $requestBuilder = $this->createMock(RequestBuilder::class);
+        $recordService = $this->createMock(WorkspacesAwareRecordService::class);
+        $typoScriptService = $this->createMock(TypoScriptService::class);
+        $providerResolver = $this->createMock(ProviderResolver::class);
+        $resolver = $this->createMock(Resolver::class);
 
-    /**
-     * @param ViewInterface $view
-     */
-    public function setView(ViewInterface $view)
+        parent::__construct(
+            $renderingContextBuilder,
+            $requestBuilder,
+            $recordService,
+            $typoScriptService,
+            $providerResolver,
+            $resolver
+        );
+    }
+
+    public function setView(ViewInterface $view): void
     {
         $this->view = $view;
     }
 
-    /**
-     * @return array
-     */
-    public function getRecord()
+    public function getRecord(): array
     {
         return $this->record;
     }
 
-    /**
-     * @param array $record
-     */
-    public function setRecord(array $record)
+    public function setRecord(array $record): void
     {
         $this->record = $record;
     }
 
-    /**
-     * @return ProviderInterface
-     */
-    public function getProvider()
+    public function getProvider(): ?ControllerProviderInterface
     {
         return $this->provider;
     }
 
-    /**
-     * @param ProviderInterface $provider
-     * @return void
-     */
-    public function setProvider(ProviderInterface $provider)
+    private function createMock(string $className): object
     {
-        $this->provider = $provider;
+        return (new Generator())->getMock($className, [], [], '', false);
     }
 }

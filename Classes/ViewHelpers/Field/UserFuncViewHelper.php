@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -13,17 +14,10 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Flexform Userfunc field ViewHelper
- *
- * DEPRECATED - use flux:field instead
- * @deprecated Will be removed in Flux 10.0
  */
 class UserFuncViewHelper extends AbstractFieldViewHelper
 {
-    /**
-     * Initialize
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
@@ -48,21 +42,16 @@ class UserFuncViewHelper extends AbstractFieldViewHelper
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param iterable $arguments
-     * @return UserFunction
-     */
     public static function getComponent(
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): UserFunction {
         /** @var array $arguments */
         /** @var UserFunction $user */
         $user = static::getPreparedComponent(UserFunction::class, $renderingContext, $arguments);
-        $user->setFunction($arguments['userFunc']);
+        $user->setFunction((string) $arguments['userFunc']);
         $user->setRenderType($arguments['renderType'] ?? '');
-        $user->setArguments($arguments['arguments']);
+        $user->setArguments($arguments['arguments'] ?? []);
         return $user;
     }
 }

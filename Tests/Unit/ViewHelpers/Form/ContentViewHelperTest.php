@@ -13,11 +13,7 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3\CMS\Extbase\Mvc\Request;
 
-/**
- * ContentViewHelperTest
- */
 class ContentViewHelperTest extends AbstractViewHelperTestCase
 {
     /**
@@ -25,9 +21,6 @@ class ContentViewHelperTest extends AbstractViewHelperTestCase
      */
     public function createsGridIfNotSet()
     {
-        $request = new Request();
-        $this->controllerContext->setRequest($request);
-
         $column = $this->getMockBuilder(Column::class)->setMethods(['setName', 'setLabel'])->getMock();
         $column->expects($this->once())->method('setName');
         $column->expects($this->once())->method('setLabel');

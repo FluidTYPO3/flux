@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Content;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
@@ -16,11 +17,6 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\Sequencer;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
 
@@ -36,20 +32,26 @@ use TYPO3Fluid\Fluid\Core\Parser\Source;
  */
 class ContentTypeValidator
 {
+    private ViewBuilder $viewBuilder;
+    private ContentTypeManager $contentTypeManager;
+    private ConnectionPool $connectionPool;
+    private TemplateValidationService $templateValidationService;
+
+    public function __construct(
+        ViewBuilder $viewBuilder,
+        ContentTypeManager $contentTypeManager,
+        ConnectionPool $connectionPool,
+        TemplateValidationService $templateValidationService
+    ) {
+        $this->viewBuilder = $viewBuilder;
+        $this->contentTypeManager = $contentTypeManager;
+        $this->connectionPool = $connectionPool;
+        $this->templateValidationService = $templateValidationService;
+    }
+
     public function validateContentTypeRecord(array $parameters): string
     {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var Request $request */
-        $request = $objectManager->get(Request::class);
-        /** @var ControllerContext $context */
-        $context = $objectManager->get(ControllerContext::class);
-        $context->setRequest($request);
-        /** @var TemplateView $view */
-        $view = $objectManager->get(TemplateView::class);
-        $view->getRenderingContext()->setControllerContext($context);
-        $view->getRenderingContext()->getTemplatePaths()->fillDefaultsByPackageName('flux');
-        $view->getRenderingContext()->setControllerName('Content');
+        $view = $this->viewBuilder->buildTemplateView('FluidTYPO3.Flux', 'Content', 'validation', 'validation');
 
         $record = $parameters['row'];
         $recordIsNew = strncmp((string)$record['uid'], 'NEW', 3) === 0;
@@ -57,15 +59,13 @@ class ContentTypeValidator
         $view->assign('recordIsNew', $recordIsNew);
 
         if ($recordIsNew) {
-            return $view->render('validation');
+            return $view->render();
         }
 
-        /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = $objectManager->get(ContentTypeManager::class);
-        $contentType = $contentTypeManager->determineContentTypeForTypeString($record['content_type']);
+        $contentType = $this->contentTypeManager->determineContentTypeForTypeString($record['content_type']);
         if (!$contentType) {
             $view->assign('recordIsNew', true);
-            return $view->render('validation');
+            return $view->render();
         }
 
         $usesTemplateFile = true;
@@ -82,14 +82,14 @@ class ContentTypeValidator
             'validation' => [
                 'extensionInstalled' => $this->validateContextExtensionIsInstalled($contentType),
                 'extensionMatched' => $this->validateContextMatchesSignature($contentType),
-                'templateSource' => $this->getTemplateValidationService()->validateContentDefinition($contentType),
+                'templateSource' => $this->templateValidationService->validateContentDefinition($contentType),
                 'templateFile' => $usesTemplateFile,
                 'icon' => !empty($record['icon'])
                     && file_exists($this->resolveAbsolutePathForFilename($record['icon'])),
             ],
         ]);
 
-        return $view->render('validation');
+        return $view->render();
     }
 
     protected function validateContextMatchesSignature(ContentTypeDefinitionInterface $definition): bool
@@ -102,6 +102,9 @@ class ContentTypeValidator
         ) === reset($parts);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function validateContextExtensionIsInstalled(ContentTypeDefinitionInterface $definition): bool
     {
         return ExtensionManagementUtility::isLoaded(
@@ -114,9 +117,7 @@ class ContentTypeValidator
      */
     protected function countUsages(ContentTypeDefinitionInterface $definition): int
     {
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
         $queryBuilder->select('uid')
             ->from('tt_content')
             ->where(
@@ -134,15 +135,5 @@ class ContentTypeValidator
     protected function resolveAbsolutePathForFilename(string $filename): string
     {
         return GeneralUtility::getFileAbsFileName($filename);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getTemplateValidationService(): TemplateValidationService
-    {
-        /** @var TemplateValidationService $templateValidationService */
-        $templateValidationService = GeneralUtility::makeInstance(TemplateValidationService::class);
-        return $templateValidationService;
     }
 }

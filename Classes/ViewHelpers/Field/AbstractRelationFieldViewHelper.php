@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -14,22 +15,17 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Base class for all FlexForm fields.
- *
- * @deprecated Will be removed in Flux 10.0
  */
 abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldViewHelper
 {
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument(
             'table',
             'string',
-            'Define foreign table name to turn selector into a record selector for that table'
+            'Define foreign table name to turn selector into a record selector for that table',
+            true
         );
         $this->registerArgument(
             'condition',
@@ -41,16 +37,12 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
             'foreignField',
             'string',
             'The `foreign_field` is the field of the child record pointing to the parent record. This defines where '
-            . 'to store the uid of the parent record.',
-            false,
-            ''
+            . 'to store the uid of the parent record.'
         );
         $this->registerArgument(
             'foreignLabel',
             'string',
-            "If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.",
-            false,
-            ''
+            "If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view."
         );
         $this->registerArgument(
             'foreignSelector',
@@ -64,26 +56,20 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'foreignSortby',
             'string',
-            'Field on the child record (or on the intermediate table) that stores the manual sorting information.',
-            false,
-            ''
+            'Field on the child record (or on the intermediate table) that stores the manual sorting information.'
         );
         $this->registerArgument(
             'foreignDefaultSortby',
             'string',
             'If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the '
-            . '"ORDER BY" statement to sort the records in the table when listed.',
-            false,
-            ''
+            . '"ORDER BY" statement to sort the records in the table when listed.'
         );
         $this->registerArgument(
             'foreignTableField',
             'string',
             'The field of the child record pointing to the parent record. This defines where to store the table '
             . 'name of the parent record. On setting this configuration key together with `foreign_field`, the child '
-            . 'record knows what its parent record is - so the child record could also be used on other parent tables.',
-            false,
-            ''
+            . 'record knows what its parent record is - so the child record could also be used on other parent tables.'
         );
         $this->registerArgument(
             'foreignUnique',
@@ -94,38 +80,23 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
             'symmetricField',
             'string',
             'In case of bidirectional symmetric relations, this defines in which field on the foreign table the '
-            . 'uid of the "other" parent is stored.',
-            false,
-            ''
+            . 'uid of the "other" parent is stored.'
         );
         $this->registerArgument(
             'symmetricLabel',
             'string',
-            'If set, this overrides the default label of the selected `symmetric_field`.',
-            false,
-            ''
+            'If set, this overrides the default label of the selected `symmetric_field`.'
         );
         $this->registerArgument(
             'symmetricSortby',
             'string',
             'Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is '
-            . 'stored.',
-            false,
-            ''
+            . 'stored.'
         );
         $this->registerArgument(
             'localizationMode',
             'string',
-            "Set whether children can be localizable ('select') or just inherit from default language ('keep').",
-            false,
-            ''
-        );
-        $this->registerArgument(
-            'localizeChildrenAtParentLocalization',
-            'boolean',
-            'Defines whether children should be localized when the localization of the parent gets created.',
-            false,
-            false
+            "Set whether children can be localizable ('select') or just inherit from default language ('keep')."
         );
         $this->registerArgument(
             'disableMovingChildrenWithParent',
@@ -152,35 +123,29 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $this->registerArgument(
             'oppositeField',
             'string',
-            'Name of the opposite field related to a proper mm relation',
-            false,
-            ''
+            'Name of the opposite field related to a proper mm relation'
         );
     }
 
-    /**
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return RelationFieldInterface
-     */
-    public static function getComponent(RenderingContextInterface $renderingContext, iterable $arguments)
-    {
+    public static function getComponent(
+        RenderingContextInterface $renderingContext,
+        iterable $arguments
+    ): RelationFieldInterface {
         return static::getPreparedComponent(Relation::class, $renderingContext, $arguments);
     }
 
     /**
      * @template T
      * @param class-string<T> $type
-     * @param RenderingContextInterface $renderingContext
-     * @param array $arguments
-     * @return T
+     * @return T&RelationFieldInterface
      */
     protected static function getPreparedComponent(
         $type,
         RenderingContextInterface $renderingContext,
         iterable $arguments
-    ) {
+    ): RelationFieldInterface {
         /** @var array $arguments */
+        /** @var T&RelationFieldInterface $component */
         $component = parent::getPreparedComponent($type, $renderingContext, $arguments);
         $component->setTable($arguments['table']);
         $component->setCondition($arguments['condition']);
@@ -196,7 +161,6 @@ abstract class AbstractRelationFieldViewHelper extends AbstractMultiValueFieldVi
         $component->setSymmetricLabel($arguments['symmetricLabel']);
         $component->setSymmetricSortby($arguments['symmetricSortby']);
         $component->setLocalizationMode($arguments['localizationMode']);
-        $component->setLocalizeChildrenAtParentLocalization($arguments['localizeChildrenAtParentLocalization']);
         $component->setDisableMovingChildrenWithParent($arguments['disableMovingChildrenWithParent']);
         $component->setShowThumbnails($arguments['showThumbs']);
         $component->setMatchFields((array) $arguments['matchFields']);

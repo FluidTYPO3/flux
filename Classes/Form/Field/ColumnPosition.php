@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -8,27 +9,13 @@ namespace FluidTYPO3\Flux\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * ColumnPosition
- */
 class ColumnPosition extends UserFunction
 {
     const FIELD_NAME = 'colPos';
 
-    /**
-     * @var \Closure
-     */
-    protected $closure;
+    protected ?string $name = self::FIELD_NAME;
 
-    /**
-     * @var string
-     */
-    protected $name = self::FIELD_NAME;
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $fieldConfiguration = $this->prepareConfiguration('user');
         $fieldConfiguration['renderType'] = 'fluxColumnPosition';

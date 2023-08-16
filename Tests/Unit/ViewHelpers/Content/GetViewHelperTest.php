@@ -16,50 +16,96 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Frontend\Page\PageRepository;
 
-/**
- * GetViewHelperTest
- */
 class GetViewHelperTest extends AbstractViewHelperTestCase
 {
-    /**
-     * Setup
-     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)->disableOriginalConstructor()->getMock();
-        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->setMethods(['getRecords'])->getMock();
+        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getRecords', 'cObjGetSingle'])
+            ->getMock();
         $GLOBALS['TSFE']->cObj->method('getRecords')->willReturn([]);
-        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)->disableOriginalConstructor()->setMethods(['enableFields'])->getMock();
-        $GLOBALS['TCA']['tt_content']['ctrl'] = array();
+        $GLOBALS['TSFE']->cObj->method('cObjGetSingle')->willReturn('object');
+        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['enableFields'])
+            ->getMock();
+        $GLOBALS['TCA']['tt_content']['ctrl'] = [];
 
-        $provider = new Provider();
-        $provider->setGrid(Grid::create(['children' => [['type' => Row::class, 'children' => [['type' => Column::class, 'name' => 'void']]]]]));
-        $provider->setForm($this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock());
+        $grid = Grid::create(
+            [
+                'children' => [
+                    [
+                        'type' => Row::class, 'children' => [
+                            [
+                                'type' => Column::class, 'name' => 'void'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        );
+
+        $provider = $this->getMockBuilder(Provider::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $provider->setGrid($grid);
+        $provider->setForm($this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock());
 
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'provider', $provider);
         $this->viewHelperVariableContainer->addOrUpdate(FormViewHelper::class, 'record', ['uid' => 123]);
+
+        $contentObjectFactory = $this->getMockBuilder(ContentObjectFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        GeneralUtility::addInstance(ContentObjectFactory::class, $contentObjectFactory);
+
+        $expressionBuilder = $this->getMockBuilder(ExpressionBuilder::class)
+            ->onlyMethods(['eq'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->onlyMethods(['getQueryBuilderForTable'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->onlyMethods(['expr'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder->method('expr')->willReturn($expressionBuilder);
+
+        GeneralUtility::addInstance(ConnectionPool::class, $connectionPool);
     }
 
     /**
      * @test
      */
-    public function canRenderViewHelper()
+    public function canRenderViewHelper(): void
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'records',
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren,
-            'provider' => new Provider()
-        );
+            'provider' => $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $output = $viewHelper->initializeArgumentsAndRender();
@@ -69,19 +115,19 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canRenderViewHelperWithLoadRegister()
+    public function canRenderViewHelperWithLoadRegister(): void
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'records',
             'order' => 'sorting',
-            'loadRegister' => array(
+            'loadRegister' => [
                 'maxImageWidth' => 300
-            )
-        );
-        $variables = array(
+            ]
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $output = $viewHelper->initializeArgumentsAndRender();
@@ -91,17 +137,17 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup()
+    public function canRenderViewHelperWithExistingAsArgumentAndTakeBackup(): void
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'nameTaken',
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'nameTaken' => 'taken',
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $content = $viewHelper->initializeArgumentsAndRender();
@@ -111,16 +157,16 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canRenderViewHelperWithNonExistingAsArgument()
+    public function canRenderViewHelperWithNonExistingAsArgument(): void
     {
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'as' => 'freevariablename',
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $node = $this->createNode('Text', 'Hello loopy world!');
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables, $node);
         $output = $viewHelper->initializeArgumentsAndRender();
@@ -130,17 +176,17 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canReturnArrayOfUnrenderedContentElements()
+    public function canReturnArrayOfUnrenderedContentElements(): void
     {
         $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'render' => false,
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
@@ -149,17 +195,17 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canReturnArrayOfRenderedContentElements()
+    public function canReturnArrayOfRenderedContentElements(): void
     {
         $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
-        $arguments = array(
+        $arguments = [
             'area' => 'void',
             'render' => true,
             'order' => 'sorting'
-        );
-        $variables = array(
+        ];
+        $variables = [
             'record' => Records::$contentRecordWithoutParentAndWithoutChildren
-        );
+        ];
         $viewHelper = $this->buildViewHelperInstance($arguments, $variables);
         $output = $viewHelper->initializeArgumentsAndRender();
         $this->assertIsArray($output);
@@ -168,14 +214,17 @@ class GetViewHelperTest extends AbstractViewHelperTestCase
     /**
      * @test
      */
-    public function canProcessRecords()
+    public function canProcessRecords(): void
     {
-        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder('TYPO3\\CMS\\Frontend\\Page\\PageRepository')->setMethods(array('dummy'))->disableOriginalConstructor()->getMock();
+        $GLOBALS['TSFE']->sys_page = $this->getMockBuilder(PageRepository::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $instance = $this->createInstance();
-        $records = array(
-            array('uid' => 0),
-            array('uid' => 99999999999),
-        );
+        $records = [
+            ['uid' => 0],
+            ['uid' => 99999999999],
+        ];
         $output = $this->callInaccessibleMethod($instance, 'getRenderedRecords', $records);
         $this->assertIsArray($output);
     }

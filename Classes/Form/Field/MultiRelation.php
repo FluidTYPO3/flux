@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,20 +11,11 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractRelationFormField;
 
-/**
- * MultiRelation
- */
 class MultiRelation extends AbstractRelationFormField
 {
-    /**
-     * @var string|null
-     */
-    protected $renderType = null;
+    protected ?string $renderType = null;
 
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('group');
         $configuration['internal_type'] = 'db';

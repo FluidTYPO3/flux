@@ -7,6 +7,121 @@ services:
   FluidTYPO3\Flux\:
     resource: '../Classes/*'
 
+  cache.flux:
+    class: TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
+    factory: ['TYPO3\CMS\Core\Core\Bootstrap', 'createCache']
+    arguments: ['flux']
+
+  cache.runtime:
+    class: TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
+    factory: ['TYPO3\CMS\Core\Core\Bootstrap', 'createCache']
+    arguments: ['runtime']
+
+  TYPO3\CMS\Backend\View\BackendViewFactory:
+    public: true
+
+  FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:
+    public: true
+  FluidTYPO3\Flux\Backend\PageLayoutDataProvider:
+    public: true
+  FluidTYPO3\Flux\Content\ContentTypeManager:
+    public: true
+  FluidTYPO3\Flux\Content\ContentTypeValidator:
+    public: true
+  FluidTYPO3\Flux\Content\ContentTypeFluxTemplateDumper:
+    public: true
+  FluidTYPO3\Flux\Controller\ContentController:
+    public: true
+  FluidTYPO3\Flux\Controller\PageController:
+    public: true
+  FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator:
+    public: true
+  FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor:
+    public: true
+  FluidTYPO3\Flux\Integration\FormEngine\SiteConfigurationProviderItems:
+    public: true
+  FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor:
+    public: true
+  FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion:
+    public: true
+  FluidTYPO3\Flux\Integration\BackendLayoutRenderer:
+    public: true
+    autowire: false
+  FluidTYPO3\Flux\Integration\Resolver:
+    public: true
+  FluidTYPO3\Flux\Integration\PreviewRenderer:
+    public: true
+  FluidTYPO3\Flux\Builder\ContentTypeBuilder:
+    public: true
+  FluidTYPO3\Flux\Builder\FlexFormBuilder:
+    public: true
+  FluidTYPO3\Flux\Builder\RenderingContextBuilder:
+    public: true
+  FluidTYPO3\Flux\Builder\ViewBuilder:
+    public: true
+  FluidTYPO3\Flux\Provider\ProviderResolver:
+    public: true
+  FluidTYPO3\Flux\Provider\Provider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Provider\PageProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Content\ContentTypeProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider:
+    shared: false
+    public: true
+  FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinitionRepository:
+    public: true
+  FluidTYPO3\Flux\Form\Transformation\FormDataTransformer:
+    public: true
+  FluidTYPO3\Flux\Integration\WizardItemsManipulator:
+    public: true
+  FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems:
+    public: true
+  FluidTYPO3\Flux\Service\TypoScriptService:
+    public: true
+  FluidTYPO3\Flux\Service\CacheService:
+    public: true
+    arguments: ['@cache.flux', '@cache.runtime']
+
+  FluidTYPO3\Flux\Integration\Event\ModifyNewContentElementWizardItemsEventListener:
+    public: true
+    tags:
+      - name: event.listener
+        identifier: 'flux-new-content-wizard'
+        method: 'manipulateWizardItems'
+        event: TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent
+  FluidTYPO3\Flux\Integration\Event\ModifyPageLayoutContentEventListener:
+    public: true
+    tags:
+      - name: event.listener
+        identifier: 'flux-page-preview'
+        method: 'renderPreview'
+        event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
+  FluidTYPO3\Flux\Integration\Event\PageContentPreviewRenderingEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-page-content-preview'
+        method: 'renderPreview'
+        event: TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent
+  FluidTYPO3\Flux\Integration\Event\IsContentUsedOnPageLayoutEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-page-content-used'
+        method: 'handleEvent'
+        event: TYPO3\CMS\Backend\View\Event\IsContentUsedOnPageLayoutEvent
+  FluidTYPO3\Flux\Integration\Event\BootCompletedEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-boot-completed'
+        method: 'spoolQueuedTcaOperations'
+        event: TYPO3\CMS\Core\Core\Event\BootCompletedEvent
   FluidTYPO3\Flux\Integration\Event\AfterLocalizationControllerColumnsEventListener:
     tags:
       - name: event.listener
@@ -19,3 +134,15 @@ services:
         identifier: 'flux-requireColumnPositionJavaScript'
         method: 'requireColumnPositionJavaScript'
         event: TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent
+  FluidTYPO3\Flux\Integration\Event\BeforeFlexFormDataStructureIdentifierInitializedEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-beforeFlexFormDataStructureIdentifierInitializedEvent'
+        method: 'applyFluxFlexFormIdentifier'
+        event: TYPO3\CMS\Core\Configuration\Event\BeforeFlexFormDataStructureIdentifierInitializedEvent
+  FluidTYPO3\Flux\Integration\Event\BeforeFlexFormDataStructureParsedEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'flux-beforeFlexFormDataStructureParsedEvent'
+        method: 'applyFluxFlexFormDataStructure'
+        event: TYPO3\CMS\Core\Configuration\Event\BeforeFlexFormDataStructureParsedEvent

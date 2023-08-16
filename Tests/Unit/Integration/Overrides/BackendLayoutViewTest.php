@@ -9,35 +9,36 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Integration\Overrides\BackendLayoutView;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
-use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
-use TYPO3\CMS\Backend\View\BackendLayout\DataProviderCollection;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
-/**
- * Class ColumnPositionsTest
- */
 class BackendLayoutViewTest extends AbstractTestCase
 {
-    private ?FluxService $fluxService;
+    private ProviderResolver $providerResolver;
 
     protected function setUp(): void
     {
-        $this->fluxService = $this->getMockBuilder(FluxService::class)
-            ->setMethods(['resolvePrimaryConfigurationProvider'])
+        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
+            ->onlyMethods(['resolvePrimaryConfigurationProvider'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->singletonInstances[ProviderResolver::class] = $this->providerResolver;
 
         parent::setUp();
     }
 
     public function testCanSetProvider()
     {
-        $instance = new BackendLayoutView();
+        $instance = $this->getMockBuilder(BackendLayoutView::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $instance->setProvider($provider);
         $this->assertSame($provider, $this->getInaccessiblePropertyValue($instance, 'provider'));
@@ -45,7 +46,10 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     public function testCanSetRecord()
     {
-        $instance = new BackendLayoutView();
+        $instance = $this->getMockBuilder(BackendLayoutView::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $record = ['foo' => 'bar'];
         $instance->setRecord($record);
         $this->assertSame($record, $this->getInaccessiblePropertyValue($instance, 'record'));
@@ -54,7 +58,7 @@ class BackendLayoutViewTest extends AbstractTestCase
     public function testColPosListItemProcFuncWithoutSelectedIdentifier(): void
     {
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(['getSelectedCombinedIdentifier', 'determinePageId'])
+            ->onlyMethods(['getSelectedCombinedIdentifier', 'determinePageId'])
             ->disableOriginalConstructor()
             ->getMock();
         $subject->expects(self::once())->method('determinePageId')->willReturn(1);
@@ -67,27 +71,19 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     public function testColPosListItemProcFuncWithForeignSelectedIdentifier(): void
     {
-        $providerCollection = $this->getMockBuilder(DataProviderCollection::class)
-            ->setMethods(['getBackendLayout'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $providerCollection->method('getBackendLayout')->willReturn(null);
-
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getBackendLayoutForPage',
                     'getSelectedCombinedIdentifier',
                     'determinePageId',
                     'loadRecordFromTable',
-                    'getDataProviderCollection',
                 ]
             )
             ->disableOriginalConstructor()
             ->getMock();
         $subject->method('getSelectedCombinedIdentifier')->willReturn('foreign__foobar');
         $subject->method('determinePageId')->willReturn(0);
-        $subject->method('getDataProviderCollection')->willReturn($providerCollection);
         $subject->expects(self::never())->method('loadRecordFromTable');
         $subject->method('getBackendLayoutForPage')->willReturn(
             $this->getMockBuilder(BackendLayout::class)->disableOriginalConstructor()->getMock()
@@ -101,7 +97,7 @@ class BackendLayoutViewTest extends AbstractTestCase
     public function testColPosListItemProcFuncWithoutPageRecord(): void
     {
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getBackendLayoutForPage',
                     'getSelectedCombinedIdentifier',
@@ -128,7 +124,7 @@ class BackendLayoutViewTest extends AbstractTestCase
     public function testColPosListItemProcFuncWithPageLevelProvider(): void
     {
         $grid = $this->getMockBuilder(Grid::class)
-            ->setMethods(['buildExtendedBackendLayoutArray'])
+            ->onlyMethods(['buildExtendedBackendLayoutArray'])
             ->disableOriginalConstructor()
             ->getMock();
         $grid->expects(self::once())->method('buildExtendedBackendLayoutArray')->with(0);
@@ -136,10 +132,10 @@ class BackendLayoutViewTest extends AbstractTestCase
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getGrid')->willReturn($grid);
 
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getBackendLayoutForPage',
                     'getSelectedCombinedIdentifier',
@@ -163,13 +159,12 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     /**
      * @param int|array $uid
-     * @return void
      * @dataProvider getColPosListItemProcFuncWithDelegateProviderTestValues
      */
     public function testColPosListItemProcFuncWithDelegateProvider($uid): void
     {
         $grid = $this->getMockBuilder(Grid::class)
-            ->setMethods(['buildExtendedBackendLayoutArray'])
+            ->onlyMethods(['buildExtendedBackendLayoutArray'])
             ->disableOriginalConstructor()
             ->getMock();
         $grid->expects(self::once())->method('buildExtendedBackendLayoutArray')->with(1);
@@ -177,15 +172,14 @@ class BackendLayoutViewTest extends AbstractTestCase
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getGrid')->willReturn($grid);
 
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(null);
-
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getBackendLayoutForPage',
                     'getSelectedCombinedIdentifier',
                     'determinePageId',
                     'loadRecordFromTable',
+                    'resolvePrimaryProviderForRecord',
                 ]
             )
             ->disableOriginalConstructor()
@@ -196,7 +190,7 @@ class BackendLayoutViewTest extends AbstractTestCase
         $subject->method('getBackendLayoutForPage')->willReturn(
             $this->getMockBuilder(BackendLayout::class)->disableOriginalConstructor()->getMock()
         );
-
+        $subject->method('resolvePrimaryProviderForRecord')->willReturn(null);
         $subject->setProvider($provider);
 
         $parameters = [
@@ -218,22 +212,16 @@ class BackendLayoutViewTest extends AbstractTestCase
 
     public function testColPosListItemProcFuncWithoutProviders(): void
     {
-        $providerCollection = $this->getMockBuilder(DataProviderCollection::class)
-            ->setMethods(['getBackendLayout'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $providerCollection->method('getBackendLayout')->willReturn(null);
-
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn(null);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn(null);
 
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getBackendLayoutForPage',
                     'getSelectedCombinedIdentifier',
                     'determinePageId',
                     'loadRecordFromTable',
-                    'getDataProviderCollection',
+                    'resolvePrimaryProviderForRecord',
                 ]
             )
             ->disableOriginalConstructor()
@@ -241,7 +229,6 @@ class BackendLayoutViewTest extends AbstractTestCase
         $subject->expects(self::atLeastOnce())->method('getSelectedCombinedIdentifier')->willReturn('flux__foobar');
         $subject->method('determinePageId')->willReturn(0);
         $subject->method('loadRecordFromTable')->willReturn(['uid' => 123]);
-        $subject->method('getDataProviderCollection')->willReturn($providerCollection);
         $subject->method('getBackendLayoutForPage')->willReturn(null);
 
         $parameters = [
@@ -256,7 +243,7 @@ class BackendLayoutViewTest extends AbstractTestCase
     public function testAddColPosListLayoutItemsWithPageRecord(): void
     {
         $grid = $this->getMockBuilder(Grid::class)
-            ->setMethods(['buildExtendedBackendLayoutArray'])
+            ->onlyMethods(['buildExtendedBackendLayoutArray'])
             ->disableOriginalConstructor()
             ->getMock();
         $grid->expects(self::once())
@@ -267,21 +254,22 @@ class BackendLayoutViewTest extends AbstractTestCase
         $provider = $this->getMockBuilder(GridProviderInterface::class)->getMockForAbstractClass();
         $provider->method('getGrid')->willReturn($grid);
 
-        $this->fluxService->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
         $languageService = $this->getMockBuilder(LanguageService::class)
-            ->setMethods(['sL'])
+            ->onlyMethods(['sL'])
             ->disableOriginalConstructor()
             ->getMock();
         $languageService->method('sL')->willReturn('Label');
 
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'determinePageId',
                     'getSelectedBackendLayout',
                     'loadRecordFromTable',
                     'getLanguageService',
+                    'resolvePrimaryProviderForRecord',
                 ]
             )
             ->disableOriginalConstructor()
@@ -290,19 +278,23 @@ class BackendLayoutViewTest extends AbstractTestCase
         $subject->method('loadRecordFromTable')->willReturn(['uid' => 123]);
         $subject->method('getSelectedBackendLayout')->willReturn(['__items' => []]);
         $subject->method('getLanguageService')->willReturn($languageService);
+        $subject->method('resolvePrimaryProviderForRecord')->willReturn($provider);
 
         $subject->setRecord(['uid' => 123, 'colPos' => 12300]);
 
         $this->setInaccessiblePropertyValue($subject, 'addingItemsForContent', true);
 
         $output = $this->callInaccessibleMethod($subject, 'addColPosListLayoutItems', 123, []);
-        self::assertSame([['Label', '--div--']], $output);
+        self::assertSame(
+            [(new SelectOption('Label', '--div--'))->toArray()],
+            $output
+        );
     }
 
     public function testAddColPosListLayoutItemsWithoutPageRecord(): void
     {
         $subject = $this->getMockBuilder(BackendLayoutView::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'determinePageId',
                     'getSelectedBackendLayout',
@@ -322,12 +314,5 @@ class BackendLayoutViewTest extends AbstractTestCase
 
         $output = $this->callInaccessibleMethod($subject, 'addColPosListLayoutItems', 123, []);
         self::assertSame([], $output);
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturn($this->fluxService);
-        return $instance;
     }
 }

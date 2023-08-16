@@ -8,48 +8,44 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Controller\ContentController;
+use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 
-/**
- * ControllerActionsViewHelperTest
- */
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-    /**
-     * @var array
-     */
-    protected $defaultArguments = array(
+    protected array $defaultArguments = [
         'label' => 'Test field',
         'controllerExtensionName' => '',
         'pluginName' => 'Flux',
         'controllerName' => 'Content',
-        'actions' => array(),
+        'actions' => [],
         'disableLocalLanguageLabels' => false,
-        'excludeActions' => array(),
+        'excludeActions' => [],
         'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
         'prefixOnRequiredArguments' => '*',
-        'subActions' => array()
-    );
+        'subActions' => []
+    ];
 
     /**
      * @test
      */
-    public function acceptsTraversableListOfActions()
+    public function acceptsTraversableListOfActions(): void
     {
-        $array = array('foo', 'bar');
+        $array = ['foo', 'bar'];
         $traversable = new \ArrayIterator($array);
-        $arguments = array(
+        $arguments = [
             'label' => 'Test field',
             'controllerExtensionName' => 'Flux',
             'pluginName' => 'API',
             'controllerName' => 'Flux',
             'actions' => $traversable,
             'disableLocalLanguageLabels' => false,
-            'excludeActions' => array(),
+            'excludeActions' => [],
             'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
             'prefixOnRequiredArguments' => '*',
-            'subActions' => array()
-        );
+            'subActions' => []
+        ];
         $instance = $this->buildViewHelperInstance($arguments);
         $component = $instance->getComponent(
             $this->renderingContext,
@@ -61,46 +57,58 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function throwsExceptionOnInvalidExtensionPluginNameAndActionsCombination()
+    public function throwsExceptionOnInvalidExtensionPluginNameAndActionsCombination(): void
     {
-        $arguments = array(
+        $arguments = [
             'label' => 'Test field',
             'controllerExtensionName' => '',
             'extensionName' => '',
             'pluginName' => '',
             'controllerName' => '',
-            'actions' => array(),
+            'actions' => [],
             'disableLocalLanguageLabels' => false,
-            'excludeActions' => array(),
+            'excludeActions' => [],
             'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
             'prefixOnRequiredArguments' => '*',
-            'subActions' => array()
+            'subActions' => []
+        ];
+        $instance = $this->buildViewHelperInstance(
+            $arguments,
+            [],
+            null,
+            $arguments['extensionName'],
+            $arguments['pluginName']
         );
-        $instance = $this->buildViewHelperInstance($arguments, array(), null, $arguments['extensionName'], $arguments['pluginName']);
         $this->expectExceptionCode(1346514748);
         $instance->initializeArgumentsAndRender();
     }
+
     /**
      * @test
      */
-    public function supportsUseOfControllerAndActionSeparator()
+    public function supportsUseOfControllerAndActionSeparator(): void
     {
-        $arguments = array(
+        $arguments = [
             'label' => 'Test field',
             'controllerExtensionName' => 'Flux',
             'pluginName' => 'API',
             'extensionName' => '',
             'controllerName' => 'Flux',
-            'actions' => array(),
+            'actions' => [],
             'disableLocalLanguageLabels' => false,
-            'excludeActions' => array(),
+            'excludeActions' => [],
             'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
             'prefixOnRequiredArguments' => '*',
-            'subActions' => array(),
+            'subActions' => [],
             'separator' => ' :: '
+        ];
+        $instance = $this->buildViewHelperInstance(
+            $arguments,
+            [],
+            null,
+            $arguments['extensionName'],
+            $arguments['pluginName']
         );
-        $instance = $this->buildViewHelperInstance($arguments, array(), null, $arguments['extensionName'], $arguments['pluginName']);
-        ;
         $instance->initializeArgumentsAndRender();
         $component = $instance->getComponent(
             $this->renderingContext,
@@ -112,24 +120,33 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
-    public function canGetCombinedExtensionKeyFromRequest()
+    public function canGetCombinedExtensionKeyFromRequest(): void
     {
-        $arguments = array(
+        $arguments = [
             'label' => 'Test field',
             'pluginName' => 'API',
             'controllerName' => 'Flux',
-            'actions' => array(),
+            'actions' => [],
             'disableLocalLanguageLabels' => false,
-            'excludeActions' => array(),
+            'excludeActions' => [],
             'localLanguageFileRelativePath' => '/Resources/Private/Language/locallang_db.xml',
             'prefixOnRequiredArguments' => '*',
-            'subActions' => array(),
+            'subActions' => [],
             'separator' => ' :: '
-        );
+        ];
         $instance = $this->buildViewHelperInstance($arguments);
-        $request = new Request();
-        $request->setControllerExtensionName('Flux');
-        if (method_exists($request, 'setcontrollerVendorName')) {
+        $request = $this->getMockBuilder(Request::class)
+            ->setMethods(['getExtbaseAttribute'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        if (class_exists(ExtbaseRequestParameters::class)) {
+            $parameters = new ExtbaseRequestParameters(ContentController::class);
+            $parameters->setControllerExtensionName('Flux');
+            $request->method('getExtbaseAttribute')->willReturn($parameters);
+        } else {
+            $request->setControllerExtensionName('Flux');
+        }
+        if (method_exists($request, 'setControllerVendorName')) {
             $request->setControllerVendorName('FluidTYPO3');
             $expected = $expected = 'FluidTYPO3.Flux';
         } else {

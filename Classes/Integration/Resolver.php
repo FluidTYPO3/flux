@@ -11,29 +11,22 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 
-/**
- * Class Resolver
- */
 class Resolver
 {
     /**
-     * @param string $extensionKey
-     * @param string $controllerObjectShortName
-     * @param boolean $failHard
-     * @throws \RuntimeException
      * @return class-string|null
      */
     public function resolveFluxControllerClassNameByExtensionKeyAndControllerName(
-        $extensionKey,
-        $controllerObjectShortName,
-        $failHard = false
-    ) {
-        $potentialControllerClassName = self::buildControllerClassNameFromExtensionKeyAndControllerType(
+        string $extensionKey,
+        string $controllerObjectShortName,
+        bool $failHard = false
+    ): ?string {
+        $potentialControllerClassName = $this->buildControllerClassNameFromExtensionKeyAndControllerType(
             $extensionKey,
             $controllerObjectShortName
         );
-        if (false === class_exists($potentialControllerClassName)) {
-            if (true === $failHard) {
+        if (!class_exists($potentialControllerClassName)) {
+            if ($failHard) {
                 throw new \RuntimeException(
                     'Class ' . $potentialControllerClassName . ' does not exist. It was build from: ' .
                     var_export($extensionKey, true) . ' but the resulting class name was not found.',
@@ -52,14 +45,11 @@ class Resolver
         )['controllerClassName'];
     }
 
-    /**
-     * @param string $extensionKey
-     * @param string $controllerName
-     * @return string
-     */
-    private static function buildControllerClassNameFromExtensionKeyAndControllerType($extensionKey, $controllerName)
-    {
-        if (true === ExtensionNamingUtility::hasVendorName($extensionKey)) {
+    private function buildControllerClassNameFromExtensionKeyAndControllerType(
+        string $extensionKey,
+        string $controllerName
+    ): string {
+        if (ExtensionNamingUtility::hasVendorName($extensionKey)) {
             list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionKey);
             $potentialClassName = sprintf(
                 '%s\\%s\\Controller\\%sController',
@@ -72,5 +62,12 @@ class Resolver
             $potentialClassName = $extensionName . '\\Controller\\' . $controllerName . 'Controller';
         }
         return $potentialClassName;
+    }
+
+    public function resolveControllerNameFromControllerClassName(string $controllerClassName): string
+    {
+        $parts = explode('\\', $controllerClassName);
+        $className = array_pop($parts);
+        return substr($className, 0, -10);
     }
 }

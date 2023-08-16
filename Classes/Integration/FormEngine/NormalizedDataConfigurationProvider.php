@@ -5,13 +5,7 @@ use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 
 class NormalizedDataConfigurationProvider implements FormDataProviderInterface
 {
-    /**
-     * Add form data to result array
-     *
-     * @param array $result Initialized result array
-     * @return array Result filled with more data
-     */
-    public function addData(array $result)
+    public function addData(array $result): array
     {
         if ($result['tableName'] === 'flux_field') {
             $fieldValue = &$result['processedTca']['columns']['field_value'];

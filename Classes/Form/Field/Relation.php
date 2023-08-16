@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -10,21 +11,11 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 use FluidTYPO3\Flux\Form\AbstractRelationFormField;
 
-/**
- * Relation
- */
 class Relation extends AbstractRelationFormField
 {
+    protected ?string $renderType = 'selectSingle';
 
-    /**
-     * @var string|null
-     */
-    protected $renderType = 'selectSingle';
-
-    /**
-     * @return array
-     */
-    public function buildConfiguration()
+    public function buildConfiguration(): array
     {
         $configuration = $this->prepareConfiguration('select');
         return $configuration;

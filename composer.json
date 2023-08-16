@@ -26,12 +26,12 @@
         "php": "^7.4.0 || ^8",
         "ext-json": "*",
         "ext-pdo": "*",
-        "typo3/cms-core": "^8.7 || ^9 || ^10 || ^11 || dev-master",
         "ext-dom": "*",
-        "typo3/cms-fluid": "^8.7 || ^9 || ^10 || ^11 || dev-master",
-        "typo3/cms-backend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
-        "typo3/cms-frontend": "^8.7 || ^9 || ^10 || ^11 || dev-master",
-        "typo3/cms-recordlist": "^8.7 || ^9 || ^10 || ^11 || dev-master"
+        "typo3/cms-core": "^10 || ^11 || ^12 || dev-master",
+        "typo3/cms-fluid": "^10 || ^11 || ^12 || dev-master",
+        "typo3/cms-backend": "^10 || ^11 || ^12 || dev-master",
+        "typo3/cms-frontend": "^10 || ^11 || ^12 || dev-master",
+        "typo3/cms-recordlist": "^10 || ^11 || ^12 || dev-master"
     },
     "extra": {
         "typo3/cms": {

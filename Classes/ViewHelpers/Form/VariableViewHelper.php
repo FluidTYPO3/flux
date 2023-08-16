@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 /*
@@ -10,19 +11,18 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
  * Sets an option in the Form instance
  */
 class VariableViewHelper extends AbstractFormViewHelper
 {
+    use CompileWithContentArgumentAndRenderStatic;
 
-    /**
-     * Initialize arguments
-     * @return void
-     */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
+        $this->registerArgument('value', 'mixed', 'Value of the option');
         $this->registerArgument(
             'name',
             'string',
@@ -30,21 +30,17 @@ class VariableViewHelper extends AbstractFormViewHelper
             'handle the Form instance',
             true
         );
-        $this->registerArgument('value', 'mixed', 'Value of the option', true);
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return void
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ) {
+    ): string {
+        /** @var string $variableName */
+        $variableName = $arguments['name'];
         static::getContainerFromRenderingContext($renderingContext)
-            ->setVariable($arguments['name'], $arguments['value']);
+            ->setVariable($variableName, $renderChildrenClosure());
+        return '';
     }
 }

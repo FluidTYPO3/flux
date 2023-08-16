@@ -8,16 +8,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * InputTest
- */
 class InputTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'enabled' => true,
@@ -27,7 +20,7 @@ class InputTest extends AbstractFieldTest
         'validate' => 'trim,int',
         'default' => 'test',
         'requestUpdate' => true,
-    );
+    ];
 
     /**
      * @test

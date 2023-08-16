@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 /*
@@ -11,6 +12,7 @@ namespace FluidTYPO3\Flux\Utility;
 use DOMElement;
 use DOMNode;
 use DOMNodeList;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
@@ -19,34 +21,25 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * MiscellaneousUtility Utility
- */
 class MiscellaneousUtility
 {
-    /**
-     * @var array
-     */
-    private static $allowedIconTypes = ['svg', 'png', 'gif'];
+    private static array $allowedIconTypes = ['svg', 'png', 'gif'];
 
     /**
      * Returns the icon for a template
      * - checks and returns if manually set as option or
      * - checks and returns Icon if it exists by convention in
      *   EXT:$extensionKey/Resources/Public/Icons/$controllerName/$templateName.(png|gif)
-     *
-     * @param Form $form
-     * @return string|null
      */
-    public static function getIconForTemplate(Form $form)
+    public static function getIconForTemplate(Form $form): ?string
     {
-        if (true === $form->hasOption(Form::OPTION_ICON)) {
-            $iconOptionValue = $form->getOption(Form::OPTION_ICON);
+        if (true === $form->hasOption(FormOption::ICON)) {
+            $iconOptionValue = $form->getOption(FormOption::ICON);
             return is_scalar($iconOptionValue) ? (string) $iconOptionValue : null;
         }
-        if (true === $form->hasOption(Form::OPTION_TEMPLATEFILE)) {
+        if (true === $form->hasOption(FormOption::TEMPLATE_FILE)) {
             $extensionKey = ExtensionNamingUtility::getExtensionKey((string) $form->getExtensionName());
-            $fullTemplatePathAndName = $form->getOption(Form::OPTION_TEMPLATEFILE);
+            $fullTemplatePathAndName = $form->getOption(FormOption::TEMPLATE_FILE);
             $templatePathParts = is_scalar($fullTemplatePathAndName)
                 ? explode('/', (string) $fullTemplatePathAndName)
                 : [];
@@ -87,12 +80,19 @@ class MiscellaneousUtility
 
     /**
      * Returns a generated icon file into typo3temp/pics
-     * @param string $originalFile
-     * @param string $identifier
-     * @return string
      */
-    public static function createIcon($originalFile, $identifier = null)
+    public static function createIcon(string $originalFile, ?string $identifier = null): string
     {
+        /** @var IconRegistry $iconRegistry */
+        $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
+        if ($iconRegistry->isRegistered($originalFile)) {
+            return $originalFile;
+        }
+
+        if (strpos($originalFile, 'EXT:') === 0 || $originalFile[0] !== '/') {
+            $originalFile = GeneralUtility::getFileAbsFileName($originalFile);
+        }
+
         $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
         switch (strtolower($extension)) {
             case 'svg':
@@ -102,13 +102,12 @@ class MiscellaneousUtility
             default:
                 $iconProvider = BitmapIconProvider::class;
         }
+
         $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
-        /** @var IconRegistry $iconRegistry */
-        $iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
         $iconRegistry->registerIcon(
             $iconIdentifier,
             $iconProvider,
-            ['source' => $originalFile, 'size' => Icon::SIZE_LARGE]
+            ['source' => $originalFile, 'size' => Icon::SIZE_DEFAULT]
         );
         return $iconIdentifier;
     }
@@ -116,12 +115,8 @@ class MiscellaneousUtility
     /**
      * Cleans flex form XML, removing any field nodes identified
      * in $removals and trimming the result to avoid empty containers.
-     *
-     * @param string $xml
-     * @param array $removals
-     * @return string
      */
-    public static function cleanFlexFormXml($xml, array $removals = [])
+    public static function cleanFlexFormXml(string $xml, array $removals = []): string
     {
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
@@ -146,7 +141,7 @@ class MiscellaneousUtility
         foreach ($dom->getElementsByTagName('el') as $containerNode) {
             /** @var DOMElement $containerNode */
             $hasIdNode = false;
-            if ($containerNode->attributes instanceof \DOMNamedNodeMap && 0 < $containerNode->attributes->length) {
+            if ($containerNode->attributes instanceof \DOMNamedNodeMap && 0 < count($containerNode->attributes)) {
                 // skip <el> tags reserved for other purposes by attributes; only allow pure <el> tags.
                 continue;
             }

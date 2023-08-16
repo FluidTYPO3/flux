@@ -8,30 +8,21 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Controller\AbstractFluxController;
+use FluidTYPO3\Flux\Controller\ContentController;
 
-/**
- * ContentControllerTest
- */
 class ContentControllerTest extends AbstractFluxControllerTestCase
 {
-    /**
-     * @test
-     */
-    public function canRegisterCustomControllerForContent()
+    public function testCanRegisterCustomControllerForContent(): void
     {
         $this->performDummyRegistration();
     }
 
-    /**
-     * @return AbstractFluxController
-     */
-    protected function createAndTestDummyControllerInstance()
+    protected function createAndTestDummyControllerInstance(): ContentController
     {
         $this->performDummyRegistration();
-        $controllerClassName = 'FluidTYPO3\\Flux\\Controller\\ContentController';
-        /** @var AbstractFluxController $instance */
-        $instance = new $controllerClassName();
+        $controllerClassName = ContentController::class;
+        /** @var ContentController $instance */
+        $instance = new $controllerClassName(...$this->getConstructorArguments());
         $this->setInaccessiblePropertyValue($instance, 'extensionName', 'Flux');
         return $instance;
     }

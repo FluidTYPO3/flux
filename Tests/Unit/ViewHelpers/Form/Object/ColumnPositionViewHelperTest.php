@@ -12,5 +12,4 @@ use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Field\AbstractFieldViewHelperTestCase
 
 class ColumnPositionViewHelperTest extends AbstractFieldViewHelperTestCase
 {
-
 }

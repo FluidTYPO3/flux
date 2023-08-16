@@ -10,23 +10,14 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
-use FluidTYPO3\Flux\Service\FluxService;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3Fluid\Fluid\Core\Parser\Interceptor\Escape;
 
-/**
- * AbstractTestCase
- */
 abstract class AbstractTestCase extends TestCase
 {
     const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
@@ -41,18 +32,13 @@ abstract class AbstractTestCase extends TestCase
     const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/CollidingGrid.html';
     const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
 
+    protected array $singletonInstances = [];
     private array $singletonInstancesBackup = [];
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         if (!defined('LF')) {
             define('LF', PHP_EOL);
-        }
-        if (!defined('TYPO3_MODE')) {
-            define('TYPO3_MODE', 'FE');
         }
         if (!defined('TYPO3_REQUESTTYPE')) {
             define('TYPO3_REQUESTTYPE', 1);
@@ -60,44 +46,41 @@ abstract class AbstractTestCase extends TestCase
         if (!defined('TYPO3_REQUESTTYPE_FE')) {
             define('TYPO3_REQUESTTYPE_FE', 1);
         }
-        if (!defined('TYPO3_version')) {
-            define('TYPO3_version', '9.5.0');
+
+        if (!defined('TYPO3_version')) { // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
+            define('TYPO3_version', '9.5.0'); // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
         }
 
         $GLOBALS['EXEC_TIME'] = time();
         $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [
-            Escape::class
-        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fluid_template'] = [
             'frontend' => VariableFrontend::class,
             'backend' => TransientMemoryBackend::class,
         ];
 
-        $objectManager = $this->createObjectManagerInstance();
-
         $this->singletonInstancesBackup = GeneralUtility::getSingletonInstances();
-        GeneralUtility::setSingletonInstance(ObjectManagerInterface::class, $objectManager);
-        GeneralUtility::setSingletonInstance(ObjectManager::class, $objectManager);
+        foreach ($this->singletonInstances as $className => $singletonInstance) {
+            GeneralUtility::setSingletonInstance($className, $singletonInstance);
+        }
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
 
+        GeneralUtility::purgeInstances();
         GeneralUtility::resetSingletonInstances($this->singletonInstancesBackup);
     }
 
     /**
      * Helper function to call protected or private methods
      *
-     * @param object $object The object to be invoked
-     * @param string $name the name of the method to call
      * @param mixed $arguments
      * @return mixed
      */
-    protected function callInaccessibleMethod($object, $name, ...$arguments)
+    protected function callInaccessibleMethod(object $object, string $name, ...$arguments)
     {
         $reflectionObject = new \ReflectionObject($object);
         $reflectionMethod = $reflectionObject->getMethod($name);
@@ -106,10 +89,7 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param object $object
-     * @param string $propertyName
      * @param mixed $value
-     * @return void
      */
     protected function setInaccessiblePropertyValue(object $object, string $propertyName, $value): void
     {
@@ -119,8 +99,6 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param object $object
-     * @param string $propertyName
      * @return mixed
      */
     protected function getInaccessiblePropertyValue(object $object, string $propertyName)
@@ -131,14 +109,16 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param string $propertyName
      * @param mixed $value
      * @param mixed $expectedValue
      * @param mixed $expectsChaining
-     * @return void
      */
-    protected function assertGetterAndSetterWorks($propertyName, $value, $expectedValue = null, $expectsChaining = false)
-    {
+    protected function assertGetterAndSetterWorks(
+        string $propertyName,
+        $value,
+        $expectedValue = null,
+        $expectsChaining = false
+    ): void {
         $instance = $this->createInstance();
         $setter = 'set' . ucfirst($propertyName);
         $getter = 'get' . ucfirst($propertyName);
@@ -178,7 +158,7 @@ abstract class AbstractTestCase extends TestCase
      * @param mixed $value
      * @return void
      */
-    protected function assertIsInteger($value)
+    protected function assertIsInteger($value): void
     {
         $isIntegerConstraint = new IsType(IsType::TYPE_INT);
         $this->assertThat($value, $isIntegerConstraint);
@@ -188,7 +168,7 @@ abstract class AbstractTestCase extends TestCase
      * @param mixed $value
      * @return void
      */
-    protected function assertIsBoolean($value)
+    protected function assertIsBoolean($value): void
     {
         $isBooleanConstraint = new IsType(IsType::TYPE_BOOL);
         $this->assertThat($value, $isBooleanConstraint);
@@ -197,7 +177,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @param mixed $value
      */
-    protected function assertIsValidAndWorkingFormObject($value)
+    protected function assertIsValidAndWorkingFormObject($value): void
     {
         $this->assertInstanceOf(Form::class, $value);
         $this->assertInstanceOf(Form\FormInterface::class, $value);
@@ -218,7 +198,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @param mixed $value
      */
-    protected function assertIsValidAndWorkingGridObject($value)
+    protected function assertIsValidAndWorkingGridObject($value): void
     {
         $this->assertInstanceOf(Form\Container\Grid::class, $value);
         $this->assertInstanceOf(Form\ContainerInterface::class, $value);
@@ -227,40 +207,17 @@ abstract class AbstractTestCase extends TestCase
         $this->assertIsArray($structure);
     }
 
-    /**
-     * @return string
-     */
-    protected function getShorthandFixtureTemplatePathAndFilename()
+    protected function getShorthandFixtureTemplatePathAndFilename(): string
     {
         return self::FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL;
     }
 
-    /**
-     * @param string $shorthandTemplatePath
-     * @return string
-     */
-    protected function getAbsoluteFixtureTemplatePathAndFilename($shorthandTemplatePath)
+    protected function getAbsoluteFixtureTemplatePathAndFilename(string $shorthandTemplatePath): string
     {
         return realpath(str_replace('EXT:flux/', './', $shorthandTemplatePath));
     }
 
-    /**
-     * @param array $methods
-     * @return FluxService
-     */
-    protected function createFluxServiceInstance($methods = array('dummy'))
-    {
-        /** @var FluxService $fluxService */
-        $fluxService = $this->getMockBuilder(FluxService::class)->setMethods($methods)->disableOriginalConstructor()->getMock();
-        $configurationManager = $this->getMockBuilder(ConfigurationManager::class)->disableOriginalConstructor()->getMock();
-        $fluxService->injectConfigurationManager($configurationManager);
-        return $fluxService;
-    }
-
-    /**
-     * @return string
-     */
-    protected function createInstanceClassName()
+    protected function createInstanceClassName(): string
     {
         return str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
     }
@@ -271,14 +228,9 @@ abstract class AbstractTestCase extends TestCase
     protected function createInstance()
     {
         $instanceClassName = $this->createInstanceClassName();
-        return new $instanceClassName();
-    }
-
-    /**
-     * @return ObjectManagerInterface|MockObject
-     */
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        return $this->getMockBuilder(ObjectManager::class)->setMethods(['get'])->disableOriginalConstructor()->getMockForAbstractClass();
+        return $this->getMockBuilder($instanceClassName)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

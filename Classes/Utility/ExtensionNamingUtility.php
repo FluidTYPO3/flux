@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 /*
@@ -10,56 +11,32 @@ namespace FluidTYPO3\Flux\Utility;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Extension Utility
- */
 class ExtensionNamingUtility
 {
-
-    /**
-     * @param string $qualifiedExtensionName
-     * @return boolean
-     */
-    public static function hasVendorName($qualifiedExtensionName)
+    public static function hasVendorName(string $qualifiedExtensionName): bool
     {
         return false !== strpos($qualifiedExtensionName, '.');
     }
 
-    /**
-     * @param string $qualifiedExtensionName
-     * @return string|null
-     */
-    public static function getVendorName($qualifiedExtensionName)
+    public static function getVendorName(string $qualifiedExtensionName): ?string
     {
         list($vendorName, ) = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
         return $vendorName;
     }
 
-    /**
-     * @param string $qualifiedExtensionName
-     * @return string
-     */
-    public static function getExtensionKey($qualifiedExtensionName)
+    public static function getExtensionKey(string $qualifiedExtensionName): string
     {
         list(, $extensionKey) = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
         return $extensionKey;
     }
 
-    /**
-     * @param string $qualifiedExtensionName
-     * @return string
-     */
-    public static function getExtensionName($qualifiedExtensionName)
+    public static function getExtensionName(string $qualifiedExtensionName): string
     {
         list(, $extensionName) = static::getVendorNameAndExtensionName($qualifiedExtensionName);
         return (string) $extensionName;
     }
 
-    /**
-     * @param string $qualifiedExtensionName
-     * @return string
-     */
-    public static function getExtensionSignature($qualifiedExtensionName)
+    public static function getExtensionSignature(string $qualifiedExtensionName): string
     {
         static $cache = [];
         if (isset($cache[$qualifiedExtensionName])) {
@@ -70,11 +47,7 @@ class ExtensionNamingUtility
         return $cache[$qualifiedExtensionName];
     }
 
-    /**
-     * @param string $qualifiedExtensionName
-     * @return array
-     */
-    public static function getVendorNameAndExtensionKey($qualifiedExtensionName)
+    public static function getVendorNameAndExtensionKey(string $qualifiedExtensionName): array
     {
         static $cache = [];
         if (isset($cache[$qualifiedExtensionName])) {
@@ -91,11 +64,7 @@ class ExtensionNamingUtility
         return [$vendorName, $extensionKey];
     }
 
-    /**
-     * @param string $qualifiedExtensionName
-     * @return array
-     */
-    public static function getVendorNameAndExtensionName($qualifiedExtensionName)
+    public static function getVendorNameAndExtensionName(string $qualifiedExtensionName): array
     {
         static $cache = [];
         if (isset($cache[$qualifiedExtensionName])) {

@@ -8,9 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * InvalidConfigurationProvider
- */
 class InvalidConfigurationProvider
 {
 

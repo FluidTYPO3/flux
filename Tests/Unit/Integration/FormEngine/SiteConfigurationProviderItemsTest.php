@@ -9,22 +9,26 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\FormEngine;
  */
 
 use FluidTYPO3\Flux\Content\ContentTypeManager;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\FormEngine\SiteConfigurationProviderItems;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 class SiteConfigurationProviderItemsTest extends AbstractTestCase
 {
-    private ?PageService $pageService;
+    private PageService $pageService;
+    private ContentTypeManager $contentTypeManager;
 
     protected function setUp(): void
     {
         $this->pageService = $this->getMockBuilder(PageService::class)
-            ->setMethods(['getAvailablePageTemplateFiles'])
+            ->onlyMethods(['getAvailablePageTemplateFiles'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
+            ->onlyMethods(['fetchContentTypeNames'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -33,15 +37,7 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
 
     public function testProcessContentTypeItems(): void
     {
-        $singletons = GeneralUtility::getSingletonInstances();
-
-        $contentTypeManager = $this->getMockBuilder(ContentTypeManager::class)
-            ->setMethods(['fetchContentTypeNames'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $contentTypeManager->method('fetchContentTypeNames')->willReturn(['flux_test', 'flux_test2']);
-
-        GeneralUtility::setSingletonInstance(ContentTypeManager::class, $contentTypeManager);
+        $this->contentTypeManager->method('fetchContentTypeNames')->willReturn(['flux_test', 'flux_test2']);
 
         $tca = ['items' => []];
 
@@ -49,7 +45,7 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
         $expected['items'][] = ['flux_test', 'flux_test'];
         $expected['items'][] = ['flux_test2', 'flux_test2'];
 
-        $subject = new SiteConfigurationProviderItems();
+        $subject = new SiteConfigurationProviderItems($this->contentTypeManager, $this->pageService);
         $output = $subject->processContentTypeItems(
             $tca,
             $this->getMockBuilder(TcaSelectItems::class)->disableOriginalConstructor()->getMock()
@@ -59,15 +55,13 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
             $expected,
             $output
         );
-
-        GeneralUtility::resetSingletonInstances($singletons);
     }
 
     public function testProcessPageTemplateItems(): void
     {
         $form1 = Form::create();
         $form2 = Form::create();
-        $form2->setOption(Form::OPTION_TEMPLATEFILE, 'test.html');
+        $form2->setOption(FormOption::TEMPLATE_FILE, 'test.html');
 
         $this->pageService->method('getAvailablePageTemplateFiles')->willReturn(
             [
@@ -79,8 +73,8 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
         );
 
         $subject = $this->getMockBuilder(SiteConfigurationProviderItems::class)
-            ->setMethods(['translate'])
-            ->disableOriginalConstructor()
+            ->onlyMethods(['translate'])
+            ->setConstructorArgs([$this->contentTypeManager, $this->pageService])
             ->getMock();
         $subject->method('translate')->willReturn('test');
 
@@ -96,12 +90,5 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
                 $this->getMockBuilder(TcaSelectItems::class)->disableOriginalConstructor()->getMock()
             )
         );
-    }
-
-    protected function createObjectManagerInstance(): ObjectManagerInterface
-    {
-        $instance = parent::createObjectManagerInstance();
-        $instance->method('get')->willReturn($this->pageService);
-        return $instance;
     }
 }

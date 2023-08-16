@@ -8,19 +8,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-/**
- * UserFunctionTest
- */
 class UserFunctionTest extends AbstractFieldTest
 {
-
-    /**
-     * @var array
-     */
-    protected $chainProperties = array(
+    protected array $chainProperties = [
         'name' => 'test',
         'label' => 'Test field',
         'function' => 'FluidTYPO3\Flux\UserFunction\NoFields->renderField',
-        'arguments' => array(1, 2),
-    );
+        'arguments' => [1, 2],
+    ];
 }

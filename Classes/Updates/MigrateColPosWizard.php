@@ -105,7 +105,7 @@ class MigrateColPosWizard implements
                 $queryBuilder->expr()->gte('child.sorting', 'parent.sorting')
             )
             ->execute()
-            ->fetchColumn(0);
+            ->fetchOne();
 
         $this->output->write($numRows . ' content elements need to be fixed');
 
@@ -161,7 +161,7 @@ class MigrateColPosWizard implements
                     $queryBuilder->expr()->lte('colPos', $queryBuilder->createNamedParameter($max, \PDO::PARAM_INT)),
                 )
                 ->execute()
-                ->fetchColumn(0);
+                ->fetchOne();
 
             $queryBuilder = $connectionPool->getQueryBuilderForTable('tt_content');
             $queryBuilder
@@ -187,7 +187,7 @@ class MigrateColPosWizard implements
                 )
                 ->orderBy('sorting', 'ASC')
                 ->execute()
-                ->fetchAll();
+                ->fetchAllAssociative();
 
             $changed = false;
             $newSorting = $maxChildSorting;
