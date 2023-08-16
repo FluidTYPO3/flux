@@ -42,11 +42,13 @@ class WizardItemsManipulator
                 true
             );
             if (!empty($enabledContentTypes)) {
-                $fluidContentTypeNames = (array) $this->contentTypeManager->fetchContentTypeNames();
+                $fluxContentTypeNames = (array) $this->contentTypeManager->fetchContentTypeNames();
                 $items = array_filter(
                     $items,
-                    function (array $item) use ($enabledContentTypes) {
-                        return in_array($item['tt_content_defValues']['CType'] ?? null, $enabledContentTypes, true);
+                    function (array $item) use ($enabledContentTypes, $fluxContentTypeNames) {
+                        $contentType = $item['tt_content_defValues']['CType'] ?? null;
+                        return !in_array($contentType, $fluxContentTypeNames, true) ||
+                            in_array($contentType, $enabledContentTypes, true);
                     }
                 );
             }
