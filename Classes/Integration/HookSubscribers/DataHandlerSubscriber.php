@@ -204,7 +204,8 @@ class DataHandlerSubscriber
             if (($GLOBALS["TCA"][$table]["columns"][$fieldName]["config"]["type"] ?? '') === 'flex') {
                 $primaryConfigurationProvider = $resolver->resolvePrimaryConfigurationProvider(
                     $table,
-                    $fieldName
+                    $fieldName,
+                    $fieldArray
                 );
 
                 if ($primaryConfigurationProvider
