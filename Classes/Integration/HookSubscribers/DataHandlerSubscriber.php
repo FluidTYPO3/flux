@@ -427,23 +427,13 @@ class DataHandlerSubscriber
             $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
         }
 
-        if ($command === 'move') {
-            $subCommandMap = $this->recursivelyMoveChildRecords(
-                $table,
-                (integer) $id,
-                (integer) $destinationPid,
-                $languageUid,
-                $reference
-            );
-        }
-
-        if (!empty($subCommandMap)) {
-            /** @var DataHandler $dataHandler */
-            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $dataHandler->copyMappingArray = $reference->copyMappingArray;
-            $dataHandler->start([], $subCommandMap);
-            $dataHandler->process_cmdmap();
-        }
+        $this->recursivelyMoveChildRecords(
+            $table,
+            $recordsToProcess,
+            (integer) $destinationPid,
+            $languageUid,
+            $reference
+        );
     }
 
     protected function fetchAllColumnNumbersBeneathParent(int $parentUid): array
@@ -462,22 +452,16 @@ class DataHandlerSubscriber
 
     protected function recursivelyMoveChildRecords(
         string $table,
-        int $parentUid,
+        array $recordsToProcess,
         int $pageUid,
         int $languageUid,
         DataHandler $dataHandler
-    ): array {
-        $dataMap = [];
-
-        [, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
-            $table,
-            $parentUid,
-            'uid, colPos'
-        );
+    ): void {
+        $subCommandMap = [];
 
         foreach ($recordsToProcess as $recordToProcess) {
             $recordUid = $recordToProcess['uid'];
-            $dataMap[$table][$recordUid]['move'] = [
+            $subCommandMap[$table][$recordUid]['move'] = [
                 'action' => 'paste',
                 'target' => $pageUid,
                 'update' => [
@@ -485,7 +469,14 @@ class DataHandlerSubscriber
                 ],
             ];
         }
-        return $dataMap;
+
+        if (!empty($subCommandMap)) {
+            /** @var DataHandler $dataHandler */
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->copyMappingArray = $dataHandler->copyMappingArray;
+            $dataHandler->start([], $subCommandMap);
+            $dataHandler->process_cmdmap();
+        }
     }
 
     /**
