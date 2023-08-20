@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
@@ -42,18 +41,13 @@ class ContentIcon
     protected IconFactory $iconFactory;
     protected FrontendInterface $cache;
 
-    public function __construct()
-    {
-        /** @var ProviderResolver $providerResolver */
-        $providerResolver = GeneralUtility::makeInstance(ProviderResolver::class);
+    public function __construct(
+        ProviderResolver $providerResolver,
+        IconFactory $iconFactory,
+        CacheManager $cacheManager
+    ) {
         $this->providerResolver = $providerResolver;
-
-        /** @var IconFactory $iconFactory */
-        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         $this->iconFactory = $iconFactory;
-
-        /** @var CacheManager $cacheManager */
-        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         $this->cache = $cacheManager->getCache('flux');
     }
 
@@ -114,7 +108,7 @@ class ContentIcon
     {
         $collapseIcon = $this->iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
         $expandIcon = $this->iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
-        $label = $GLOBALS['LANG']->sL('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
+        $label = $this->translate('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
         $icon = $collapseIcon . $expandIcon;
 
         $template = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11', '<')
@@ -174,5 +168,13 @@ class ContentIcon
     protected function getCookie(): ?string
     {
         return true === isset($_COOKIE['fluxCollapseStates']) ? $_COOKIE['fluxCollapseStates'] : null;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function translate(string $label): ?string
+    {
+        return $GLOBALS['LANG']->sL($label);
     }
 }
