@@ -8,23 +8,19 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon;
-use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
-use TYPO3\CMS\Core\Imaging\IconRegistry;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Lang\LanguageService;
 
@@ -38,52 +34,27 @@ class ContentIconTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        if (!class_exists(LanguageService::class)) {
-            $this->markTestSkipped('Skipping test with LanguageService dependency');
-        }
-        $this->cache = $this->getMockBuilder(FrontendInterface::class)
-            ->onlyMethods(['get', 'set'])
-            ->getMockForAbstractClass();
-        $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
-            ->onlyMethods(['resolvePrimaryConfigurationProvider'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->cacheManager = $this->getMockBuilder(CacheManager::class)
-            ->onlyMethods(['getCache'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->cache = $this->createStub(FrontendInterface::class);
+        $this->providerResolver = $this->createStub(ProviderResolver::class);
+        $this->cacheManager = $this->createStub(CacheManager::class);
         $this->cacheManager->method('getCache')->willReturn($this->cache);
-        $this->iconFactory = $this->getMockBuilder(IconFactory::class)
-            ->onlyMethods(['getIcon'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        // Mocking the singleton of IconRegistry is apparently required for unit tests to work on some environments.
-        // Since it doesn't matter much what this method actually responds for these tests, we mock it for all envs.
-        $iconRegistryMock = $this->getMockBuilder(IconRegistry::class)
-            ->onlyMethods(['isRegistered', 'getIconConfigurationByIdentifier'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $iconRegistryMock->expects($this->any())->method('isRegistered')->willReturn(true);
-        $iconRegistryMock->expects($this->any())->method('getIconConfigurationByIdentifier')->willReturn([
-            'provider' => SvgIconProvider::class,
-            'options' => [
-                'source' => 'EXT:core/Resources/Public/Icons/T3Icons/default/default-not-found.svg'
-            ]
-        ]);
-
-        $this->singletonInstances[ProviderResolver::class] = $this->providerResolver;
-        $this->singletonInstances[IconRegistry::class] = $iconRegistryMock;
-        $this->singletonInstances[CacheManager::class] = $this->cacheManager;
-
-        GeneralUtility::addInstance(IconFactory::class, $this->iconFactory);
+        $this->iconFactory = $this->createStub(IconFactory::class);
 
         parent::setUp();
     }
 
+    protected function getConstructorArguments(): array
+    {
+        return [
+            $this->providerResolver,
+            $this->iconFactory,
+            $this->cacheManager,
+        ];
+    }
+
     public function testCreatesInstancesInConstructor(): void
     {
-        $subject = new ContentIcon();
+        $subject = new ContentIcon(...$this->getConstructorArguments());
         self::assertInstanceOf(
             ProviderResolver::class,
             $this->getInaccessiblePropertyValue($subject, 'providerResolver')
@@ -93,41 +64,41 @@ class ContentIconTest extends AbstractTestCase
 
     public function testAddSubIconUsesCache(): void
     {
-        $cache = $this->getMockBuilder(VariableFrontend::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['get', 'set'])
-            ->getMock();
-        $cache->expects($this->once())->method('get')->willReturn('icon');
+        $this->cache->expects($this->once())->method('get')->willReturn('icon');
         $instance = $this->getMockBuilder(ContentIcon::class)
             ->onlyMethods(['drawGridToggle'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs($this->getConstructorArguments())
             ->getMock();
         $instance->method('drawGridToggle')->willReturn('foobar');
-        $this->setInaccessiblePropertyValue($instance, 'cache', $cache);
+        $this->setInaccessiblePropertyValue($instance, 'cache', $this->cache);
+
+        $callerClassName = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<=')
+            ? PageLayoutView::class
+            : GridColumnItem::class;
+
         $result = $instance->addSubIcon(
             [
                 'tt_content', 123,
                 ['foo' => 'bar']
             ],
-            $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock()
+            $this->createStub($callerClassName)
         );
         $this->assertEquals('icon', $result);
     }
 
     public function testDrawGridToggle(): void
     {
-        $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)
-            ->onlyMethods(['sL'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
-
-        $icon = $this->getMockBuilder(Icon::class)->disableOriginalConstructor()->getMock();
+        $icon = $this->createStub(Icon::class);
         $icon->method('render')->willReturn('foobar');
 
         $this->iconFactory->method('getIcon')->willReturn($icon);
 
-        $subject = new ContentIcon();
+        $subject = $this->getMockBuilder(ContentIcon::class)
+            ->onlyMethods(['translate'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->getMock();
+        $subject->method('translate')->willReturnArgument(0);
+
         $result = $this->callInaccessibleMethod($subject, 'drawGridToggle', ['uid' => 123]);
         $this->assertStringContainsString(
             'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content',
@@ -141,59 +112,44 @@ class ContentIconTest extends AbstractTestCase
      */
     public function testAddSubIcon(array $parameters, ?ProviderInterface $provider): void
     {
-        $GLOBALS['BE_USER'] = $this->getMockBuilder(BackendUserAuthentication::class)
-            ->onlyMethods(['calcPerms'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $GLOBALS['BE_USER']->expects($this->any())->method('calcPerms');
-        $GLOBALS['LANG'] = $this->getMockBuilder(LanguageService::class)
-            ->onlyMethods(['sL'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $GLOBALS['LANG']->expects($this->any())->method('sL')->will($this->returnArgument(0));
-
         $GLOBALS['TCA']['tt_content']['columns']['field']['config']['type'] = 'flex';
 
         $this->cache->method('get')->willReturn(null);
         $this->cache->method('set')->with($this->anything());
 
-        $this->providerResolver->expects($this->any())
-            ->method('resolvePrimaryConfigurationProvider')
-            ->willReturn($provider);
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
 
-        $instance = new ContentIcon();
+        $subject = $this->getMockBuilder(ContentIcon::class)
+            ->onlyMethods(['translate'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->getMock();
+        $subject->method('translate')->willReturnArgument(0);
 
-        $icon = $instance->addSubIcon(
+        $callerClassName = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<=')
+            ? PageLayoutView::class
+            : GridColumnItem::class;
+
+        $icon = $subject->addSubIcon(
             $parameters,
-            $this->getMockBuilder(PageLayoutView::class)->disableOriginalConstructor()->getMock()
+            $this->createStub($callerClassName)
         );
         $this->assertSame('', $icon);
     }
 
     public function getAddSubIconTestValues(): array
     {
-        $formWithoutIcon = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
-        $formWithIcon = Form::create(['options' => ['icon' => 'icon']]);
-        $providerWithoutForm = $this->getMockBuilder(Provider::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getForm', 'getGrid'])
-            ->getMock();
-        $providerWithoutForm->expects($this->any())->method('getForm')->willReturn(null);
-        $providerWithoutForm->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
-        $providerWithFormWithoutIcon = $this->getMockBuilder(Provider::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getForm', 'getGrid'])
-            ->getMock();
-        $providerWithFormWithoutIcon->expects($this->any())->method('getForm')->willReturn($formWithoutIcon);
-        $providerWithFormWithoutIcon->expects($this->any())
-            ->method('getGrid')
-            ->willReturn(Form\Container\Grid::create());
-        $providerWithFormWithIcon = $this->getMockBuilder(Provider::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getForm', 'getGrid'])
-            ->getMock();
-        $providerWithFormWithIcon->expects($this->any())->method('getForm')->willReturn($formWithIcon);
-        $providerWithFormWithIcon->expects($this->any())->method('getGrid')->willReturn(Form\Container\Grid::create());
+        $formWithoutIcon = $this->createStub(Form::class);
+        $formWithIcon = $this->createStub(Form::class);
+        $formWithIcon->method('getOption')->with(FormOption::ICON)->willReturn('icon');
+        $providerWithoutForm = $this->createStub(ProviderInterface::class);
+        $providerWithoutForm->method('getForm')->willReturn(null);
+        $providerWithoutForm->method('getGrid')->willReturn(Form\Container\Grid::create());
+        $providerWithFormWithoutIcon = $this->createStub(ProviderInterface::class);
+        $providerWithFormWithoutIcon->method('getForm')->willReturn($formWithoutIcon);
+        $providerWithFormWithoutIcon->method('getGrid')->willReturn(Form\Container\Grid::create());
+        $providerWithFormWithIcon = $this->createStub(ProviderInterface::class);
+        $providerWithFormWithIcon->method('getForm')->willReturn($formWithIcon);
+        $providerWithFormWithIcon->method('getGrid')->willReturn(Form\Container\Grid::create());
         return [
             'no provider' => [['tt_content', 1, []], null],
             'provider without form without field' => [['tt_content', 1, []], $providerWithoutForm],
@@ -205,18 +161,22 @@ class ContentIconTest extends AbstractTestCase
 
     public function testReturnsEmptyStringWithInvalidCaller(): void
     {
-        $subject = new ContentIcon();
+        $subject = new ContentIcon(...$this->getConstructorArguments());
         self::assertSame('', $subject->addSubIcon([], $this));
     }
 
     public function testReturnsEmptyStringWithInvalidTable(): void
     {
-        $subject = new ContentIcon();
+        $callerClassName = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<=')
+            ? PageLayoutView::class
+            : GridColumnItem::class;
+
+        $subject = new ContentIcon(...$this->getConstructorArguments());
         self::assertSame(
             '',
             $subject->addSubIcon(
                 ['foo', '', ''],
-                $this->getMockBuilder(GridColumnItem::class)->disableOriginalConstructor()->getMock()
+                $this->createStub($callerClassName)
             )
         );
     }

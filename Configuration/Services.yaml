@@ -40,6 +40,8 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\FormEngine\SiteConfigurationProviderItems:
     public: true
+  FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon:
+    public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor:
     public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion:
