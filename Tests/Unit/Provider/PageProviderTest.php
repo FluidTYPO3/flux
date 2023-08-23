@@ -78,6 +78,65 @@ class PageProviderTest extends AbstractTestCase
         ];
     }
 
+    public function testProcessTableConfigurationReturnsEarlyWithoutRecord(): void
+    {
+        $this->recordService->method('getSingle')->willReturn(null);
+        $instance = new PageProvider(...$this->getConstructorArguments());
+        $configuration = ['vanillaUid' => 123];
+        self::assertSame($configuration, $instance->processTableConfiguration(['uid' => 123], $configuration));
+    }
+
+    /**
+     * @param string|array $data
+     * @dataProvider getProcessTableConfigurationTestValues
+     */
+    public function testProcessTableConfiguration($data): void
+    {
+        /** @var PageProvider|MockObject $instance */
+        $instance = $this->getMockBuilder(PageProvider::class)
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->onlyMethods(['getForm', 'getInheritanceTree', 'convertXmlToArray'])
+            ->getMock();
+        $instance->method('convertXmlToArray')->willReturn(['data' => ['foo' => 'bar']]);
+
+        $treeData = '<data />';
+
+        $tree = [
+            ['uid' => 1, PageProvider::FIELD_NAME_MAIN => $treeData, PageProvider::FIELD_NAME_SUB => $treeData],
+            ['uid' => 2, PageProvider::FIELD_NAME_MAIN => $treeData, PageProvider::FIELD_NAME_SUB => $treeData],
+        ];
+
+        $instance->method('getInheritanceTree')->willReturn($tree);
+        $instance->method('getForm')->willReturn(Form::create());
+
+        $this->recordService->method('getSingle')
+            ->willReturn(['uid' => 123, PageProvider::FIELD_NAME_MAIN => '<data />']);
+
+        $configuration = [
+            'vanillaUid' => 123,
+            'recordTypeValue' => 'content',
+            'databaseRow' => [
+                'uid' => 123,
+                PageProvider::FIELD_NAME_MAIN => $data,
+                PageProvider::FIELD_NAME_SUB => $data,
+            ],
+        ];
+
+        $expected = $configuration;
+        $expected['databaseRow'][PageProvider::FIELD_NAME_MAIN] = ['data' => ['foo' => 'bar']];
+        $expected['databaseRow'][PageProvider::FIELD_NAME_SUB] = ['data' => ['foo' => 'bar']];
+
+        self::assertSame($expected, $instance->processTableConfiguration(['uid' => 123], $configuration));
+    }
+
+    public function getProcessTableConfigurationTestValues(): array
+    {
+        return [
+            'With already unpacked FF data' => ['<data />'],
+            'With packed FF data' => [['data' => ['foo' => 'bar']]],
+        ];
+    }
+
     public function testGetExtensionKey(): void
     {
         /** @var PageProvider|MockObject $instance */

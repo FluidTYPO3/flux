@@ -284,14 +284,13 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $inheritedConfiguration = [];
         foreach ([self::FIELD_NAME_MAIN, self::FIELD_NAME_SUB] as $field) {
             if (!empty($currentPageRecord[$field])) {
-                $currentPageRecord[$field] = GeneralUtility::xml2array($currentPageRecord[$field]);
+                $currentPageRecord[$field] = $this->convertXmlToArray($currentPageRecord[$field]) ?? [];
             }
             /** @var Form&Form $form */
             $form = $this->getForm($row, $field);
             foreach ($tree as $branch) {
                 if (!empty($branch[$field])) {
-                    /** @var array $branchData */
-                    $branchData = GeneralUtility::xml2array($branch[$field] ?? '');
+                    $branchData = $this->convertXmlToArray($branch[$field] ?? '') ?? [];
                     $inheritedConfiguration[$field] = RecursiveArrayUtility::mergeRecursiveOverrule(
                         $inheritedConfiguration[$field] ?? [],
                         $branchData
@@ -322,8 +321,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                 if (is_array($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
                     $currentData = $configuration['databaseRow'][self::FIELD_NAME_MAIN];
                 } else {
-                    /** @var array $currentData */
-                    $currentData = GeneralUtility::xml2array($configuration['databaseRow'][self::FIELD_NAME_MAIN]);
+                    $currentData = $this->convertXmlToArray($configuration['databaseRow'][self::FIELD_NAME_MAIN]) ?? [];
                 }
                 $configuration['databaseRow'][self::FIELD_NAME_MAIN] = RecursiveArrayUtility::mergeRecursiveOverrule(
                     $inheritedConfigurationForMainField,
@@ -331,13 +329,13 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                 );
             }
         }
-        $subData = [];
+
         if (is_array($configuration['databaseRow'][self::FIELD_NAME_SUB])) {
-            $currentData = $configuration['databaseRow'][self::FIELD_NAME_SUB];
+            $subData = $configuration['databaseRow'][self::FIELD_NAME_SUB];
         } else {
-            /** @var array $currentData */
-            $currentData = GeneralUtility::xml2array($configuration['databaseRow'][self::FIELD_NAME_SUB]);
+            $subData = $this->convertXmlToArray($configuration['databaseRow'][self::FIELD_NAME_SUB]) ?? [];
         }
+
         $configuration['databaseRow'][self::FIELD_NAME_SUB] = RecursiveArrayUtility::mergeRecursiveOverrule(
             $inheritedConfigurationForSubField,
             $subData
@@ -431,6 +429,13 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                 $this->extractDataStorageMirrorWithInheritableFields($child, $parentArrayPosition[$childName]);
             }
         }
+    }
+
+    protected function convertXmlToArray(string $xml): ?array
+    {
+        /** @var string|array $converted */
+        $converted = GeneralUtility::xml2array($xml);
+        return is_string($converted) ? null : $converted;
     }
 
     /**
