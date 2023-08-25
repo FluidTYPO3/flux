@@ -120,7 +120,7 @@ class FlexFormBuilder
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.0', '<=')) {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '<')) {
             $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
         }
 
