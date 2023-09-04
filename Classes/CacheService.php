@@ -60,9 +60,13 @@ class CacheService implements SingletonInterface
 
     public function remove(string ...$identifyingValues): void
     {
-        $cacheKey = $this->createCacheIdFromValues($identifyingValues);
-        $this->transientCache->remove($cacheKey);
-        $this->persistentCache->remove($cacheKey);
+        try {
+            $cacheKey = $this->createCacheIdFromValues($identifyingValues);
+            $this->transientCache->remove($cacheKey);
+            $this->persistentCache->remove($cacheKey);
+        } catch (NoSuchCacheException | TableNotFoundException $exception) {
+            // Suppressed: operation without cache is allowed.
+        }
     }
 
     protected function createCacheIdFromValues(array $identifyingValues): string
