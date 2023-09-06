@@ -549,11 +549,14 @@ abstract class AbstractFluxController extends ActionController
         }
         $record = $contentObject->data;
         if ($record['_LOCALIZED_UID'] ?? false) {
-            $record = $this->recordService->getSingle(
-                (string) $this->getFluxTableName(),
-                '*',
-                $record['_LOCALIZED_UID']
-            ) ?? $record;
+            $record = array_merge(
+                $record,
+                $this->recordService->getSingle(
+                    (string) $this->getFluxTableName(),
+                    '*',
+                    $record['_LOCALIZED_UID']
+                ) ?? $record
+            );
         }
         return $record;
     }
