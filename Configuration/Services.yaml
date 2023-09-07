@@ -46,6 +46,10 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion:
     public: true
+  FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager:
+    public: true
+  FluidTYPO3\Flux\Integration\Overrides\LegacyChimeraConfigurationManager:
+    public: true
   FluidTYPO3\Flux\Integration\BackendLayoutRenderer:
     public: true
     autowire: false

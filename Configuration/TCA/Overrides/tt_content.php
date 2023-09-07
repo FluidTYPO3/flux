@@ -60,6 +60,8 @@
          * I judge this risk to be acceptably low enough that this stupid - but very effective - fallback-style loading
          * of Flux's content types when in CLI mode is acceptable.
          */
-        \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator::class)->processData();
+        /** @var \FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator $applicator */
+        $applicator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator::class);
+        $applicator->processData();
     }
 })();
