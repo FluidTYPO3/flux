@@ -42,7 +42,9 @@ class ModifyPageLayoutContentEventListener
         ]);
 
         [, $previewContent, ] = $this->pageProvider->getPreview($row);
-        $event->setHeaderContent($previewContent);
+        if (!empty($previewContent)) {
+            $event->setHeaderContent($previewContent);
+        }
     }
 
     /**
