@@ -36,6 +36,7 @@ use TYPO3\CMS\Extbase\Mvc\Response;
 use TYPO3\CMS\Extbase\Mvc\ResponseInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 use TYPO3Fluid\Fluid\View\ViewInterface;
@@ -145,7 +146,7 @@ abstract class AbstractFluxController extends ActionController
         if (is_array($this->data['settings'] ?? null)) {
             // a "settings." array is defined in the flexform configuration - extract it, use as "settings" in template
             // as well as the internal $this->settings array as per expected Extbase behavior.
-            $this->settings = RecursiveArrayUtility::merge($this->settings, $this->data['settings']);
+            $this->settings = RecursiveArrayUtility::merge($this->settings, $this->data['settings'] ?? []);
         }
         if ($this->settings['useTypoScript'] ?? false) {
             // an override shared by all Flux enabled controllers: setting plugin.tx_EXTKEY.settings.useTypoScript = 1
@@ -181,7 +182,11 @@ abstract class AbstractFluxController extends ActionController
 
     protected function initializeViewVariables(ViewInterface $view): void
     {
+        $contentObject = $this->getContentObject();
         $row = $this->getRecord();
+
+        $view->assign('contentObject', $contentObject);
+        $view->assign('data', $contentObject instanceof ContentObjectRenderer ? $contentObject->data : null);
         if ($this->provider instanceof FluidProviderInterface) {
             $view->assignMultiple($this->provider->getTemplateVariables($row));
         }
@@ -189,6 +194,7 @@ abstract class AbstractFluxController extends ActionController
         $view->assign('settings', $this->settings);
         $view->assign('provider', $this->provider);
         $view->assign('record', $row);
+
         HookHandler::trigger(
             HookHandler::CONTROLLER_VARIABLES_ASSIGNED,
             [
@@ -196,6 +202,7 @@ abstract class AbstractFluxController extends ActionController
                 'record' => $row,
                 'settings' => $this->settings,
                 'provider' => $this->provider,
+                'contentObject' => $contentObject,
             ]
         );
     }
@@ -540,7 +547,7 @@ abstract class AbstractFluxController extends ActionController
 
     public function getRecord(): array
     {
-        $contentObject = $this->configurationManager->getContentObject();
+        $contentObject = $this->getContentObject();
         if ($contentObject === null) {
             throw new \UnexpectedValueException(
                 "Record of table " . $this->getFluxTableName() . ' not found',
@@ -559,6 +566,18 @@ abstract class AbstractFluxController extends ActionController
             );
         }
         return $record;
+    }
+
+    protected function getContentObject(): ?ContentObjectRenderer
+    {
+        /** @var ContentObjectRenderer|null $renderer */
+        $renderer = $this->getServerRequest()->getAttribute(
+            'currentContentObject',
+            method_exists($this->configurationManager, 'getContentObject') ?
+                $this->configurationManager->getContentObject()
+                : null
+        );
+        return $renderer;
     }
 
     protected function getServerRequest(): ServerRequestInterface

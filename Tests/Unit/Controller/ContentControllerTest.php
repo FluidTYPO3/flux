@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  */
 
 use FluidTYPO3\Flux\Controller\ContentController;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ContentControllerTest extends AbstractFluxControllerTestCase
 {
@@ -22,8 +23,16 @@ class ContentControllerTest extends AbstractFluxControllerTestCase
         $this->performDummyRegistration();
         $controllerClassName = ContentController::class;
         /** @var ContentController $instance */
-        $instance = new $controllerClassName(...$this->getConstructorArguments());
+        $instance = $this->getMockBuilder($controllerClassName)
+            ->onlyMethods(['getContentObject', 'getServerRequest'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->getMock();
         $this->setInaccessiblePropertyValue($instance, 'extensionName', 'Flux');
         return $instance;
+    }
+
+    public function testCanGetRecord(): void
+    {
+        parent::testCanGetRecord();
     }
 }
