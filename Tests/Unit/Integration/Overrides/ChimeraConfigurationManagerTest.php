@@ -18,6 +18,7 @@ use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager;
 use TYPO3\CMS\Extbase\Service\ExtensionService;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ChimeraConfigurationManagerTest extends AbstractTestCase
 {
@@ -130,5 +131,19 @@ class ChimeraConfigurationManagerTest extends AbstractTestCase
 
         $subject = new ChimeraConfigurationManager($this->container);
         $subject->setConfiguration(['foo']);
+    }
+
+    public function testSetContentObjectDelegates(): void
+    {
+        $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass();
+        $GLOBALS['TYPO3_REQUEST']->method('getAttribute')
+            ->with('applicationType')
+            ->willReturn(SystemEnvironmentBuilder::REQUESTTYPE_FE);
+
+        $contentObject = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->getMock();
+        $this->frontendConfigurationManager->expects(self::exactly(2))->method('setContentObject')->with($contentObject);
+
+        $subject = new ChimeraConfigurationManager($this->container);
+        $subject->setContentObject($contentObject);
     }
 }

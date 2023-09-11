@@ -10,6 +10,7 @@ use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
 use TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 abstract class AbstractChimeraConfigurationManager extends ConfigurationManager
 {
@@ -48,6 +49,12 @@ abstract class AbstractChimeraConfigurationManager extends ConfigurationManager
     {
         parent::setConfiguration($configuration);
         $this->resolveConfigurationManager()->setConfiguration($configuration);
+    }
+
+    public function setContentObject(ContentObjectRenderer $contentObject): void
+    {
+        parent::setContentObject($contentObject);
+        $this->resolveConfigurationManager()->setContentObject($contentObject);
     }
 
     /**
