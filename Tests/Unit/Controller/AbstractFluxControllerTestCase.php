@@ -179,7 +179,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         return $this->getMockBuilder($controllerClassName)
-            ->setMethods(['dummy'])
+            ->onlyMethods(['getContentObject', 'getServerRequest'])
             ->setConstructorArgs($this->getConstructorArguments())
             ->getMock();
     }
@@ -205,14 +205,14 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
     public function testCanGetRecord(): void
     {
-        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
             ->disableOriginalConstructor()
             ->getMock();
         $contentObjectRenderer->data = [];
-        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
-        $configurationManager->method('getContentObject')->willReturn($contentObjectRenderer);
-        $instance->injectConfigurationManager($configurationManager);
+
+        $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
+        $instance->method('getContentObject')->willReturn($contentObjectRenderer);
+
         $record = $this->callInaccessibleMethod($instance, 'getRecord');
         $this->assertIsArray($record);
     }
@@ -642,9 +642,15 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $variables = ['foo' => 'bar'];
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $instance = $this->getMockBuilder($controllerClassName)
-            ->onlyMethods(['getRecord'])
+            ->onlyMethods(['getRecord', 'getServerRequest'])
             ->setConstructorArgs($this->getConstructorArguments())
             ->getMock();
+        $instance->method('getServerRequest')->willReturn(
+            $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
+        );
+        $instance->injectConfigurationManager(
+            $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass()
+        );
         $instance->expects($this->once())->method('getRecord')->will($this->returnValue($row));
         $view = $this->getMockBuilder(TemplateView::class)
             ->onlyMethods(['assign', 'assignMultiple'])
@@ -670,13 +676,14 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testCanUseTypoScriptSettingsInsteadOfFlexFormDataWhenRequested(): void
     {
         $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
+        $instance->method('getServerRequest')->willReturn(
+            $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
+        );
         $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
             ->disableOriginalConstructor()
             ->getMock();
         $contentObjectRenderer->data = [];
-        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
-        $configurationManager->method('getContentObject')->willReturn($contentObjectRenderer);
-        $instance->injectConfigurationManager($configurationManager);
+        $instance->method('getContentObject')->willReturn($contentObjectRenderer);
         $provider = $this->getMockBuilder(Provider::class)
             ->onlyMethods(['getFlexFormValues'])
             ->disableOriginalConstructor()
@@ -703,9 +710,10 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->setConstructorArgs($this->getConstructorArguments())
             ->getMock();
         $contentObjectRenderer->data = [];
-        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
-        $configurationManager->method('getContentObject')->willReturn($contentObjectRenderer);
-        $instance->injectConfigurationManager($configurationManager);
+        $instance->method('getContentObject')->willReturn($contentObjectRenderer);
+        $instance->injectConfigurationManager(
+            $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass()
+        );
 
         $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn(
             $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
@@ -734,14 +742,11 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
     public function testGetRecordThrowsExceptionIfContentObjectIsEmpty(): void
     {
-        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
-            ->getMockForAbstractClass();
-        $configurationManager->method('getContentObject')->willReturn(null);
         $subject = $this->getMockBuilder(AbstractFluxController::class)
-            ->setMethods(['dummy'])
+            ->onlyMethods(['getContentObject'])
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
-        $subject->injectConfigurationManager($configurationManager);
+        $subject->method('getContentObject')->willReturn(null);
 
         self::expectExceptionCode(1666538343);
         $subject->getRecord();
