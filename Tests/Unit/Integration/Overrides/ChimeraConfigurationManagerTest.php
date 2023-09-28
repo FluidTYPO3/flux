@@ -141,7 +141,9 @@ class ChimeraConfigurationManagerTest extends AbstractTestCase
             ->willReturn(SystemEnvironmentBuilder::REQUESTTYPE_FE);
 
         $contentObject = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->getMock();
-        $this->frontendConfigurationManager->expects(self::exactly(2))->method('setContentObject')->with($contentObject);
+        $this->frontendConfigurationManager->expects(self::exactly(2))
+            ->method('setContentObject')
+            ->with($contentObject);
 
         $subject = new ChimeraConfigurationManager($this->container);
         $subject->setContentObject($contentObject);
