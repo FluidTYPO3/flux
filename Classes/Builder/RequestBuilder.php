@@ -14,9 +14,11 @@ use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
 use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
@@ -81,11 +83,33 @@ class RequestBuilder implements SingletonInterface
 
     public function getServerRequest(): ServerRequest
     {
-        /** @var ServerRequest $request */
-        $request = $GLOBALS['TYPO3_REQUEST'] ?? (new ServerRequest())->withAttribute(
-            'applicationType',
-            defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
-        )->withQueryParams($_GET);
+        if (isset($GLOBALS['TYPO3_REQUEST'])) {
+            /** @var ServerRequest $request */
+            $request = $GLOBALS['TYPO3_REQUEST'];
+        } else {
+            $serverParams = $_SERVER;
+            $httpHost = GeneralUtility::getIndpEnv('HTTP_HOST');
+            if (empty($httpHost)) {
+                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                foreach ($siteFinder->getAllSites() as $site) {
+                    if (!empty($site->getBase()->getHost())) {
+                        $httpHost = $site->getBase()->getHost();
+                    }
+                }
+                // Set dummy domain if $_SERVER['HTTP_HOST'] is not set (on the command line) and no site contains
+                // a base url with the full domain; this is only needed for TYPO3 10 to prevent an exception in
+                // \TYPO3\CMS\Core\Http\NormalizedParams::determineSiteUrl
+                if (empty($httpHost) && version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11', '<')) {
+                    $httpHost = 'example.local';
+                }
+                $serverParams['HTTP_HOST'] = $httpHost;
+            }
+
+            $request = (new ServerRequest(null, null, 'php://input', [], $serverParams))->withAttribute(
+                'applicationType',
+                defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
+            )->withQueryParams($_GET);
+        }
 
         if (!$request->getAttribute('normalizedParams')) {
             $request = $request->withAttribute('normalizedParams', NormalizedParams::createFromRequest($request));
