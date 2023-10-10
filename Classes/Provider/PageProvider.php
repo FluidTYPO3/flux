@@ -84,14 +84,25 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             return null;
         }
 
-        $pageTemplateConfiguration = $this->pageService->getPageTemplateConfiguration($row['uid']);
-
         // If field is main field and "this page" has no selection or field is sub field and "subpages" has no selection
         if (($forField === self::FIELD_NAME_MAIN && empty($row[self::FIELD_ACTION_MAIN]))
             || ($forField === self::FIELD_NAME_SUB && empty($row[self::FIELD_ACTION_SUB]))
         ) {
             // The page inherits page layout from parent(s). Read the root line for the first page that defines a value
             // in the sub-action field, then use that record and resolve the Form used in the sub-configuration field.
+            // If the row is a new page, use the inherited form from the parent page.
+            $pageUid = $row['uid'] ?? 0;
+            $pageUidIsParent = false;
+            if (is_string($pageUid) && substr($pageUid, 0, 3) === 'NEW') {
+                $pageUid = $row['pid'] ?? 0;
+                $pageUidIsParent = true;
+            }
+
+            $pageTemplateConfiguration = $this->pageService->getPageTemplateConfiguration(
+                (integer) $pageUid,
+                $pageUidIsParent
+            );
+
             $form = parent::getForm($pageTemplateConfiguration['record_sub'] ?? $row, self::FIELD_NAME_SUB);
         } else {
             $form = parent::getForm($row, $forField);

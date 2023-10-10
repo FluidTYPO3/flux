@@ -59,7 +59,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
      *
      * @api
      */
-    public function getPageTemplateConfiguration(int $pageUid): ?array
+    public function getPageTemplateConfiguration(int $pageUid, bool $pageUidIsParentUid = false): ?array
     {
         $pageUid = (integer) $pageUid;
         if (!$pageUid) {
@@ -81,12 +81,13 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         // Initialize with possibly-empty values and loop root line
         // to fill values as they are detected.
         foreach ($rootLine as $page) {
+            $rootLinePageUid = (integer) ($page['uid'] ?? 0);
             $mainFieldValue = $page[PageProvider::FIELD_ACTION_MAIN] ?? null;
             $subFieldValue = $page[PageProvider::FIELD_ACTION_SUB] ?? null;
             $resolvedMainTemplateIdentity = is_array($mainFieldValue) ? $mainFieldValue[0] : $mainFieldValue;
             $resolvedSubTemplateIdentity = is_array($subFieldValue) ? $subFieldValue[0] : $subFieldValue;
             $containsSubDefinition = (strpos($subFieldValue ?? '', '->') !== false);
-            $isCandidate = ((integer) ($page['uid'] ?? 0) !== $pageUid);
+            $isCandidate = $pageUidIsParentUid ? true : $rootLinePageUid !== $pageUid;
             if ($containsSubDefinition && $isCandidate) {
                 $resolvedSubTemplateIdentity = $subFieldValue;
                 $recordDefiningSub = $page;
