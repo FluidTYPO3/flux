@@ -548,4 +548,66 @@ DATA;
         $subject->method('getControllerActionReferenceFromRecord')->willReturn('');
         self::assertSame('default', $subject->getControllerActionFromRecord(['uid' => 123]));
     }
+
+    /**
+     * @dataProvider getFormTestValues
+     */
+    public function testGetForm(array $row, ?string $forField, ?int $expectedLookupPageUid, ?Form $expectedReturn): void
+    {
+        $pageService = $this->getMockBuilder(PageService::class)
+            ->onlyMethods(['getPageTemplateConfiguration'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subject = $this->getMockBuilder(PageProvider::class)
+            ->onlyMethods(['extractConfiguration', 'createCustomFormInstance'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->setInaccessiblePropertyValue($subject, 'pageService', $pageService);
+
+        if ($row['deleted'] ?? false) {
+            $pageService->expects(self::never())->method('getPageTemplateConfiguration');
+            $subject->expects(self::never())->method('extractConfiguration');
+        } elseif ($expectedLookupPageUid === null) {
+            $pageService->expects(self::never())->method('getPageTemplateConfiguration');
+            $subject->expects(self::once())->method('extractConfiguration')->willReturn($expectedReturn);
+        } else {
+            $fromParent = ['record_sub' => ['uid' => $expectedLookupPageUid]];
+            $pageService->expects(self::once())
+                ->method('getPageTemplateConfiguration')
+                ->with($expectedLookupPageUid)
+                ->willReturn($fromParent);
+            $subject->expects(self::once())
+                ->method('extractConfiguration')
+                ->with($fromParent['record_sub'])
+                ->willReturn($expectedReturn);
+        }
+        $output = $subject->getForm($row, $forField);
+        self::assertSame($expectedReturn, $output);
+    }
+
+    public function getFormTestValues(): array
+    {
+        $dummyForm = Form::create();
+        return [
+            'deleted page returns null early' => [['deleted' => 1], null, null, null],
+            'existing record uses inherited configuration' => [
+                ['uid' => 123],
+                PageProvider::FIELD_NAME_MAIN,
+                123,
+                $dummyForm
+            ],
+            'existing record and unspecified field does not look up inherited configuration' => [
+                ['uid' => 123],
+                null,
+                null,
+                $dummyForm
+            ],
+            'new record uses parent page form' => [
+                ['uid' => 'NEW123', 'pid' => 33],
+                PageProvider::FIELD_NAME_MAIN,
+                33,
+                $dummyForm
+            ],
+        ];
+    }
 }

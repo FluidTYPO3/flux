@@ -64,7 +64,7 @@ class TextTest extends InputTest
             'eval' => 'trim',
             'placeholder' => null,
             'enableRichtext' => true,
-            'softref' => 'typolink_tag,images,email[subst],url',
+            'softref' => 'typolink_tag,email[subst],url',
             'richtextConfiguration' => 'default',
             'renderType' => 'rte',
             'format' => '',
