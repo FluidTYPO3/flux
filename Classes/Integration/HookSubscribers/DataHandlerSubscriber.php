@@ -120,13 +120,17 @@ class DataHandlerSubscriber
             // of parent, rather, parent was pasted somewhere else).
             // If language of child record is different from resolved parent (copyToLanguage occurred), resolve the
             // right parent for the language and update the column position accordingly.
+            $recordUid = (integer) ($record['uid'] ?? $id);
             $originalParentUid = ColumnNumberUtility::calculateParentUid($fieldArray['colPos']);
             $originalParent = $this->getSingleRecordWithoutRestrictions($table, $originalParentUid, 'sys_language_uid');
-            if ($originalParent !== null && $originalParent['sys_language_uid'] !== $fieldArray['sys_language_uid']) {
+            $currentRecordLanguageUid = $fieldArray['sys_language_uid']
+                ?? $this->getSingleRecordWithoutRestrictions($table, $recordUid, 'sys_language_uid')['sys_language_uid']
+                ?? 0;
+            if ($originalParent !== null && $originalParent['sys_language_uid'] !== $currentRecordLanguageUid) {
                 // copyToLanguage case. Resolve the most recent translated version of the parent record in language of
                 // child record, and calculate the new column position number based on it.
                 $newParentRecord = $this->getTranslatedVersionOfParentInLanguageOnPage(
-                    (int) $fieldArray['sys_language_uid'],
+                    (int) $currentRecordLanguageUid,
                     (int) $fieldArray['pid'],
                     $originalParentUid
                 );

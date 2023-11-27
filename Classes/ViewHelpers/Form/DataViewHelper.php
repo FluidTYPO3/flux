@@ -151,7 +151,7 @@ class DataViewHelper extends AbstractViewHelper
         string $field
     ): array {
         if (0 === count($providers)) {
-            $dataArray = static::getFormDataTransformer()->convertFlexFormContentToArray($record[$field]);
+            $dataArray = static::getFormDataTransformer()->convertFlexFormContentToArray($record[$field] ?? '');
         } else {
             $dataArray = [];
             /** @var ProviderInterface $provider */
