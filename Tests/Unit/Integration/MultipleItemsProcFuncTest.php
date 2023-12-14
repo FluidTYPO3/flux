@@ -30,18 +30,28 @@ class MultipleItemsProcFuncTest extends AbstractTestCase
         );
     }
 
-    public function testExecutesFunction(): void
+    public function testExecutesFunctionWithFormDataProvider(): void
     {
+        static::$executed = false;
         $formDataProviderInterface = $this->getMockBuilder(FormDataProviderInterface::class)->getMockForAbstractClass();
         MultipleItemsProcFunc::register('table', 'field', static::class . '->dummyFunction');
         $parameters = ['table' => 'table', 'field' => 'field'];
         (new MultipleItemsProcFunc())->execute($parameters, $formDataProviderInterface);
 
-        if (class_exists('ItemProcessingService')) {
-            $itemProcessingServiceProvider = $this->getMockBuilder(ItemProcessingService::class)->getMockForAbstractClass();
-            (new MultipleItemsProcFunc())->execute($parameters, $itemProcessingServiceProvider);
-        }
+        self::assertTrue(static::$executed);
+    }
 
+    public function testExecutesFunctionWithItemProcessingService(): void
+    {
+        static::$executed = false;
+        if (!class_exists(ItemProcessingService::class)) {
+            $this->markTestSkipped('Skippped, class ' . ItemProcessingService::class . ' does not exist');
+        }
+        MultipleItemsProcFunc::register('table', 'field', static::class . '->dummyFunction');
+        $parameters = ['table' => 'table', 'field' => 'field'];
+        $itemProcessingServiceProvider = $this->getMockBuilder(ItemProcessingService::class)->getMockForAbstractClass();
+        (new MultipleItemsProcFunc())->execute($parameters, $itemProcessingServiceProvider
+                                               
         self::assertTrue(static::$executed);
     }
 
