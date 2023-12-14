@@ -34,9 +34,7 @@ class MultipleItemsProcFunc
     }
 
     /**
-     * @param array $parameters
      * @param ItemProcessingService|FormDataProviderInterface $formDataProvider
-     * @return void
      */
     public function execute(array &$parameters, $formDataProvider): void
     {
