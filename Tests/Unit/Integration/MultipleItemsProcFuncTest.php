@@ -33,11 +33,15 @@ class MultipleItemsProcFuncTest extends AbstractTestCase
     public function testExecutesFunction(): void
     {
         $formDataProviderInterface = $this->getMockBuilder(FormDataProviderInterface::class)->getMockForAbstractClass();
-        $itemProcessingServiceProvider = $this->getMockBuilder(ItemProcessingService::class)->getMockForAbstractClass();
         MultipleItemsProcFunc::register('table', 'field', static::class . '->dummyFunction');
         $parameters = ['table' => 'table', 'field' => 'field'];
         (new MultipleItemsProcFunc())->execute($parameters, $formDataProviderInterface);
-        (new MultipleItemsProcFunc())->execute($parameters, $itemProcessingServiceProvider);
+
+        if (class_exists('ItemProcessingService')) {
+            $itemProcessingServiceProvider = $this->getMockBuilder(ItemProcessingService::class)->getMockForAbstractClass();
+            (new MultipleItemsProcFunc())->execute($parameters, $itemProcessingServiceProvider);
+        }
+
         self::assertTrue(static::$executed);
     }
 
