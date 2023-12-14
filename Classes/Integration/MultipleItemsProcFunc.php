@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Integration;
 
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\DataHandling\ItemProcessingService;
 
 class MultipleItemsProcFunc
 {
@@ -32,7 +33,7 @@ class MultipleItemsProcFunc
         $GLOBALS['TCA'][$table]['columns'][$field]['config']['itemsProcFunc'] = $newFunction;
     }
 
-    public function execute(array &$parameters, FormDataProviderInterface $formDataProvider): void
+    public function execute(array &$parameters, ItemProcessingService | FormDataProviderInterface $formDataProvider): void
     {
         $table = $parameters['table'];
         $field = $parameters['field'];
