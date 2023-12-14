@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Variable \\$EM_CONF might not be defined\\.$#"
+            count: 1
+            path: Classes/Backend/PageLayoutDataProvider.php
+        -
             message: "#^Call to an undefined (static )?method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\(Frontend|Backend)?ConfigurationManager\\:\\:setRequest\\(\\)\\.$#"
             count: 3
             path: Classes/Integration/Overrides/AbstractChimeraConfigurationManager.php
