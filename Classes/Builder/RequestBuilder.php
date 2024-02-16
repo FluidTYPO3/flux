@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Builder;
  */
 
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -79,9 +80,9 @@ class RequestBuilder implements SingletonInterface
         return $request;
     }
 
-    public function getServerRequest(): ServerRequest
+    public function getServerRequest(): ServerRequestInterface
     {
-        /** @var ServerRequest $request */
+        /** @var ServerRequestInterface $request */
         $request = $GLOBALS['TYPO3_REQUEST'] ?? (new ServerRequest())->withAttribute(
             'applicationType',
             defined('TYPO3_REQUESTTYPE') ? constant('TYPO3_REQUESTTYPE') : SystemEnvironmentBuilder::REQUESTTYPE_FE
