@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Integration\Configuration;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use FluidTYPO3\Flux\Builder\ContentTypeBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
@@ -179,7 +179,7 @@ class SpooledConfigurationApplicator
 
             try {
                 $this->contentTypeBuilder->registerContentType($providerExtensionName, $contentType, $provider);
-            } catch (PageNotFoundException|DBALException $error) {
+            } catch (PageNotFoundException|TableNotFoundException $error) {
                 // Suppressed: Flux bootstrap does not care if a page can be resolved or not.
             } catch (Exception $error) {
                 if (!$applicationContext->isProduction()) {
