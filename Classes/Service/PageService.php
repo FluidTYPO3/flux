@@ -229,8 +229,6 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         $typoScript = $this->getPageConfiguration();
         $output = [];
 
-        /** @var TemplateView $view */
-        $view = GeneralUtility::makeInstance(TemplateView::class);
         foreach ((array) $typoScript as $extensionName => $group) {
             if (!($group['enable'] ?? true)) {
                 continue;
@@ -251,6 +249,8 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                     continue;
                 }
 
+                /** @var TemplateView $view */
+                $view = GeneralUtility::makeInstance(TemplateView::class);
                 $view->getRenderingContext()->setTemplatePaths($templatePaths);
                 $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
                     FormViewHelper::SCOPE,

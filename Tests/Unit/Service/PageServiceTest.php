@@ -121,6 +121,8 @@ class PageServiceTest extends AbstractTestCase
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
         $instance->method('getPageConfiguration')->willReturn($typoScript);
 
+        // There are exactly 2 page template fixtures. We need to return exactly two mock instances of TemplateView.
+        GeneralUtility::addInstance(TemplateView::class, $templateView);
         GeneralUtility::addInstance(TemplateView::class, $templateView);
 
         $result = $instance->getAvailablePageTemplateFiles();
