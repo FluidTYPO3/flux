@@ -234,6 +234,17 @@ class ContentTypeBuilder
             'CType',
             $providerExtensionName
         );
+
+        /** @var \Countable $fields */
+        $fields = $form->getFields();
+        if (count($fields) > 0) {
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
+                'tt_content',
+                'pi_flexform',
+                $provider->getContentObjectType(),
+                'after:header'
+            );
+        }
     }
 
     protected function addIcon(Form $form, string $contentType): string

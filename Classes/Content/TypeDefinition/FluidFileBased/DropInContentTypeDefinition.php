@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -168,6 +169,9 @@ class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
         if (strpos($filename, '://') !== false) {
             return $filename;
         }
-        return realpath($filename) ?: $filename;
+        if (strpos($filename, '/') === 0) {
+            return $filename;
+        }
+        return Environment::getPublicPath() . '/' . $filename;
     }
 }
