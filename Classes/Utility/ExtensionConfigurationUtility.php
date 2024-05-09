@@ -9,13 +9,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExtensionConfigurationUtility
 {
-    public const OPTION_DEBUG_MODE = 'debugMode';
-    public const OPTION_DOKTYPES = 'doktypes';
-    public const OPTION_HANDLE_ERRORS = 'handleErrors';
-    public const OPTION_AUTOLOAD = 'autoload';
-    public const OPTION_PLUG_AND_PLAY = 'plugAndPlay';
-    public const OPTION_PLUG_AND_PLAY_DIRECTORY = 'plugAndPlayDirectory';
-    public const OPTION_PAGE_INTEGRATION = 'pageIntegration';
     public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
     protected static array $defaults = [
@@ -27,6 +20,7 @@ class ExtensionConfigurationUtility
         ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY => DropInContentTypeDefinition::DESIGN_DIRECTORY,
         ExtensionOption::OPTION_PAGE_INTEGRATION => true,
         ExtensionOption::OPTION_FLEXFORM_TO_IRRE => false,
+        ExtensionOption::OPTION_INHERITANCE_MODE => 'restricted',
     ];
 
     public static function initialize(?string $extensionConfiguration): void

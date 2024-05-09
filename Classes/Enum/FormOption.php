@@ -15,4 +15,5 @@ class FormOption
     public const RECORD_TABLE = 'recordTable';
     public const TRANSFORM = 'transform';
     public const HIDE_NATIVE_FIELDS = 'hideNativeFields';
+    public const INHERITANCE_MODE = 'inheritanceMode';
 }
