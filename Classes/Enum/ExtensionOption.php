@@ -12,4 +12,5 @@ class ExtensionOption
     public const OPTION_PLUG_AND_PLAY_DIRECTORY = 'plugAndPlayDirectory';
     public const OPTION_PAGE_INTEGRATION = 'pageIntegration';
     public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
+    public const OPTION_INHERITANCE_MODE = 'inheritanceMode';
 }

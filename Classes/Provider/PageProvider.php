@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\Provider;
  */
 
 use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
@@ -17,6 +19,7 @@ use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -456,12 +459,33 @@ class PageProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getInheritanceTree(array $row): array
     {
+        $previousTemplate = $row[self::FIELD_ACTION_MAIN] ?? null;
+        $configuredInheritance = ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_INHERITANCE_MODE);
+
+        $form = $this->getForm($row);
+
+        $defaultInheritanceMode = ($form ? $form->getOption(FormOption::INHERITANCE_MODE) : $configuredInheritance)
+            ?? $configuredInheritance;
+
         $records = $this->loadRecordTreeFromDatabase($row);
         foreach ($records as $index => $record) {
-            $hasSubAction = false === empty($record[self::FIELD_ACTION_SUB]);
-            if ($hasSubAction) {
+            $childForm = $this->getForm($record);
+            $subAction = $record[self::FIELD_ACTION_SUB] ?? null;
+            $hasSubAction = !empty($subAction);
+
+            if ($childForm) {
+                $inheritanceMode = $childForm->getOption(FormOption::INHERITANCE_MODE) ?? $defaultInheritanceMode;
+            } else {
+                $inheritanceMode = $defaultInheritanceMode;
+            }
+
+            if ($inheritanceMode === 'restricted'
+                && $hasSubAction
+                && ($subAction ?? $previousTemplate) !== $previousTemplate
+            ) {
                 return array_slice($records, 0, $index + 1);
             }
+            $previousTemplate = $subAction ?? $previousTemplate;
         }
         return $records;
     }
@@ -473,7 +497,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         $uid = $row['uid'] ?? '';
         $cacheKey = $tableName . $tableFieldName . $uid;
         if (false === isset(self::$cache[$cacheKey])) {
-            $tree = $this->getInheritanceTree($row);
+            $tree = array_reverse($this->getInheritanceTree($row), true);
             $data = [];
             foreach ($tree as $branch) {
                 $values = $this->getFlexFormValuesSingle($branch, self::FIELD_NAME_SUB);
@@ -511,18 +535,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             unset($values[$name]);
         }
         return $values;
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function getParentFieldValue(array $row)
-    {
-        $parentFieldName = $this->getParentFieldName($row);
-        if (null !== $parentFieldName && false === isset($row[$parentFieldName])) {
-            $row = $this->recordService->getSingle((string) $this->getTableName($row), $parentFieldName, $row['uid']);
-        }
-        return $row[$parentFieldName] ?? null;
     }
 
     protected function loadRecordTreeFromDatabase(array $record): array
