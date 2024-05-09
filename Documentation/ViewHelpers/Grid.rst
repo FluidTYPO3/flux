@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/GridViewHelper.php
+
+:edit-on-github-link: GridViewHelper.php
+:navigation-title: grid
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-grid:
 
-====
-grid
-====
-
+=============================
+Grid ViewHelper `<flux:grid>`
+=============================
 
 Grid container ViewHelper.
 
@@ -35,64 +39,70 @@ Rendering
     <v:content.render column="0" />
     <v:content.render column="1" />
 
+.. _fluidtypo3-flux-grid_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `GridViewHelper.php (GitHub) <fluidtypo3/flux/development/GridViewHelper.php>`__.
+
+.. _fluidtypo3-flux-grid_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:grid>`:
 
-.. _grid_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-grid-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-grid-name
+    :type: string
+    :Default: 'grid'
+    :required: false
 
-:aspect:`Default`
-   'grid'
+    Optional name of this grid - defaults to "grid"
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional name of this grid - defaults to "grid"
-
-.. _grid_label:
+.. _fluidtypo3-flux-grid-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-grid-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional label for this grid - defaults to an LLL value (reported if it is missing)
+    Optional label for this grid - defaults to an LLL value (reported if it is missing)
 
-.. _grid_variables:
+.. _fluidtypo3-flux-grid-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-grid-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
-
-.. _grid_extensionname:
+.. _fluidtypo3-flux-grid-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-grid-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.

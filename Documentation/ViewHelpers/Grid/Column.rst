@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Grid/ColumnViewHelper.php
+
+:edit-on-github-link: Grid/ColumnViewHelper.php
+:navigation-title: grid.column
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-grid-column:
 
-===========
-grid.column
-===========
-
+===========================================
+Grid.column ViewHelper `<flux:grid.column>`
+===========================================
 
 Flexform Grid Column ViewHelper
 
@@ -37,122 +41,120 @@ It is also possible to limit the allowed fluid content elements:
         <flux:form.variable name="allowedContentTypes" value="extkey_vehicledetailssectionusedcarseal"/>
     </flux:grid.column>
 
+.. _fluidtypo3-flux-grid-column_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `ColumnViewHelper.php (GitHub) <fluidtypo3/flux/development/Grid/ColumnViewHelper.php>`__.
+
+.. _fluidtypo3-flux-grid-column_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:grid.column>`:
 
-.. _grid.column_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-grid-column-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-grid-column-name
+    :type: string
+    :Default: 'column'
+    :required: false
 
-:aspect:`Default`
-   'column'
+    Identifies your column and is used to fetch translations from XLF for example.
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Identifies your column and is used to fetch translations from XLF for example.
-
-.. _grid.column_label:
+.. _fluidtypo3-flux-grid-column-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-grid-column-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional column label, will be shown as column header.
+    Optional column label, will be shown as column header.
 
-.. _grid.column_colpos:
+.. _fluidtypo3-flux-grid-column-colpos_argument:
 
 colPos
 ------
 
-:aspect:`DataType`
-   integer
+..  confval:: colPos
+    :name: fluidtypo3-flux-grid-column-colpos
+    :type: integer
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Column number - between 0 and 99, should be unique.
+    Column number - between 0 and 99, should be unique.
 
-.. _grid.column_colspan:
+.. _fluidtypo3-flux-grid-column-colspan_argument:
 
 colspan
 -------
 
-:aspect:`DataType`
-   integer
+..  confval:: colspan
+    :name: fluidtypo3-flux-grid-column-colspan
+    :type: integer
+    :Default: 1
+    :required: false
 
-:aspect:`Default`
-   1
+    Column span
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Column span
-
-.. _grid.column_rowspan:
+.. _fluidtypo3-flux-grid-column-rowspan_argument:
 
 rowspan
 -------
 
-:aspect:`DataType`
-   integer
+..  confval:: rowspan
+    :name: fluidtypo3-flux-grid-column-rowspan
+    :type: integer
+    :Default: 1
+    :required: false
 
-:aspect:`Default`
-   1
+    Row span
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Row span
-
-.. _grid.column_style:
+.. _fluidtypo3-flux-grid-column-style_argument:
 
 style
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: style
+    :name: fluidtypo3-flux-grid-column-style
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Inline style to add when rendering the column
+    Inline style to add when rendering the column
 
-.. _grid.column_variables:
+.. _fluidtypo3-flux-grid-column-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-grid-column-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template. Can also be set and/or overridden in tag content using `<flux:form.variable />`
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template. Can also be set and/or overridden in tag content using `<flux:form.variable />`
-
-.. _grid.column_extensionname:
+.. _fluidtypo3-flux-grid-column-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-grid-column-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.

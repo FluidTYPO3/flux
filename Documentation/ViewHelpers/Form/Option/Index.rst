@@ -1,3 +1,4 @@
+..  This reStructured text file has been automatically generated, do not change.
 .. include:: /Includes.rst.txt
 
 ======
@@ -5,7 +6,7 @@ option
 ======
 
 
-* 4 ViewHelpers documented
+* 5 ViewHelpers documented
 
 .. toctree::
    :titlesonly:
@@ -13,6 +14,7 @@ option
 
    Group
    Icon
+   InheritanceMode
    Sorting
    Static
 

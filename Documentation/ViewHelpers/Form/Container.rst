@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Form/ContainerViewHelper.php
+
+:edit-on-github-link: Form/ContainerViewHelper.php
+:navigation-title: form.container
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-container:
 
-==============
-form.container
-==============
-
+=================================================
+Form.container ViewHelper `<flux:form.container>`
+=================================================
 
 FlexForm Field Container element
 ================================
@@ -31,61 +35,69 @@ Accessing values of grouped elements
 
     Name: {settings.name.firstname} {settings.name.lastname}
 
+.. _fluidtypo3-flux-form-container_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `ContainerViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/ContainerViewHelper.php>`__.
+
+.. _fluidtypo3-flux-form-container_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:form.container>`:
 
-.. _form.container_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-form-container-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-form-container-name
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of the attribute, FlexForm XML-valid tag name string
+    Name of the attribute, FlexForm XML-valid tag name string
 
-.. _form.container_label:
+.. _fluidtypo3-flux-form-container-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-form-container-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
+    Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
 
-.. _form.container_variables:
+.. _fluidtypo3-flux-form-container-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-form-container-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
-
-.. _form.container_extensionname:
+.. _fluidtypo3-flux-form-container-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-form-container-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.

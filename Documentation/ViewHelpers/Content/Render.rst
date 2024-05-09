@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Content/RenderViewHelper.php
+
+:edit-on-github-link: Content/RenderViewHelper.php
+:navigation-title: content.render
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-content-render:
 
-==============
-content.render
-==============
-
+=================================================
+Content.render ViewHelper `<flux:content.render>`
+=================================================
 
 Renders all child content of a record based on the area name.
 
@@ -31,132 +35,131 @@ Example: Render all child elements of one grid column
      </div>
     </f:section>
 
+.. _fluidtypo3-flux-content-render_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `RenderViewHelper.php (GitHub) <fluidtypo3/flux/development/Content/RenderViewHelper.php>`__.
+
+.. _fluidtypo3-flux-content-render_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:content.render>`:
 
-.. _content.render_area:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-content-render-area_argument:
 
 area
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: area
+    :name: fluidtypo3-flux-content-render-area
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name or "colPos" value of the content area to render
+    Name or "colPos" value of the content area to render
 
-.. _content.render_limit:
+.. _fluidtypo3-flux-content-render-limit_argument:
 
 limit
 -----
 
-:aspect:`DataType`
-   integer
+..  confval:: limit
+    :name: fluidtypo3-flux-content-render-limit
+    :type: integer
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional limit to the number of content elements to render
+    Optional limit to the number of content elements to render
 
-.. _content.render_offset:
+.. _fluidtypo3-flux-content-render-offset_argument:
 
 offset
 ------
 
-:aspect:`DataType`
-   integer
+..  confval:: offset
+    :name: fluidtypo3-flux-content-render-offset
+    :type: integer
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional offset to the limit
+    Optional offset to the limit
 
-.. _content.render_order:
+.. _fluidtypo3-flux-content-render-order_argument:
 
 order
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: order
+    :name: fluidtypo3-flux-content-render-order
+    :type: string
+    :Default: 'sorting'
+    :required: false
 
-:aspect:`Default`
-   'sorting'
+    Optional sort order of content elements - RAND() supported
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional sort order of content elements - RAND() supported
-
-.. _content.render_sortdirection:
+.. _fluidtypo3-flux-content-render-sortdirection_argument:
 
 sortDirection
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: sortDirection
+    :name: fluidtypo3-flux-content-render-sortdirection
+    :type: string
+    :Default: 'ASC'
+    :required: false
 
-:aspect:`Default`
-   'ASC'
+    Optional sort direction of content elements
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional sort direction of content elements
-
-.. _content.render_as:
+.. _fluidtypo3-flux-content-render-as_argument:
 
 as
 --
 
-:aspect:`DataType`
-   string
+..  confval:: as
+    :name: fluidtypo3-flux-content-render-as
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Variable name to register, then render child content and insert all results as an array of records
+    Variable name to register, then render child content and insert all results as an array of records
 
-.. _content.render_loadregister:
+.. _fluidtypo3-flux-content-render-loadregister_argument:
 
 loadRegister
 ------------
 
-:aspect:`DataType`
-   mixed
+..  confval:: loadRegister
+    :name: fluidtypo3-flux-content-render-loadregister
+    :type: mixed
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   List of LOAD_REGISTER variable
+    List of LOAD_REGISTER variable
 
-.. _content.render_render:
+.. _fluidtypo3-flux-content-render-render_argument:
 
 render
 ------
 
-:aspect:`DataType`
-   boolean
+..  confval:: render
+    :name: fluidtypo3-flux-content-render-render
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    Optional returning variable as original table rows
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional returning variable as original table rows
-
-.. _content.render_hideuntranslated:
+.. _fluidtypo3-flux-content-render-hideuntranslated_argument:
 
 hideUntranslated
 ----------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: hideUntranslated
+    :name: fluidtypo3-flux-content-render-hideuntranslated
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Exclude untranslated records
+    Exclude untranslated records

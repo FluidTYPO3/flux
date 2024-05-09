@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Field/MultiRelationViewHelper.php
+
+:edit-on-github-link: Field/MultiRelationViewHelper.php
+:navigation-title: field.multiRelation
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-multirelation:
 
-===================
-field.multiRelation
-===================
-
+===========================================================
+Field.multiRelation ViewHelper `<flux:field.multiRelation>`
+===========================================================
 
 Select one or more database records from several tables.
 
@@ -35,634 +39,582 @@ Add a wizard to search for content elements, instead of opening a popup:
         <flux:wizard.suggest />
     </flux:field.multiRelation>
 
+.. _fluidtypo3-flux-field-multirelation_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `MultiRelationViewHelper.php (GitHub) <fluidtypo3/flux/development/Field/MultiRelationViewHelper.php>`__.
+
+.. _fluidtypo3-flux-field-multirelation_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:field.multiRelation>`:
 
-.. _field.multirelation_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-field-multirelation-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-field-multirelation-name
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of the attribute, FlexForm XML-valid tag name string
+    Name of the attribute, FlexForm XML-valid tag name string
 
-.. _field.multirelation_label:
+.. _fluidtypo3-flux-field-multirelation-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-field-multirelation-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
+    Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
 
-.. _field.multirelation_default:
+.. _fluidtypo3-flux-field-multirelation-default_argument:
 
 default
 -------
 
-:aspect:`DataType`
-   string
+..  confval:: default
+    :name: fluidtypo3-flux-field-multirelation-default
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Default value for this attribute
+    Default value for this attribute
 
-.. _field.multirelation_native:
+.. _fluidtypo3-flux-field-multirelation-native_argument:
 
 native
 ------
 
-:aspect:`DataType`
-   boolean
+..  confval:: native
+    :name: fluidtypo3-flux-field-multirelation-native
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
+    If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
 
-.. _field.multirelation_position:
+.. _fluidtypo3-flux-field-multirelation-position_argument:
 
 position
 --------
 
-:aspect:`DataType`
-   string
+..  confval:: position
+    :name: fluidtypo3-flux-field-multirelation-position
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
+    Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
 
-.. _field.multirelation_required:
+.. _fluidtypo3-flux-field-multirelation-required_argument:
 
 required
 --------
 
-:aspect:`DataType`
-   boolean
+..  confval:: required
+    :name: fluidtypo3-flux-field-multirelation-required
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this attribute must be filled when editing the FCE
+    If TRUE, this attribute must be filled when editing the FCE
 
-.. _field.multirelation_exclude:
+.. _fluidtypo3-flux-field-multirelation-exclude_argument:
 
 exclude
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: exclude
+    :name: fluidtypo3-flux-field-multirelation-exclude
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
+    If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
 
-.. _field.multirelation_transform:
+.. _fluidtypo3-flux-field-multirelation-transform_argument:
 
 transform
 ---------
 
-:aspect:`DataType`
-   string
+..  confval:: transform
+    :name: fluidtypo3-flux-field-multirelation-transform
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
+    Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
 
-.. _field.multirelation_enabled:
+.. _fluidtypo3-flux-field-multirelation-enabled_argument:
 
 enabled
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: enabled
+    :name: fluidtypo3-flux-field-multirelation-enabled
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If FALSE, disables the field in the FlexForm
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If FALSE, disables the field in the FlexForm
-
-.. _field.multirelation_requestupdate:
+.. _fluidtypo3-flux-field-multirelation-requestupdate_argument:
 
 requestUpdate
 -------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: requestUpdate
+    :name: fluidtypo3-flux-field-multirelation-requestupdate
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the form is force-saved and reloaded when field value changes
+    If TRUE, the form is force-saved and reloaded when field value changes
 
-.. _field.multirelation_displaycond:
+.. _fluidtypo3-flux-field-multirelation-displaycond_argument:
 
 displayCond
 -----------
 
-:aspect:`DataType`
-   string
+..  confval:: displayCond
+    :name: fluidtypo3-flux-field-multirelation-displaycond
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+    Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
 
-.. _field.multirelation_inherit:
+.. _fluidtypo3-flux-field-multirelation-inherit_argument:
 
 inherit
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inherit
+    :name: fluidtypo3-flux-field-multirelation-inherit
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
-
-.. _field.multirelation_inheritempty:
+.. _fluidtypo3-flux-field-multirelation-inheritempty_argument:
 
 inheritEmpty
 ------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inheritEmpty
+    :name: fluidtypo3-flux-field-multirelation-inheritempty
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
-
-.. _field.multirelation_clear:
+.. _fluidtypo3-flux-field-multirelation-clear_argument:
 
 clear
 -----
 
-:aspect:`DataType`
-   boolean
+..  confval:: clear
+    :name: fluidtypo3-flux-field-multirelation-clear
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
 
-.. _field.multirelation_variables:
+.. _fluidtypo3-flux-field-multirelation-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-field-multirelation-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
-
-.. _field.multirelation_extensionname:
+.. _fluidtypo3-flux-field-multirelation-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-field-multirelation-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
 
-.. _field.multirelation_config:
+.. _fluidtypo3-flux-field-multirelation-config_argument:
 
 config
 ------
 
-:aspect:`DataType`
-   mixed
+..  confval:: config
+    :name: fluidtypo3-flux-field-multirelation-config
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
-
-.. _field.multirelation_validate:
+.. _fluidtypo3-flux-field-multirelation-validate_argument:
 
 validate
 --------
 
-:aspect:`DataType`
-   string
+..  confval:: validate
+    :name: fluidtypo3-flux-field-multirelation-validate
+    :type: string
+    :Default: 'trim'
+    :required: false
 
-:aspect:`Default`
-   'trim'
+    FlexForm-type validation configuration for this input
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   FlexForm-type validation configuration for this input
-
-.. _field.multirelation_size:
+.. _fluidtypo3-flux-field-multirelation-size_argument:
 
 size
 ----
 
-:aspect:`DataType`
-   integer
+..  confval:: size
+    :name: fluidtypo3-flux-field-multirelation-size
+    :type: integer
+    :Default: 1
+    :required: false
 
-:aspect:`Default`
-   1
+    Size of the selector box
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Size of the selector box
-
-.. _field.multirelation_multiple:
+.. _fluidtypo3-flux-field-multirelation-multiple_argument:
 
 multiple
 --------
 
-:aspect:`DataType`
-   boolean
+..  confval:: multiple
+    :name: fluidtypo3-flux-field-multirelation-multiple
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, allows selecting the same value multiple times
+    If TRUE, allows selecting the same value multiple times
 
-.. _field.multirelation_minitems:
+.. _fluidtypo3-flux-field-multirelation-minitems_argument:
 
 minItems
 --------
 
-:aspect:`DataType`
-   integer
+..  confval:: minItems
+    :name: fluidtypo3-flux-field-multirelation-minitems
+    :type: integer
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Minimum required number of items to be selected
+    Minimum required number of items to be selected
 
-.. _field.multirelation_maxitems:
+.. _fluidtypo3-flux-field-multirelation-maxitems_argument:
 
 maxItems
 --------
 
-:aspect:`DataType`
-   integer
+..  confval:: maxItems
+    :name: fluidtypo3-flux-field-multirelation-maxitems
+    :type: integer
+    :Default: 1
+    :required: false
 
-:aspect:`Default`
-   1
+    Maxium allowed number of items to be selected
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Maxium allowed number of items to be selected
-
-.. _field.multirelation_itemliststyle:
+.. _fluidtypo3-flux-field-multirelation-itemliststyle_argument:
 
 itemListStyle
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: itemListStyle
+    :name: fluidtypo3-flux-field-multirelation-itemliststyle
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Overrides the default list style when maxItems > 1
+    Overrides the default list style when maxItems > 1
 
-.. _field.multirelation_selectedliststyle:
+.. _fluidtypo3-flux-field-multirelation-selectedliststyle_argument:
 
 selectedListStyle
 -----------------
 
-:aspect:`DataType`
-   string
+..  confval:: selectedListStyle
+    :name: fluidtypo3-flux-field-multirelation-selectedliststyle
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Overrides the default selected list style when maxItems > 1 and renderType is SelectSingle
+    Overrides the default selected list style when maxItems > 1 and renderType is SelectSingle
 
-.. _field.multirelation_items:
+.. _fluidtypo3-flux-field-multirelation-items_argument:
 
 items
 -----
 
-:aspect:`DataType`
-   mixed
+..  confval:: items
+    :name: fluidtypo3-flux-field-multirelation-items
+    :type: mixed
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Items for the selector; array / CSV / Traversable / Query supported
+    Items for the selector; array / CSV / Traversable / Query supported
 
-.. _field.multirelation_emptyoption:
+.. _fluidtypo3-flux-field-multirelation-emptyoption_argument:
 
 emptyOption
 -----------
 
-:aspect:`DataType`
-   mixed
+..  confval:: emptyOption
+    :name: fluidtypo3-flux-field-multirelation-emptyoption
+    :type: mixed
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property's value (cast to string) as label.
+    If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property's value (cast to string) as label.
 
-.. _field.multirelation_translatecsvitems:
+.. _fluidtypo3-flux-field-multirelation-translatecsvitems_argument:
 
 translateCsvItems
 -----------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: translateCsvItems
+    :name: fluidtypo3-flux-field-multirelation-translatecsvitems
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions
+    If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions
 
-.. _field.multirelation_itemsprocfunc:
+.. _fluidtypo3-flux-field-multirelation-itemsprocfunc_argument:
 
 itemsProcFunc
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: itemsProcFunc
+    :name: fluidtypo3-flux-field-multirelation-itemsprocfunc
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Function for serving items. See TCA "select" field "itemsProcFunc" attribute
+    Function for serving items. See TCA "select" field "itemsProcFunc" attribute
 
-.. _field.multirelation_table:
+.. _fluidtypo3-flux-field-multirelation-table_argument:
 
 table
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: table
+    :name: fluidtypo3-flux-field-multirelation-table
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Define foreign table name to turn selector into a record selector for that table
+    Define foreign table name to turn selector into a record selector for that table
 
-.. _field.multirelation_condition:
+.. _fluidtypo3-flux-field-multirelation-condition_argument:
 
 condition
 ---------
 
-:aspect:`DataType`
-   string
+..  confval:: condition
+    :name: fluidtypo3-flux-field-multirelation-condition
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Condition to use when selecting from "foreignTable", supports FlexForm `foreign_table_where` markers
+    Condition to use when selecting from "foreignTable", supports FlexForm `foreign_table_where` markers
 
-.. _field.multirelation_mm:
+.. _fluidtypo3-flux-field-multirelation-mm_argument:
 
 mm
 --
 
-:aspect:`DataType`
-   string
+..  confval:: mm
+    :name: fluidtypo3-flux-field-multirelation-mm
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional name of MM table to use for record selection
+    Optional name of MM table to use for record selection
 
-.. _field.multirelation_foreignfield:
+.. _fluidtypo3-flux-field-multirelation-foreignfield_argument:
 
 foreignField
 ------------
 
-:aspect:`DataType`
-   string
+..  confval:: foreignField
+    :name: fluidtypo3-flux-field-multirelation-foreignfield
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.
+    The `foreign_field` is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.
 
-.. _field.multirelation_foreignlabel:
+.. _fluidtypo3-flux-field-multirelation-foreignlabel_argument:
 
 foreignLabel
 ------------
 
-:aspect:`DataType`
-   string
+..  confval:: foreignLabel
+    :name: fluidtypo3-flux-field-multirelation-foreignlabel
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.
+    If set, it overrides the label set in `TCA[foreign_table]['ctrl']['label']` for the inline-view.
 
-.. _field.multirelation_foreignselector:
+.. _fluidtypo3-flux-field-multirelation-foreignselector_argument:
 
 foreignSelector
 ---------------
 
-:aspect:`DataType`
-   string
+..  confval:: foreignSelector
+    :name: fluidtypo3-flux-field-multirelation-foreignselector
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.
+    A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The `foreign_selector` points to a field of the `foreign_table` that is responsible for providing a selector-box - this field on the `foreign_table` usually has the type "select" and also has a `foreign_table` defined.
 
-.. _field.multirelation_foreignsortby:
+.. _fluidtypo3-flux-field-multirelation-foreignsortby_argument:
 
 foreignSortby
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: foreignSortby
+    :name: fluidtypo3-flux-field-multirelation-foreignsortby
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Field on the child record (or on the intermediate table) that stores the manual sorting information.
+    Field on the child record (or on the intermediate table) that stores the manual sorting information.
 
-.. _field.multirelation_foreigndefaultsortby:
+.. _fluidtypo3-flux-field-multirelation-foreigndefaultsortby_argument:
 
 foreignDefaultSortby
 --------------------
 
-:aspect:`DataType`
-   string
+..  confval:: foreignDefaultSortby
+    :name: fluidtypo3-flux-field-multirelation-foreigndefaultsortby
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.
+    If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.
 
-.. _field.multirelation_foreigntablefield:
+.. _fluidtypo3-flux-field-multirelation-foreigntablefield_argument:
 
 foreignTableField
 -----------------
 
-:aspect:`DataType`
-   string
+..  confval:: foreignTableField
+    :name: fluidtypo3-flux-field-multirelation-foreigntablefield
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.
+    The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with `foreign_field`, the child record knows what its parent record is - so the child record could also be used on other parent tables.
 
-.. _field.multirelation_foreignunique:
+.. _fluidtypo3-flux-field-multirelation-foreignunique_argument:
 
 foreignUnique
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: foreignUnique
+    :name: fluidtypo3-flux-field-multirelation-foreignunique
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Field which must be uniue for all children of a parent record.
+    Field which must be uniue for all children of a parent record.
 
-.. _field.multirelation_symmetricfield:
+.. _fluidtypo3-flux-field-multirelation-symmetricfield_argument:
 
 symmetricField
 --------------
 
-:aspect:`DataType`
-   string
+..  confval:: symmetricField
+    :name: fluidtypo3-flux-field-multirelation-symmetricfield
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.
+    In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.
 
-.. _field.multirelation_symmetriclabel:
+.. _fluidtypo3-flux-field-multirelation-symmetriclabel_argument:
 
 symmetricLabel
 --------------
 
-:aspect:`DataType`
-   string
+..  confval:: symmetricLabel
+    :name: fluidtypo3-flux-field-multirelation-symmetriclabel
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If set, this overrides the default label of the selected `symmetric_field`.
+    If set, this overrides the default label of the selected `symmetric_field`.
 
-.. _field.multirelation_symmetricsortby:
+.. _fluidtypo3-flux-field-multirelation-symmetricsortby_argument:
 
 symmetricSortby
 ---------------
 
-:aspect:`DataType`
-   string
+..  confval:: symmetricSortby
+    :name: fluidtypo3-flux-field-multirelation-symmetricsortby
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.
+    Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.
 
-.. _field.multirelation_localizationmode:
+.. _fluidtypo3-flux-field-multirelation-localizationmode_argument:
 
 localizationMode
 ----------------
 
-:aspect:`DataType`
-   string
+..  confval:: localizationMode
+    :name: fluidtypo3-flux-field-multirelation-localizationmode
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Set whether children can be localizable ('select') or just inherit from default language ('keep').
+    Set whether children can be localizable ('select') or just inherit from default language ('keep').
 
-.. _field.multirelation_disablemovingchildrenwithparent:
+.. _fluidtypo3-flux-field-multirelation-disablemovingchildrenwithparent_argument:
 
 disableMovingChildrenWithParent
 -------------------------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: disableMovingChildrenWithParent
+    :name: fluidtypo3-flux-field-multirelation-disablemovingchildrenwithparent
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Disables that child records get moved along with their parent records.
+    Disables that child records get moved along with their parent records.
 
-.. _field.multirelation_showthumbs:
+.. _fluidtypo3-flux-field-multirelation-showthumbs_argument:
 
 showThumbs
 ----------
 
-:aspect:`DataType`
-   boolean
+..  confval:: showThumbs
+    :name: fluidtypo3-flux-field-multirelation-showthumbs
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If TRUE, adds thumbnail display when editing in BE
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, adds thumbnail display when editing in BE
-
-.. _field.multirelation_matchfields:
+.. _fluidtypo3-flux-field-multirelation-matchfields_argument:
 
 matchFields
 -----------
 
-:aspect:`DataType`
-   mixed
+..  confval:: matchFields
+    :name: fluidtypo3-flux-field-multirelation-matchfields
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table
-
-.. _field.multirelation_oppositefield:
+.. _fluidtypo3-flux-field-multirelation-oppositefield_argument:
 
 oppositeField
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: oppositeField
+    :name: fluidtypo3-flux-field-multirelation-oppositefield
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Name of the opposite field related to a proper mm relation
+    Name of the opposite field related to a proper mm relation

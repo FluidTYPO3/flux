@@ -1,253 +1,244 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Field/NoneViewHelper.php
+
+:edit-on-github-link: Field/NoneViewHelper.php
+:navigation-title: field.none
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-none:
 
-==========
-field.none
-==========
-
+=========================================
+Field.none ViewHelper `<flux:field.none>`
+=========================================
 
 None field ViewHelper
 
 Makes a read-only component which supports a default value
 but which cannot be edited.
 
+.. _fluidtypo3-flux-field-none_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `NoneViewHelper.php (GitHub) <fluidtypo3/flux/development/Field/NoneViewHelper.php>`__.
+
+.. _fluidtypo3-flux-field-none_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:field.none>`:
 
-.. _field.none_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-field-none-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-field-none-name
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of the attribute, FlexForm XML-valid tag name string
+    Name of the attribute, FlexForm XML-valid tag name string
 
-.. _field.none_label:
+.. _fluidtypo3-flux-field-none-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-field-none-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
+    Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
 
-.. _field.none_default:
+.. _fluidtypo3-flux-field-none-default_argument:
 
 default
 -------
 
-:aspect:`DataType`
-   string
+..  confval:: default
+    :name: fluidtypo3-flux-field-none-default
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Default value for this attribute
+    Default value for this attribute
 
-.. _field.none_native:
+.. _fluidtypo3-flux-field-none-native_argument:
 
 native
 ------
 
-:aspect:`DataType`
-   boolean
+..  confval:: native
+    :name: fluidtypo3-flux-field-none-native
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
+    If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
 
-.. _field.none_position:
+.. _fluidtypo3-flux-field-none-position_argument:
 
 position
 --------
 
-:aspect:`DataType`
-   string
+..  confval:: position
+    :name: fluidtypo3-flux-field-none-position
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
+    Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
 
-.. _field.none_required:
+.. _fluidtypo3-flux-field-none-required_argument:
 
 required
 --------
 
-:aspect:`DataType`
-   boolean
+..  confval:: required
+    :name: fluidtypo3-flux-field-none-required
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this attribute must be filled when editing the FCE
+    If TRUE, this attribute must be filled when editing the FCE
 
-.. _field.none_exclude:
+.. _fluidtypo3-flux-field-none-exclude_argument:
 
 exclude
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: exclude
+    :name: fluidtypo3-flux-field-none-exclude
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
+    If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
 
-.. _field.none_transform:
+.. _fluidtypo3-flux-field-none-transform_argument:
 
 transform
 ---------
 
-:aspect:`DataType`
-   string
+..  confval:: transform
+    :name: fluidtypo3-flux-field-none-transform
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
+    Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
 
-.. _field.none_enabled:
+.. _fluidtypo3-flux-field-none-enabled_argument:
 
 enabled
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: enabled
+    :name: fluidtypo3-flux-field-none-enabled
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If FALSE, disables the field in the FlexForm
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If FALSE, disables the field in the FlexForm
-
-.. _field.none_requestupdate:
+.. _fluidtypo3-flux-field-none-requestupdate_argument:
 
 requestUpdate
 -------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: requestUpdate
+    :name: fluidtypo3-flux-field-none-requestupdate
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the form is force-saved and reloaded when field value changes
+    If TRUE, the form is force-saved and reloaded when field value changes
 
-.. _field.none_displaycond:
+.. _fluidtypo3-flux-field-none-displaycond_argument:
 
 displayCond
 -----------
 
-:aspect:`DataType`
-   string
+..  confval:: displayCond
+    :name: fluidtypo3-flux-field-none-displaycond
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+    Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
 
-.. _field.none_inherit:
+.. _fluidtypo3-flux-field-none-inherit_argument:
 
 inherit
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inherit
+    :name: fluidtypo3-flux-field-none-inherit
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
-
-.. _field.none_inheritempty:
+.. _fluidtypo3-flux-field-none-inheritempty_argument:
 
 inheritEmpty
 ------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inheritEmpty
+    :name: fluidtypo3-flux-field-none-inheritempty
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
-
-.. _field.none_clear:
+.. _fluidtypo3-flux-field-none-clear_argument:
 
 clear
 -----
 
-:aspect:`DataType`
-   boolean
+..  confval:: clear
+    :name: fluidtypo3-flux-field-none-clear
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
 
-.. _field.none_variables:
+.. _fluidtypo3-flux-field-none-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-field-none-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
-
-.. _field.none_extensionname:
+.. _fluidtypo3-flux-field-none-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-field-none-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
 
-.. _field.none_config:
+.. _fluidtypo3-flux-field-none-config_argument:
 
 config
 ------
 
-:aspect:`DataType`
-   mixed
+..  confval:: config
+    :name: fluidtypo3-flux-field-none-config
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
-
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
+    Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"

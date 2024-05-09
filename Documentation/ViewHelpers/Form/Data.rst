@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Form/DataViewHelper.php
+
+:edit-on-github-link: Form/DataViewHelper.php
+:navigation-title: form.data
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-data:
 
-=========
-form.data
-=========
-
+=======================================
+Form.data ViewHelper `<flux:form.data>`
+=======================================
 
 Converts raw flexform xml into an associative array, and applies any
 transformation that may be configured for fields/objects.
@@ -32,71 +36,80 @@ a link to it:
         </flux:form.data>
     </f:if>
 
+.. _fluidtypo3-flux-form-data_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `DataViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/DataViewHelper.php>`__.
+
+.. _fluidtypo3-flux-form-data_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:form.data>`:
 
-.. _form.data_table:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-form-data-table_argument:
 
 table
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: table
+    :name: fluidtypo3-flux-form-data-table
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of table that contains record with Flux field
+    Name of table that contains record with Flux field
 
-.. _form.data_field:
+.. _fluidtypo3-flux-form-data-field_argument:
 
 field
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: field
+    :name: fluidtypo3-flux-form-data-field
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of Flux field in table
+    Name of Flux field in table
 
-.. _form.data_uid:
+.. _fluidtypo3-flux-form-data-uid_argument:
 
 uid
 ---
 
-:aspect:`DataType`
-   integer
+..  confval:: uid
+    :name: fluidtypo3-flux-form-data-uid
+    :type: integer
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   UID of record to load (used if "record" attribute not used)
+    UID of record to load (used if "record" attribute not used)
 
-.. _form.data_record:
+.. _fluidtypo3-flux-form-data-record_argument:
 
 record
 ------
 
-:aspect:`DataType`
-   mixed
+..  confval:: record
+    :name: fluidtypo3-flux-form-data-record
+    :type: mixed
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Record containing Flux field (used if "uid" attribute not used)
+    Record containing Flux field (used if "uid" attribute not used)
 
-.. _form.data_as:
+.. _fluidtypo3-flux-form-data-as_argument:
 
 as
 --
 
-:aspect:`DataType`
-   string
+..  confval:: as
+    :name: fluidtypo3-flux-form-data-as
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional name of variable to assign in tag content rendering
+    Optional name of variable to assign in tag content rendering

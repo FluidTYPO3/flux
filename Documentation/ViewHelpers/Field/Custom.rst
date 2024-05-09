@@ -1,292 +1,278 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Field/CustomViewHelper.php
+
+:edit-on-github-link: Field/CustomViewHelper.php
+:navigation-title: field.custom
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-custom:
 
-============
-field.custom
-============
-
+=============================================
+Field.custom ViewHelper `<flux:field.custom>`
+=============================================
 
 Custom FlexForm field ViewHelper
+
+.. _fluidtypo3-flux-field-custom_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `CustomViewHelper.php (GitHub) <fluidtypo3/flux/development/Field/CustomViewHelper.php>`__.
+
+.. _fluidtypo3-flux-field-custom_arguments:
 
 Arguments
 =========
 
+The following arguments are available for `<flux:field.custom>`:
 
-.. _field.custom_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-field-custom-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-field-custom-name
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of the attribute, FlexForm XML-valid tag name string
+    Name of the attribute, FlexForm XML-valid tag name string
 
-.. _field.custom_label:
+.. _fluidtypo3-flux-field-custom-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-field-custom-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
+    Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
 
-.. _field.custom_default:
+.. _fluidtypo3-flux-field-custom-default_argument:
 
 default
 -------
 
-:aspect:`DataType`
-   string
+..  confval:: default
+    :name: fluidtypo3-flux-field-custom-default
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Default value for this attribute
+    Default value for this attribute
 
-.. _field.custom_native:
+.. _fluidtypo3-flux-field-custom-native_argument:
 
 native
 ------
 
-:aspect:`DataType`
-   boolean
+..  confval:: native
+    :name: fluidtypo3-flux-field-custom-native
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
+    If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
 
-.. _field.custom_position:
+.. _fluidtypo3-flux-field-custom-position_argument:
 
 position
 --------
 
-:aspect:`DataType`
-   string
+..  confval:: position
+    :name: fluidtypo3-flux-field-custom-position
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
+    Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
 
-.. _field.custom_required:
+.. _fluidtypo3-flux-field-custom-required_argument:
 
 required
 --------
 
-:aspect:`DataType`
-   boolean
+..  confval:: required
+    :name: fluidtypo3-flux-field-custom-required
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this attribute must be filled when editing the FCE
+    If TRUE, this attribute must be filled when editing the FCE
 
-.. _field.custom_exclude:
+.. _fluidtypo3-flux-field-custom-exclude_argument:
 
 exclude
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: exclude
+    :name: fluidtypo3-flux-field-custom-exclude
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
+    If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
 
-.. _field.custom_transform:
+.. _fluidtypo3-flux-field-custom-transform_argument:
 
 transform
 ---------
 
-:aspect:`DataType`
-   string
+..  confval:: transform
+    :name: fluidtypo3-flux-field-custom-transform
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
+    Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
 
-.. _field.custom_enabled:
+.. _fluidtypo3-flux-field-custom-enabled_argument:
 
 enabled
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: enabled
+    :name: fluidtypo3-flux-field-custom-enabled
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If FALSE, disables the field in the FlexForm
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If FALSE, disables the field in the FlexForm
-
-.. _field.custom_requestupdate:
+.. _fluidtypo3-flux-field-custom-requestupdate_argument:
 
 requestUpdate
 -------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: requestUpdate
+    :name: fluidtypo3-flux-field-custom-requestupdate
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the form is force-saved and reloaded when field value changes
+    If TRUE, the form is force-saved and reloaded when field value changes
 
-.. _field.custom_displaycond:
+.. _fluidtypo3-flux-field-custom-displaycond_argument:
 
 displayCond
 -----------
 
-:aspect:`DataType`
-   string
+..  confval:: displayCond
+    :name: fluidtypo3-flux-field-custom-displaycond
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+    Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
 
-.. _field.custom_inherit:
+.. _fluidtypo3-flux-field-custom-inherit_argument:
 
 inherit
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inherit
+    :name: fluidtypo3-flux-field-custom-inherit
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
-
-.. _field.custom_inheritempty:
+.. _fluidtypo3-flux-field-custom-inheritempty_argument:
 
 inheritEmpty
 ------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inheritEmpty
+    :name: fluidtypo3-flux-field-custom-inheritempty
+    :type: boolean
+    :Default: true
+    :required: false
 
-:aspect:`Default`
-   true
+    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
-
-.. _field.custom_clear:
+.. _fluidtypo3-flux-field-custom-clear_argument:
 
 clear
 -----
 
-:aspect:`DataType`
-   boolean
+..  confval:: clear
+    :name: fluidtypo3-flux-field-custom-clear
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
 
-.. _field.custom_variables:
+.. _fluidtypo3-flux-field-custom-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-field-custom-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
-
-.. _field.custom_extensionname:
+.. _fluidtypo3-flux-field-custom-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-field-custom-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
 
-.. _field.custom_config:
+.. _fluidtypo3-flux-field-custom-config_argument:
 
 config
 ------
 
-:aspect:`DataType`
-   mixed
+..  confval:: config
+    :name: fluidtypo3-flux-field-custom-config
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
-
-.. _field.custom_userfunc:
+.. _fluidtypo3-flux-field-custom-userfunc_argument:
 
 userFunc
 --------
 
-:aspect:`DataType`
-   string
+..  confval:: userFunc
+    :name: fluidtypo3-flux-field-custom-userfunc
+    :type: string
+    :Default: 'FluidTYPO3\\Flux\\UserFunction\\HtmlOutput->renderField'
+    :required: false
 
-:aspect:`Default`
-   'FluidTYPO3\\Flux\\UserFunction\\HtmlOutput->renderField'
+    User function to render the Closure built by this ViewHelper
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   User function to render the Closure built by this ViewHelper
-
-.. _field.custom_rendertype:
+.. _fluidtypo3-flux-field-custom-rendertype_argument:
 
 renderType
 ----------
 
-:aspect:`DataType`
-   string
+..  confval:: renderType
+    :name: fluidtypo3-flux-field-custom-rendertype
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Render type (TCA renderType) - required on TYPO3 9.5 and above. Render type must be registered as FormEngine node type. See https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/FormEngine/Rendering/Index.html
+    Render type (TCA renderType) - required on TYPO3 9.5 and above. Render type must be registered as FormEngine node type. See https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/FormEngine/Rendering/Index.html
 
-.. _field.custom_arguments:
+.. _fluidtypo3-flux-field-custom-arguments_argument:
 
 arguments
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: arguments
+    :name: fluidtypo3-flux-field-custom-arguments
+    :type: mixed
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Optional array of arguments to pass to the UserFunction building this field
+    Optional array of arguments to pass to the UserFunction building this field

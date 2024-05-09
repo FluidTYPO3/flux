@@ -1,124 +1,132 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Form/ObjectViewHelper.php
+
+:edit-on-github-link: Form/ObjectViewHelper.php
+:navigation-title: form.object
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-object:
 
-===========
-form.object
-===========
-
+===========================================
+Form.object ViewHelper `<flux:form.object>`
+===========================================
 
 FlexForm field section object ViewHelper
 
 Use this inside flux:form.section to name and divide the fields
 into individual objects that can be inserted into the section.
 
+.. _fluidtypo3-flux-form-object_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `ObjectViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/ObjectViewHelper.php>`__.
+
+.. _fluidtypo3-flux-form-object_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:form.object>`:
 
-.. _form.object_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-form-object-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-form-object-name
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of the section object, FlexForm XML-valid tag name string
+    Name of the section object, FlexForm XML-valid tag name string
 
-.. _form.object_label:
+.. _fluidtypo3-flux-form-object-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-form-object-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Label for section object, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.objects.foobar" based on object name, in scope of extension rendering the Flux form.
+    Label for section object, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.objects.foobar" based on object name, in scope of extension rendering the Flux form.
 
-.. _form.object_variables:
+.. _fluidtypo3-flux-form-object-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-form-object-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
-
-.. _form.object_extensionname:
+.. _fluidtypo3-flux-form-object-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-form-object-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
 
-.. _form.object_inherit:
+.. _fluidtypo3-flux-form-object-inherit_argument:
 
 inherit
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inherit
+    :name: fluidtypo3-flux-form-object-inherit
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
 
-.. _form.object_inheritempty:
+.. _fluidtypo3-flux-form-object-inheritempty_argument:
 
 inheritEmpty
 ------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inheritEmpty
+    :name: fluidtypo3-flux-form-object-inheritempty
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
 
-.. _form.object_transform:
+.. _fluidtypo3-flux-form-object-transform_argument:
 
 transform
 ---------
 
-:aspect:`DataType`
-   string
+..  confval:: transform
+    :name: fluidtypo3-flux-form-object-transform
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
+    Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
 
-.. _form.object_contentcontainer:
+.. _fluidtypo3-flux-form-object-contentcontainer_argument:
 
 contentContainer
 ----------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: contentContainer
+    :name: fluidtypo3-flux-form-object-contentcontainer
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, each object that is created of this type results in a content column of the same name, with an automatic colPos value.
+    If TRUE, each object that is created of this type results in a content column of the same name, with an automatic colPos value.

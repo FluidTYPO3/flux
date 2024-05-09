@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Form/SectionViewHelper.php
+
+:edit-on-github-link: Form/SectionViewHelper.php
+:navigation-title: form.section
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-section:
 
-============
-form.section
-============
-
+=============================================
+Form.section ViewHelper `<flux:form.section>`
+=============================================
 
 FlexForm field section ViewHelper
 
@@ -31,103 +35,106 @@ Reading section element values
         <br/>
     </f:for>
 
+.. _fluidtypo3-flux-form-section_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `SectionViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/SectionViewHelper.php>`__.
+
+.. _fluidtypo3-flux-form-section_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:form.section>`:
 
-.. _form.section_name:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-form-section-name_argument:
 
 name
 ----
 
-:aspect:`DataType`
-   string
+..  confval:: name
+    :name: fluidtypo3-flux-form-section-name
+    :type: string
+    :required: true
 
-:aspect:`Required`
-   true
-:aspect:`Description`
-   Name of the attribute, FlexForm XML-valid tag name string
+    Name of the attribute, FlexForm XML-valid tag name string
 
-.. _form.section_label:
+.. _fluidtypo3-flux-form-section-label_argument:
 
 label
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: label
+    :name: fluidtypo3-flux-form-section-label
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Label for section, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.sections.foobar" based on section name, in scope of extension rendering the form.
+    Label for section, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.sections.foobar" based on section name, in scope of extension rendering the form.
 
-.. _form.section_variables:
+.. _fluidtypo3-flux-form-section-variables_argument:
 
 variables
 ---------
 
-:aspect:`DataType`
-   mixed
+..  confval:: variables
+    :name: fluidtypo3-flux-form-section-variables
+    :type: mixed
+    :Default: array ()
+    :required: false
 
-:aspect:`Default`
-   array ()
+    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
-
-.. _form.section_extensionname:
+.. _fluidtypo3-flux-form-section-extensionname_argument:
 
 extensionName
 -------------
 
-:aspect:`DataType`
-   string
+..  confval:: extensionName
+    :name: fluidtypo3-flux-form-section-extensionname
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
 
-.. _form.section_inherit:
+.. _fluidtypo3-flux-form-section-inherit_argument:
 
 inherit
 -------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inherit
+    :name: fluidtypo3-flux-form-section-inherit
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
 
-.. _form.section_inheritempty:
+.. _fluidtypo3-flux-form-section-inheritempty_argument:
 
 inheritEmpty
 ------------
 
-:aspect:`DataType`
-   boolean
+..  confval:: inheritEmpty
+    :name: fluidtypo3-flux-form-section-inheritempty
+    :type: boolean
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
 
-.. _form.section_gridmode:
+.. _fluidtypo3-flux-form-section-gridmode_argument:
 
 gridMode
 --------
 
-:aspect:`DataType`
-   string
+..  confval:: gridMode
+    :name: fluidtypo3-flux-form-section-gridmode
+    :type: string
+    :Default: 'rows'
+    :required: false
 
-:aspect:`Default`
-   'rows'
-
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Defines how section objects which are marked as content containers, get rendered as a grid. Valid values are either "rows" or "columns". Default is to render as rows.
+    Defines how section objects which are marked as content containers, get rendered as a grid. Valid values are either "rows" or "columns". Default is to render as rows.

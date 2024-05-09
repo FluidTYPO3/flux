@@ -1,11 +1,15 @@
+..  This reStructured text file has been automatically generated, do not change.
+..  Source: fluidtypo3/flux/development/Form/Option/GroupViewHelper.php
+
+:edit-on-github-link: Form/Option/GroupViewHelper.php
+:navigation-title: form.option.group
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option-group:
 
-=================
-form.option.group
-=================
-
+=======================================================
+Form.option.group ViewHelper `<flux:form.option.group>`
+=======================================================
 
 Form group option ViewHelper
 
@@ -15,19 +19,32 @@ setting gets used is specific to the extension reading the
 Flux form - please consult that documentation to learn
 if/how the extension supports this option.
 
+.. _fluidtypo3-flux-form-option-group_source:
+
+Source code
+===========
+
+Go to the source code of this ViewHelper: `GroupViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/Option/GroupViewHelper.php>`__.
+
+.. _fluidtypo3-flux-form-option-group_arguments:
+
 Arguments
 =========
 
+The following arguments are available for `<flux:form.option.group>`:
 
-.. _form.option.group_value:
+..  contents::
+    :local:
+
+
+.. _fluidtypo3-flux-form-option-group-value_argument:
 
 value
 -----
 
-:aspect:`DataType`
-   string
+..  confval:: value
+    :name: fluidtypo3-flux-form-option-group-value
+    :type: string
+    :required: false
 
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Name of the group
+    Name of the group
