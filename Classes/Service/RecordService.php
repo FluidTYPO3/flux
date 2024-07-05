@@ -160,7 +160,8 @@ class RecordService implements SingletonInterface
         if (ApplicationType::fromRequest($request)->isFrontend()) {
             /** @var Context $context */
             $context = GeneralUtility::makeInstance(Context::class);
-            return (bool) $context->getPropertyFromAspect('frontend.preview', 'isPreview');
+            return $context->hasAspect('frontend.preview')
+                && $context->getPropertyFromAspect('frontend.preview', 'isPreview');
         }
         return false;
     }
