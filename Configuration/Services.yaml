@@ -20,6 +20,10 @@ services:
   TYPO3\CMS\Backend\View\BackendViewFactory:
     public: true
 
+  FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry:
+    arguments:
+      $locator: !tagged_locator { tag: 'flux.datatransformer', index_by: 'identifier' }
+
   FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:
     public: true
   FluidTYPO3\Flux\Backend\PageLayoutDataProvider:
