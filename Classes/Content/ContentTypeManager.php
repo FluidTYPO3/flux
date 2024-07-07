@@ -49,7 +49,7 @@ class ContentTypeManager implements SingletonInterface
     /**
      * @return ContentTypeDefinitionInterface[]
      */
-    public function fetchContentTypes(): iterable
+    public function fetchContentTypes(): array
     {
         if (!empty($this->types)) {
             return $this->types;
