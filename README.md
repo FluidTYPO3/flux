@@ -231,6 +231,140 @@ All of which create the same form with a single input field called `myField` wit
 example shows the `form` structure nested in a Provider (another Flux concept) which connects the `pi_flexform` field of the
 related `tt_content` plugin record type to the form.
 
+Field Value Data Transformation
+-------------------------------
+
+Flux is capable of transforming the values of fields before assigning the values as template variables. You can use this to
+ensure that the variables in your templates have the correct types - and you can also use it as a quick way to transform
+for example a selected foreign record to an instance of the domain model. Consider the following example:
+
+```xml
+<flux:form id="myform">
+  <flux:field.input name="myField" label="My special field" transform="boolean" />
+</flux:form>
+```
+
+When Flux renders the template that contains this form, the variable `{myField}` will be converted to a proper boolean.
+
+The following transformation types are built-in:
+
+* `string`
+* `integer` (alias: `int`)
+* `boolean` (alias: `bool`)
+* `array` (will explode value by commas, e.g. `a,b,c` becomes `['a', 'b', 'c']`)
+* `float` (alias: `decimal` and `double`)
+* `file`
+* `filereference`
+* `files`
+* `filereferences`
+
+The `file` etc. types will convert file references added through an IRRE FAL field to either a `File` or `FileReference`
+object, or an array of such objects if you use the plural forms.
+
+You can also specify a class name of a Domain Model as the `transform` type. Flux will then attempt to use the matching
+Repository to load a single instance of that Domain Model. The value saved in the DB must be an integer `uid` of the
+related object (for example, the `flux:field.relation` field type will save such a value). If you need multiple instances
+from a multiple selection field (like `flux:field.multiRelation`) you must use a compound transform type like:
+
+```xml
+transform="\TYPO3\CMS\Extbase\Persistence\ObjectStorage<\My\Extension\Domain\Model\MyObject>"
+```
+
+Or you can use a custom container class instead of ObjectStorage, for example if you have an Iterator that sorts objects
+in a certain way. The container class will receive an array of the domain model instances as first constructor argument.
+
+```xml
+transform="\My\Extension\Iterator\SpecialSorter<\My\Extension\Domain\Model\MyObject>"
+```
+
+Or you can specify any class which takes a constructor argument. Flux will then create an instance of the specified class
+with the database value as constructor argument. For example, using `\DateTime` as transform type and having a value of
+`now` in the database results in a `DateTime` instance with the current date+time:
+
+```xml
+transform="\DateTime"
+```
+
+Finally you can also create an implementation of `FluidTYPO3\Flux\Form\Transformation\DataTransformerInterface` which
+can support any type of data transformation:
+
+```php
+<?php
+namespace My\Extension\Transformation;
+
+use FluidTYPO3\Flux\Attribute\DataTransformer;
+use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\FormInterface;
+use FluidTYPO3\Flux\Form\Transformation\DataTransformerInterface;
+
+/* PHP 8.0 registration with class attribute. ID must be unique! */
+#[DataTransformer('myextension.datatransformer.mytransform')]
+class MyTransformer implements DataTransformerInterface
+{
+    public function canTransformToType(string $type): bool
+    {
+        // Support transform of any type that begins with "myextension:"
+        return strpos($type, 'myextension:') === 0;
+    }
+
+    public function getPriority(): int
+    {
+        // Higher priority means your DataTransformer is checked before others with lower priority.
+        return 10;
+    }
+
+    /**
+     * @var FieldInterface|ContainerInterface $component
+     * @var mixed $value
+     * @return mixed
+     */
+    public function transform(FormInterface $component, string $type, $value)
+    {
+        $converted = null;
+        switch ($type) {
+            case 'myextension:foo':
+                $converted = 'call something to transform $value to one type';
+                break;
+            case 'myextension:bar':
+                $converted = 'call something else to transform $value to another type';
+                break;
+        }
+        return $converted;
+    }
+}
+```
+
+The above class would support both `transform="myexternsion:foo"` and `transform="myextension:bar` through the same class.
+Obviously a DataTransformer can also support just a single type.
+
+You can override other DataTransformers or give priority to your own DataTransformer if it supports the same type as other
+transformers, by returning a higher number from the `getPriority` method.
+
+**Special note about PHP 7.4**
+
+Since PHP 7.4 does not support attributes like PHP 8.0 and above, you'll need to manually specify a DI tag for your class,
+in `Configuration/Services.yaml` of your extension:
+
+```yaml
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  My\Extension\:
+    resource: '../Classes/*'
+
+  My\Extension\Transformation\MyTransformer:
+    tags:
+      - name: flux.datatransformer
+        identifier: 'myextension.datatransformer.mytransform'
+```
+
+This is not necessary on PHP 8.0+ because the DI container will scan for the `#[DataTransformer('id')]` attribute and
+automatically tag your class as a DataTransformer for Flux.
+
 
 Flux feature highlights
 -----------------------

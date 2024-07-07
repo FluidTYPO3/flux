@@ -84,7 +84,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
 
     protected static function getExtensionNameFromRenderingContextOrArguments(
         RenderingContextInterface $renderingContext,
-        iterable $arguments
+        array $arguments
     ): string {
         if ($extensionName = $arguments[static::SCOPE_VARIABLE_EXTENSIONNAME] ?? false) {
             return (string) $extensionName;
