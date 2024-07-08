@@ -11,25 +11,33 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation\Transformer;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\FileTransformer;
+use FluidTYPO3\Flux\Tests\Mock\QueryBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 
 class FileTransformerTest extends AbstractTestCase
 {
-    private FileRepository $fileRepository;
+    private ConnectionPool $connectionPool;
+    private ResourceFactory $resourceFactory;
 
     protected function setUp(): void
     {
-        $this->fileRepository = $this->getMockBuilder(FileRepository::class)
-            ->onlyMethods(['findByRelation'])
+        $this->connectionPool = $this->getMockBuilder(ConnectionPool::class)
+            ->onlyMethods(['getQueryBuilderForTable'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->subject = new FileTransformer($this->fileRepository);
+        $this->resourceFactory = $this->getMockBuilder(ResourceFactory::class)
+            ->onlyMethods(['getFileReferenceObject'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->subject = new FileTransformer($this->connectionPool, $this->resourceFactory);
 
         parent::setUp();
     }
@@ -40,7 +48,10 @@ class FileTransformerTest extends AbstractTestCase
      */
     public function testTransformationWithFileTargetTypes(string $type, array $files, $expected): void
     {
-        $this->fileRepository->method('findByRelation')->willReturn($files);
+        $this->connectionPool->method('getQueryBuilderForTable')->willReturn(
+            new QueryBuilder(array_fill(0, count($files), ['uid' => 1]))
+        );
+        $this->resourceFactory->method('getFileReferenceObject')->willReturnOnConsecutiveCalls(...$files);
 
         $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         $form->setOption(FormOption::RECORD_TABLE, 'tt_content');
