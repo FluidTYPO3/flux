@@ -14,9 +14,11 @@ use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\OptionCarryingInterface;
 use FluidTYPO3\Flux\Form\Transformation\DataTransformerInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 
 /**
  * File Transformer
@@ -24,11 +26,13 @@ use TYPO3\CMS\Core\Resource\FileRepository;
 #[DataTransformer('flux.datatransformer.file')]
 class FileTransformer implements DataTransformerInterface
 {
-    private FileRepository $fileRepository;
+    private ConnectionPool $connectionPool;
+    private ResourceFactory $resourceFactory;
 
-    public function __construct(FileRepository $fileRepository)
+    public function __construct(ConnectionPool $connectionPool, ResourceFactory $resourceFactory)
     {
-        $this->fileRepository = $fileRepository;
+        $this->connectionPool = $connectionPool;
+        $this->resourceFactory = $resourceFactory;
     }
 
     public function canTransformToType(string $type): bool
@@ -55,7 +59,7 @@ class FileTransformer implements DataTransformerInterface
         /** @var array $record */
         $record = $form->getOption(FormOption::RECORD);
 
-        $references = $this->fileRepository->findByRelation($table, (string) $component->getName(), $record['uid']);
+        $references = $this->fetchFileReferences($table, (string) $component->getName(), (integer) $record['uid']);
 
         switch ($type) {
             case 'file':
@@ -76,5 +80,32 @@ class FileTransformer implements DataTransformerInterface
         }
 
         return null;
+    }
+
+    protected function fetchFileReferences(string $table, string $fieldName, int $recordUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
+        $result = $queryBuilder
+            ->select('uid')
+            ->from('sys_file_reference')
+            ->where(
+                $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($recordUid)),
+                $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($table)),
+                $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($fieldName))
+            )
+            ->orderBy('sorting_foreign')
+            ->execute();
+
+        $references = [];
+        while ($row = $result->fetchAssociative()) {
+            /** @var array<string, int> $row */
+            try {
+                $references[] = $this->resourceFactory->getFileReferenceObject($row['uid']);
+            } catch (ResourceDoesNotExistException $exception) {
+                // Not handled - defunct references are just ignored.
+            }
+        }
+
+        return $references;
     }
 }
