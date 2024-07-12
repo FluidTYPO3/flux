@@ -77,10 +77,10 @@ class FlexFormBuilder
 
     public function parseDataStructureByIdentifier(array $identifier): array
     {
-        if ($identifier['type'] !== 'flux') {
+        if (($identifier['type'] ?? null) !== 'flux') {
             return [];
         }
-        $record = $identifier['record'];
+        $record = $identifier['record'] ?? null;
         if (!$record) {
             return [];
         }
