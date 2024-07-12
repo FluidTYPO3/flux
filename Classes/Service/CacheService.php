@@ -47,6 +47,10 @@ class CacheService implements SingletonInterface
      */
     public function setInCaches($value, bool $persistent, string ...$identifyingValues): void
     {
+        if ($value === null) {
+            $this->remove(...$identifyingValues);
+            return;
+        }
         $cacheKey = $this->createCacheIdFromValues($identifyingValues);
         try {
             $this->transientCache->set($cacheKey, $value);

@@ -111,7 +111,9 @@ class AbstractProvider implements ProviderInterface
             $settings['grid'] = Grid::create($settings['grid']);
         }
         foreach ($settings as $name => $value) {
-            $this->$name = $value;
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
         }
         $fieldName = $this->getFieldName([]);
         if (true === isset($settings['listType'])) {
@@ -328,15 +330,20 @@ class AbstractProvider implements ProviderInterface
         }
 
         $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class, []);
+        $cachePersistent = false;
         if (isset($variables['form'])) {
             $variables['form']->setOption(
                 FormOption::TEMPLATE_FILE,
                 $this->getTemplatePathAndFilename($row, $forField)
             );
-            if ($variables['form']->getOption(FormOption::STATIC)) {
-                $this->cacheService->setInCaches($variables, true, $cacheKeyAll);
-            }
+            $cachePersistent = (boolean) $variables['form']->getOption(FormOption::STATIC);
         }
+
+        $this->cacheService->setInCaches(
+            $variables,
+            $cachePersistent,
+            $cacheKeyAll
+        );
 
         $returnValue = $name ? ($variables[$name] ?? null) : $variables;
 
