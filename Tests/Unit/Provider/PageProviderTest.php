@@ -22,8 +22,6 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\Resource\FileRepository;
-use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -50,10 +48,6 @@ class PageProviderTest extends AbstractTestCase
             ->getMock();
         $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
             ->onlyMethods(['getSingle', 'update'])
-            ->getMock();
-        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
-            ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
-            ->disableOriginalConstructor()
             ->getMock();
         $this->cacheService = $this->getMockBuilder(CacheService::class)
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])

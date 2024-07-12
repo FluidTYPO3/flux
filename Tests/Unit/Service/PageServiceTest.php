@@ -42,8 +42,9 @@ class PageServiceTest extends AbstractTestCase
     {
         $runtimeCache = new VariableFrontend(
             'runtime',
-            $this->getMockBuilder(BackendInterface::class)->getMockForAbstractClass()
+            $this->getMockBuilder(BackendInterface::class)->onlyMethods(['get'])->getMockForAbstractClass()
         );
+        $runtimeCache->getBackend()->method('get')->willReturn('N;');
         $instance = $this->getMockBuilder(DummyPageService::class)
             ->onlyMethods(['getRootLine'])
             ->getMock();

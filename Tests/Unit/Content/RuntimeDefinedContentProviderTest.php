@@ -30,6 +30,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
     protected CacheService $cacheService;
     protected ContentTypeManager $contentTypeManager;
     protected ContentTypeDefinitionInterface $contentTypeDefinition;
+    protected TypoScriptService $typoScriptService;
 
     protected function setUp(): void
     {
