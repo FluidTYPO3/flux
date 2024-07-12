@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
@@ -170,7 +171,11 @@ class PreviewView extends TemplateView
             $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
             if ($pageLayoutView instanceof BackendLayoutRenderer) {
                 if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
-                    $content .= $pageLayoutView->drawContent($GLOBALS['TYPO3_REQUEST'], $pageLayoutView->getContext());
+                    $content .= $pageLayoutView->drawContent(
+                        $GLOBALS['TYPO3_REQUEST'],
+                        $pageLayoutView->getContext(),
+                        $form->getOption(FormOption::RECORD_TABLE) === 'pages' // render unused area only for "pages"
+                    );
                 } else {
                     $content .= $pageLayoutView->drawContent(false);
                 }
