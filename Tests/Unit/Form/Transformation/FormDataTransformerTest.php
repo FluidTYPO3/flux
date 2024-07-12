@@ -179,5 +179,4 @@ class FormDataTransformerTest extends AbstractTestCase
 
         self::assertEquals($expected, $transformed);
     }
-
 }
