@@ -110,8 +110,8 @@ class FormDataTransformer
                     ]
                 )['value'];
                 if ($value === $originalValue) {
-                    $value = $this->registry->resolveDataTransformerByType($transformType)
-                        ->transform($object, $transformType, $value);
+                    $transformer = $this->registry->resolveDataTransformerByType($transformType);
+                    $value = $transformer->transform($object, $transformType, $value);
                 }
                 $value = HookHandler::trigger(
                     HookHandler::VALUE_AFTER_TRANSFORM,

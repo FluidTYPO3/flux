@@ -8,22 +8,26 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation\Transformer;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Attribute\DataTransformer;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
 class ObjectTransformerTest extends AbstractTestCase
 {
     private ?FrontendUserRepository $frontendUserRepository = null;
     private ?FrontendUser $frontendUser = null;
+    private ObjectTransformer $subject;
 
     protected function setUp(): void
     {
@@ -51,6 +55,40 @@ class ObjectTransformerTest extends AbstractTestCase
         $this->frontendUserRepository->method('findByUid')->willReturn($this->frontendUser);
 
         GeneralUtility::setSingletonInstance(FrontendUserRepository::class, $this->frontendUserRepository);
+    }
+
+    public function testGetPriority(): void
+    {
+        self::assertSame(0, $this->subject->getPriority());
+    }
+
+    /**
+     * @dataProvider getCanTransformToTypeTestValues
+     */
+    public function testCanTransformToType(bool $expected, string $type): void
+    {
+        self::assertSame($expected, $this->subject->canTransformToType($type));
+    }
+
+    public function getCanTransformToTypeTestValues(): array
+    {
+        $domainObjectClass = get_class($this->getMockBuilder(DomainObjectInterface::class)->getMockForAbstractClass());
+        return [
+            'supports standard object' => [true, DataTransformer::class],
+            'supports single domain object' => [true, $domainObjectClass],
+            'supports compound with domain object' => [true, ObjectStorage::class . '<' . $domainObjectClass . '>'],
+            'supports compound with other object' => [true, ObjectStorage::class . '<' . DataTransformer::class . '>'],
+            'does not support float' => [false, 'float'],
+            'does not support string' => [false, 'string'],
+        ];
+    }
+
+    public function testConvertsToSimpleObjectsThroughConstructor(): void
+    {
+        $input = Form::create()->createField(Form\Field\Input::class, 'test');
+        $output = $this->subject->transform($input, DataTransformer::class, 'test-id');
+        self::assertInstanceOf(DataTransformer::class, $output);
+        self::assertSame('test-id', $output->identifier);
     }
 
     /**
@@ -100,6 +138,6 @@ class ObjectTransformerTest extends AbstractTestCase
             $repository,
             $identifiers
         );
-        $this->assertEquals($result, ['foobar', 'foobar2']);
+        $this->assertEquals($identifiers, $result);
     }
 }

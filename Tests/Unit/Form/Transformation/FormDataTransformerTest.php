@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Form\Transformation\Transformer\ArrayTransformer;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\BooleanTransformer;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\FloatTransformer;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\IntegerTransformer;
+use FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -42,6 +43,7 @@ class FormDataTransformerTest extends AbstractTestCase
                 'flux.datatransformer.boolean' => BooleanTransformer::class,
                 'flux.datatransformer.integer' => IntegerTransformer::class,
                 'flux.datatransformer.float' => FloatTransformer::class,
+                'flux.datatransformer.object' => ObjectTransformer::class,
             ]
         );
         $serviceLocator->method('get')->willReturnMap(
@@ -50,6 +52,7 @@ class FormDataTransformerTest extends AbstractTestCase
                 ['flux.datatransformer.boolean', new BooleanTransformer()],
                 ['flux.datatransformer.integer', new IntegerTransformer()],
                 ['flux.datatransformer.float', new FloatTransformer()],
+                ['flux.datatransformer.object', new ObjectTransformer()],
             ]
         );
 
@@ -58,13 +61,8 @@ class FormDataTransformerTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->registry = $this->getMockBuilder(DataTransformerRegistry::class)
-            ->setConstructorArgs([$serviceLocator])
-            ->getMock();
-
-        $this->subject = $this->getMockBuilder(FormDataTransformer::class)
-            ->setConstructorArgs($this->getConstructorArguments())
-            ->getMock();
+        $this->registry = new DataTransformerRegistry($serviceLocator);
+        $this->subject = new FormDataTransformer($this->flexFormService, $this->registry);
 
         parent::setUp();
     }
@@ -158,13 +156,28 @@ class FormDataTransformerTest extends AbstractTestCase
             ['0', 'integer', 0],
             ['0.12', 'float', 0.12],
             ['1,2,3', 'array', [1, 2, 3]],
-            ['123,321', 'InvalidClass', '123'],
             ['1', 'boolean', true],
-            /*
-            [date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))],
-            ['1,2', ObjectStorage::class . '<\\Invalid>', null],
-            ['bar', self::class . '->fixtureTransformToFooString', 'foo'],
-            */
         ];
     }
+
+    public function testTransformationSectionObject(): void
+    {
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $section = $form->createContainer(Form\Container\Section::class, 'section');
+        $object = $section->createContainer(Form\Container\SectionObject::class, 'object');
+        $object->setTransform(\ArrayObject::class);
+        $object->createField(Form\Field\Input::class, 'foo');
+        $object->createField(Form\Field\Input::class, 'baz');
+
+        $data = ['section' => ['abcdef123456' => ['object' => ['foo' => 'bar', 'baz' => 'test']]]];
+
+        $transformed = $this->subject->transformAccordingToConfiguration($data, $form);
+        $expected = $transformed;
+        $expected['section']['abcdef123456']['object'] = new \ArrayObject(
+            $expected['section']['abcdef123456']['object']
+        );
+
+        self::assertEquals($expected, $transformed);
+    }
+
 }

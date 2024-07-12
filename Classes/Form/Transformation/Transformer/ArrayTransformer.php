@@ -12,6 +12,7 @@ namespace FluidTYPO3\Flux\Form\Transformation\Transformer;
 use FluidTYPO3\Flux\Attribute\DataTransformer;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\Transformation\DataTransformerInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Array Transformer
@@ -30,11 +31,20 @@ class ArrayTransformer implements DataTransformerInterface
     }
 
     /**
-     * @param string $value
+     * @param string|array $value
      * @return array|null
      */
     public function transform(FormInterface $component, string $type, $value)
     {
-        return explode(',', (string) $value) ?: null;
+        if (is_array($value)) {
+            return $value;
+        }
+        if (is_string($value)) {
+            return GeneralUtility::trimExplode(',', $value, true);
+        }
+        if (is_iterable($value)) {
+            return iterator_to_array($value);
+        }
+        return (array) $value;
     }
 }

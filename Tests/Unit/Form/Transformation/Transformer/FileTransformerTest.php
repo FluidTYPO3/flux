@@ -24,6 +24,7 @@ class FileTransformerTest extends AbstractTestCase
 {
     private ConnectionPool $connectionPool;
     private ResourceFactory $resourceFactory;
+    private FileTransformer $subject;
 
     protected function setUp(): void
     {
@@ -40,6 +41,11 @@ class FileTransformerTest extends AbstractTestCase
         $this->subject = new FileTransformer($this->connectionPool, $this->resourceFactory);
 
         parent::setUp();
+    }
+
+    public function testGetPriority(): void
+    {
+        self::assertSame(0, $this->subject->getPriority());
     }
 
     /**
