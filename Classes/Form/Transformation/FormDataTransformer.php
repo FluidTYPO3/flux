@@ -9,11 +9,15 @@ namespace FluidTYPO3\Flux\Form\Transformation;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Service\FlexFormService;
 
 class FormDataTransformer
@@ -60,9 +64,16 @@ class FormDataTransformer
             $languagePointer,
             $valuePointer
         );
-        if (null !== $form && $form->getOption(FormOption::TRANSFORM)) {
-            $settings = $this->transformAccordingToConfiguration($settings, $form);
+
+        if ($form !== null) {
+            if ($form->getOption(FormOption::TRANSFORM)) {
+                $settings = $this->transformAccordingToConfiguration($settings, $form);
+            }
+            if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES)) {
+                unset($settings[$form->getOption(FormOption::RECORD_FIELD)]);
+            }
         }
+
         return $settings;
     }
 
@@ -73,62 +84,69 @@ class FormDataTransformer
      */
     public function transformAccordingToConfiguration(array $values, Form $form, string $prefix = ''): array
     {
+        $rebuilt = [];
         foreach ($values as $index => $value) {
+            $component = $this->extractTransformableObjectByPath($form, $prefix . $index);
             if (is_array($value)) {
                 $value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
                 if ($object = $this->extractTransformableObjectByPath($form, $index)) {
-                    $value = $this->transform($form, $index, $value);
+                    $value = $this->transform($form, $object, $value);
                 }
-            } else {
-                $value = $this->transform($form, $prefix . $index, $value);
+            } elseif ($component) {
+                $value = $this->transform($form, $component, $value);
             }
-            $values[$index] = $value;
+            if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES) &&
+                ($component instanceof Fal || ($component instanceof Field && $component->getType() === 'file'))
+            ) {
+                // Revert the field name back to the un-prefixed field name
+                $index = $component->getName();
+            }
+            $rebuilt[$index] = $value;
         }
-        return $values;
+        return $rebuilt;
     }
 
     /**
      * @param mixed $value
+     * @param FieldInterface|ContainerInterface $object
      * @return mixed
      */
-    protected function transform(Form $form, string $path, $value)
+    protected function transform(Form $form, Form\FormInterface $object, $value)
     {
-        /** @var FieldInterface|ContainerInterface $object */
-        $object = $this->extractTransformableObjectByPath($form, $path);
-        if (is_object($object)) {
-            $transformType = $object->getTransform();
-
-            if ($transformType) {
-                $originalValue = $value;
-                $value = HookHandler::trigger(
-                    HookHandler::VALUE_BEFORE_TRANSFORM,
-                    [
-                        'value' => $value,
-                        'object' => $object,
-                        'type' => $transformType,
-                        'form' => $form
-                    ]
-                )['value'];
-                if ($value === $originalValue) {
-                    $transformer = $this->registry->resolveDataTransformerByType($transformType);
-                    $value = $transformer->transform($object, $transformType, $value);
-                }
-                $value = HookHandler::trigger(
-                    HookHandler::VALUE_AFTER_TRANSFORM,
-                    [
-                        'value' => $value,
-                        'object' => $object,
-                        'type' => $transformType,
-                        'form' => $form
-                    ]
-                )['value'];
-            }
+        $transformType = $object->getTransform();
+        if (!$transformType) {
+            return $value;
         }
+
+        $originalValue = $value;
+        $value = HookHandler::trigger(
+            HookHandler::VALUE_BEFORE_TRANSFORM,
+            [
+                'value' => $value,
+                'object' => $object,
+                'type' => $transformType,
+                'form' => $form
+            ]
+        )['value'];
+        if ($value === $originalValue) {
+            $transformer = $this->registry->resolveDataTransformerByType($transformType);
+            $value = $transformer->transform($object, $transformType, $value);
+        }
+        $value = HookHandler::trigger(
+            HookHandler::VALUE_AFTER_TRANSFORM,
+            [
+                'value' => $value,
+                'object' => $object,
+                'type' => $transformType,
+                'form' => $form
+            ]
+        )['value'];
+
         return $value;
     }
 
     /**
-     * @return mixed
+     * @return FieldInterface|ContainerInterface|null
      */
     protected function extractTransformableObjectByPath(ContainerInterface $subject, string $path)
     {
@@ -147,6 +165,8 @@ class FormDataTransformer
             }
             $subPath .= '.' . array_shift($pathAsArray);
         }
-        return $subject->get($path, true);
+        /** @var FieldInterface|ContainerInterface $object */
+        $object = $subject->get($path, true);
+        return $object;
     }
 }

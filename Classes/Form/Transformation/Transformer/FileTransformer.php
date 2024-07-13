@@ -10,10 +10,12 @@ namespace FluidTYPO3\Flux\Form\Transformation\Transformer;
  */
 
 use FluidTYPO3\Flux\Attribute\DataTransformer;
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\OptionCarryingInterface;
 use FluidTYPO3\Flux\Form\Transformation\DataTransformerInterface;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
@@ -59,7 +61,12 @@ class FileTransformer implements DataTransformerInterface
         /** @var array $record */
         $record = $form->getOption(FormOption::RECORD);
 
-        $references = $this->fetchFileReferences($table, (string) $component->getName(), (integer) $record['uid']);
+        $fieldName = (string) $component->getName();
+        if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES)) {
+            $fieldName = $form->getOption(FormOption::RECORD_FIELD) . '.' . $fieldName;
+        }
+
+        $references = $this->fetchFileReferences($table, $fieldName, (integer) $record['uid']);
 
         switch ($type) {
             case 'file':
