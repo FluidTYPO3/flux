@@ -543,23 +543,35 @@ class AbstractProvider implements ProviderInterface
 
     protected function extractFieldNamesToClear(array $record, string $fieldName): array
     {
-        $removals = [];
+        return $this->extractWizardTaggedFieldNames($record, $fieldName, 'clear');
+    }
+
+    protected function extractFieldNamesToProtect(array $record, string $fieldName): array
+    {
+        return $this->extractWizardTaggedFieldNames($record, $fieldName, 'protect');
+    }
+
+    protected function extractWizardTaggedFieldNames(array $record, string $fieldName, string $wizardName): array
+    {
+        $wizardTagName = '_' . $wizardName;
+        $tagLength = strlen($wizardTagName);
+        $fieldNames = [];
         $data = $record[$fieldName]['data'] ?? [];
         foreach ($data as $sheetName => $sheetFields) {
             foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
-                if ('_clear' === substr($sheetFieldName, -6)) {
-                    $removals[] = $sheetFieldName;
+                if ($wizardTagName === substr($sheetFieldName, -$tagLength)) {
+                    $fieldNames[] = $sheetFieldName;
                 } else {
-                    $clearFieldName = $sheetFieldName . '_clear';
-                    if (isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF'])) {
-                        if ((boolean) $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) {
-                            $removals[] = $sheetFieldName;
+                    $wizardFieldName = $sheetFieldName . $wizardTagName;
+                    if (isset($data[$sheetName]['lDEF'][$wizardFieldName]['vDEF'])) {
+                        if ((boolean) $data[$sheetName]['lDEF'][$wizardFieldName]['vDEF']) {
+                            $fieldNames[] = $sheetFieldName;
                         }
                     }
                 }
             }
         }
-        return array_unique($removals);
+        return array_unique($fieldNames);
     }
 
     /**

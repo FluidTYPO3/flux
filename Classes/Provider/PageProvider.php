@@ -235,6 +235,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                 }
 
                 $removeForField = [];
+                $protected = array_flip($this->extractFieldNamesToProtect($record, $tableFieldName));
                 foreach ($form->getFields() as $field) {
                     /** @var Form\Container\Sheet $parent */
                     $parent = $field->getParent();
@@ -254,7 +255,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                         );
                         $empty = (true === empty($value) && $value !== '0' && $value !== 0);
                         $same = ($inheritedValue === $value);
-                        if (true === $same && true === $inherit || (true === $inheritEmpty && true === $empty)) {
+                        $protected = (bool) ($protected[$fieldName] ?? false);
+                        if (!$protected && ($same && $inherit || ($inheritEmpty && $empty))) {
                             $removeForField[] = $fieldName;
                         }
                     }
@@ -292,56 +294,51 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             return $configuration;
         }
 
-        $tree = $this->getInheritanceTree($currentPageRecord);
+        $tree = array_reverse($this->getInheritanceTree($currentPageRecord), true);
 
-        $dataMirror = [];
         $inheritedConfiguration = [];
-        foreach ([self::FIELD_NAME_MAIN, self::FIELD_NAME_SUB] as $field) {
-            if (!empty($currentPageRecord[$field])) {
-                $currentPageRecord[$field] = $this->convertXmlToArray($currentPageRecord[$field]) ?? [];
-            }
-            /** @var Form&Form $form */
-            $form = $this->getForm($row, $field);
-            foreach ($tree as $branch) {
-                if (!empty($branch[$field])) {
-                    $branchData = $this->convertXmlToArray($branch[$field] ?? '') ?? [];
-                    $inheritedConfiguration[$field] = RecursiveArrayUtility::mergeRecursiveOverrule(
-                        $inheritedConfiguration[$field] ?? [],
-                        $branchData
-                    );
-                }
-            }
 
-            $dataMirror[$field] = ['data' => []];
-            $this->extractDataStorageMirrorWithInheritableFields($form, $dataMirror[$field]['data']);
+        if (!empty($currentPageRecord[self::FIELD_NAME_SUB])) {
+            $currentPageRecord[self::FIELD_NAME_SUB] = $this->convertXmlToArray(
+                $currentPageRecord[self::FIELD_NAME_SUB]
+            ) ?? [];
         }
-
-        $inheritedConfigurationForMainField = $inheritedConfiguration[self::FIELD_NAME_SUB] ?? [];
-        $this->unsetUninheritableFieldsInInheritedConfiguration(
-            $inheritedConfigurationForMainField,
-            $currentPageRecord[self::FIELD_NAME_MAIN],
-            $dataMirror[self::FIELD_NAME_MAIN]
-        );
-
-        $inheritedConfigurationForSubField = $inheritedConfiguration[self::FIELD_NAME_SUB] ?? [];
-        $this->unsetUninheritableFieldsInInheritedConfiguration(
-            $inheritedConfigurationForSubField,
-            $currentPageRecord[self::FIELD_NAME_SUB],
-            $dataMirror[self::FIELD_NAME_SUB]
-        );
-
-        if (empty($configuration['databaseRow'][self::FIELD_ACTION_MAIN][0])) {
-            if (!empty($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
-                if (is_array($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
-                    $currentData = $configuration['databaseRow'][self::FIELD_NAME_MAIN];
-                } else {
-                    $currentData = $this->convertXmlToArray($configuration['databaseRow'][self::FIELD_NAME_MAIN]) ?? [];
-                }
-                $configuration['databaseRow'][self::FIELD_NAME_MAIN] = RecursiveArrayUtility::mergeRecursiveOverrule(
-                    $inheritedConfigurationForMainField,
-                    $currentData
+        /** @var Form&Form $form */
+        $form = $this->getForm($row, self::FIELD_NAME_SUB);
+        foreach ($tree as $branch) {
+            if (!empty($branch[self::FIELD_NAME_SUB])) {
+                $branchData = $this->convertXmlToArray($branch[self::FIELD_NAME_SUB] ?? '') ?? [];
+                $inheritedConfiguration = RecursiveArrayUtility::mergeRecursiveOverrule(
+                    $inheritedConfiguration,
+                    $branchData
                 );
             }
+        }
+
+        $inheritedConfigurationForFields = [];
+        foreach ([self::FIELD_NAME_MAIN, self::FIELD_NAME_SUB] as $field) {
+            $inheritedConfigurationForFields[$field] = $inheritedConfiguration;
+            $dataMirror = ['data' => []];
+            $this->extractDataStorageMirrorWithInheritableFields($form, $dataMirror['data']);
+            $this->unsetUninheritableFieldsInInheritedConfiguration(
+                $inheritedConfigurationForFields[$field],
+                $currentPageRecord[self::FIELD_NAME_MAIN],
+                $dataMirror
+            );
+        }
+
+        if (!empty($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
+            if (is_array($configuration['databaseRow'][self::FIELD_NAME_MAIN])) {
+                $currentData = $configuration['databaseRow'][self::FIELD_NAME_MAIN];
+            } else {
+                $currentData = $this->convertXmlToArray($configuration['databaseRow'][self::FIELD_NAME_MAIN]) ?? [];
+            }
+            $configuration['databaseRow'][self::FIELD_NAME_MAIN] = RecursiveArrayUtility::mergeRecursiveOverrule(
+                $inheritedConfigurationForFields[self::FIELD_NAME_MAIN],
+                $currentData,
+                false,
+                true
+            );
         }
 
         if (is_array($configuration['databaseRow'][self::FIELD_NAME_SUB])) {
@@ -351,7 +348,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         }
 
         $configuration['databaseRow'][self::FIELD_NAME_SUB] = RecursiveArrayUtility::mergeRecursiveOverrule(
-            $inheritedConfigurationForSubField,
+            $inheritedConfigurationForFields[self::FIELD_NAME_SUB],
             $subData
         );
 
@@ -445,6 +442,9 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function convertXmlToArray(string $xml): ?array
     {
         /** @var string|array $converted */
@@ -501,7 +501,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $data = [];
             foreach ($tree as $branch) {
                 $values = $this->getFlexFormValuesSingle($branch, self::FIELD_NAME_SUB);
-                $data = RecursiveArrayUtility::merge($data, $values);
+                $data = RecursiveArrayUtility::mergeRecursiveOverrule($data, $values, false, true);
             }
             self::$cache[$cacheKey] = $data;
         }

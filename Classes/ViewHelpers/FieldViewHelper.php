@@ -74,6 +74,15 @@ class FieldViewHelper extends AbstractFieldViewHelper
             false
         );
         $this->registerArgument(
+            'protect',
+            'boolean',
+            'If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the ' .
+            'value from being changed if the (normally inherited) field value is changed in a parent record. Has no ' .
+            'effect if "inherit" is disabled on the field.',
+            false,
+            false
+        );
+        $this->registerArgument(
             'extensionName',
             'string',
             'If provided, enables overriding the extension context for this and all child nodes. The extension name ' .
@@ -88,9 +97,8 @@ class FieldViewHelper extends AbstractFieldViewHelper
         /** @var array $arguments */
         $parent = static::getContainerFromRenderingContext($renderingContext);
         $field = Field::create($arguments instanceof ArgumentCollection ? $arguments->getArrayCopy() : $arguments);
-        if ($arguments['clear'] ?? false) {
-            $field->setClearable(true);
-        }
+        $field->setClearable($arguments['clear']);
+        $field->setProtectable($arguments['protect']);
 
         if (!$parent instanceof FieldContainerInterface) {
             return $field;
