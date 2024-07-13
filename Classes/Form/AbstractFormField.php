@@ -33,6 +33,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     protected bool $inherit = true;
     protected bool $inheritEmpty = false;
     protected bool $clearable = false;
+    protected bool $protectable = false;
     protected bool $exclude = false;
     protected ?string $validate = null;
     protected ?string $position = null;
@@ -107,6 +108,12 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
         if ($this->getClearable()) {
             $fieldStructureArray['config']['fieldWizard']['fluxClearValue'] = [
                 'renderType' => 'fluxClearValue',
+            ];
+        }
+
+        if ($this->getProtectable() && $this->getInherit()) {
+            $fieldStructureArray['config']['fieldWizard']['fluxProtectValue'] = [
+                'renderType' => 'fluxProtectValue',
             ];
         }
 
@@ -256,5 +263,16 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
     public function getClearable(): bool
     {
         return $this->clearable;
+    }
+
+    public function getProtectable(): bool
+    {
+        return $this->protectable;
+    }
+
+    public function setProtectable(bool $protectable): self
+    {
+        $this->protectable = $protectable;
+        return $this;
     }
 }

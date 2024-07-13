@@ -110,6 +110,15 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
             false
         );
         $this->registerArgument(
+            'protect',
+            'boolean',
+            'If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the ' .
+            'value from being changed if the (normally inherited) field value is changed in a parent record. Has no ' .
+            'effect if "inherit" is disabled on the field.',
+            false,
+            false
+        );
+        $this->registerArgument(
             'variables',
             'array',
             'Freestyle variables which become assigned to the resulting Component - can then be read from that ' .
@@ -161,6 +170,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
         $component->setInheritEmpty($arguments['inheritEmpty']);
         $component->setTransform($arguments['transform']);
         $component->setClearable($arguments['clear']);
+        $component->setProtectable($arguments['protect']);
         $component->setVariables($arguments['variables']);
         $component->setNative($arguments['native']);
         $component->setPosition($arguments['position']);

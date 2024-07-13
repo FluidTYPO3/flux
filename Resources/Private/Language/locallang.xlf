@@ -199,6 +199,15 @@
 			<trans-unit id="flux.clearValue">
 				<source>Clear value</source>
 			</trans-unit>
+			<trans-unit id="flux.clearValue.help">
+				<source>Destroy the value that is saved in the database, allowing the value to either be inherited again from a parent or reset to the default value if there is no inherited value.</source>
+			</trans-unit>
+			<trans-unit id="flux.protectValue">
+				<source>Protect value</source>
+			</trans-unit>
+			<trans-unit id="flux.protectValue.help">
+				<source>Protected values will remain the same even if the (inherited) value changes in a parent record.</source>
+			</trans-unit>
 			<trans-unit id="reference">
 				<source>Reference to content on page '%s' - click to jump to original</source>
 			</trans-unit>

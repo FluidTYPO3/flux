@@ -12,9 +12,9 @@ use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * TCA field wizard to remove empty values
+ * TCA field wizard to protect the value from changing when inherited value changes.
  */
-class ClearValueWizard extends AbstractNode
+class ProtectValueWizard extends AbstractNode
 {
     public function render(): array
     {
@@ -22,16 +22,21 @@ class ClearValueWizard extends AbstractNode
 
         $fieldName = 'data' . $this->data['elementBaseName'];
         $nameSegments = explode('][', $fieldName);
-        $nameSegments[count($nameSegments) - 2] .= '_clear';
+        $wizardFieldName = $nameSegments[count($nameSegments) - 2] .= '_protect';
+        $wizardFieldValue = $this->data['flexFormRowData'][$wizardFieldName]['vDEF'] ?? false;
         $fieldName = implode('][', $nameSegments);
+        $checked = (bool) $wizardFieldValue ? ' checked="checked"' : '';
 
-        $result['html'] = '<label style="opacity: 0.65; margin-top: 1em; margin-right: 1em;" title="'
-            . $this->translate('flux.clearValue.help')
+        $result['html'] = '<input type="hidden" name="' . $fieldName . '" value="0" />';
+        $result['html'] .= '<label style="opacity: 0.65; margin-top: 1em; margin-right: 1em;" title="'
+            . $this->translate('flux.protectValue.help')
             . '">'
             . '<input type="checkbox" class="form-check-input" name="'
             . $fieldName
-            . '" value="1" /> '
-            . $this->translate('flux.clearValue')
+            . '" value="1"'
+            . $checked
+            . '/> '
+            . $this->translate('flux.protectValue')
             . '</label>';
 
         return $result;
