@@ -35,7 +35,7 @@ class FieldViewHelper extends AbstractFieldViewHelper
             'transform',
             'string',
             'Set this to transform your value to this type - integer, array (for csv values), float, DateTime, ' .
-            'Vendor\\MyExt\\Domain\\Model\\Object or ObjectStorage with type hint. '
+            'Vendor\\MyExt\\Domain\\Model\\Object or ObjectStorage with type hint.'
         );
         $this->registerArgument(
             'onChange',
