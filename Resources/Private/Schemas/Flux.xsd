@@ -227,6 +227,11 @@ Defines a single field data structure.
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:string" name="extensionName" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.]]></xsd:documentation>
@@ -311,6 +316,11 @@ Defines a single field data structure.
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -464,6 +474,11 @@ is not important; the order and the sheet location don't matter.
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -680,6 +695,11 @@ is not important; the order and the sheet location don't matter.
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -791,6 +811,11 @@ is not important; the order and the sheet location don't matter.
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -896,6 +921,11 @@ Use `<flux:field.inline.fal>` if you want this feature.
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -1082,6 +1112,11 @@ Use `<flux:field.inline.fal>` if you want this feature.
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -1471,6 +1506,11 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -1809,6 +1849,11 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -1957,6 +2002,11 @@ Add a wizard to search for content elements, instead of opening a popup:
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -2203,6 +2253,11 @@ but which cannot be edited.
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -2297,6 +2352,11 @@ but which cannot be edited.
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -2477,6 +2537,11 @@ https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#fore
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -2746,6 +2811,11 @@ You can translate those labels by putting a LLL reference in the first property:
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -2907,6 +2977,11 @@ You can translate those labels by putting a LLL reference in the first property:
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -3046,6 +3121,11 @@ You can translate those labels by putting a LLL reference in the first property:
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
@@ -3324,6 +3404,11 @@ You can translate those labels by putting a LLL reference in the first property:
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template]]></xsd:documentation>
@@ -3598,6 +3683,11 @@ You can translate those labels by putting a LLL reference in the first property:
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:boolean" name="protect" default="false">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:anySimpleType" name="variables" default="array (&#10;)">
