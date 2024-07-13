@@ -582,6 +582,12 @@ class AbstractProvider implements ProviderInterface
     {
         $form = $this->getForm($row, $conf['fieldName'] ?? null);
         if ($dataStructure !== null && $form !== null) {
+            // Last minute set the field name. Ensures the field name matches the one given with the DS identifier,
+            // even if the Form instance was resolved from another field (e.g. inherited Form in page template).
+            $form->setOption(
+                FormOption::RECORD_FIELD,
+                $conf['fieldName'] ?? $form->getOption(FormOption::RECORD_FIELD)
+            );
             $dataStructure = array_replace_recursive($dataStructure, $form->build());
         }
     }

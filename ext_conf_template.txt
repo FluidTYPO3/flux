@@ -24,3 +24,6 @@ flexFormToIrre = 0
 
 # cat=basic/enable; type=options[restricted, unrestricted]; label=LLL:EXT:flux/Resources/Private/Language/locallang.xlf:extension_configuration.inheritanceMode
 inheritanceMode = restricted
+
+# cat=basic/enable; type=boolean; label=LLL:EXT:flux/Resources/Private/Language/locallang.xlf:extension_configuration.uniqueFileFieldNames
+uniqueFileFieldNames = 0

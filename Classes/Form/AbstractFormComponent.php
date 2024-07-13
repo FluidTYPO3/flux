@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Column;
@@ -18,6 +19,7 @@ use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\SectionObject;
 use FluidTYPO3\Flux\Form\Container\Sheet;
 use FluidTYPO3\Flux\Hooks\HookHandler;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -423,13 +425,25 @@ abstract class AbstractFormComponent implements FormInterface
      */
     protected function buildChildren(iterable $children): array
     {
+        /** @var OptionCarryingInterface $root */
+        $root = $this->getRoot();
+
         $structure = [];
         foreach ($children as $child) {
             if (!$child->getEnabled() || $child instanceof FieldInterface && $child->isNative()) {
                 continue;
             }
             $name = $child->getName();
-            $structure[$name] = $child->build();
+            $configuration = $child->build();
+            $config = $configuration['config'] ?? [];
+            if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES)) {
+                // Unique file names are enabled. IF the field is type=file or type=inline with FAL, prefix the name.
+                $type = $config['type'] ?? null;
+                if ($type === 'file' || ($type === 'inline' && $config['foreign_table'] === 'sys_file_reference')) {
+                    $name = $root->getOption(FormOption::RECORD_FIELD) . '.' . $name;
+                }
+            }
+            $structure[$name] = $configuration;
         }
         return $structure;
     }
