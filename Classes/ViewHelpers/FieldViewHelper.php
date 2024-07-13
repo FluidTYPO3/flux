@@ -69,7 +69,7 @@ class FieldViewHelper extends AbstractFieldViewHelper
             'clear',
             'boolean',
             'If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely ' .
-            'destroys the current field value all the way down to the stored XML value',
+            'destroys the current field value all the way down to the stored XML value.',
             false,
             false
         );
