@@ -20,6 +20,7 @@ use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
@@ -262,5 +263,23 @@ class WizardItemsManipulatorTest extends AbstractTestCase
 
         self::assertSame($expectedWhitelist, $whitelist, 'Whitelist does not match expected value');
         self::assertSame($expectedBlacklist, $blacklist, 'Blacklist does not match expected value');
+    }
+
+    public function testManipulateWizardItemsToleratesSiteNotFoundException(): void
+    {
+        $this->siteFinder->expects(self::atLeastOnce())
+            ->method('getSiteByPageId')
+            ->willThrowException(new SiteNotFoundException('test'));
+        $this->subject->manipulateWizardItems([], 1, null);
+    }
+
+    public function testFindParentColumnPositionRecursesToSelfWithVirtualColumnPosition(): void
+    {
+        $this->recordService->method('getSingle')->willReturnOnConsecutiveCalls(
+            ['colPos' => 10010],
+            ['colPos' => 4]
+        );
+        $output = $this->callInaccessibleMethod($this->subject, 'findParentColumnPosition', 1);
+        self::assertSame(4, $output);
     }
 }
