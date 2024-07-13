@@ -1,193 +1,211 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/FieldViewHelper.php
-
-:edit-on-github-link: FieldViewHelper.php
 :navigation-title: field
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field:
 
 ===============================
-Field ViewHelper `<flux:field>`
+field ViewHelper `<flux:field>`
 ===============================
+
 
 FlexForm field ViewHelper
 
 Defines a single field data structure.
 
-.. _fluidtypo3-flux-field_source:
-
-Source code
-===========
-
-Go to the source code of this ViewHelper: `FieldViewHelper.php (GitHub) <fluidtypo3/flux/development/FieldViewHelper.php>`__.
 
 .. _fluidtypo3-flux-field_arguments:
 
 Arguments
 =========
 
-The following arguments are available for `<flux:field>`:
 
-..  contents::
-    :local:
-
-
-.. _fluidtypo3-flux-field-type_argument:
+.. _field_type:
 
 type
 ----
 
-..  confval:: type
-    :name: fluidtypo3-flux-field-type
-    :type: string
-    :required: true
+:aspect:`DataType`
+   string
 
-    TCA field type
+:aspect:`Required`
+   true
+:aspect:`Description`
+   TCA field type
 
-.. _fluidtypo3-flux-field-name_argument:
+.. _field_name:
 
 name
 ----
 
-..  confval:: name
-    :name: fluidtypo3-flux-field-name
-    :type: string
-    :required: true
+:aspect:`DataType`
+   string
 
-    Name of the attribute, FlexForm XML-valid tag name string
+:aspect:`Required`
+   true
+:aspect:`Description`
+   Name of the attribute, FlexForm XML-valid tag name string
 
-.. _fluidtypo3-flux-field-label_argument:
+.. _field_label:
 
 label
 -----
 
-..  confval:: label
-    :name: fluidtypo3-flux-field-label
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Label for field
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Label for field
 
-.. _fluidtypo3-flux-field-description_argument:
+.. _field_description:
 
 description
 -----------
 
-..  confval:: description
-    :name: fluidtypo3-flux-field-description
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Field description
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field description
 
-.. _fluidtypo3-flux-field-exclude_argument:
+.. _field_exclude:
 
 exclude
 -------
 
-..  confval:: exclude
-    :name: fluidtypo3-flux-field-exclude
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Set to FALSE if field is not an "exclude" field
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Set to FALSE if field is not an "exclude" field
 
-.. _fluidtypo3-flux-field-config_argument:
+.. _field_config:
 
 config
 ------
 
-..  confval:: config
-    :name: fluidtypo3-flux-field-config
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    TCA "config" array
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-transform_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   TCA "config" array
+
+.. _field_transform:
 
 transform
 ---------
 
-..  confval:: transform
-    :name: fluidtypo3-flux-field-transform
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
 
-.. _fluidtypo3-flux-field-onchange_argument:
+.. _field_onchange:
 
 onChange
 --------
 
-..  confval:: onChange
-    :name: fluidtypo3-flux-field-onchange
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    TCA onChange instruction
+:aspect:`Required`
+   false
+:aspect:`Description`
+   TCA onChange instruction
 
-.. _fluidtypo3-flux-field-displaycond_argument:
+.. _field_displaycond:
 
 displayCond
 -----------
 
-..  confval:: displayCond
-    :name: fluidtypo3-flux-field-displaycond
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
 
-.. _fluidtypo3-flux-field-inherit_argument:
+.. _field_inherit:
 
 inherit
 -------
 
-..  confval:: inherit
-    :name: fluidtypo3-flux-field-inherit
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-inheritempty_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+
+.. _field_inheritempty:
 
 inheritEmpty
 ------------
 
-..  confval:: inheritEmpty
-    :name: fluidtypo3-flux-field-inheritempty
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-clear_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+
+.. _field_clear:
 
 clear
 -----
 
-..  confval:: clear
-    :name: fluidtypo3-flux-field-clear
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value.
 
-.. _fluidtypo3-flux-field-extensionname_argument:
+.. _field_protect:
+
+protect
+-------
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.
+
+.. _field_extensionname:
 
 extensionName
 -------------
 
-..  confval:: extensionName
-    :name: fluidtypo3-flux-field-extensionname
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.

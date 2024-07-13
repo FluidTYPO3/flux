@@ -1,15 +1,12 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/Form/Option/InheritanceModeViewHelper.php
-
-:edit-on-github-link: Form/Option/InheritanceModeViewHelper.php
 :navigation-title: form.option.inheritanceMode
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option-inheritancemode:
 
 ===========================================================================
-Form.option.inheritanceMode ViewHelper `<flux:form.option.inheritanceMode>`
+form.option.inheritanceMode ViewHelper `<flux:form.option.inheritanceMode>`
 ===========================================================================
+
 
 Inheritance mode option
 =======================
@@ -56,32 +53,22 @@ Or:
     (which is the same as:)
     <flux:form.option.inheritanceMode>restricted</flux:form.option.inheritanceMode>
 
-.. _fluidtypo3-flux-form-option-inheritancemode_source:
-
-Source code
-===========
-
-Go to the source code of this ViewHelper: `InheritanceModeViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/Option/InheritanceModeViewHelper.php>`__.
 
 .. _fluidtypo3-flux-form-option-inheritancemode_arguments:
 
 Arguments
 =========
 
-The following arguments are available for `<flux:form.option.inheritanceMode>`:
 
-..  contents::
-    :local:
-
-
-.. _fluidtypo3-flux-form-option-inheritancemode-value_argument:
+.. _form.option.inheritancemode_value:
 
 value
 -----
 
-..  confval:: value
-    :name: fluidtypo3-flux-form-option-inheritancemode-value
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Mode of inheritance, either "restricted" or "unrestricted".
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Mode of inheritance, either "restricted" or "unrestricted".

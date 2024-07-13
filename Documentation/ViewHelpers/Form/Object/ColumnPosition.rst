@@ -1,15 +1,12 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/Form/Object/ColumnPositionViewHelper.php
-
-:edit-on-github-link: Form/Object/ColumnPositionViewHelper.php
 :navigation-title: form.object.columnPosition
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-object-columnposition:
 
 =========================================================================
-Form.object.columnPosition ViewHelper `<flux:form.object.columnPosition>`
+form.object.columnPosition ViewHelper `<flux:form.object.columnPosition>`
 =========================================================================
+
 
 Section object - automatic colPos field
 
@@ -56,11 +53,11 @@ with the "static" option for `<flux:form />` - this
 option must not be enabled; if it is, the grid will
 not be rendered.
 
-.. _fluidtypo3-flux-form-object-columnposition_source:
 
-Source code
-===========
+.. _fluidtypo3-flux-form-object-columnposition_arguments:
 
-Go to the source code of this ViewHelper: `ColumnPositionViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/Object/ColumnPositionViewHelper.php>`__.
+Arguments
+=========
 
-..  note:: `<flux:form.object.columnPosition>` has no arguments.
+
+This ViewHelper has no arguments.

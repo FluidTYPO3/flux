@@ -1,15 +1,12 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/Form/ContentViewHelper.php
-
-:edit-on-github-link: Form/ContentViewHelper.php
 :navigation-title: form.content
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-content:
 
 =============================================
-Form.content ViewHelper `<flux:form.content>`
+form.content ViewHelper `<flux:form.content>`
 =============================================
+
 
 Adds a content area to a source using Flux FlexForms
 
@@ -48,56 +45,48 @@ Example of difference
         <!-- No use of flux:content is possible after this point -->
     </flux:form>
 
-.. _fluidtypo3-flux-form-content_source:
-
-Source code
-===========
-
-Go to the source code of this ViewHelper: `ContentViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/ContentViewHelper.php>`__.
 
 .. _fluidtypo3-flux-form-content_arguments:
 
 Arguments
 =========
 
-The following arguments are available for `<flux:form.content>`:
 
-..  contents::
-    :local:
-
-
-.. _fluidtypo3-flux-form-content-name_argument:
+.. _form.content_name:
 
 name
 ----
 
-..  confval:: name
-    :name: fluidtypo3-flux-form-content-name
-    :type: string
-    :required: true
+:aspect:`DataType`
+   string
 
-    Name of the content area, FlexForm XML-valid tag name string
+:aspect:`Required`
+   true
+:aspect:`Description`
+   Name of the content area, FlexForm XML-valid tag name string
 
-.. _fluidtypo3-flux-form-content-label_argument:
+.. _form.content_label:
 
 label
 -----
 
-..  confval:: label
-    :name: fluidtypo3-flux-form-content-label
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Label for content area, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.columns.foobar" based on column name, in scope of extension rendering the Flux form.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Label for content area, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.columns.foobar" based on column name, in scope of extension rendering the Flux form.
 
-.. _fluidtypo3-flux-form-content-extensionname_argument:
+.. _form.content_extensionname:
 
 extensionName
 -------------
 
-..  confval:: extensionName
-    :name: fluidtypo3-flux-form-content-extensionname
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.

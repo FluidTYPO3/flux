@@ -1,15 +1,12 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/Form/Option/IconViewHelper.php
-
-:edit-on-github-link: Form/Option/IconViewHelper.php
 :navigation-title: form.option.icon
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option-icon:
 
 =====================================================
-Form.option.icon ViewHelper `<flux:form.option.icon>`
+form.option.icon ViewHelper `<flux:form.option.icon>`
 =====================================================
+
 
 Icon option
 ===========
@@ -26,32 +23,22 @@ Example
 
     <flux:form.option.icon value="/typo3conf/ext/myext/Resources/Public/Icons/Element.svg"/>
 
-.. _fluidtypo3-flux-form-option-icon_source:
-
-Source code
-===========
-
-Go to the source code of this ViewHelper: `IconViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/Option/IconViewHelper.php>`__.
 
 .. _fluidtypo3-flux-form-option-icon_arguments:
 
 Arguments
 =========
 
-The following arguments are available for `<flux:form.option.icon>`:
 
-..  contents::
-    :local:
-
-
-.. _fluidtypo3-flux-form-option-icon-value_argument:
+.. _form.option.icon_value:
 
 value
 -----
 
-..  confval:: value
-    :name: fluidtypo3-flux-form-option-icon-value
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Path and name of the icon file
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Path and name of the icon file

@@ -1,15 +1,12 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/Field/ControllerActionsViewHelper.php
-
-:edit-on-github-link: Field/ControllerActionsViewHelper.php
 :navigation-title: field.controllerActions
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-controlleractions:
 
 ===================================================================
-Field.controllerActions ViewHelper `<flux:field.controllerActions>`
+field.controllerActions ViewHelper `<flux:field.controllerActions>`
 ===================================================================
+
 
 ControllerActions ViewHelper
 
@@ -70,518 +67,590 @@ cases leave out the "name" argument which is required on all other
 field types at the time of writing this). Where the field is placed
 is not important; the order and the sheet location don't matter.
 
-.. _fluidtypo3-flux-field-controlleractions_source:
-
-Source code
-===========
-
-Go to the source code of this ViewHelper: `ControllerActionsViewHelper.php (GitHub) <fluidtypo3/flux/development/Field/ControllerActionsViewHelper.php>`__.
 
 .. _fluidtypo3-flux-field-controlleractions_arguments:
 
 Arguments
 =========
 
-The following arguments are available for `<flux:field.controllerActions>`:
 
-..  contents::
-    :local:
-
-
-.. _fluidtypo3-flux-field-controlleractions-name_argument:
+.. _field.controlleractions_name:
 
 name
 ----
 
-..  confval:: name
-    :name: fluidtypo3-flux-field-controlleractions-name
-    :type: string
-    :Default: 'switchableControllerActions'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Name of the field
+:aspect:`Default`
+   'switchableControllerActions'
 
-.. _fluidtypo3-flux-field-controlleractions-label_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Name of the field
+
+.. _field.controlleractions_label:
 
 label
 -----
 
-..  confval:: label
-    :name: fluidtypo3-flux-field-controlleractions-label
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
 
-.. _fluidtypo3-flux-field-controlleractions-default_argument:
+.. _field.controlleractions_default:
 
 default
 -------
 
-..  confval:: default
-    :name: fluidtypo3-flux-field-controlleractions-default
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Default value for this attribute
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Default value for this attribute
 
-.. _fluidtypo3-flux-field-controlleractions-native_argument:
+.. _field.controlleractions_native:
 
 native
 ------
 
-..  confval:: native
-    :name: fluidtypo3-flux-field-controlleractions-native
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
 
-.. _fluidtypo3-flux-field-controlleractions-position_argument:
+.. _field.controlleractions_position:
 
 position
 --------
 
-..  confval:: position
-    :name: fluidtypo3-flux-field-controlleractions-position
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
 
-.. _fluidtypo3-flux-field-controlleractions-required_argument:
+.. _field.controlleractions_required:
 
 required
 --------
 
-..  confval:: required
-    :name: fluidtypo3-flux-field-controlleractions-required
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, this attribute must be filled when editing the FCE
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, this attribute must be filled when editing the FCE
 
-.. _fluidtypo3-flux-field-controlleractions-exclude_argument:
+.. _field.controlleractions_exclude:
 
 exclude
 -------
 
-..  confval:: exclude
-    :name: fluidtypo3-flux-field-controlleractions-exclude
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
 
-.. _fluidtypo3-flux-field-controlleractions-transform_argument:
+.. _field.controlleractions_transform:
 
 transform
 ---------
 
-..  confval:: transform
-    :name: fluidtypo3-flux-field-controlleractions-transform
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
 
-.. _fluidtypo3-flux-field-controlleractions-enabled_argument:
+.. _field.controlleractions_enabled:
 
 enabled
 -------
 
-..  confval:: enabled
-    :name: fluidtypo3-flux-field-controlleractions-enabled
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If FALSE, disables the field in the FlexForm
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-controlleractions-requestupdate_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If FALSE, disables the field in the FlexForm
+
+.. _field.controlleractions_requestupdate:
 
 requestUpdate
 -------------
 
-..  confval:: requestUpdate
-    :name: fluidtypo3-flux-field-controlleractions-requestupdate
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, the form is force-saved and reloaded when field value changes
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, the form is force-saved and reloaded when field value changes
 
-.. _fluidtypo3-flux-field-controlleractions-displaycond_argument:
+.. _field.controlleractions_displaycond:
 
 displayCond
 -----------
 
-..  confval:: displayCond
-    :name: fluidtypo3-flux-field-controlleractions-displaycond
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
 
-.. _fluidtypo3-flux-field-controlleractions-inherit_argument:
+.. _field.controlleractions_inherit:
 
 inherit
 -------
 
-..  confval:: inherit
-    :name: fluidtypo3-flux-field-controlleractions-inherit
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-controlleractions-inheritempty_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+
+.. _field.controlleractions_inheritempty:
 
 inheritEmpty
 ------------
 
-..  confval:: inheritEmpty
-    :name: fluidtypo3-flux-field-controlleractions-inheritempty
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-controlleractions-clear_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+
+.. _field.controlleractions_clear:
 
 clear
 -----
 
-..  confval:: clear
-    :name: fluidtypo3-flux-field-controlleractions-clear
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
 
-.. _fluidtypo3-flux-field-controlleractions-variables_argument:
+.. _field.controlleractions_protect:
+
+protect
+-------
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.
+
+.. _field.controlleractions_variables:
 
 variables
 ---------
 
-..  confval:: variables
-    :name: fluidtypo3-flux-field-controlleractions-variables
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-controlleractions-extensionname_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
+
+.. _field.controlleractions_extensionname:
 
 extensionName
 -------------
 
-..  confval:: extensionName
-    :name: fluidtypo3-flux-field-controlleractions-extensionname
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
 
-.. _fluidtypo3-flux-field-controlleractions-config_argument:
+.. _field.controlleractions_config:
 
 config
 ------
 
-..  confval:: config
-    :name: fluidtypo3-flux-field-controlleractions-config
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-controlleractions-validate_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
+
+.. _field.controlleractions_validate:
 
 validate
 --------
 
-..  confval:: validate
-    :name: fluidtypo3-flux-field-controlleractions-validate
-    :type: string
-    :Default: 'trim'
-    :required: false
+:aspect:`DataType`
+   string
 
-    FlexForm-type validation configuration for this input
+:aspect:`Default`
+   'trim'
 
-.. _fluidtypo3-flux-field-controlleractions-size_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   FlexForm-type validation configuration for this input
+
+.. _field.controlleractions_size:
 
 size
 ----
 
-..  confval:: size
-    :name: fluidtypo3-flux-field-controlleractions-size
-    :type: integer
-    :Default: 1
-    :required: false
+:aspect:`DataType`
+   integer
 
-    Size of the selector box
+:aspect:`Default`
+   1
 
-.. _fluidtypo3-flux-field-controlleractions-multiple_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Size of the selector box
+
+.. _field.controlleractions_multiple:
 
 multiple
 --------
 
-..  confval:: multiple
-    :name: fluidtypo3-flux-field-controlleractions-multiple
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, allows selecting the same value multiple times
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, allows selecting the same value multiple times
 
-.. _fluidtypo3-flux-field-controlleractions-minitems_argument:
+.. _field.controlleractions_minitems:
 
 minItems
 --------
 
-..  confval:: minItems
-    :name: fluidtypo3-flux-field-controlleractions-minitems
-    :type: integer
-    :required: false
+:aspect:`DataType`
+   integer
 
-    Minimum required number of items to be selected
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Minimum required number of items to be selected
 
-.. _fluidtypo3-flux-field-controlleractions-maxitems_argument:
+.. _field.controlleractions_maxitems:
 
 maxItems
 --------
 
-..  confval:: maxItems
-    :name: fluidtypo3-flux-field-controlleractions-maxitems
-    :type: integer
-    :Default: 1
-    :required: false
+:aspect:`DataType`
+   integer
 
-    Maxium allowed number of items to be selected
+:aspect:`Default`
+   1
 
-.. _fluidtypo3-flux-field-controlleractions-itemliststyle_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Maxium allowed number of items to be selected
+
+.. _field.controlleractions_itemliststyle:
 
 itemListStyle
 -------------
 
-..  confval:: itemListStyle
-    :name: fluidtypo3-flux-field-controlleractions-itemliststyle
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Overrides the default list style when maxItems > 1
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Overrides the default list style when maxItems > 1
 
-.. _fluidtypo3-flux-field-controlleractions-selectedliststyle_argument:
+.. _field.controlleractions_selectedliststyle:
 
 selectedListStyle
 -----------------
 
-..  confval:: selectedListStyle
-    :name: fluidtypo3-flux-field-controlleractions-selectedliststyle
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Overrides the default selected list style when maxItems > 1 and renderType is SelectSingle
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Overrides the default selected list style when maxItems > 1 and renderType is SelectSingle
 
-.. _fluidtypo3-flux-field-controlleractions-items_argument:
+.. _field.controlleractions_items:
 
 items
 -----
 
-..  confval:: items
-    :name: fluidtypo3-flux-field-controlleractions-items
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Optional, full list of items to display - note: if used, this overrides any automatic option filling!
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Optional, full list of items to display - note: if used, this overrides any automatic option filling!
 
-.. _fluidtypo3-flux-field-controlleractions-emptyoption_argument:
+.. _field.controlleractions_emptyoption:
 
 emptyOption
 -----------
 
-..  confval:: emptyOption
-    :name: fluidtypo3-flux-field-controlleractions-emptyoption
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property's value (cast to string) as label.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property's value (cast to string) as label.
 
-.. _fluidtypo3-flux-field-controlleractions-translatecsvitems_argument:
+.. _field.controlleractions_translatecsvitems:
 
 translateCsvItems
 -----------------
 
-..  confval:: translateCsvItems
-    :name: fluidtypo3-flux-field-controlleractions-translatecsvitems
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions
 
-.. _fluidtypo3-flux-field-controlleractions-itemsprocfunc_argument:
+.. _field.controlleractions_itemsprocfunc:
 
 itemsProcFunc
 -------------
 
-..  confval:: itemsProcFunc
-    :name: fluidtypo3-flux-field-controlleractions-itemsprocfunc
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Function for serving items. See TCA "select" field "itemsProcFunc" attribute
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Function for serving items. See TCA "select" field "itemsProcFunc" attribute
 
-.. _fluidtypo3-flux-field-controlleractions-rendertype_argument:
+.. _field.controlleractions_rendertype:
 
 renderType
 ----------
 
-..  confval:: renderType
-    :name: fluidtypo3-flux-field-controlleractions-rendertype
-    :type: string
-    :Default: 'selectSingle'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Rendering type as applies in FormEngine/TCA
+:aspect:`Default`
+   'selectSingle'
 
-.. _fluidtypo3-flux-field-controlleractions-showicontable_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Rendering type as applies in FormEngine/TCA
+
+.. _field.controlleractions_showicontable:
 
 showIconTable
 -------------
 
-..  confval:: showIconTable
-    :name: fluidtypo3-flux-field-controlleractions-showicontable
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE shows the option icons as table beneath the select
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE shows the option icons as table beneath the select
 
-.. _fluidtypo3-flux-field-controlleractions-controllerextensionname_argument:
+.. _field.controlleractions_controllerextensionname:
 
 controllerExtensionName
 -----------------------
 
-..  confval:: controllerExtensionName
-    :name: fluidtypo3-flux-field-controlleractions-controllerextensionname
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Name of the Extbase extension that contains the Controller to parse, ex. MyExtension. In vendor based extensions use dot, ex. Vendor.MyExtension
 
-.. _fluidtypo3-flux-field-controlleractions-pluginname_argument:
+.. _field.controlleractions_pluginname:
 
 pluginName
 ----------
 
-..  confval:: pluginName
-    :name: fluidtypo3-flux-field-controlleractions-pluginname
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Name of the Extbase plugin that contains Controller definitions to parse, ex. MyPluginName
 
-.. _fluidtypo3-flux-field-controlleractions-controllername_argument:
+.. _field.controlleractions_controllername:
 
 controllerName
 --------------
 
-..  confval:: controllerName
-    :name: fluidtypo3-flux-field-controlleractions-controllername
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Optional extra limiting of actions displayed - if used, field only displays actions for this controller name - ex Article(Controller) or FrontendUser(Controller) - the Controller part is implied
 
-.. _fluidtypo3-flux-field-controlleractions-actions_argument:
+.. _field.controlleractions_actions:
 
 actions
 -------
 
-..  confval:: actions
-    :name: fluidtypo3-flux-field-controlleractions-actions
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-controlleractions-excludeactions_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Array of "ControllerName" => "csv,of,actions" which are allowed. If used, does not require the use of an ExtensionName and PluginName (will use the one specified in your current plugin automatically)
+
+.. _field.controlleractions_excludeactions:
 
 excludeActions
 --------------
 
-..  confval:: excludeActions
-    :name: fluidtypo3-flux-field-controlleractions-excludeactions
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Array of "ControllerName" => "csv,of,actions" which must be excluded
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-controlleractions-prefixonrequiredarguments_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Array of "ControllerName" => "csv,of,actions" which must be excluded
+
+.. _field.controlleractions_prefixonrequiredarguments:
 
 prefixOnRequiredArguments
 -------------------------
 
-..  confval:: prefixOnRequiredArguments
-    :name: fluidtypo3-flux-field-controlleractions-prefixonrequiredarguments
-    :type: string
-    :Default: '*'
-    :required: false
+:aspect:`DataType`
+   string
 
-    A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins
+:aspect:`Default`
+   '*'
 
-.. _fluidtypo3-flux-field-controlleractions-disablelocallanguagelabels_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   A short string denoting that the method takes arguments, ex * (which should then be explained in the documentation for your extension about how to setup your plugins
+
+.. _field.controlleractions_disablelocallanguagelabels:
 
 disableLocalLanguageLabels
 --------------------------
 
-..  confval:: disableLocalLanguageLabels
-    :name: fluidtypo3-flux-field-controlleractions-disablelocallanguagelabels
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, disables LLL label usage and just uses the class comment or Controller->action syntax
 
-.. _fluidtypo3-flux-field-controlleractions-locallanguagefilerelativepath_argument:
+.. _field.controlleractions_locallanguagefilerelativepath:
 
 localLanguageFileRelativePath
 -----------------------------
 
-..  confval:: localLanguageFileRelativePath
-    :name: fluidtypo3-flux-field-controlleractions-locallanguagefilerelativepath
-    :type: string
-    :Default: '/Resources/Private/Language/locallang_db.xml'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Relative (from extension $extensionName) path to locallang file containing the action method labels
+:aspect:`Default`
+   '/Resources/Private/Language/locallang_db.xml'
 
-.. _fluidtypo3-flux-field-controlleractions-subactions_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Relative (from extension $extensionName) path to locallang file containing the action method labels
+
+.. _field.controlleractions_subactions:
 
 subActions
 ----------
 
-..  confval:: subActions
-    :name: fluidtypo3-flux-field-controlleractions-subactions
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which ' .
+:aspect:`Default`
+   array ()
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Array of sub actions {ControllerName: {list: 'update,delete'}, OtherController: {new: 'create'}} which ' .
            'are also allowed but not presented as options when the mapped action is selected (in example: if ' .
            'ControllerName->list is selected, ControllerName->update and ControllerName->delete are allowed - but ' .
            'cannot be selected).
 
-.. _fluidtypo3-flux-field-controlleractions-separator_argument:
+.. _field.controlleractions_separator:
 
 separator
 ---------
 
-..  confval:: separator
-    :name: fluidtypo3-flux-field-controlleractions-separator
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Separator string (glue) for Controller->action values, defaults to "->". Empty values result in default being used.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Separator string (glue) for Controller->action values, defaults to "->". Empty values result in default being used.

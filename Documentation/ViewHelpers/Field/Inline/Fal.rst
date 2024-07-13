@@ -1,15 +1,12 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/Field/Inline/FalViewHelper.php
-
-:edit-on-github-link: Field/Inline/FalViewHelper.php
 :navigation-title: field.inline.fal
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-inline-fal:
 
 =====================================================
-Field.inline.fal ViewHelper `<flux:field.inline.fal>`
+field.inline.fal ViewHelper `<flux:field.inline.fal>`
 =====================================================
+
 
 Creates a FAL IRRE field
 
@@ -88,824 +85,935 @@ Rendering multiple images
         <f:image treatIdAsReference="1" src="{image.uid}" title="{image.title}" alt="{image.alternative}"/><br/>
     </f:for>
 
-.. _fluidtypo3-flux-field-inline-fal_source:
-
-Source code
-===========
-
-Go to the source code of this ViewHelper: `FalViewHelper.php (GitHub) <fluidtypo3/flux/development/Field/Inline/FalViewHelper.php>`__.
 
 .. _fluidtypo3-flux-field-inline-fal_arguments:
 
 Arguments
 =========
 
-The following arguments are available for `<flux:field.inline.fal>`:
 
-..  contents::
-    :local:
-
-
-.. _fluidtypo3-flux-field-inline-fal-name_argument:
+.. _field.inline.fal_name:
 
 name
 ----
 
-..  confval:: name
-    :name: fluidtypo3-flux-field-inline-fal-name
-    :type: string
-    :required: true
+:aspect:`DataType`
+   string
 
-    Name of the attribute, FlexForm XML-valid tag name string
+:aspect:`Required`
+   true
+:aspect:`Description`
+   Name of the attribute, FlexForm XML-valid tag name string
 
-.. _fluidtypo3-flux-field-inline-fal-label_argument:
+.. _field.inline.fal_label:
 
 label
 -----
 
-..  confval:: label
-    :name: fluidtypo3-flux-field-inline-fal-label
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Label for the attribute, can be LLL: value. Optional - if not specified, Flux tries to detect an LLL label named "flux.fluxFormId.fields.foobar" based on field name, in scope of extension rendering the Flux form. If field is in an object, use "flux.fluxFormId.objects.objectname.foobar" where "foobar" is the name of the field.
 
-.. _fluidtypo3-flux-field-inline-fal-default_argument:
+.. _field.inline.fal_default:
 
 default
 -------
 
-..  confval:: default
-    :name: fluidtypo3-flux-field-inline-fal-default
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Default value for this attribute
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Default value for this attribute
 
-.. _fluidtypo3-flux-field-inline-fal-native_argument:
+.. _field.inline.fal_native:
 
 native
 ------
 
-..  confval:: native
-    :name: fluidtypo3-flux-field-inline-fal-native
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.
 
-.. _fluidtypo3-flux-field-inline-fal-position_argument:
+.. _field.inline.fal_position:
 
 position
 --------
 
-..  confval:: position
-    :name: fluidtypo3-flux-field-inline-fal-position
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Only applies if native=1. Specify where in the editing form this field should be, using the syntax of \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Additionally, allows you to specify a TCA sheet if you want this field to be positioned in a dedicated sheet. Examples: position="after:header", position="replace:header", position="after:header My Sheet"
 
-.. _fluidtypo3-flux-field-inline-fal-required_argument:
+.. _field.inline.fal_required:
 
 required
 --------
 
-..  confval:: required
-    :name: fluidtypo3-flux-field-inline-fal-required
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, this attribute must be filled when editing the FCE
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, this attribute must be filled when editing the FCE
 
-.. _fluidtypo3-flux-field-inline-fal-exclude_argument:
+.. _field.inline.fal_exclude:
 
 exclude
 -------
 
-..  confval:: exclude
-    :name: fluidtypo3-flux-field-inline-fal-exclude
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, this field becomes an "exclude field" (see TYPO3 documentation about this)
 
-.. _fluidtypo3-flux-field-inline-fal-transform_argument:
+.. _field.inline.fal_transform:
 
 transform
 ---------
 
-..  confval:: transform
-    :name: fluidtypo3-flux-field-inline-fal-transform
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.
 
-.. _fluidtypo3-flux-field-inline-fal-enabled_argument:
+.. _field.inline.fal_enabled:
 
 enabled
 -------
 
-..  confval:: enabled
-    :name: fluidtypo3-flux-field-inline-fal-enabled
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If FALSE, disables the field in the FlexForm
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-inline-fal-requestupdate_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If FALSE, disables the field in the FlexForm
+
+.. _field.inline.fal_requestupdate:
 
 requestUpdate
 -------------
 
-..  confval:: requestUpdate
-    :name: fluidtypo3-flux-field-inline-fal-requestupdate
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, the form is force-saved and reloaded when field value changes
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, the form is force-saved and reloaded when field value changes
 
-.. _fluidtypo3-flux-field-inline-fal-displaycond_argument:
+.. _field.inline.fal_displaycond:
 
 displayCond
 -----------
 
-..  confval:: displayCond
-    :name: fluidtypo3-flux-field-inline-fal-displaycond
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Optional "Display Condition" (TCA style) for this particular field. See: https://docs.typo3.org/typo3cms/TCAReference/Reference/Columns/Index.html#displaycond
 
-.. _fluidtypo3-flux-field-inline-fal-inherit_argument:
+.. _field.inline.fal_inherit:
 
 inherit
 -------
 
-..  confval:: inherit
-    :name: fluidtypo3-flux-field-inline-fal-inherit
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-inline-fal-inheritempty_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, the value for this particular field is inherited - if inheritance is enabled by the ConfigurationProvider
+
+.. _field.inline.fal_inheritempty:
 
 inheritEmpty
 ------------
 
-..  confval:: inheritEmpty
-    :name: fluidtypo3-flux-field-inline-fal-inheritempty
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-inline-fal-clear_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, allows empty values (specifically excluding the number zero!) to be inherited - if inheritance is enabled by the ConfigurationProvider
+
+.. _field.inline.fal_clear:
 
 clear
 -----
 
-..  confval:: clear
-    :name: fluidtypo3-flux-field-inline-fal-clear
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
 
-.. _fluidtypo3-flux-field-inline-fal-variables_argument:
+.. _field.inline.fal_protect:
+
+protect
+-------
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.
+
+.. _field.inline.fal_variables:
 
 variables
 ---------
 
-..  confval:: variables
-    :name: fluidtypo3-flux-field-inline-fal-variables
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-inline-fal-extensionname_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Freestyle variables which become assigned to the resulting Component - can then be read from that Component outside this Fluid template and in other templates using the Form object from this template
+
+.. _field.inline.fal_extensionname:
 
 extensionName
 -------------
 
-..  confval:: extensionName
-    :name: fluidtypo3-flux-field-inline-fal-extensionname
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If provided, enables overriding the extension context for this and all child nodes. The extension name is otherwise automatically detected from rendering context.
 
-.. _fluidtypo3-flux-field-inline-fal-config_argument:
+.. _field.inline.fal_config:
 
 config
 ------
 
-..  confval:: config
-    :name: fluidtypo3-flux-field-inline-fal-config
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-inline-fal-validate_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Raw TCA options - passed directly to "config" section of created field and overrides anything generated by the component itself. Can be used to provide options that Flux itself does not support, and can be used to pass root-level arguments for a "userFunc"
+
+.. _field.inline.fal_validate:
 
 validate
 --------
 
-..  confval:: validate
-    :name: fluidtypo3-flux-field-inline-fal-validate
-    :type: string
-    :Default: 'trim'
-    :required: false
+:aspect:`DataType`
+   string
 
-    FlexForm-type validation configuration for this input
+:aspect:`Default`
+   'trim'
 
-.. _fluidtypo3-flux-field-inline-fal-size_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   FlexForm-type validation configuration for this input
+
+.. _field.inline.fal_size:
 
 size
 ----
 
-..  confval:: size
-    :name: fluidtypo3-flux-field-inline-fal-size
-    :type: integer
-    :Default: 1
-    :required: false
+:aspect:`DataType`
+   integer
 
-    Size of the selector box
+:aspect:`Default`
+   1
 
-.. _fluidtypo3-flux-field-inline-fal-multiple_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Size of the selector box
+
+.. _field.inline.fal_multiple:
 
 multiple
 --------
 
-..  confval:: multiple
-    :name: fluidtypo3-flux-field-inline-fal-multiple
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, allows selecting the same value multiple times
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, allows selecting the same value multiple times
 
-.. _fluidtypo3-flux-field-inline-fal-minitems_argument:
+.. _field.inline.fal_minitems:
 
 minItems
 --------
 
-..  confval:: minItems
-    :name: fluidtypo3-flux-field-inline-fal-minitems
-    :type: integer
-    :required: false
+:aspect:`DataType`
+   integer
 
-    Minimum required number of items to be selected
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Minimum required number of items to be selected
 
-.. _fluidtypo3-flux-field-inline-fal-maxitems_argument:
+.. _field.inline.fal_maxitems:
 
 maxItems
 --------
 
-..  confval:: maxItems
-    :name: fluidtypo3-flux-field-inline-fal-maxitems
-    :type: integer
-    :Default: 1
-    :required: false
+:aspect:`DataType`
+   integer
 
-    Maxium allowed number of items to be selected
+:aspect:`Default`
+   1
 
-.. _fluidtypo3-flux-field-inline-fal-itemliststyle_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Maxium allowed number of items to be selected
+
+.. _field.inline.fal_itemliststyle:
 
 itemListStyle
 -------------
 
-..  confval:: itemListStyle
-    :name: fluidtypo3-flux-field-inline-fal-itemliststyle
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Overrides the default list style when maxItems > 1
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Overrides the default list style when maxItems > 1
 
-.. _fluidtypo3-flux-field-inline-fal-selectedliststyle_argument:
+.. _field.inline.fal_selectedliststyle:
 
 selectedListStyle
 -----------------
 
-..  confval:: selectedListStyle
-    :name: fluidtypo3-flux-field-inline-fal-selectedliststyle
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Overrides the default selected list style when maxItems > 1 and renderType is SelectSingle
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Overrides the default selected list style when maxItems > 1 and renderType is SelectSingle
 
-.. _fluidtypo3-flux-field-inline-fal-items_argument:
+.. _field.inline.fal_items:
 
 items
 -----
 
-..  confval:: items
-    :name: fluidtypo3-flux-field-inline-fal-items
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Items for the selector; array / CSV / Traversable / Query supported
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Items for the selector; array / CSV / Traversable / Query supported
 
-.. _fluidtypo3-flux-field-inline-fal-emptyoption_argument:
+.. _field.inline.fal_emptyoption:
 
 emptyOption
 -----------
 
-..  confval:: emptyOption
-    :name: fluidtypo3-flux-field-inline-fal-emptyoption
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property's value (cast to string) as label.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If not-FALSE, adds one empty option/value pair to the generated selector box and tries to use this property's value (cast to string) as label.
 
-.. _fluidtypo3-flux-field-inline-fal-translatecsvitems_argument:
+.. _field.inline.fal_translatecsvitems:
 
 translateCsvItems
 -----------------
 
-..  confval:: translateCsvItems
-    :name: fluidtypo3-flux-field-inline-fal-translatecsvitems
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, attempts to resolve a LLL label for each value provided as CSV in "items" attribute using convention for lookup "$field.option.123" if given "123" as CSV item value. Field name is determined by normal Flux field name conventions
 
-.. _fluidtypo3-flux-field-inline-fal-itemsprocfunc_argument:
+.. _field.inline.fal_itemsprocfunc:
 
 itemsProcFunc
 -------------
 
-..  confval:: itemsProcFunc
-    :name: fluidtypo3-flux-field-inline-fal-itemsprocfunc
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Function for serving items. See TCA "select" field "itemsProcFunc" attribute
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Function for serving items. See TCA "select" field "itemsProcFunc" attribute
 
-.. _fluidtypo3-flux-field-inline-fal-table_argument:
+.. _field.inline.fal_table:
 
 table
 -----
 
-..  confval:: table
-    :name: fluidtypo3-flux-field-inline-fal-table
-    :type: string
-    :Default: 'sys_file_reference'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Define foreign table name to turn selector into a record selector for that table
+:aspect:`Default`
+   'sys_file_reference'
 
-.. _fluidtypo3-flux-field-inline-fal-condition_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Define foreign table name to turn selector into a record selector for that table
+
+.. _field.inline.fal_condition:
 
 condition
 ---------
 
-..  confval:: condition
-    :name: fluidtypo3-flux-field-inline-fal-condition
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Condition to use when selecting from "foreignTable", supports FlexForm `foreign_table_where` markers
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Condition to use when selecting from "foreignTable", supports FlexForm `foreign_table_where` markers
 
-.. _fluidtypo3-flux-field-inline-fal-mm_argument:
+.. _field.inline.fal_mm:
 
 mm
 --
 
-..  confval:: mm
-    :name: fluidtypo3-flux-field-inline-fal-mm
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Optional name of MM table to use for record selection
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Optional name of MM table to use for record selection
 
-.. _fluidtypo3-flux-field-inline-fal-foreignfield_argument:
+.. _field.inline.fal_foreignfield:
 
 foreignField
 ------------
 
-..  confval:: foreignField
-    :name: fluidtypo3-flux-field-inline-fal-foreignfield
-    :type: string
-    :Default: 'uid_foreign'
-    :required: false
+:aspect:`DataType`
+   string
 
-    The foreign_field is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.
+:aspect:`Default`
+   'uid_foreign'
 
-.. _fluidtypo3-flux-field-inline-fal-foreignlabel_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   The foreign_field is the field of the child record pointing to the parent record. This defines where to store the uid of the parent record.
+
+.. _field.inline.fal_foreignlabel:
 
 foreignLabel
 ------------
 
-..  confval:: foreignLabel
-    :name: fluidtypo3-flux-field-inline-fal-foreignlabel
-    :type: string
-    :Default: 'uid_local'
-    :required: false
+:aspect:`DataType`
+   string
 
-    If set, it overrides the label set in TCA[foreign_table]['ctrl']['label'] for the inline-view.
+:aspect:`Default`
+   'uid_local'
 
-.. _fluidtypo3-flux-field-inline-fal-foreignselector_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If set, it overrides the label set in TCA[foreign_table]['ctrl']['label'] for the inline-view.
+
+.. _field.inline.fal_foreignselector:
 
 foreignSelector
 ---------------
 
-..  confval:: foreignSelector
-    :name: fluidtypo3-flux-field-inline-fal-foreignselector
-    :type: string
-    :Default: 'uid_local'
-    :required: false
+:aspect:`DataType`
+   string
 
-    A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The foreign_selector points to a field of the foreign_table that is responsible for providing a selector-box  this field on the foreign_table usually has the type "select" and also has a "foreign_table" defined.
+:aspect:`Default`
+   'uid_local'
 
-.. _fluidtypo3-flux-field-inline-fal-foreignsortby_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   A selector is used to show all possible child records that could be used to create a relation with the parent record. It will be rendered as a multi-select-box. On clicking on an item inside the selector a new relation is created. The foreign_selector points to a field of the foreign_table that is responsible for providing a selector-box  this field on the foreign_table usually has the type "select" and also has a "foreign_table" defined.
+
+.. _field.inline.fal_foreignsortby:
 
 foreignSortby
 -------------
 
-..  confval:: foreignSortby
-    :name: fluidtypo3-flux-field-inline-fal-foreignsortby
-    :type: string
-    :Default: 'sorting_foreign'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Field on the child record (or on the intermediate table) that stores the manual sorting information.
+:aspect:`Default`
+   'sorting_foreign'
 
-.. _fluidtypo3-flux-field-inline-fal-foreigndefaultsortby_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field on the child record (or on the intermediate table) that stores the manual sorting information.
+
+.. _field.inline.fal_foreigndefaultsortby:
 
 foreignDefaultSortby
 --------------------
 
-..  confval:: foreignDefaultSortby
-    :name: fluidtypo3-flux-field-inline-fal-foreigndefaultsortby
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If a fieldname for `foreign_sortby` is defined, then this is ignored. Otherwise this is used as the "ORDER BY" statement to sort the records in the table when listed.
 
-.. _fluidtypo3-flux-field-inline-fal-foreigntablefield_argument:
+.. _field.inline.fal_foreigntablefield:
 
 foreignTableField
 -----------------
 
-..  confval:: foreignTableField
-    :name: fluidtypo3-flux-field-inline-fal-foreigntablefield
-    :type: string
-    :Default: 'tablenames'
-    :required: false
+:aspect:`DataType`
+   string
 
-    The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with foreign_field, the child record knows what its parent record is - so the child record could also be used on other parent tables.
+:aspect:`Default`
+   'tablenames'
 
-.. _fluidtypo3-flux-field-inline-fal-foreignunique_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   The field of the child record pointing to the parent record. This defines where to store the table name of the parent record. On setting this configuration key together with foreign_field, the child record knows what its parent record is - so the child record could also be used on other parent tables.
+
+.. _field.inline.fal_foreignunique:
 
 foreignUnique
 -------------
 
-..  confval:: foreignUnique
-    :name: fluidtypo3-flux-field-inline-fal-foreignunique
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Field which must be uniue for all children of a parent record.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field which must be uniue for all children of a parent record.
 
-.. _fluidtypo3-flux-field-inline-fal-symmetricfield_argument:
+.. _field.inline.fal_symmetricfield:
 
 symmetricField
 --------------
 
-..  confval:: symmetricField
-    :name: fluidtypo3-flux-field-inline-fal-symmetricfield
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   In case of bidirectional symmetric relations, this defines in which field on the foreign table the uid of the "other" parent is stored.
 
-.. _fluidtypo3-flux-field-inline-fal-symmetriclabel_argument:
+.. _field.inline.fal_symmetriclabel:
 
 symmetricLabel
 --------------
 
-..  confval:: symmetricLabel
-    :name: fluidtypo3-flux-field-inline-fal-symmetriclabel
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    If set, this overrides the default label of the selected `symmetric_field`.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If set, this overrides the default label of the selected `symmetric_field`.
 
-.. _fluidtypo3-flux-field-inline-fal-symmetricsortby_argument:
+.. _field.inline.fal_symmetricsortby:
 
 symmetricSortby
 ---------------
 
-..  confval:: symmetricSortby
-    :name: fluidtypo3-flux-field-inline-fal-symmetricsortby
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Works like `foreign_sortby`, but defines the field on `foreign_table` where the "other" sort order is stored.
 
-.. _fluidtypo3-flux-field-inline-fal-localizationmode_argument:
+.. _field.inline.fal_localizationmode:
 
 localizationMode
 ----------------
 
-..  confval:: localizationMode
-    :name: fluidtypo3-flux-field-inline-fal-localizationmode
-    :type: string
-    :Default: 'select'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Set whether children can be localizable ('select') or just inherit from default language ('keep').
+:aspect:`Default`
+   'select'
 
-.. _fluidtypo3-flux-field-inline-fal-disablemovingchildrenwithparent_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Set whether children can be localizable ('select') or just inherit from default language ('keep').
+
+.. _field.inline.fal_disablemovingchildrenwithparent:
 
 disableMovingChildrenWithParent
 -------------------------------
 
-..  confval:: disableMovingChildrenWithParent
-    :name: fluidtypo3-flux-field-inline-fal-disablemovingchildrenwithparent
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Disables that child records get moved along with their parent records.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Disables that child records get moved along with their parent records.
 
-.. _fluidtypo3-flux-field-inline-fal-showthumbs_argument:
+.. _field.inline.fal_showthumbs:
 
 showThumbs
 ----------
 
-..  confval:: showThumbs
-    :name: fluidtypo3-flux-field-inline-fal-showthumbs
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If TRUE, adds thumbnail display when editing in BE
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-inline-fal-matchfields_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, adds thumbnail display when editing in BE
+
+.. _field.inline.fal_matchfields:
 
 matchFields
 -----------
 
-..  confval:: matchFields
-    :name: fluidtypo3-flux-field-inline-fal-matchfields
-    :type: mixed
-    :Default: array ()
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table
+:aspect:`Default`
+   array ()
 
-.. _fluidtypo3-flux-field-inline-fal-oppositefield_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   When using manyToMany you can provide an additional array of field=>value pairs that must match in the relation table
+
+.. _field.inline.fal_oppositefield:
 
 oppositeField
 -------------
 
-..  confval:: oppositeField
-    :name: fluidtypo3-flux-field-inline-fal-oppositefield
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Name of the opposite field related to a proper mm relation
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Name of the opposite field related to a proper mm relation
 
-.. _fluidtypo3-flux-field-inline-fal-collapseall_argument:
+.. _field.inline.fal_collapseall:
 
 collapseAll
 -----------
 
-..  confval:: collapseAll
-    :name: fluidtypo3-flux-field-inline-fal-collapseall
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    If true, all child records are shown as collapsed.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If true, all child records are shown as collapsed.
 
-.. _fluidtypo3-flux-field-inline-fal-expandsingle_argument:
+.. _field.inline.fal_expandsingle:
 
 expandSingle
 ------------
 
-..  confval:: expandSingle
-    :name: fluidtypo3-flux-field-inline-fal-expandsingle
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Show only one expanded record at any time. If a new record is expanded, all others are collapsed.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Show only one expanded record at any time. If a new record is expanded, all others are collapsed.
 
-.. _fluidtypo3-flux-field-inline-fal-newrecordlinkaddtitle_argument:
+.. _field.inline.fal_newrecordlinkaddtitle:
 
 newRecordLinkAddTitle
 ---------------------
 
-..  confval:: newRecordLinkAddTitle
-    :name: fluidtypo3-flux-field-inline-fal-newrecordlinkaddtitle
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Add the foreign table's title to the 'Add new' link (ie. 'Add new (sometable)')
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-inline-fal-newrecordlinkposition_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Add the foreign table's title to the 'Add new' link (ie. 'Add new (sometable)')
+
+.. _field.inline.fal_newrecordlinkposition:
 
 newRecordLinkPosition
 ---------------------
 
-..  confval:: newRecordLinkPosition
-    :name: fluidtypo3-flux-field-inline-fal-newrecordlinkposition
-    :type: string
-    :Default: 'top'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Where to show 'Add new' link. Can be 'top', 'bottom', 'both' or 'none'.
+:aspect:`Default`
+   'top'
 
-.. _fluidtypo3-flux-field-inline-fal-usecombination_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Where to show 'Add new' link. Can be 'top', 'bottom', 'both' or 'none'.
+
+.. _field.inline.fal_usecombination:
 
 useCombination
 --------------
 
-..  confval:: useCombination
-    :name: fluidtypo3-flux-field-inline-fal-usecombination
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit '
+:aspect:`Required`
+   false
+:aspect:`Description`
+   For use on bidirectional relations using an intermediary table. In combinations, it's possible to edit '
            . 'attributes and the related child record.
 
-.. _fluidtypo3-flux-field-inline-fal-usesortable_argument:
+.. _field.inline.fal_usesortable:
 
 useSortable
 -----------
 
-..  confval:: useSortable
-    :name: fluidtypo3-flux-field-inline-fal-usesortable
-    :type: boolean
-    :Default: true
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Allow manual sorting of records.
+:aspect:`Default`
+   true
 
-.. _fluidtypo3-flux-field-inline-fal-showpossiblelocalizationrecords_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Allow manual sorting of records.
+
+.. _field.inline.fal_showpossiblelocalizationrecords:
 
 showPossibleLocalizationRecords
 -------------------------------
 
-..  confval:: showPossibleLocalizationRecords
-    :name: fluidtypo3-flux-field-inline-fal-showpossiblelocalizationrecords
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Show unlocalized records which are in the original language, but not yet localized.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Show unlocalized records which are in the original language, but not yet localized.
 
-.. _fluidtypo3-flux-field-inline-fal-showremovedlocalizationrecords_argument:
+.. _field.inline.fal_showremovedlocalizationrecords:
 
 showRemovedLocalizationRecords
 ------------------------------
 
-..  confval:: showRemovedLocalizationRecords
-    :name: fluidtypo3-flux-field-inline-fal-showremovedlocalizationrecords
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Show records which were once localized but do not exist in the original language anymore.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Show records which were once localized but do not exist in the original language anymore.
 
-.. _fluidtypo3-flux-field-inline-fal-showalllocalizationlink_argument:
+.. _field.inline.fal_showalllocalizationlink:
 
 showAllLocalizationLink
 -----------------------
 
-..  confval:: showAllLocalizationLink
-    :name: fluidtypo3-flux-field-inline-fal-showalllocalizationlink
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Show the 'localize all records' link to fetch untranslated records from the original language.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Show the 'localize all records' link to fetch untranslated records from the original language.
 
-.. _fluidtypo3-flux-field-inline-fal-showsynchronizationlink_argument:
+.. _field.inline.fal_showsynchronizationlink:
 
 showSynchronizationLink
 -----------------------
 
-..  confval:: showSynchronizationLink
-    :name: fluidtypo3-flux-field-inline-fal-showsynchronizationlink
-    :type: boolean
-    :required: false
+:aspect:`DataType`
+   boolean
 
-    Defines whether to show a 'synchronize' link to update to a 1:1 translation with the original language.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Defines whether to show a 'synchronize' link to update to a 1:1 translation with the original language.
 
-.. _fluidtypo3-flux-field-inline-fal-enabledcontrols_argument:
+.. _field.inline.fal_enabledcontrols:
 
 enabledControls
 ---------------
 
-..  confval:: enabledControls
-    :name: fluidtypo3-flux-field-inline-fal-enabledcontrols
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. '
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Associative array with the keys 'info', 'new', 'dragdrop', 'sort', 'hide', delete' and 'localize'. '
            . 'Set either one to TRUE or FALSE to show or hide it.
 
-.. _fluidtypo3-flux-field-inline-fal-headerthumbnail_argument:
+.. _field.inline.fal_headerthumbnail:
 
 headerThumbnail
 ---------------
 
-..  confval:: headerThumbnail
-    :name: fluidtypo3-flux-field-inline-fal-headerthumbnail
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Associative array with header thumbnail.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Associative array with header thumbnail.
 
-.. _fluidtypo3-flux-field-inline-fal-foreignmatchfields_argument:
+.. _field.inline.fal_foreignmatchfields:
 
 foreignMatchFields
 ------------------
 
-..  confval:: foreignMatchFields
-    :name: fluidtypo3-flux-field-inline-fal-foreignmatchfields
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    The fields and values of the child record which have to match. For FAL the field/key is "fieldname" and the value has to be defined.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   The fields and values of the child record which have to match. For FAL the field/key is "fieldname" and the value has to be defined.
 
-.. _fluidtypo3-flux-field-inline-fal-foreigntypes_argument:
+.. _field.inline.fal_foreigntypes:
 
 foreignTypes
 ------------
 
-..  confval:: foreignTypes
-    :name: fluidtypo3-flux-field-inline-fal-foreigntypes
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Overrides the "types" TCA array of the target table with this array (beware! must be specified fully in order to work!). Expects an array of arrays; indexed by type number - each array containing for example a "showitem" CSV list value of field names to be shown when inline-editing the related record.
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Overrides the "types" TCA array of the target table with this array (beware! must be specified fully in order to work!). Expects an array of arrays; indexed by type number - each array containing for example a "showitem" CSV list value of field names to be shown when inline-editing the related record.
 
-.. _fluidtypo3-flux-field-inline-fal-levellinksposition_argument:
+.. _field.inline.fal_levellinksposition:
 
 levelLinksPosition
 ------------------
 
-..  confval:: levelLinksPosition
-    :name: fluidtypo3-flux-field-inline-fal-levellinksposition
-    :type: string
-    :Default: 'both'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Level links position.
+:aspect:`Default`
+   'both'
 
-.. _fluidtypo3-flux-field-inline-fal-allowedextensions_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Level links position.
+
+.. _field.inline.fal_allowedextensions:
 
 allowedExtensions
 -----------------
 
-..  confval:: allowedExtensions
-    :name: fluidtypo3-flux-field-inline-fal-allowedextensions
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Allowed File Extensions .
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Allowed File Extensions .
 
-.. _fluidtypo3-flux-field-inline-fal-disallowedextensions_argument:
+.. _field.inline.fal_disallowedextensions:
 
 disallowedExtensions
 --------------------
 
-..  confval:: disallowedExtensions
-    :name: fluidtypo3-flux-field-inline-fal-disallowedextensions
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Disallowed File Extensions .
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Disallowed File Extensions .
 
-.. _fluidtypo3-flux-field-inline-fal-createnewrelationlinktitle_argument:
+.. _field.inline.fal_createnewrelationlinktitle:
 
 createNewRelationLinkTitle
 --------------------------
 
-..  confval:: createNewRelationLinkTitle
-    :name: fluidtypo3-flux-field-inline-fal-createnewrelationlinktitle
-    :type: string
-    :Default: 'LLL:EXT:lang/locallang_core.xlf:cm.createNewRelation'
-    :required: false
+:aspect:`DataType`
+   string
 
-    Override label of "Create new relation" button.
+:aspect:`Default`
+   'LLL:EXT:lang/locallang_core.xlf:cm.createNewRelation'
 
-.. _fluidtypo3-flux-field-inline-fal-cropvariants_argument:
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Override label of "Create new relation" button.
+
+.. _field.inline.fal_cropvariants:
 
 cropVariants
 ------------
 
-..  confval:: cropVariants
-    :name: fluidtypo3-flux-field-inline-fal-cropvariants
-    :type: mixed
-    :required: false
+:aspect:`DataType`
+   mixed
 
-    Add one or multiple crop variants for uploaded images
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Add one or multiple crop variants for uploaded images

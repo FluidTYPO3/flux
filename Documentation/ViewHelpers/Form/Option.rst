@@ -1,56 +1,44 @@
-..  This reStructured text file has been automatically generated, do not change.
-..  Source: fluidtypo3/flux/development/Form/OptionViewHelper.php
-
-:edit-on-github-link: Form/OptionViewHelper.php
 :navigation-title: form.option
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option:
 
 ===========================================
-Form.option ViewHelper `<flux:form.option>`
+form.option ViewHelper `<flux:form.option>`
 ===========================================
+
 
 Form option ViewHelper
 
-.. _fluidtypo3-flux-form-option_source:
-
-Source code
-===========
-
-Go to the source code of this ViewHelper: `OptionViewHelper.php (GitHub) <fluidtypo3/flux/development/Form/OptionViewHelper.php>`__.
 
 .. _fluidtypo3-flux-form-option_arguments:
 
 Arguments
 =========
 
-The following arguments are available for `<flux:form.option>`:
 
-..  contents::
-    :local:
-
-
-.. _fluidtypo3-flux-form-option-value_argument:
+.. _form.option_value:
 
 value
 -----
 
-..  confval:: value
-    :name: fluidtypo3-flux-form-option-value
-    :type: string
-    :required: false
+:aspect:`DataType`
+   string
 
-    Option value
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Option value
 
-.. _fluidtypo3-flux-form-option-name_argument:
+.. _form.option_name:
 
 name
 ----
 
-..  confval:: name
-    :name: fluidtypo3-flux-form-option-name
-    :type: string
-    :required: true
+:aspect:`DataType`
+   string
 
-    Name of the option to be set
+:aspect:`Required`
+   true
+:aspect:`Description`
+   Name of the option to be set
