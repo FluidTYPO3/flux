@@ -224,7 +224,7 @@ Defines a single field data structure.
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="clear" default="false">
         <xsd:annotation>
-          <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value]]></xsd:documentation>
+          <xsd:documentation><![CDATA[If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="protect" default="false">
