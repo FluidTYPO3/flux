@@ -199,7 +199,7 @@ Defines a single field data structure.
       </xsd:attribute>
       <xsd:attribute type="xsd:string" name="transform" default="NULL">
         <xsd:annotation>
-          <xsd:documentation><![CDATA[Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint. ]]></xsd:documentation>
+          <xsd:documentation><![CDATA[Set this to transform your value to this type - integer, array (for csv values), float, DateTime, Vendor\MyExt\Domain\Model\Object or ObjectStorage with type hint.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:string" name="onChange" default="NULL">
