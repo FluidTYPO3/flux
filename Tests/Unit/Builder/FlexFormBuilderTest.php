@@ -14,12 +14,14 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
+use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class FlexFormBuilderTest extends AbstractTestCase
 {
     protected ProviderResolver $providerResolver;
     protected CacheService $cacheService;
+    protected PageService $pageService;
 
     protected function setUp(): void
     {
@@ -29,6 +31,10 @@ class FlexFormBuilderTest extends AbstractTestCase
             ->getMock();
         $this->cacheService = $this->getMockBuilder(CacheService::class)
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->pageService = $this->getMockBuilder(PageService::class)
+            ->onlyMethods(['getPageTemplateConfiguration'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -48,6 +54,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         return [
             $this->cacheService,
             $this->providerResolver,
+            $this->pageService,
         ];
     }
 
