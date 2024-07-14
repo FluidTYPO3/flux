@@ -121,8 +121,8 @@ class PreviewView extends TemplateView
         }
         $extensionKey = $provider->getExtensionKey($row);
 
-        $flexformVariables = $provider->getFlexFormValues($row);
         $templateVariables = $provider->getTemplateVariables($row);
+        $flexformVariables = $provider->getFlexFormValues($row);
         $variables = RecursiveArrayUtility::merge($templateVariables, $flexformVariables);
         $variables['row'] = $row;
         $variables['record'] = $row;

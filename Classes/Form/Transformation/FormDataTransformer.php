@@ -66,11 +66,16 @@ class FormDataTransformer
         );
 
         if ($form !== null) {
+            if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES)) {
+                $nestedDimension = $form->getOption(FormOption::RECORD_FIELD);
+                if (isset($settings[$nestedDimension])) {
+                    // Some variables were relocated to a sub-scope. Relocate them back to the root of variables.
+                    $settings = array_replace_recursive($settings, $settings[$nestedDimension]);
+                    unset($settings[$nestedDimension]);
+                }
+            }
             if ($form->getOption(FormOption::TRANSFORM)) {
                 $settings = $this->transformAccordingToConfiguration($settings, $form);
-            }
-            if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES)) {
-                unset($settings[$form->getOption(FormOption::RECORD_FIELD)]);
             }
         }
 
