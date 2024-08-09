@@ -88,10 +88,10 @@ abstract class AbstractMultiValueFieldViewHelper extends AbstractFieldViewHelper
         $component->setEmptyOption($arguments['emptyOption']);
         $component->setTranslateCsvItems((boolean) $arguments['translateCsvItems']);
         $component->setValidate($arguments['validate']);
-        $component->setMinItems($arguments['minItems']);
-        $component->setMaxItems($arguments['maxItems']);
-        $component->setSize($arguments['size']);
-        $component->setMultiple($arguments['multiple']);
+        $component->setMinItems((integer) $arguments['minItems']);
+        $component->setMaxItems((integer) $arguments['maxItems']);
+        $component->setSize((integer) $arguments['size']);
+        $component->setMultiple((boolean) $arguments['multiple']);
         $component->setItemListStyle($arguments['itemListStyle']);
         $component->setSelectedListStyle($arguments['selectedListStyle']);
         return $component;
