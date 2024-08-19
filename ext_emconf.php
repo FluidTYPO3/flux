@@ -26,7 +26,7 @@ $EM_CONF['flux'] = array (
     'depends' => 
     array (
       'typo3' => '10.4.0-12.4.99',
-      'php' => '7.4.0-8.2.99',
+      'php' => '7.4.0-8.3.99',
     ),
     'conflicts' => 
     array (
