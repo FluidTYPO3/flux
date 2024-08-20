@@ -70,6 +70,10 @@ class FlexFormBuilder
                 // template selection values as part of our DS identifier.
                 // This is NOT necessary if the input record contains an explicitly selected page layout, hence the
                 // added check above before entering this condition block.
+                if ((int)$record['pid'] < 0) {
+                    // we have uid of sibling, need parent
+                    $record['pid'] = BackendUtility::getRecord('pages',abs($record['pid']),'uid')['uid'];
+                }
                 $record = array_merge(
                     $record,
                     $this->pageService->getPageTemplateConfiguration($record['pid'], true) ?? []
