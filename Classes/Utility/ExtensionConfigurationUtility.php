@@ -22,6 +22,7 @@ class ExtensionConfigurationUtility
         ExtensionOption::OPTION_FLEXFORM_TO_IRRE => false,
         ExtensionOption::OPTION_INHERITANCE_MODE => 'restricted',
         ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES => false,
+        ExtensionOption::OPTION_CUSTOM_PAGE_LAYOUT_SELECTOR => false,
     ];
 
     public static function initialize(?string $extensionConfiguration): void
