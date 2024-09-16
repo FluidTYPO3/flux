@@ -72,7 +72,11 @@ class FlexFormBuilder
                 // added check above before entering this condition block.
                 if ((integer) $record['pid'] < 0) {
                     // we have uid of sibling, need parent
-                    $record['pid'] = BackendUtility::getRecord('pages', (integer) abs($record['pid']), 'uid')['uid'] ?? 0;
+                    $record['pid'] = BackendUtility::getRecord(
+                        'pages',
+                        (integer) abs($record['pid']),
+                        'uid'
+                    )['uid'] ?? 0;
                 }
                 $record = array_merge(
                     $record,
