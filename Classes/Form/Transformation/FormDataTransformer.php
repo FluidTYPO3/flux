@@ -94,7 +94,7 @@ class FormDataTransformer
             $component = $this->extractTransformableObjectByPath($form, $prefix . $index);
             if (is_array($value)) {
                 $value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
-                if ($object = $this->extractTransformableObjectByPath($form, $index)) {
+                if ($object = $this->extractTransformableObjectByPath($form, (string) $index)) {
                     $value = $this->transform($form, $object, $value);
                 }
             } elseif ($component) {
