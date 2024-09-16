@@ -75,7 +75,7 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 && !$firstChild->hasChildren()
             ) {
                 // Form has a single sheet, it's the default sheet and it has no fields. Replace it.
-                $this->children->detach($this->children->current());
+                $this->children->detach($firstChild);
             }
             foreach ($this->children as $existingChild) {
                 if ($child->getName() === $existingChild->getName()) {
