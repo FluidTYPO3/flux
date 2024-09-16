@@ -14,4 +14,5 @@ class ExtensionOption
     public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
     public const OPTION_INHERITANCE_MODE = 'inheritanceMode';
     public const OPTION_UNIQUE_FILE_FIELD_NAMES = 'uniqueFileFieldNames';
+    public const OPTION_CUSTOM_PAGE_LAYOUT_SELECTOR = 'customLayoutSelector';
 }

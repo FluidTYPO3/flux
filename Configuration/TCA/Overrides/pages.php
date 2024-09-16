@@ -4,41 +4,42 @@
         return;
     }
 
+    if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.0', '>=') && \FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_CUSTOM_PAGE_LAYOUT_SELECTOR)) {
+        $layoutSelectorFieldConfiguration = [
+            'type' => 'radio',
+            'items' => [],
+            'renderType' => 'fluxPageLayoutSelector',
+            'iconHeight' => 200,
+            'titles' => true,
+            'descriptions' => true,
+        ];
+    } else {
+        $layoutSelectorFieldConfiguration = [
+            'type' => 'select',
+            'renderType' => 'selectSingle',
+            'behaviour' => [
+                'allowLanguageSynchronization' => true,
+            ],
+            'fieldWizard' => [
+                'selectIcons' => [
+                    'disabled' => false,
+                ],
+            ],
+        ];
+    }
+
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('pages', [
         'tx_fed_page_controller_action' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action',
             'onChange' => 'reload',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
-                'fieldWizard' => [
-                    'selectIcons' => [
-                        'disabled' => false
-                    ]
-                ]
-            ]
+            'config' => $layoutSelectorFieldConfiguration,
         ],
         'tx_fed_page_controller_action_sub' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:pages.tx_fed_page_controller_action_sub',
             'onChange' => 'reload',
-
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
-                'fieldWizard' => [
-                    'selectIcons' => [
-                        'disabled' => false
-                    ]
-                ]
-            ]
+            'config' => $layoutSelectorFieldConfiguration,
         ],
         'tx_fed_page_flexform' => [
             'exclude' => 1,

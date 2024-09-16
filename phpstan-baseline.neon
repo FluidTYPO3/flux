@@ -1,6 +1,18 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Call to an undefined method TYPO3\\\\CMS\\\\Core\\\\Package\\\\MetaData\\:\\:getTitle\\(\\)\\.$#"
+            count: 1
+            path: Classes/Integration/FormEngine/PageLayoutSelector.php
+        -
+            message: "#^Call to an undefined static method TYPO3\\\\CMS\\\\Core\\\\Utility\\\\PathUtility\\:\\:getPublicResourceWebPath\\(\\)\\.$#"
+            count: 2
+            path: Classes/Integration/FormEngine/PageLayoutSelector.php
+        -
+            message: "#^Property .+ does not accept#"
+            count: 4
+            path: Classes/Integration/FormEngine/PageLayoutSelector.php
+        -
             message: "#^Variable \\$EM_CONF might not be defined\\.$#"
             count: 1
             path: Classes/Backend/PageLayoutDataProvider.php

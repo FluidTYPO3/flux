@@ -66,6 +66,11 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     ];
 
     // FormEngine integration for custom TCA field types used by Flux
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1726225012] = [
+        'nodeName' => 'fluxPageLayoutSelector',
+        'priority' => 40,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\PageLayoutSelector::class,
+    ];
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1575276512] = [
         'nodeName' => 'fluxContentTypeValidator',
         'priority' => 40,
