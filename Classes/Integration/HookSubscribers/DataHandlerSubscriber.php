@@ -427,7 +427,11 @@ class DataHandlerSubscriber
         if ($relativeTo > 0) {
             $destinationPid = $relativeTo;
         } else {
-            $relativeRecord = $this->getSingleRecordWithoutRestrictions($table, (integer) abs($relativeTo), 'pid');
+            $relativeRecord = $this->getSingleRecordWithoutRestrictions(
+                $table,
+                (integer) abs((integer) $relativeTo),
+                'pid'
+            );
             $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
         }
 
