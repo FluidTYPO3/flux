@@ -179,6 +179,7 @@ class RuntimeDefinedContentProviderTest extends AbstractTestCase
         $expected = [
             'record' => $record,
             'settings' => [],
+            'forField' => null,
             'page' => [],
             'user' => [],
             'contentType' => $this->contentTypeDefinition,

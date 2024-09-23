@@ -177,7 +177,8 @@ class AbstractProvider implements ProviderInterface
         $fieldName = $forField ?? $this->getFieldName($row);
         $variables = [
             'record' => $row,
-            'settings' => $this->typoScriptService->getSettingsForExtensionName($extensionKey)
+            'settings' => $this->typoScriptService->getSettingsForExtensionName($extensionKey),
+            'forField' => $forField,
         ];
 
         // Special case: when saving a new record variable $row[$fieldName] is already an array
