@@ -47,9 +47,7 @@ class InputViewHelper extends AbstractFieldViewHelper
         $input->setMaxCharacters($arguments['maxCharacters']);
         $input->setMinimum($arguments['minimum']);
         $input->setMaximum($arguments['maximum']);
-        if (is_scalar($arguments['placeholder']??false)) {
-            $input->setPlaceholder((string) $arguments['placeholder']);
-        }
+        $input->setPlaceholder(is_scalar($arguments['placeholder']) ? (string) $arguments['placeholder'] : null);
         $input->setSize($arguments['size']);
         return $input;
     }
