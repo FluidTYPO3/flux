@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\OptionCarryingInterface;
 use FluidTYPO3\Flux\Form\Transformation\DataTransformerInterface;
+use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
@@ -92,7 +93,7 @@ class FileTransformer implements DataTransformerInterface
     protected function fetchFileReferences(string $table, string $fieldName, int $recordUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-        $result = $queryBuilder
+        $queryBuilder
             ->select('uid')
             ->from('sys_file_reference')
             ->where(
@@ -100,11 +101,12 @@ class FileTransformer implements DataTransformerInterface
                 $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($table)),
                 $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($fieldName))
             )
-            ->orderBy('sorting_foreign')
-            ->execute();
+            ->orderBy('sorting_foreign');
+
+        $result = DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
 
         $references = [];
-        while ($row = $result->fetchAssociative()) {
+        while ($row = DoctrineQueryProxy::fetchAssociative($result)) {
             /** @var array<string, int> $row */
             try {
                 $references[] = $this->resourceFactory->getFileReferenceObject($row['uid']);

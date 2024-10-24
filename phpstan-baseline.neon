@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Result\\:\\:fetch(All)?\\(\\)\\.$#"
+            count: 2
+            path: Classes/Utility/DoctrineQueryProxy.php
+        -
             message: "#^Call to an undefined method TYPO3\\\\CMS\\\\Core\\\\Package\\\\MetaData\\:\\:getTitle\\(\\)\\.$#"
             count: 1
             path: Classes/Integration/FormEngine/PageLayoutSelector.php

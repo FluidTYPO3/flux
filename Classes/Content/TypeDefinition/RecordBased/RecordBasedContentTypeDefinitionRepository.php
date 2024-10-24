@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Content\TypeDefinition\RecordBased;
  */
 
 use Doctrine\DBAL\Exception\TableNotFoundException;
+use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -35,16 +36,17 @@ class RecordBasedContentTypeDefinitionRepository implements SingletonInterface
             $queryBuilder = $this->connectionPool->getQueryBuilderForTable('content_types');
             /** @var string[] $keys */
             $keys = array_keys($GLOBALS['TCA']['content_types']['columns'] ?? ['*' => '']);
-            /** @var array[] $typeRecords */
-            $typeRecords = $queryBuilder->select(...$keys)
+            $queryBuilder->select(...$keys)
                 ->from('content_types')
                 ->where(
                     $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
                     $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
                 )
-                ->orderBy('sorting', 'ASC')
-                ->execute()
-                ->fetchAll();
+                ->orderBy('sorting', 'ASC');
+
+            $result = $typeRecords = DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
+            /** @var array[] $typeRecords */
+            $typeRecords = DoctrineQueryProxy::fetchAllAssociative($result);
         } catch (TableNotFoundException $exception) {
             $typeRecords = [];
         }

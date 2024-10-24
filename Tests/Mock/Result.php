@@ -38,4 +38,9 @@ trait ResultTrait
     {
         return $this->returns;
     }
+
+    public function rowCount(): int
+    {
+        return count($this->returns);
+    }
 }

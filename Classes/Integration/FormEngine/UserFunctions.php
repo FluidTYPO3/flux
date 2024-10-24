@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Integration\FormEngine;
 
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
@@ -121,7 +122,7 @@ class UserFunctions
             $queryBuilder->expr()->gte('colPos', $minimumColPosValue),
             $queryBuilder->expr()->lt('colPos', $maximumColPosValue)
         );
-        $rows = $query->execute()->fetchAll();
+        $rows = DoctrineQueryProxy::fetchAllAssociative(DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder));
         return empty($rows) ? [] : array_map(function ($colPos) {
             return ColumnNumberUtility::calculateLocalColumnNumber($colPos);
         }, array_unique(array_column($rows, 'colPos')));
