@@ -217,7 +217,7 @@ class InlineRecordDataConverter implements ConverterInterface
         $queryBuilder = $this->createQueryBuilderForTable('flux_field');
         /** @var array[] $result */
         $result = $queryBuilder->select('uid', 'field_name', 'field_value')->from('flux_field')->where(
-            $queryBuilder->expr()->eq('sheet', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT))
+            $queryBuilder->expr()->eq('sheet', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT))
         )->execute()->fetchAllAssociative();
         foreach ($result as $fieldRecord) {
             $settings = $this->assignVariableByDottedPath(
@@ -238,11 +238,11 @@ class InlineRecordDataConverter implements ConverterInterface
         return $queryBuilder->select('*')->from('flux_sheet')->where(
             $queryBuilder->expr()->eq(
                 'source_table',
-                $queryBuilder->createNamedParameter($this->table, \PDO::PARAM_STR)
+                $queryBuilder->createNamedParameter($this->table, Connection::PARAM_STR)
             ),
             $queryBuilder->expr()->eq(
                 'source_field',
-                $queryBuilder->createNamedParameter($this->field, \PDO::PARAM_STR)
+                $queryBuilder->createNamedParameter($this->field, Connection::PARAM_STR)
             ),
         )->execute()->fetchAllAssociative();
     }
@@ -254,7 +254,7 @@ class InlineRecordDataConverter implements ConverterInterface
     {
         $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
         return $queryBuilder->select('uid', 'name')->from('flux_sheet')->where(
-            $queryBuilder->expr()->eq('name', $queryBuilder->createNamedParameter($sheetName, \PDO::PARAM_STR))
+            $queryBuilder->expr()->eq('name', $queryBuilder->createNamedParameter($sheetName, Connection::PARAM_STR))
         )->execute()->fetchAssociative() ?: null;
     }
 

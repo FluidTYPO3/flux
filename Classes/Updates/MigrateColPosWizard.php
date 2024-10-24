@@ -3,6 +3,7 @@ namespace FluidTYPO3\Flux\Updates;
 
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Registry;
@@ -157,8 +158,14 @@ class MigrateColPosWizard implements
                 ->selectLiteral('MAX(sorting)')
                 ->from('tt_content')
                 ->where(
-                    $queryBuilder->expr()->gte('colPos', $queryBuilder->createNamedParameter($min, \PDO::PARAM_INT)),
-                    $queryBuilder->expr()->lte('colPos', $queryBuilder->createNamedParameter($max, \PDO::PARAM_INT)),
+                    $queryBuilder->expr()->gte(
+                        'colPos',
+                        $queryBuilder->createNamedParameter($min, Connection::PARAM_INT)
+                    ),
+                    $queryBuilder->expr()->lte(
+                        'colPos',
+                        $queryBuilder->createNamedParameter($max, Connection::PARAM_INT)
+                    ),
                 )
                 ->execute()
                 ->fetchOne();
@@ -174,15 +181,15 @@ class MigrateColPosWizard implements
                 ->where(
                     $queryBuilder->expr()->eq(
                         'pid',
-                        $queryBuilder->createNamedParameter($contentRow['pid'], \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($contentRow['pid'], Connection::PARAM_INT)
                     ),
                     $queryBuilder->expr()->eq(
                         'colPos',
-                        $queryBuilder->createNamedParameter($contentRow['colPos'], \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($contentRow['colPos'], Connection::PARAM_INT)
                     ),
                     $queryBuilder->expr()->gte(
                         'sorting',
-                        $queryBuilder->createNamedParameter($contentRow['sorting'], \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($contentRow['sorting'], Connection::PARAM_INT)
                     ),
                 )
                 ->orderBy('sorting', 'ASC')
