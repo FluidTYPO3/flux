@@ -38,7 +38,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
      * This method is called as "itemsProcFunc" with the accordant context
      * for tt_content.colPos.
      */
-    public function colPosListItemProcFunc(array $parameters): void
+    public function colPosListItemProcFunc(array &$parameters): void
     {
         $this->record = $parameters['row'];
         $this->addingItemsForContent = true;
