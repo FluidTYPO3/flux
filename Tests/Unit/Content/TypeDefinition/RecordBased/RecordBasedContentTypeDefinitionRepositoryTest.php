@@ -14,16 +14,15 @@ use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinitionRepository;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
+use FluidTYPO3\Flux\Tests\Mock\QueryBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Package\PackageManager;
 
 class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
 {
-    protected QueryBuilder $queryBuilder;
     protected ConnectionPool $connectionPool;
 
     protected function setUp(): void
@@ -34,11 +33,9 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
             ->getMock();
         $packageManager->method('isPackageActive')->willReturn(true);
 
-        $this->queryBuilder = $this->createQueryBuilderMock();
         $this->connectionPool = $this->getMockBuilder(ConnectionPool::class)
             ->onlyMethods(['getQueryBuilderForTable'])
             ->getMock();
-        $this->connectionPool->method('getQueryBuilderForTable')->willReturn($this->queryBuilder);
 
         AccessibleExtensionManagementUtility::setPackageManager($packageManager);
 
@@ -47,9 +44,14 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
 
     public function testReturnsEmptySetOfDefinitionsOnTableNotExists(): void
     {
-        $this->queryBuilder->method('select')->willThrowException(
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->onlyMethods(['select'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder->method('select')->willThrowException(
             $this->getMockBuilder(TableNotFoundException::class)->disableOriginalConstructor()->getMock()
         );
+        $this->connectionPool->method('getQueryBuilderForTable')->willReturn($queryBuilder);
         $subject = new RecordBasedContentTypeDefinitionRepository($this->connectionPool);
 
         self::assertSame([], $subject->fetchContentTypeDefinitions());
@@ -71,50 +73,13 @@ class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase
 
         ];
 
-        $subject = new RecordBasedContentTypeDefinitionRepository($this->connectionPool);
+        $queryBuilder = new QueryBuilder($definitionRecords);
+        $this->connectionPool->method('getQueryBuilderForTable')->willReturn($queryBuilder);
 
-        $this->queryBuilder->execute()->method('fetchAll')->willReturn($definitionRecords);
+        $subject = new RecordBasedContentTypeDefinitionRepository($this->connectionPool);
 
         $definitions = $subject->fetchContentTypeDefinitions();
         self::assertCount(2, $definitions);
         self::assertInstanceOf(RecordBasedContentTypeDefinition::class, reset($definitions));
-    }
-
-    protected function createQueryBuilderMock(): MockObject
-    {
-        $statement = $this->getMockBuilder(Statement::class)
-            ->setMethods(['fetchAll'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $expressionBuilder = $this->getMockBuilder(ExpressionBuilder::class)
-            ->setMethods(['eq'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-        $expressionBuilder->method('eq')->willReturn('');
-
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-            ->setMethods(
-                [
-                    'select',
-                    'from',
-                    'where',
-                    'expr',
-                    'orderBy',
-                    'execute',
-                    'createNamedParameter',
-                ]
-            )
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-        $queryBuilder->method('select')->willReturnSelf();
-        $queryBuilder->method('from')->willReturnSelf();
-        $queryBuilder->method('where')->willReturnSelf();
-        $queryBuilder->method('orderBy')->willReturnSelf();
-        $queryBuilder->method('expr')->willReturn($expressionBuilder);
-        $queryBuilder->method('createNamedParameter')->willReturn('"foo"');
-        $queryBuilder->method('execute')->willReturn($statement);
-
-        return $queryBuilder;
     }
 }

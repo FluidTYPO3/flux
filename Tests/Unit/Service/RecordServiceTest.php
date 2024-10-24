@@ -10,11 +10,11 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 
 use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Service\RecordService;
+use FluidTYPO3\Flux\Tests\Mock\QueryBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -23,8 +23,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordServiceTest extends AbstractTestCase
 {
-    protected ?Statement $statement = null;
-
     /**
      * @param array $methods
      * @return RecordService|MockObject
@@ -41,53 +39,11 @@ class RecordServiceTest extends AbstractTestCase
     /**
      * @return QueryBuilder
      */
-    protected function createAndRegisterMockForQueryBuilder()
+    protected function createAndRegisterMockForQueryBuilder(array $returns = []): QueryBuilder
     {
-        $this->statement = $this->getMockBuilder(Statement::class)
-            ->setMethods(['fetchAll'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $expressionBuilder = $this->getMockBuilder(ExpressionBuilder::class)->disableOriginalConstructor()->getMock();
 
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-            ->setMethods(
-                [
-                    'from',
-                    'where',
-                    'select',
-                    'update',
-                    'orderBy',
-                    'groupBy',
-                    'delete',
-                    'setMaxResults',
-                    'setFirstResult',
-                    'setParameters',
-                    'execute',
-                    'set',
-                    'getRestrictions',
-                    'expr',
-                    'createNamedParameter',
-                ]
-            )
-            ->disableOriginalConstructor()
-            ->getMock();
-        $queryBuilder->method('select')->willReturnSelf();
-        $queryBuilder->method('update')->willReturnSelf();
-        $queryBuilder->method('from')->willReturnSelf();
-        $queryBuilder->method('where')->willReturnSelf();
-        $queryBuilder->method('orderBy')->willReturnSelf();
-        $queryBuilder->method('groupBy')->willReturnSelf();
-        $queryBuilder->method('delete')->willReturnSelf();
-        $queryBuilder->method('setMaxResults')->willReturnSelf();
-        $queryBuilder->method('setFirstResult')->willReturnSelf();
-        $queryBuilder->method('setParameters')->willReturnSelf();
-        $queryBuilder->method('execute')->willReturn($this->statement);
-        $queryBuilder->method('expr')->willReturn($expressionBuilder);
-        $queryBuilder->method('createNamedParameter')->willReturn('param');
-        $queryBuilder->method('getRestrictions')->willReturn(
-            $this->getMockBuilder(QueryRestrictionContainerInterface::class)->getMockForAbstractClass()
-        );
+        $queryBuilder = new QueryBuilder($returns);
 
         $prophecy = $this->getMockBuilder(ConnectionPool::class)
             ->setMethods(['getQueryBuilderForTable'])
@@ -115,7 +71,6 @@ class RecordServiceTest extends AbstractTestCase
         $mock = $this->getMockServiceInstance();
 
         $this->createAndRegisterMockForQueryBuilder();
-        $this->statement->method('fetchAll')->willReturn([]);
 
         $this->assertSame(
             [],
@@ -152,10 +107,7 @@ class RecordServiceTest extends AbstractTestCase
 
         $this->createAndRegisterMockForQueryBuilder();
 
-        $this->assertInstanceOf(
-            Statement::class,
-            $mock->update($table, $fields)
-        );
+        self::assertFalse(empty($mock->update($table, $fields)));
     }
 
     /**
@@ -194,7 +146,6 @@ class RecordServiceTest extends AbstractTestCase
     {
         $mock = $this->getMockServiceInstance();
         $this->createAndRegisterMockForQueryBuilder();
-        $this->statement->method('fetchAll')->willReturn([]);
         self::assertSame(
             [],
             $mock->preparedGet('table', 'fields', 'test = 1')

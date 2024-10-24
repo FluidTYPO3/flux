@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -161,7 +162,8 @@ class DataHandlerSubscriber
                         $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, Connection::PARAM_INT)
                     )
                 )
-            )->execute();
+            );
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
         }
 
         static::$copiedRecords[$fieldArray['t3_origuid']] = true;
@@ -500,7 +502,9 @@ class DataHandlerSubscriber
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)));
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -515,7 +519,9 @@ class DataHandlerSubscriber
             ->from($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)));
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -535,7 +541,9 @@ class DataHandlerSubscriber
                 $queryBuilder->expr()->neq('t3ver_state', -1)
             );
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -568,7 +576,9 @@ class DataHandlerSubscriber
                 )
             );
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -642,7 +652,7 @@ class DataHandlerSubscriber
             $query->andWhere($queryBuilder->expr()->neq('pid', -1));
         }
 
-        $records = $query->execute()->fetchAll();
+        $records = DoctrineQueryProxy::fetchAllAssociative(DoctrineQueryProxy::executeQueryOnQueryBuilder($query));
 
         // Selecting records to return. The "sorting DESC" is very intentional; copy operations will place records
         // into the top of columns which means reading records in reverse order causes the correct final order.

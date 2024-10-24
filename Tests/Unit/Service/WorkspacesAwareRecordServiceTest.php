@@ -54,9 +54,7 @@ class WorkspacesAwareRecordServiceTest extends RecordServiceTest
             ->with($table, ['uid' => $uid])
             ->willReturn(['uid' => 456]);
 
-        $this->createAndRegisterMockForQueryBuilder();
-
-        $this->statement->method('fetchAll')->willReturn([['uid' => $uid]]);
+        $this->createAndRegisterMockForQueryBuilder([['uid' => $uid]]);
 
         $mock->getSingle($table, $fields, $uid);
     }
