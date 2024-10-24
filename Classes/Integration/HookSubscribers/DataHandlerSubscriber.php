@@ -145,20 +145,20 @@ class DataHandlerSubscriber
 
         if ($newColumnPosition > 0) {
             $queryBuilder = $this->createQueryBuilderForTable($table);
-            $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, \PDO::PARAM_INT)->where(
+            $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, Connection::PARAM_INT)->where(
                 $queryBuilder->expr()->eq(
                     'uid',
-                    $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], Connection::PARAM_INT)
                 )
             )->orWhere(
                 $queryBuilder->expr()->andX(
                     $queryBuilder->expr()->eq(
                         't3ver_oid',
-                        $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], Connection::PARAM_INT)
                     ),
                     $queryBuilder->expr()->eq(
                         't3ver_wsid',
-                        $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, Connection::PARAM_INT)
                     )
                 )
             )->execute();
@@ -498,7 +498,7 @@ class DataHandlerSubscriber
         $queryBuilder->getRestrictions()->removeAll()->add($deletedRestriction);
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)));
         /** @var array|false $firstResult */
         $firstResult = $queryBuilder->execute()->fetch();
         return $firstResult ?: null;
@@ -513,7 +513,7 @@ class DataHandlerSubscriber
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)));
         /** @var array|false $firstResult */
         $firstResult = $queryBuilder->execute()->fetch();
         return $firstResult ?: null;
@@ -559,12 +559,12 @@ class DataHandlerSubscriber
             ->where(
                 $queryBuilder->expr()->eq(
                     'sys_language_uid',
-                    $queryBuilder->createNamedParameter($languageUid, \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($languageUid, Connection::PARAM_INT)
                 ),
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, Connection::PARAM_INT)),
                 $queryBuilder->expr()->eq(
                     'l10n_source',
-                    $queryBuilder->createNamedParameter($originalParentUid, \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($originalParentUid, Connection::PARAM_INT)
                 )
             );
         /** @var array|false $firstResult */

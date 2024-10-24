@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidRenderingContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -123,7 +124,7 @@ class ContentTypeValidator
             ->where(
                 $queryBuilder->expr()->eq(
                     'CType',
-                    $queryBuilder->createNamedParameter($definition->getContentTypeName(), \PDO::PARAM_STR)
+                    $queryBuilder->createNamedParameter($definition->getContentTypeName(), Connection::PARAM_STR)
                 )
             );
         return (integer) $queryBuilder->execute()->rowCount();
