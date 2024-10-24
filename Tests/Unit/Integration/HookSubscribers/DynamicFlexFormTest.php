@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
 use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -19,6 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class DynamicFlexFormTest extends AbstractTestCase
 {
     protected ?FlexFormBuilder $flexFormBuilder = null;
+    protected ?FlexFormTools $flexFormTools = null;
 
     protected function setUp(): void
     {
@@ -27,7 +29,13 @@ class DynamicFlexFormTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->flexFormTools = $this->getMockBuilder(FlexFormTools::class)
+            ->onlyMethods(['getDataStructureIdentifier'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         GeneralUtility::addInstance(FlexFormBuilder::class, $this->flexFormBuilder);
+        GeneralUtility::addInstance(FlexFormTools::class, $this->flexFormTools);
 
         parent::setUp();
     }
@@ -51,6 +59,7 @@ class DynamicFlexFormTest extends AbstractTestCase
         $this->flexFormBuilder->method('resolveDataStructureIdentifier')
             ->with()
             ->willReturn(['foo' => 'bar']);
+        $this->flexFormTools->method('getDataStructureIdentifier')->willReturn('{"id": 123}');
         $output = $subject->getDataStructureIdentifierPreProcess([], 'table', 'field', ['uid' => 1]);
         self::assertSame(['foo' => 'bar'], $output);
     }

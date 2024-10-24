@@ -19,7 +19,7 @@ use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderInterface;
 use TYPO3\CMS\Backend\View\BackendLayout\DefaultDataProvider;
 
-class BackendLayoutDataProvider extends DefaultDataProvider implements DataProviderInterface
+class BackendLayoutDataProvider implements DataProviderInterface
 {
     protected ProviderResolver $providerResolver;
     protected WorkspacesAwareRecordService $recordService;
