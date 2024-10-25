@@ -7,12 +7,17 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
 class DoctrineQueryProxy
 {
-    /**
-     * Returns \Doctrine\DBAL\Result on v11+, \Doctrine\DBAL\Driver\ResultStatement on v10
-     *
-     * @return Result
-     */
-    public static function executeQueryOnQueryBuilder(QueryBuilder $queryBuilder)
+    public static function executeStatementOnQueryBuilder(QueryBuilder $queryBuilder): int
+    {
+        if (method_exists($queryBuilder, 'executeStatement')) {
+            return $queryBuilder->executeStatement();
+        }
+        /** @var int $result */
+        $result = $queryBuilder->execute();
+        return $result;
+    }
+
+    public static function executeQueryOnQueryBuilder(QueryBuilder $queryBuilder): Result
     {
         if (method_exists($queryBuilder, 'executeQuery')) {
             return $queryBuilder->executeQuery();

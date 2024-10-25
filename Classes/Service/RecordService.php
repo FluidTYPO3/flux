@@ -86,7 +86,7 @@ class RecordService implements SingletonInterface
         foreach ($record as $name => $value) {
             $builder->set($name, $value);
         }
-        return DoctrineQueryProxy::executeQueryOnQueryBuilder($builder);
+        return DoctrineQueryProxy::executeStatementOnQueryBuilder($builder);
     }
 
     /**
@@ -98,7 +98,7 @@ class RecordService implements SingletonInterface
         $queryBuilder = $this->getQueryBuilder($table);
         $queryBuilder->delete($table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($clauseUid)));
-        return (bool) DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
+        return (bool) DoctrineQueryProxy::executeStatementOnQueryBuilder($queryBuilder);
     }
 
     public function preparedGet(string $table, string $fields, string $condition, array $values = []): array
