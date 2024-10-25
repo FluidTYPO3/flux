@@ -105,9 +105,12 @@ class RecordServiceTest extends AbstractTestCase
         $fields = ['foo' => 'bar', 'uid' => $uid];
         $mock = $this->getMockServiceInstance();
 
-        $this->createAndRegisterMockForQueryBuilder();
+        $this->createAndRegisterMockForQueryBuilder([['uid' => 123]]);
 
-        self::assertFalse(empty($mock->update($table, $fields)));
+        self::assertSame(
+            1,
+            $mock->update($table, $fields)
+        );
     }
 
     /**
@@ -119,7 +122,7 @@ class RecordServiceTest extends AbstractTestCase
         $uid = 123;
         $mock = $this->getMockServiceInstance();
 
-        $this->createAndRegisterMockForQueryBuilder();
+        $this->createAndRegisterMockForQueryBuilder([['uid' => 123]]);
 
         $this->assertTrue(
             $mock->delete($table, $uid)
@@ -135,7 +138,7 @@ class RecordServiceTest extends AbstractTestCase
         $record = ['uid' => 123];
         $mock = $this->getMockServiceInstance();
 
-        $this->createAndRegisterMockForQueryBuilder();
+        $this->createAndRegisterMockForQueryBuilder([['uid' => 123]]);
 
         $this->assertTrue(
             $mock->delete($table, $record)
