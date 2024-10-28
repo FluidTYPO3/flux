@@ -30,9 +30,4 @@ class ContentControllerTest extends AbstractFluxControllerTestCase
         $this->setInaccessiblePropertyValue($instance, 'extensionName', 'Flux');
         return $instance;
     }
-
-    public function testCanGetRecord(): void
-    {
-        parent::testCanGetRecord();
-    }
 }

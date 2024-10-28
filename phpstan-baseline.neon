@@ -57,6 +57,10 @@ parameters:
             count: 1
             path: Classes/Controller/AbstractFluxController.php
         -
+            message: "#^Call to protected method getTypoScriptFrontendController\\(\\) of class TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\ContentObjectRenderer\\.$#"
+            count: 1
+            path: Classes/Controller/AbstractFluxController.php
+        -
             message: "#^Method FluidTYPO3\\\\Flux\\\\Integration\\\\BackendLayoutRenderer\\:\\:getContext\\(\\) should return TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutContext but returns TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutContext\\|null\\.$#"
             count: 1
             path: Classes/Integration/BackendLayoutRenderer.php
