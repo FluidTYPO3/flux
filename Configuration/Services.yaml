@@ -24,6 +24,8 @@ services:
     arguments:
       $locator: !tagged_locator { tag: 'flux.datatransformer', index_by: 'identifier' }
 
+  FluidTYPO3\Flux\Integration\HookSubscribers\ColumnPositionItems:
+    public: true
   FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:
     public: true
   FluidTYPO3\Flux\Backend\PageLayoutDataProvider:

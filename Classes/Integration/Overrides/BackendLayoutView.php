@@ -9,10 +9,8 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -21,7 +19,6 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
 {
     protected ?GridProviderInterface $provider = null;
     protected array $record = [];
-    protected bool $addingItemsForContent = false;
 
     public function setProvider(GridProviderInterface $provider): void
     {
@@ -34,42 +31,10 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     }
 
     /**
-     * Gets colPos items to be shown in the forms engine.
-     * This method is called as "itemsProcFunc" with the accordant context
-     * for tt_content.colPos.
-     */
-    public function colPosListItemProcFunc(array $parameters): void
-    {
-        $this->record = $parameters['row'];
-        $this->addingItemsForContent = true;
-        parent::colPosListItemProcFunc($parameters);
-        $this->addingItemsForContent = false;
-    }
-
-    /**
      * @param int $pageId
      */
     public function getSelectedBackendLayout($pageId): ?array
     {
-        if ($this->addingItemsForContent) {
-            $identifier = $this->getSelectedCombinedIdentifier($pageId);
-            if ($identifier === false) {
-                return null;
-            }
-
-            // Early return parent method's output if selected identifier is not from Flux
-            if (substr((string) $identifier, 0, 6) !== 'flux__') {
-                return parent::getSelectedBackendLayout($pageId);
-            }
-            $pageRecord = $this->loadRecordFromTable('pages', (int)$pageId);
-            if (!$pageRecord) {
-                return null;
-            }
-            $pageLevelProvider = $this->resolvePrimaryProviderForRecord('pages', $pageRecord);
-            if ($pageLevelProvider instanceof GridProviderInterface) {
-                return $pageLevelProvider->getGrid($pageRecord)->buildExtendedBackendLayoutArray(0);
-            }
-        }
         // Delegate resolving of backend layout structure to the Provider, which will return a Grid, which can create
         // a full backend layout data array.
         if ($this->provider instanceof GridProviderInterface) {
@@ -96,51 +61,6 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
     }
 
     /**
-     * Override which will merge allowed colPos values from two places:
-     *
-     * 1) The currently selected backend layout (which may be a Flux-based
-     *    or any other type).
-     * 2) If a Provider can be resolved for the parent record and it has
-     *    a grid, items from that grid are included.
-     *
-     * The result is a "colPos" items collection which includes page columns
-     * and columns directly inside the current parent.
-     *
-     * @param int $pageId
-     * @param array $items
-     */
-    protected function addColPosListLayoutItems($pageId, $items): array
-    {
-        $layout = $this->getSelectedBackendLayout($pageId);
-        if (isset($layout, $layout['__items'])) {
-            $items = $layout['__items'];
-        }
-        if ($this->addingItemsForContent) {
-            $parentRecordUid = ColumnNumberUtility::calculateParentUid((integer) ($this->record['colPos'] ?? 0));
-            if ($parentRecordUid > 0) {
-                $parentRecord = $this->loadRecordFromTable('tt_content', $parentRecordUid);
-                if (!$parentRecord) {
-                    return $items;
-                }
-                $provider = $this->resolvePrimaryProviderForRecord('tt_content', $parentRecord);
-                if ($provider) {
-                    $label = $this->getLanguageService()->sL(
-                        'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent'
-                    );
-                    $items = array_merge(
-                        $items,
-                        [
-                            (new SelectOption($label, '--div--'))->toArray()
-                        ],
-                        $provider->getGrid($parentRecord)->buildExtendedBackendLayoutArray($parentRecordUid)['__items']
-                    );
-                }
-            }
-        }
-        return $items;
-    }
-
-    /**
      * @codeCoverageIgnore
      */
     protected function loadRecordFromTable(string $table, int $uid): ?array
@@ -157,6 +77,9 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
         return $results[0] ?? null;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function resolvePrimaryProviderForRecord(string $table, array $record): ?GridProviderInterface
     {
         /** @var ProviderResolver $providerResolver */
