@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Form\Transformation;
  */
 
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataTransformerRegistry
 {
@@ -17,6 +18,8 @@ class DataTransformerRegistry
      * @var DataTransformerInterface[]
      */
     private array $transformers = [];
+
+    private static array $legacy = [];
 
     public function __construct(ServiceLocator $locator)
     {
@@ -31,9 +34,23 @@ class DataTransformerRegistry
         );
     }
 
+    public static function registerTransformerOnLegacyPhpVersion(string $transformerClassName): void
+    {
+        self::$legacy[] = $transformerClassName;
+    }
+
     public function resolveDataTransformerByType(string $type): DataTransformerInterface
     {
         foreach ($this->transformers as $transformer) {
+            if ($transformer->canTransformToType($type)) {
+                return $transformer;
+            }
+        }
+
+        /** @var class-string $legacyClassName */
+        foreach (self::$legacy as $legacyClassName) {
+            /** @var DataTransformerInterface $transformer */
+            $transformer = GeneralUtility::makeInstance($legacyClassName);
             if ($transformer->canTransformToType($type)) {
                 return $transformer;
             }

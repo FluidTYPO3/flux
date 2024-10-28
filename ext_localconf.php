@@ -44,6 +44,15 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
         $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
             'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
+        if (version_compare((string) PHP_MAJOR_VERSION, '8.0', '<')) {
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\ArrayTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\BooleanTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\FileTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\FloatTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\FunctionCallTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\IntegerTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer::class);
+        }
     }
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\FluidTYPO3\Flux\Updates\MigrateColPosWizard::class]

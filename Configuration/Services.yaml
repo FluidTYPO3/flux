@@ -24,6 +24,10 @@ services:
     arguments:
       $locator: !tagged_locator { tag: 'flux.datatransformer', index_by: 'identifier' }
 
+  # This entry only exists for PHP <8 to be able to load FileTransformer. Don't rely on being able to construct this!
+  FluidTYPO3\Flux\Form\Transformation\Transformer\FileTransformer:
+    public: true
+
   FluidTYPO3\Flux\Integration\HookSubscribers\ColumnPositionItems:
     public: true
   FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:
