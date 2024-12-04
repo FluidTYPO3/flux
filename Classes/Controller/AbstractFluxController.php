@@ -583,15 +583,18 @@ abstract class AbstractFluxController extends ActionController
             );
         }
 
-        if ($record['_LOCALIZED_UID'] ?? false) {
-            $record = array_merge(
-                $record,
-                $this->recordService->getSingle(
-                    (string) $this->getFluxTableName(),
-                    '*',
-                    $record['_LOCALIZED_UID']
-                ) ?? $record
+        if ($contentObject->data['_LOCALIZED_UID'] ?? false) {
+            $localized = $this->recordService->getSingle(
+                (string) $this->getFluxTableName(),
+                '*',
+                $contentObject->data['_LOCALIZED_UID']
             );
+            if ($localized) {
+                $record = array_merge(
+                    $record,
+                    $localized
+                );
+            }
         }
         return $record;
     }
