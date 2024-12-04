@@ -48,6 +48,10 @@ class RenderingContextBuilder implements SingletonInterface
             $pluginName
         );
 
+        if (method_exists($renderingContext, 'setRequest')) {
+            $renderingContext->setRequest($request);
+        }
+
         if (method_exists($renderingContext, 'getControllerContext')) {
             /** @var ControllerContext $controllerContext */
             $controllerContext = $this->buildControllerContext($request);
@@ -58,10 +62,6 @@ class RenderingContextBuilder implements SingletonInterface
                     'Controller class ' . $request->getControllerObjectName() . ' caused error: ' . $error->getMessage()
                 );
             }
-        }
-
-        if (method_exists($renderingContext, 'setRequest')) {
-            $renderingContext->setRequest($request);
         }
 
         if (method_exists($renderingContext, 'setControllerAction')) {
