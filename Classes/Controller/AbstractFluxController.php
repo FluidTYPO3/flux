@@ -435,7 +435,7 @@ abstract class AbstractFluxController extends ActionController
             ]
         )['content'];
 
-        return $this->createHtmlResponse($content);
+        return $content instanceof \Psr\Http\Message\ResponseInterface ? $content : $this->createHtmlResponse($content);
     }
 
     protected function hasSubControllerActionOnForeignController(
@@ -458,6 +458,7 @@ abstract class AbstractFluxController extends ActionController
 
     /**
      * @param class-string $controllerClassName
+     * @return \Psr\Http\Message\ResponseInterface|ResponseInterface|null
      */
     protected function callSubControllerAction(
         string $extensionName,
@@ -465,8 +466,11 @@ abstract class AbstractFluxController extends ActionController
         string $controllerActionName,
         string $pluginName,
         string $pluginSignature
-    ): string {
-        $arguments = $this->getServerRequest()->getQueryParams()[$pluginSignature] ?? [];
+    ) {
+        $serverRequest = $this->getServerRequest();
+        $arguments = $serverRequest->getQueryParams()[$pluginSignature] ?? [];
+        $arguments = array_merge($arguments, ((array) $serverRequest->getParsedBody())[$pluginSignature] ?? []);
+
         $request = $this->requestBuilder->buildRequestFor(
             $extensionName,
             $this->resolver->resolveControllerNameFromControllerClassName(
@@ -484,7 +488,7 @@ abstract class AbstractFluxController extends ActionController
             /** @var ResponseInterface\ $response */
             $response = $this->responseFactory->createResponse();
         } else {
-            /** @var Response $response */
+            /** @var ResponseInterface $response */
             $response = GeneralUtility::makeInstance(Response::class);
         }
 
@@ -500,7 +504,7 @@ abstract class AbstractFluxController extends ActionController
                 ]
             );
 
-            /** @var Response|null $responseFromCall */
+            /** @var \Psr\Http\Message\ResponseInterface|ResponseInterface|null $responseFromCall */
             $responseFromCall = $potentialControllerInstance->processRequest($request, $response);
             if ($responseFromCall) {
                 $response = $responseFromCall;
@@ -518,14 +522,8 @@ abstract class AbstractFluxController extends ActionController
                 'controllerActionName' => $controllerActionName
             ]
         );
-        if (method_exists($response, 'getContent')) {
-            return $response->getContent();
-        }
-        if (method_exists($response, 'getBody')) {
-            $response->getBody()->rewind();
-            return $response->getBody()->getContents();
-        }
-        return '';
+
+        return $response;
     }
 
     /**

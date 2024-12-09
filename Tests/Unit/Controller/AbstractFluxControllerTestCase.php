@@ -23,6 +23,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -305,6 +306,11 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()
         );
         $instance->injectConfigurationManager($configurationManager);
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
 
         $output = $this->callInaccessibleMethod(
             $instance,
@@ -333,6 +339,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance->expects($this->once())->method('callSubControllerAction');
         $instance->method('createHtmlResponse')->willReturn($response);
         $this->setInaccessiblePropertyValue($instance, 'extensionName', $this->extensionName);
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
+
         $this->callInaccessibleMethod(
             $instance,
             'performSubRendering',
@@ -444,11 +456,18 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
         $this->setInaccessiblePropertyValue($instance, 'request', $request);
         $this->setInaccessiblePropertyValue($instance, 'provider', $provider);
+        $this->setInaccessiblePropertyValue($instance, 'settings', []);
         $this->setInaccessiblePropertyValue(
             $instance,
             'configurationManager',
             $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass()
         );
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
+
         $this->callInaccessibleMethod($instance, 'initializeSettings');
     }
 
@@ -582,6 +601,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $view->expects($this->once())->method('render')->will($this->returnValue('test'));
         $this->setInaccessiblePropertyValue($instance, 'extensionName', $this->shortExtensionName);
         $this->setInaccessiblePropertyValue($instance, 'view', $view);
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
+
         $result = $this->callInaccessibleMethod(
             $instance,
             'performSubRendering',
@@ -650,6 +675,11 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             'Content',
             'tx_flux_content'
         );
+
+        if ($result instanceof ResponseInterface) {
+            $result = $result->getBody()->getContents();
+        }
+
         $this->assertEquals('test', $result);
     }
 
@@ -730,6 +760,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $settings = [
             'useTypoScript' => true
         ];
+        $this->setInaccessiblePropertyValue($instance, 'settings', []);
         $previousSettings = $this->getInaccessiblePropertyValue($instance, 'settings');
         $this->setInaccessiblePropertyValue($instance, 'settings', $settings);
         $this->callInaccessibleMethod($instance, 'initializeProvider');
