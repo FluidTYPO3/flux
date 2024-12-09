@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, string\\|TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
+            count: 1
+            path: Classes/ViewHelpers/InlineViewHelper.php
+        -
             message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Result\\:\\:fetch(All)?\\(\\)\\.$#"
             count: 2
             path: Classes/Utility/DoctrineQueryProxy.php

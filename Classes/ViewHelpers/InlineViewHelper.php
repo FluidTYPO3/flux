@@ -12,7 +12,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use TYPO3Fluid\Fluid\Core\Parser\Source;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
  * Inline Fluid rendering ViewHelper
@@ -37,8 +36,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderS
  */
 class InlineViewHelper extends AbstractViewHelper
 {
-    use CompileWithContentArgumentAndRenderStatic;
-
     /**
      * @var boolean
      */
@@ -62,15 +59,28 @@ class InlineViewHelper extends AbstractViewHelper
     /**
      * @return mixed
      */
+    public function render()
+    {
+        return self::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
+    }
+
+    /**
+     * @return mixed
+     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        $source = $renderChildrenClosure();
+        $source = (string) ($arguments['code'] ?? $renderChildrenClosure());
         return $renderingContext->getTemplateParser()
             ->parse(class_exists(Source::class) ? new Source($source) : $source)
             ->getRootNode()
             ->evaluate($renderingContext);
+    }
+
+    public function getContentArgumentName(): ?string
+    {
+        return 'code';
     }
 }
