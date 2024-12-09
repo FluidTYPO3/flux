@@ -1,7 +1,8 @@
-Latest release: 10.0.10 (2024/05/07 11:37:40)
+Latest release: 10.1.0 (2024/12/09 14:27:03)
 
 All previous release change logs:
 
+* [10.1.0 (2024/12/09)](Documentation/Changelog/10.1.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/10.0.10...10.1.0)
 * [10.0.10 (1970/01/01)](Documentation/Changelog/10.0.10.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/10.0.9...10.0.10)
 * [10.0.9 (2024/01/11)](Documentation/Changelog/10.0.9.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/10.0.8...10.0.9)
 * [10.0.8 (2023/11/27)](Documentation/Changelog/10.0.8.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/10.0.7...10.0.8)
