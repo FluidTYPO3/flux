@@ -25,8 +25,12 @@ class ClearValueWizard extends AbstractNode
         $nameSegments[count($nameSegments) - 2] .= '_clear';
         $fieldName = implode('][', $nameSegments);
 
-        $result['html'] = '<label style="opacity: 0.65; margin-top: 1em;">'
-            . '<input type="checkbox" class="form-check-input" name="' . $fieldName . '" value="1" /> '
+        $result['html'] = '<label style="opacity: 0.65; margin-top: 1em; margin-right: 1em;" title="'
+            . $this->translate('flux.clearValue.help')
+            . '">'
+            . '<input type="checkbox" class="form-check-input" name="'
+            . $fieldName
+            . '" value="1" /> '
             . $this->translate('flux.clearValue')
             . '</label>';
 

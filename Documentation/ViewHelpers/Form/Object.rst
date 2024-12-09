@@ -1,16 +1,20 @@
+:navigation-title: form.object
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-object:
 
-===========
-form.object
-===========
+===========================================
+form.object ViewHelper `<flux:form.object>`
+===========================================
 
 
 FlexForm field section object ViewHelper
 
 Use this inside flux:form.section to name and divide the fields
 into individual objects that can be inserted into the section.
+
+
+.. _fluidtypo3-flux-form-object_arguments:
 
 Arguments
 =========

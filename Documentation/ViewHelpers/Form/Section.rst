@@ -1,10 +1,11 @@
+:navigation-title: form.section
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-section:
 
-============
-form.section
-============
+=============================================
+form.section ViewHelper `<flux:form.section>`
+=============================================
 
 
 FlexForm field section ViewHelper
@@ -30,6 +31,9 @@ Reading section element values
         <f:if condition="{obj.mobile}">landline, {obj.mobile.number}</f:if>
         <br/>
     </f:for>
+
+
+.. _fluidtypo3-flux-form-section_arguments:
 
 Arguments
 =========

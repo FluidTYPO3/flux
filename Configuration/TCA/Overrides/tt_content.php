@@ -4,7 +4,7 @@
     \FluidTYPO3\Flux\Integration\MultipleItemsProcFunc::register(
         'tt_content',
         'colPos',
-        \FluidTYPO3\Flux\Integration\Overrides\BackendLayoutView::class . '->colPosListItemProcFunc'
+        \FluidTYPO3\Flux\Integration\HookSubscribers\ColumnPositionItems::class . '->colPosListItemProcFunc'
     );
 
     $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['label'] = 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:tt_content.pi_flexform';

@@ -36,6 +36,15 @@
 			<trans-unit id="extension_configuration.flexFormToIrre">
 				<source>EXPERIMENTAL - FlexForm-to-IRRE: FlexForm XML to IRRE storage. WARNING - destroys existing FlexForm data in DB when saving records! Enabling this option makes Flux capable of storing FlexForm XML data structures as normalized IRRE records. By using the DataAccessTrait, classes such as controllers can read out the data in an array structure compatible with vanilla FlexForm data.</source>
 			</trans-unit>
+			<trans-unit id="extension_configuration.inheritanceMode">
+				<source>Default mode of Form value inheritance: The default mode is "restricted" which means inheritance follows the Flux pre 10.1.x rules that page variable inheritance only happens if the parent page uses the same page layout as the child page. This can be set to "unrestrited" to remove that constraint and allow inheritance when parent and child pages do not use the same page layout. This option changes the global default - individual templates can also set the mode which that specific template uses, with the flux:form.option.inheritanceMode ViewHelper.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.uniqueFileFieldNames">
+				<source>Unique file field names: When this is enabled, FAL reference fields within a Flux context will be prefixed with the parent field name. This is done in order to ensure that references written to sys_file_reference will contain a unique value in "fieldname". Without this option enabled, any record which renders the same Flux form in two fields (e.g. pages when "this page" and "subpages" templates are identical) will show the same references in both fields because the "fieldname" saved in sys_file_reference is the same for both contexts. So, in order to avoid this duplication symptom, you can prefix the "fieldname" value stored in DB. Note: although this is handled transparently when you use transform="file" (and other file transformations) the prefix must manually be added to the field name when using e.g. v:resources.record.fal. CHANGING THIS OPTION WILL ORPHAN ALL EXISTING RELATIONS - TOGGLE IT ON FOR NEW SITES BUT LEAVE OLD SITES USING THE OPTION VALUE THEY WERE BORN WITH, OR YOU WILL NEED TO MIGRATE YOUR FILE REFERENCES!</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.customLayoutSelector">
+				<source>Custom Layout Selector: (Requires TYPO3v11 or higher). When enabled, uses a fully custom page layout selector instead of the default "select" type for the "Page Layouts" fields in page properties. The custom page layout selector can be further configured through TCA overrides for TCA.pages.columns.tx_fed_page_controller_action.config and TCA.pages.columns.tx_fed_page_controller_action_sub.config. Supported settings are: "iconHeight" (integer, sets the height of icons, defaults to 200), titles (boolean, whether to render template titles in the selector, defaults to true) and descriptions (boolean, whether to render template descriptions in the selector, defaults to true).</source>
+			</trans-unit>
 			<trans-unit id="content_types">
 				<source>Flux-based Content Type</source>
 			</trans-unit>
@@ -195,6 +204,15 @@
 			</trans-unit>
 			<trans-unit id="flux.clearValue">
 				<source>Clear value</source>
+			</trans-unit>
+			<trans-unit id="flux.clearValue.help">
+				<source>Destroy the value that is saved in the database, allowing the value to either be inherited again from a parent or reset to the default value if there is no inherited value.</source>
+			</trans-unit>
+			<trans-unit id="flux.protectValue">
+				<source>Protect value</source>
+			</trans-unit>
+			<trans-unit id="flux.protectValue.help">
+				<source>Protected values will remain the same even if the (inherited) value changes in a parent record.</source>
 			</trans-unit>
 			<trans-unit id="reference">
 				<source>Reference to content on page '%s' - click to jump to original</source>

@@ -1,13 +1,17 @@
+:navigation-title: form
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form:
 
-====
-form
-====
+=============================
+form ViewHelper `<flux:form>`
+=============================
 
 
 FlexForm configuration container ViewHelper
+
+
+.. _fluidtypo3-flux-form_arguments:
 
 Arguments
 =========

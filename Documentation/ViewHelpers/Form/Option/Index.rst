@@ -5,7 +5,7 @@ option
 ======
 
 
-* 4 ViewHelpers documented
+* 5 ViewHelpers documented
 
 .. toctree::
    :titlesonly:
@@ -13,6 +13,7 @@ option
 
    Group
    Icon
+   InheritanceMode
    Sorting
    Static
 

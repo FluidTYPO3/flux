@@ -1,10 +1,11 @@
+:navigation-title: content.render
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-content-render:
 
-==============
-content.render
-==============
+=================================================
+content.render ViewHelper `<flux:content.render>`
+=================================================
 
 
 Renders all child content of a record based on the area name.
@@ -30,6 +31,9 @@ Example: Render all child elements of one grid column
       <flux:content.render area="teaser"/>
      </div>
     </f:section>
+
+
+.. _fluidtypo3-flux-content-render_arguments:
 
 Arguments
 =========

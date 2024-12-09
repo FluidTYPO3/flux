@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -145,23 +146,24 @@ class DataHandlerSubscriber
 
         if ($newColumnPosition > 0) {
             $queryBuilder = $this->createQueryBuilderForTable($table);
-            $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, \PDO::PARAM_INT)->where(
+            $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, Connection::PARAM_INT)->where(
                 $queryBuilder->expr()->eq(
                     'uid',
-                    $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], Connection::PARAM_INT)
                 )
             )->orWhere(
                 $queryBuilder->expr()->andX(
                     $queryBuilder->expr()->eq(
                         't3ver_oid',
-                        $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], Connection::PARAM_INT)
                     ),
                     $queryBuilder->expr()->eq(
                         't3ver_wsid',
-                        $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, Connection::PARAM_INT)
                     )
                 )
-            )->execute();
+            );
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
         }
 
         static::$copiedRecords[$fieldArray['t3_origuid']] = true;
@@ -427,7 +429,11 @@ class DataHandlerSubscriber
         if ($relativeTo > 0) {
             $destinationPid = $relativeTo;
         } else {
-            $relativeRecord = $this->getSingleRecordWithoutRestrictions($table, (integer) abs($relativeTo), 'pid');
+            $relativeRecord = $this->getSingleRecordWithoutRestrictions(
+                $table,
+                (integer) abs((integer) $relativeTo),
+                'pid'
+            );
             $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
         }
 
@@ -494,9 +500,11 @@ class DataHandlerSubscriber
         $queryBuilder->getRestrictions()->removeAll()->add($deletedRestriction);
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)));
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -509,9 +517,11 @@ class DataHandlerSubscriber
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->select(...GeneralUtility::trimExplode(',', $fieldsToSelect))
             ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)));
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)));
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -531,7 +541,9 @@ class DataHandlerSubscriber
                 $queryBuilder->expr()->neq('t3ver_state', -1)
             );
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -555,16 +567,18 @@ class DataHandlerSubscriber
             ->where(
                 $queryBuilder->expr()->eq(
                     'sys_language_uid',
-                    $queryBuilder->createNamedParameter($languageUid, \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($languageUid, Connection::PARAM_INT)
                 ),
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, Connection::PARAM_INT)),
                 $queryBuilder->expr()->eq(
                     'l10n_source',
-                    $queryBuilder->createNamedParameter($originalParentUid, \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($originalParentUid, Connection::PARAM_INT)
                 )
             );
         /** @var array|false $firstResult */
-        $firstResult = $queryBuilder->execute()->fetch();
+        $firstResult = DoctrineQueryProxy::fetchAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         return $firstResult ?: null;
     }
 
@@ -638,7 +652,7 @@ class DataHandlerSubscriber
             $query->andWhere($queryBuilder->expr()->neq('pid', -1));
         }
 
-        $records = $query->execute()->fetchAll();
+        $records = DoctrineQueryProxy::fetchAllAssociative(DoctrineQueryProxy::executeQueryOnQueryBuilder($query));
 
         // Selecting records to return. The "sorting DESC" is very intentional; copy operations will place records
         // into the top of columns which means reading records in reverse order causes the correct final order.

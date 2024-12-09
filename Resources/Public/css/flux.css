@@ -40,3 +40,39 @@
 .flux-grid-hidden {
 	display: none !important;
 }
+
+.flux-page-layouts {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-content: flex-start;
+}
+
+.flux-page-layouts input {
+	display: none;
+}
+
+.flux-page-layouts img {
+	display: block;
+}
+
+.flux-page-layouts label {
+	width: min-content;
+	display: inline-table;
+	flex-shrink: 1;
+	margin-right: 0.5em;
+	margin-bottom: 0.25em;
+	border: 3px solid lightgrey;
+	padding: 0.5em;
+}
+
+.flux-page-layouts label:hover,
+.flux-page-layouts label.selected {
+	border-color: black;
+}
+
+.flux-page-layouts label h4,
+.flux-page-layouts label p {
+	margin: 0;
+	margin-top: 0.5em;
+}

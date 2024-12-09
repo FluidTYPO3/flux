@@ -1,10 +1,11 @@
+:navigation-title: field.inline.fal
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-inline-fal:
 
-================
-field.inline.fal
-================
+=====================================================
+field.inline.fal ViewHelper `<flux:field.inline.fal>`
+=====================================================
 
 
 Creates a FAL IRRE field
@@ -83,6 +84,9 @@ Rendering multiple images
     <f:for each="{v:content.resources.fal(field: 'settings.image')}" as="image">
         <f:image treatIdAsReference="1" src="{image.uid}" title="{image.title}" alt="{image.alternative}"/><br/>
     </f:for>
+
+
+.. _fluidtypo3-flux-field-inline-fal_arguments:
 
 Arguments
 =========
@@ -278,6 +282,19 @@ clear
    false
 :aspect:`Description`
    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+
+.. _field.inline.fal_protect:
+
+protect
+-------
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.
 
 .. _field.inline.fal_variables:
 

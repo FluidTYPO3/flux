@@ -1,10 +1,11 @@
+:navigation-title: grid.column
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-grid-column:
 
-===========
-grid.column
-===========
+===========================================
+grid.column ViewHelper `<flux:grid.column>`
+===========================================
 
 
 Flexform Grid Column ViewHelper
@@ -36,6 +37,9 @@ It is also possible to limit the allowed fluid content elements:
     <flux:grid.column name="elements" colPos="0">
         <flux:form.variable name="allowedContentTypes" value="extkey_vehicledetailssectionusedcarseal"/>
     </flux:grid.column>
+
+
+.. _fluidtypo3-flux-grid-column_arguments:
 
 Arguments
 =========

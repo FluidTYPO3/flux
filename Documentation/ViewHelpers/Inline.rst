@@ -1,10 +1,11 @@
+:navigation-title: inline
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-inline:
 
-======
-inline
-======
+=================================
+inline ViewHelper `<flux:inline>`
+=================================
 
 
 Inline Fluid rendering ViewHelper
@@ -26,6 +27,9 @@ Which outputs:
 
 You can use this to pass smaller and dynamic pieces of Fluid code
 to templates, as an alternative to creating new partial templates.
+
+
+.. _fluidtypo3-flux-inline_arguments:
 
 Arguments
 =========

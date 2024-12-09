@@ -1,10 +1,11 @@
+:navigation-title: form.content
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-content:
 
-============
-form.content
-============
+=============================================
+form.content ViewHelper `<flux:form.content>`
+=============================================
 
 
 Adds a content area to a source using Flux FlexForms
@@ -43,6 +44,9 @@ Example of difference
         </flux:grid>
         <!-- No use of flux:content is possible after this point -->
     </flux:form>
+
+
+.. _fluidtypo3-flux-form-content_arguments:
 
 Arguments
 =========

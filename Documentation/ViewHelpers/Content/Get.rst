@@ -1,10 +1,11 @@
+:navigation-title: content.get
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-content-get:
 
-===========
-content.get
-===========
+===========================================
+content.get ViewHelper `<flux:content.get>`
+===========================================
 
 
 Gets all child content of a record based on area.
@@ -32,6 +33,9 @@ Each element gets a red border:
       </div>
      </f:for>
     </f:section>
+
+
+.. _fluidtypo3-flux-content-get_arguments:
 
 Arguments
 =========

@@ -1,13 +1,17 @@
+:navigation-title: form.option
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option:
 
-===========
-form.option
-===========
+===========================================
+form.option ViewHelper `<flux:form.option>`
+===========================================
 
 
 Form option ViewHelper
+
+
+.. _fluidtypo3-flux-form-option_arguments:
 
 Arguments
 =========

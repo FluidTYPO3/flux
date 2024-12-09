@@ -1,13 +1,17 @@
+:navigation-title: field.tree.category
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-tree-category:
 
-===================
-field.tree.category
-===================
+===========================================================
+field.tree.category ViewHelper `<flux:field.tree.category>`
+===========================================================
 
 
 Tree preset for sys_category
+
+
+.. _fluidtypo3-flux-field-tree-category_arguments:
 
 Arguments
 =========
@@ -203,6 +207,19 @@ clear
    false
 :aspect:`Description`
    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+
+.. _field.tree.category_protect:
+
+protect
+-------
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.
 
 .. _field.tree.category_variables:
 

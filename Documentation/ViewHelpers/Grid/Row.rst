@@ -1,10 +1,11 @@
+:navigation-title: grid.row
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-grid-row:
 
-========
-grid.row
-========
+=====================================
+grid.row ViewHelper `<flux:grid.row>`
+=====================================
 
 
 Flexform Grid Row ViewHelper
@@ -13,6 +14,9 @@ Used inside `<flux:grid>` tags.
 Usually contains `<flux:grid.column>` tags.
 
 See `<flux:grid>` for an example.
+
+
+.. _fluidtypo3-flux-grid-row_arguments:
 
 Arguments
 =========

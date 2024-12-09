@@ -1,13 +1,17 @@
+:navigation-title: form.option.sorting
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option-sorting:
 
-===================
-form.option.sorting
-===================
+===========================================================
+form.option.sorting ViewHelper `<flux:form.option.sorting>`
+===========================================================
 
 
 Form sorting option ViewHelper
+
+
+.. _fluidtypo3-flux-form-option-sorting_arguments:
 
 Arguments
 =========

@@ -1,13 +1,17 @@
+:navigation-title: form.variable
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-variable:
 
-=============
-form.variable
-=============
+===============================================
+form.variable ViewHelper `<flux:form.variable>`
+===============================================
 
 
 Sets an option in the Form instance
+
+
+.. _fluidtypo3-flux-form-variable_arguments:
 
 Arguments
 =========

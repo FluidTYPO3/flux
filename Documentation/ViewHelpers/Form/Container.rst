@@ -1,10 +1,11 @@
+:navigation-title: form.container
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-container:
 
-==============
-form.container
-==============
+=================================================
+form.container ViewHelper `<flux:form.container>`
+=================================================
 
 
 FlexForm Field Container element
@@ -30,6 +31,9 @@ Accessing values of grouped elements
 ------------------------------------
 
     Name: {settings.name.firstname} {settings.name.lastname}
+
+
+.. _fluidtypo3-flux-form-container_arguments:
 
 Arguments
 =========

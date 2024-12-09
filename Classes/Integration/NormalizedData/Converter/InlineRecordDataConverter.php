@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\NormalizedData\Converter;
 
+use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -193,7 +194,8 @@ class InlineRecordDataConverter implements ConverterInterface
     {
         $connection = $this->createConnectionForTable('flux_field');
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->insert('flux_field')->values($fieldData)->execute();
+        $queryBuilder->insert('flux_field')->values($fieldData);
+        DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
         return (int) $connection->lastInsertId('flux_field');
     }
 
@@ -204,7 +206,8 @@ class InlineRecordDataConverter implements ConverterInterface
     {
         $connection = $this->createConnectionForTable('flux_sheet');
         $queryBuilder = $connection->createQueryBuilder();
-        $queryBuilder->insert('flux_sheet')->values($sheetData)->execute();
+        $queryBuilder->insert('flux_sheet')->values($sheetData);
+        DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
         return (int) $connection->lastInsertId('flux_sheet');
     }
 
@@ -215,10 +218,13 @@ class InlineRecordDataConverter implements ConverterInterface
     {
         $settings = [];
         $queryBuilder = $this->createQueryBuilderForTable('flux_field');
+        $queryBuilder->select('uid', 'field_name', 'field_value')->from('flux_field')->where(
+            $queryBuilder->expr()->eq('sheet', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT))
+        );
         /** @var array[] $result */
-        $result = $queryBuilder->select('uid', 'field_name', 'field_value')->from('flux_field')->where(
-            $queryBuilder->expr()->eq('sheet', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT))
-        )->execute()->fetchAllAssociative();
+        $result = DoctrineQueryProxy::fetchAllAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         foreach ($result as $fieldRecord) {
             $settings = $this->assignVariableByDottedPath(
                 $settings,
@@ -235,16 +241,17 @@ class InlineRecordDataConverter implements ConverterInterface
     protected function fetchConfigurationRecords(): array
     {
         $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
-        return $queryBuilder->select('*')->from('flux_sheet')->where(
+        $queryBuilder->select('*')->from('flux_sheet')->where(
             $queryBuilder->expr()->eq(
                 'source_table',
-                $queryBuilder->createNamedParameter($this->table, \PDO::PARAM_STR)
+                $queryBuilder->createNamedParameter($this->table, Connection::PARAM_STR)
             ),
             $queryBuilder->expr()->eq(
                 'source_field',
-                $queryBuilder->createNamedParameter($this->field, \PDO::PARAM_STR)
+                $queryBuilder->createNamedParameter($this->field, Connection::PARAM_STR)
             ),
-        )->execute()->fetchAllAssociative();
+        );
+        return DoctrineQueryProxy::fetchAllAssociative(DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder));
     }
 
     /**
@@ -253,9 +260,10 @@ class InlineRecordDataConverter implements ConverterInterface
     protected function fetchSheetRecord(string $sheetName): ?array
     {
         $queryBuilder = $this->createQueryBuilderForTable('flux_sheet');
-        return $queryBuilder->select('uid', 'name')->from('flux_sheet')->where(
-            $queryBuilder->expr()->eq('name', $queryBuilder->createNamedParameter($sheetName, \PDO::PARAM_STR))
-        )->execute()->fetchAssociative() ?: null;
+        $queryBuilder->select('uid', 'name')->from('flux_sheet')->where(
+            $queryBuilder->expr()->eq('name', $queryBuilder->createNamedParameter($sheetName, Connection::PARAM_STR))
+        );
+        return DoctrineQueryProxy::fetchAssociative(DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder));
     }
 
     /**

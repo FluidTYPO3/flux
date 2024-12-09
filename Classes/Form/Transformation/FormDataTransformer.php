@@ -9,26 +9,26 @@ namespace FluidTYPO3\Flux\Form\Transformation;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\ContainerInterface;
+use FluidTYPO3\Flux\Form\Field;
 use FluidTYPO3\Flux\Form\FieldInterface;
+use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use TYPO3\CMS\Core\Resource\FileRepository;
+use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Service\FlexFormService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
-use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
 
 class FormDataTransformer
 {
-    private FileRepository $fileRepository;
     private FlexFormService $flexFormService;
+    private DataTransformerRegistry $registry;
 
-    public function __construct(FileRepository $fileRepository, FlexFormService $flexFormService)
+    public function __construct(FlexFormService $flexFormService, DataTransformerRegistry $registry)
     {
-        $this->fileRepository = $fileRepository;
         $this->flexFormService = $flexFormService;
+        $this->registry = $registry;
     }
 
     /**
@@ -64,9 +64,21 @@ class FormDataTransformer
             $languagePointer,
             $valuePointer
         );
-        if (null !== $form && $form->getOption(FormOption::TRANSFORM)) {
-            $settings = $this->transformAccordingToConfiguration($settings, $form);
+
+        if ($form !== null) {
+            if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES)) {
+                $nestedDimension = $form->getOption(FormOption::RECORD_FIELD);
+                if (isset($settings[$nestedDimension])) {
+                    // Some variables were relocated to a sub-scope. Relocate them back to the root of variables.
+                    $settings = array_replace_recursive($settings, $settings[$nestedDimension]);
+                    unset($settings[$nestedDimension]);
+                }
+            }
+            if ($form->getOption(FormOption::TRANSFORM)) {
+                $settings = $this->transformAccordingToConfiguration($settings, $form);
+            }
         }
+
         return $settings;
     }
 
@@ -77,48 +89,69 @@ class FormDataTransformer
      */
     public function transformAccordingToConfiguration(array $values, Form $form, string $prefix = ''): array
     {
+        $rebuilt = [];
         foreach ($values as $index => $value) {
+            $component = $this->extractTransformableObjectByPath($form, $prefix . $index);
             if (is_array($value)) {
                 $value = $this->transformAccordingToConfiguration($value, $form, $prefix . $index . '.');
-            } else {
-                /** @var FieldInterface|ContainerInterface $object */
-                $object = $this->extractTransformableObjectByPath($form, $prefix . $index);
-                if (is_object($object)) {
-                    $transformType = $object->getTransform();
-
-                    if ($transformType) {
-                        $originalValue = $value;
-                        $value = HookHandler::trigger(
-                            HookHandler::VALUE_BEFORE_TRANSFORM,
-                            [
-                                'value' => $value,
-                                'object' => $object,
-                                'type' => $transformType,
-                                'form' => $form
-                            ]
-                        )['value'];
-                        if ($value === $originalValue) {
-                            $value = $this->transformValueToType($value, $transformType, $prefix . $index, $form);
-                        }
-                        $value = HookHandler::trigger(
-                            HookHandler::VALUE_AFTER_TRANSFORM,
-                            [
-                                'value' => $value,
-                                'object' => $object,
-                                'type' => $transformType,
-                                'form' => $form
-                            ]
-                        )['value'];
-                    }
+                if ($object = $this->extractTransformableObjectByPath($form, (string) $index)) {
+                    $value = $this->transform($form, $object, $value);
                 }
+            } elseif ($component) {
+                $value = $this->transform($form, $component, $value);
             }
-            $values[$index] = $value;
+            if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES) &&
+                ($component instanceof Fal || ($component instanceof Field && $component->getType() === 'file'))
+            ) {
+                // Revert the field name back to the un-prefixed field name
+                $index = $component->getName();
+            }
+            $rebuilt[$index] = $value;
         }
-        return $values;
+        return $rebuilt;
     }
 
     /**
+     * @param mixed $value
+     * @param FieldInterface|ContainerInterface $object
      * @return mixed
+     */
+    protected function transform(Form $form, Form\FormInterface $object, $value)
+    {
+        $transformType = $object->getTransform();
+        if (!$transformType) {
+            return $value;
+        }
+
+        $originalValue = $value;
+        $value = HookHandler::trigger(
+            HookHandler::VALUE_BEFORE_TRANSFORM,
+            [
+                'value' => $value,
+                'object' => $object,
+                'type' => $transformType,
+                'form' => $form
+            ]
+        )['value'];
+        if ($value === $originalValue) {
+            $transformer = $this->registry->resolveDataTransformerByType($transformType);
+            $value = $transformer->transform($object, $transformType, $value);
+        }
+        $value = HookHandler::trigger(
+            HookHandler::VALUE_AFTER_TRANSFORM,
+            [
+                'value' => $value,
+                'object' => $object,
+                'type' => $transformType,
+                'form' => $form
+            ]
+        )['value'];
+
+        return $value;
+    }
+
+    /**
+     * @return FieldInterface|ContainerInterface|null
      */
     protected function extractTransformableObjectByPath(ContainerInterface $subject, string $path)
     {
@@ -137,124 +170,8 @@ class FormDataTransformer
             }
             $subPath .= '.' . array_shift($pathAsArray);
         }
-        return $subject->get($path, true);
-    }
-
-    /**
-     * Transforms a single value to $dataType
-     *
-     * @return mixed
-     */
-    protected function transformValueToType(string $value, string $dataType, string $fieldName, Form $form)
-    {
-        if (in_array($dataType, ['file', 'files', 'filereference', 'filereferences'], true)) {
-            /** @var string $table */
-            $table = $form->getOption(FormOption::RECORD_TABLE);
-            /** @var array $record */
-            $record = $form->getOption(FormOption::RECORD);
-            $references = $this->fileRepository->findByRelation($table, $fieldName, $record['uid']);
-            switch ($dataType) {
-                case 'file':
-                    if (!empty($references)) {
-                        return $references[0]->getOriginalFile();
-                    }
-                    return null;
-                case 'files':
-                    $files = [];
-                    foreach ($references as $reference) {
-                        $files[] = $reference->getOriginalFile();
-                    }
-                    return $files;
-                case 'filereference':
-                    return $references[0] ?? null;
-                case 'filereferences':
-                    return $references;
-            }
-        } elseif ('int' === $dataType || 'integer' === $dataType) {
-            return intval($value);
-        } elseif ('float' === $dataType) {
-            return floatval($value);
-        } elseif ('array' === $dataType) {
-            return explode(',', (string) $value);
-        } elseif ('bool' === $dataType || 'boolean' === $dataType) {
-            return boolval($value);
-        } elseif (strpos($dataType, '->')) {
-            /** @var class-string $class */
-            [$class, $function] = explode('->', $dataType);
-            /** @var object $object */
-            $object = GeneralUtility::makeInstance($class);
-            return $object->{$function}($value, $fieldName, $form);
-        } else {
-            return $this->getObjectOfType($dataType, $value);
-        }
-    }
-
-    /**
-     * Gets DomainObject(s) or instance of $dataType identified by, or constructed with parameter $uids
-     *
-     * @param string|class-string $dataType
-     * @param string|array $uids
-     * @return DomainObjectInterface|DomainObjectInterface[]|object|null
-     */
-    protected function getObjectOfType(string $dataType, $uids)
-    {
-        $identifiers = is_array($uids) ? $uids : GeneralUtility::trimExplode(',', trim($uids, ','), true);
-        $identifiers = array_map('intval', $identifiers);
-        $isModel = $this->isDomainModelClassName($dataType);
-        if (false !== strpos($dataType, '<')) {
-            /** @var class-string $container */
-            /** @var class-string $object */
-            [$container, $object] = explode('<', trim($dataType, '>'));
-        } else {
-            $container = null;
-            $object = $dataType;
-        }
-        $repositoryClassName = $this->resolveRepositoryClassName($object);
-        // Fast decisions
-        if ($isModel && null === $container) {
-            if (class_exists($repositoryClassName)) {
-                /** @var RepositoryInterface $repository */
-                $repository = GeneralUtility::makeInstance($repositoryClassName);
-                $repositoryObjects = $this->loadObjectsFromRepository($repository, $identifiers);
-                /** @var DomainObjectInterface|false $firstRepositoryObject */
-                $firstRepositoryObject = reset($repositoryObjects);
-                return $firstRepositoryObject ?: null;
-            }
-        } elseif (class_exists($dataType)) {
-            // using constructor value to support objects like DateTime
-            return GeneralUtility::makeInstance($dataType, $uids);
-        }
-        // slower decisions with support for type-hinted collection objects
-        if ($container && $object) {
-            if ($isModel && class_exists($repositoryClassName) && count($identifiers) > 0) {
-                /** @var RepositoryInterface $repository */
-                $repository = GeneralUtility::makeInstance($repositoryClassName);
-                return $this->loadObjectsFromRepository($repository, $identifiers);
-            } else {
-                $container = GeneralUtility::makeInstance($container);
-                return $container;
-            }
-        }
-        return null;
-    }
-
-    protected function resolveRepositoryClassName(string $object): string
-    {
-        return str_replace('\\Domain\\Model\\', '\\Domain\\Repository\\', $object) . 'Repository';
-    }
-
-    protected function isDomainModelClassName(string $dataType): bool
-    {
-        return (false !== strpos($dataType, '\\Domain\\Model\\'));
-    }
-
-    /**
-     * @return DomainObjectInterface[]
-     */
-    protected function loadObjectsFromRepository(RepositoryInterface $repository, array $identifiers): iterable
-    {
-        /** @var DomainObjectInterface[] $objects */
-        $objects = array_map([$repository, 'findByUid'], $identifiers);
-        return $objects;
+        /** @var FieldInterface|ContainerInterface $object */
+        $object = $subject->get($path, true);
+        return $object;
     }
 }

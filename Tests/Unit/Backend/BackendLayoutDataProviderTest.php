@@ -159,9 +159,11 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
 
     protected function createBackendLayoutMock(): BackendLayout
     {
-        return $this->getMockBuilder(BackendLayout::class)
-            ->setMethods(['dummy'])
+        $mock = $this->getMockBuilder(BackendLayout::class)
+            ->onlyMethods(['getIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
+        $mock->method('getIdentifier')->willReturn('belayout');
+        return $mock;
     }
 }

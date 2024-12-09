@@ -12,21 +12,23 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 use FluidTYPO3\Flux\Form\OptionCarryingInterface;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
 
 /**
  * Form option ViewHelper
  */
 class OptionViewHelper extends AbstractFormViewHelper
 {
-    use CompileWithContentArgumentAndRenderStatic;
-
     public static string $option = '';
 
     public function initializeArguments(): void
     {
         $this->registerArgument('value', 'string', 'Option value');
         $this->registerArgument('name', 'string', 'Name of the option to be set', true);
+    }
+
+    public function render()
+    {
+        return self::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
     }
 
     public static function renderStatic(
@@ -53,5 +55,10 @@ class OptionViewHelper extends AbstractFormViewHelper
             . '"',
             1602693000
         );
+    }
+
+    public function getContentArgumentName(): ?string
+    {
+        return 'value';
     }
 }

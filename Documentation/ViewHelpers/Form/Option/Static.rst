@@ -1,16 +1,20 @@
+:navigation-title: form.option.static
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option-static:
 
-==================
-form.option.static
-==================
+=========================================================
+form.option.static ViewHelper `<flux:form.option.static>`
+=========================================================
 
 
 Form static caching option ViewHelper
 
 Use this only when your Flux form is 100% static and
 will work when cached.
+
+
+.. _fluidtypo3-flux-form-option-static_arguments:
 
 Arguments
 =========

@@ -111,7 +111,9 @@ class AbstractProvider implements ProviderInterface
             $settings['grid'] = Grid::create($settings['grid']);
         }
         foreach ($settings as $name => $value) {
-            $this->$name = $value;
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
         }
         $fieldName = $this->getFieldName([]);
         if (true === isset($settings['listType'])) {
@@ -175,7 +177,8 @@ class AbstractProvider implements ProviderInterface
         $fieldName = $forField ?? $this->getFieldName($row);
         $variables = [
             'record' => $row,
-            'settings' => $this->typoScriptService->getSettingsForExtensionName($extensionKey)
+            'settings' => $this->typoScriptService->getSettingsForExtensionName($extensionKey),
+            'forField' => $forField,
         ];
 
         // Special case: when saving a new record variable $row[$fieldName] is already an array
@@ -328,15 +331,20 @@ class AbstractProvider implements ProviderInterface
         }
 
         $variables = $view->getRenderingContext()->getViewHelperVariableContainer()->getAll(FormViewHelper::class, []);
+        $cachePersistent = false;
         if (isset($variables['form'])) {
             $variables['form']->setOption(
                 FormOption::TEMPLATE_FILE,
                 $this->getTemplatePathAndFilename($row, $forField)
             );
-            if ($variables['form']->getOption(FormOption::STATIC)) {
-                $this->cacheService->setInCaches($variables, true, $cacheKeyAll);
-            }
+            $cachePersistent = (boolean) $variables['form']->getOption(FormOption::STATIC);
         }
+
+        $this->cacheService->setInCaches(
+            $variables,
+            $cachePersistent,
+            $cacheKeyAll
+        );
 
         $returnValue = $name ? ($variables[$name] ?? null) : $variables;
 
@@ -536,23 +544,35 @@ class AbstractProvider implements ProviderInterface
 
     protected function extractFieldNamesToClear(array $record, string $fieldName): array
     {
-        $removals = [];
+        return $this->extractWizardTaggedFieldNames($record, $fieldName, 'clear');
+    }
+
+    protected function extractFieldNamesToProtect(array $record, string $fieldName): array
+    {
+        return $this->extractWizardTaggedFieldNames($record, $fieldName, 'protect');
+    }
+
+    protected function extractWizardTaggedFieldNames(array $record, string $fieldName, string $wizardName): array
+    {
+        $wizardTagName = '_' . $wizardName;
+        $tagLength = strlen($wizardTagName);
+        $fieldNames = [];
         $data = $record[$fieldName]['data'] ?? [];
         foreach ($data as $sheetName => $sheetFields) {
             foreach ($sheetFields['lDEF'] as $sheetFieldName => $fieldDefinition) {
-                if ('_clear' === substr($sheetFieldName, -6)) {
-                    $removals[] = $sheetFieldName;
+                if ($wizardTagName === substr($sheetFieldName, -$tagLength)) {
+                    $fieldNames[] = $sheetFieldName;
                 } else {
-                    $clearFieldName = $sheetFieldName . '_clear';
-                    if (isset($data[$sheetName]['lDEF'][$clearFieldName]['vDEF'])) {
-                        if ((boolean) $data[$sheetName]['lDEF'][$clearFieldName]['vDEF']) {
-                            $removals[] = $sheetFieldName;
+                    $wizardFieldName = $sheetFieldName . $wizardTagName;
+                    if (isset($data[$sheetName]['lDEF'][$wizardFieldName]['vDEF'])) {
+                        if ((boolean) $data[$sheetName]['lDEF'][$wizardFieldName]['vDEF']) {
+                            $fieldNames[] = $sheetFieldName;
                         }
                     }
                 }
             }
         }
-        return array_unique($removals);
+        return array_unique($fieldNames);
     }
 
     /**
@@ -563,6 +583,12 @@ class AbstractProvider implements ProviderInterface
     {
         $form = $this->getForm($row, $conf['fieldName'] ?? null);
         if ($dataStructure !== null && $form !== null) {
+            // Last minute set the field name. Ensures the field name matches the one given with the DS identifier,
+            // even if the Form instance was resolved from another field (e.g. inherited Form in page template).
+            $form->setOption(
+                FormOption::RECORD_FIELD,
+                $conf['fieldName'] ?? $form->getOption(FormOption::RECORD_FIELD)
+            );
             $dataStructure = array_replace_recursive($dataStructure, $form->build());
         }
     }

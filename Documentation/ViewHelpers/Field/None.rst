@@ -1,16 +1,20 @@
+:navigation-title: field.none
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-none:
 
-==========
-field.none
-==========
+=========================================
+field.none ViewHelper `<flux:field.none>`
+=========================================
 
 
 None field ViewHelper
 
 Makes a read-only component which supports a default value
 but which cannot be edited.
+
+
+.. _fluidtypo3-flux-field-none_arguments:
 
 Arguments
 =========
@@ -206,6 +210,19 @@ clear
    false
 :aspect:`Description`
    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+
+.. _field.none_protect:
+
+protect
+-------
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.
 
 .. _field.none_variables:
 

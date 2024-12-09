@@ -1,10 +1,11 @@
+:navigation-title: form.object.columnPosition
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-object-columnposition:
 
-==========================
-form.object.columnPosition
-==========================
+=========================================================================
+form.object.columnPosition ViewHelper `<flux:form.object.columnPosition>`
+=========================================================================
 
 
 Section object - automatic colPos field
@@ -51,6 +52,9 @@ Please be aware that dynamic grid is NOT compatible
 with the "static" option for `<flux:form />` - this
 option must not be enabled; if it is, the grid will
 not be rendered.
+
+
+.. _fluidtypo3-flux-form-object-columnposition_arguments:
 
 Arguments
 =========

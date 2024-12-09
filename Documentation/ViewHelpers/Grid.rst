@@ -1,10 +1,11 @@
+:navigation-title: grid
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-grid:
 
-====
-grid
-====
+=============================
+grid ViewHelper `<flux:grid>`
+=============================
 
 
 Grid container ViewHelper.
@@ -34,6 +35,9 @@ Rendering
 
     <v:content.render column="0" />
     <v:content.render column="1" />
+
+
+.. _fluidtypo3-flux-grid_arguments:
 
 Arguments
 =========

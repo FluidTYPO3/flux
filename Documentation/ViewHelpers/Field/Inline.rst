@@ -1,13 +1,17 @@
+:navigation-title: field.inline
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-field-inline:
 
-============
-field.inline
-============
+=============================================
+field.inline ViewHelper `<flux:field.inline>`
+=============================================
 
 
 Inline-style FlexForm field ViewHelper
+
+
+.. _fluidtypo3-flux-field-inline_arguments:
 
 Arguments
 =========
@@ -203,6 +207,19 @@ clear
    false
 :aspect:`Description`
    If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely destroys the current field value all the way down to the stored XML value
+
+.. _field.inline_protect:
+
+protect
+-------
+
+:aspect:`DataType`
+   boolean
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the value from being changed if the (normally inherited) field value is changed in a parent record. Has no effect if "inherit" is disabled on the field.
 
 .. _field.inline_variables:
 

@@ -1,10 +1,11 @@
+:navigation-title: form.option.icon
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-option-icon:
 
-================
-form.option.icon
-================
+=====================================================
+form.option.icon ViewHelper `<flux:form.option.icon>`
+=====================================================
 
 
 Icon option
@@ -21,6 +22,9 @@ Example
 -------
 
     <flux:form.option.icon value="/typo3conf/ext/myext/Resources/Public/Icons/Element.svg"/>
+
+
+.. _fluidtypo3-flux-form-option-icon_arguments:
 
 Arguments
 =========

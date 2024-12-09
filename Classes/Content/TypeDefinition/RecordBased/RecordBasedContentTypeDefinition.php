@@ -46,7 +46,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
     /**
      * @return RecordBasedContentTypeDefinition[]
      */
-    public static function fetchContentTypes(): iterable
+    public static function fetchContentTypes(): array
     {
         if (empty(static::$types)) {
             /** @var RecordBasedContentTypeDefinitionRepository $definitionRepository */

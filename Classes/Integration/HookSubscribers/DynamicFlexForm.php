@@ -12,9 +12,10 @@ use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class DynamicFlexForm extends FlexFormTools
+class DynamicFlexForm
 {
     protected FlexFormBuilder $flexFormBuilder;
+    protected FlexFormTools $flexFormTools;
 
     protected static bool $recursed = false;
 
@@ -23,6 +24,9 @@ class DynamicFlexForm extends FlexFormTools
         /** @var FlexFormBuilder $flexFormBuilder */
         $flexFormBuilder = GeneralUtility::makeInstance(FlexFormBuilder::class);
         $this->flexFormBuilder = $flexFormBuilder;
+        /** @var FlexFormTools $flexFormTools */
+        $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
+        $this->flexFormTools = $flexFormTools;
     }
 
     /**
@@ -41,7 +45,7 @@ class DynamicFlexForm extends FlexFormTools
         }
         static::$recursed = true;
         /** @var string|array $originalIdentifier */
-        $originalIdentifier = $this->getDataStructureIdentifier(
+        $originalIdentifier = $this->flexFormTools->getDataStructureIdentifier(
             [ 'config' => $GLOBALS['TCA'][$tableName]['columns'][$fieldName]['config']],
             $tableName,
             $fieldName,

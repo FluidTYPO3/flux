@@ -10,71 +10,68 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation;
 
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\Form\Transformation\Transformer\ArrayTransformer;
+use FluidTYPO3\Flux\Form\Transformation\Transformer\BooleanTransformer;
+use FluidTYPO3\Flux\Form\Transformation\Transformer\FloatTransformer;
+use FluidTYPO3\Flux\Form\Transformation\Transformer\IntegerTransformer;
+use FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
-use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 
 class FormDataTransformerTest extends AbstractTestCase
 {
-    private FileRepository $fileRepository;
     private FlexFormService $flexFormService;
-    private ?FrontendUserRepository $frontendUserRepository = null;
-    private ?FrontendUser $frontendUser = null;
+    private DataTransformerRegistry $registry;
     private ?FormDataTransformer $subject = null;
 
     protected function setUp(): void
     {
-        $this->singletonInstances[Repository::class] = $this->getMockBuilder(Repository::class)
+        $serviceLocator = $this->getMockBuilder(ServiceLocator::class)
+            ->onlyMethods(['getProvidedServices', 'get'])
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->fileRepository = $this->getMockBuilder(FileRepository::class)
-            ->onlyMethods(['findByRelation'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $serviceLocator->method('getProvidedServices')->willReturn(
+            [
+                'flux.datatransformer.array' => ArrayTransformer::class,
+                'flux.datatransformer.boolean' => BooleanTransformer::class,
+                'flux.datatransformer.integer' => IntegerTransformer::class,
+                'flux.datatransformer.float' => FloatTransformer::class,
+                'flux.datatransformer.object' => ObjectTransformer::class,
+            ]
+        );
+        $serviceLocator->method('get')->willReturnMap(
+            [
+                ['flux.datatransformer.array', new ArrayTransformer()],
+                ['flux.datatransformer.boolean', new BooleanTransformer()],
+                ['flux.datatransformer.integer', new IntegerTransformer()],
+                ['flux.datatransformer.float', new FloatTransformer()],
+                ['flux.datatransformer.object', new ObjectTransformer()],
+            ]
+        );
 
         $this->flexFormService = $this->getMockBuilder(FlexFormService::class)
             ->onlyMethods(['convertFlexFormContentToArray'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->subject = $this->getMockBuilder(FormDataTransformer::class)
-            ->onlyMethods(['loadObjectsFromRepository'])
-            ->setConstructorArgs($this->getConstructorArguments())
-            ->getMock();
+        $this->registry = new DataTransformerRegistry($serviceLocator);
+        $this->subject = new FormDataTransformer($this->flexFormService, $this->registry);
 
         parent::setUp();
-    }
-
-    private function initializeFrontendUserFixtures(): void
-    {
-        $this->frontendUser = $this->getMockBuilder(FrontendUser::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->frontendUserRepository = $this->getMockBuilder(FrontendUserRepository::class)
-            ->setMethods(['findByUid'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->frontendUserRepository->method('findByUid')->willReturn($this->frontendUser);
-
-        GeneralUtility::setSingletonInstance(FrontendUserRepository::class, $this->frontendUserRepository);
     }
 
     private function getConstructorArguments(): array
     {
         return [
-            $this->fileRepository,
             $this->flexFormService,
+            $this->registry,
         ];
     }
 
@@ -142,7 +139,6 @@ class FormDataTransformerTest extends AbstractTestCase
      */
     public function testTransformation($value, string $transformation, $expected): void
     {
-        $this->subject->method('loadObjectsFromRepository')->willReturn([]);
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
         $form->createField(Form\Field\Input::class, 'field')->setTransform($transformation);
         $transformed = $this->subject->transformAccordingToConfiguration(['field' => $value], $form);
@@ -160,114 +156,27 @@ class FormDataTransformerTest extends AbstractTestCase
             ['0', 'integer', 0],
             ['0.12', 'float', 0.12],
             ['1,2,3', 'array', [1, 2, 3]],
-            ['123,321', 'InvalidClass', '123'],
-            [date('Ymd'), 'DateTime', new \DateTime(date('Ymd'))],
             ['1', 'boolean', true],
-            ['1,2', ObjectStorage::class . '<\\Invalid>', null],
-            ['bar', self::class . '->fixtureTransformToFooString', 'foo'],
         ];
     }
 
-    /**
-     * @dataProvider getValuesAndTransformationsForDomainObjects
-     * @param mixed $value
-     * @param mixed $expected
-     */
-    public function testTransformationOfDomainObjects($value, string $transformation, $expected): void
+    public function testTransformationSectionObject(): void
     {
-        if (!class_exists(FrontendUser::class)) {
-            $this->markTestSkipped('Skipping test with FrontendUser dependency');
-        }
+        $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $section = $form->createContainer(Form\Container\Section::class, 'section');
+        $object = $section->createContainer(Form\Container\SectionObject::class, 'object');
+        $object->setTransform(\ArrayObject::class);
+        $object->createField(Form\Field\Input::class, 'foo');
+        $object->createField(Form\Field\Input::class, 'baz');
 
-        $this->initializeFrontendUserFixtures();
-        $this->subject->method('loadObjectsFromRepository')->willReturn([]);
-        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
-        $form->createField(Form\Field\Input::class, 'field')->setTransform($transformation);
-        $transformed = $this->subject->transformAccordingToConfiguration(['field' => $value], $form);
-        $this->assertNotSame(
-            $expected,
-            $transformed,
-            'Transformation type ' . $transformation . ' failed; values are still identical'
+        $data = ['section' => ['abcdef123456' => ['object' => ['foo' => 'bar', 'baz' => 'test']]]];
+
+        $transformed = $this->subject->transformAccordingToConfiguration($data, $form);
+        $expected = $transformed;
+        $expected['section']['abcdef123456']['object'] = new \ArrayObject(
+            $expected['section']['abcdef123456']['object']
         );
-    }
 
-    public function getValuesAndTransformationsForDomainObjects(): array
-    {
-        return [
-            ['1,2', ObjectStorage::class . '<' . FrontendUser::class . '>', null],
-            ['1', FrontendUser::class, $this->frontendUser],
-        ];
-    }
-
-    /**
-     * @dataProvider getTransformWithFileTargetTypesTestValues
-     * @param mixed $expected
-     */
-    public function testTransformationWithFileTargetTypes(string $type, array $files, $expected): void
-    {
-        $this->fileRepository->method('findByRelation')->willReturn($files);
-
-        $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
-        $form->setOption(FormOption::RECORD_TABLE, 'tt_content');
-        $form->setOption(FormOption::RECORD, ['uid' => 1]);
-
-        $form->createField(Form\Field\Input::class, 'field')->setTransform($type);
-        $transformed = $this->subject->transformAccordingToConfiguration(['field' => '1'], $form);
-
-        self::assertSame(['field' => $expected], $transformed);
-    }
-
-    public function getTransformWithFileTargetTypesTestValues(): array
-    {
-        $file1 = $this->getMockBuilder(File::class)->disableOriginalConstructor()->getMock();
-        $fileReference1 = $this->getMockBuilder(FileReference::class)
-            ->onlyMethods(['getOriginalFile'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fileReference1->method('getOriginalFile')->willReturn($file1);
-
-        $file2 = $this->getMockBuilder(File::class)->disableOriginalConstructor()->getMock();
-        $fileReference2 = $this->getMockBuilder(FileReference::class)
-            ->onlyMethods(['getOriginalFile'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fileReference2->method('getOriginalFile')->willReturn($file2);
-
-        return [
-            'file, non-empty' => ['file', [$fileReference1], $file1],
-            'files, non-empty' => ['files', [$fileReference1, $fileReference2], [$file1, $file2]],
-            'filereference, non-empty' => ['filereference', [$fileReference1], $fileReference1],
-            'filesreferences, non-empty' => [
-                'filereferences',
-                [$fileReference1, $fileReference2],
-                [$fileReference1, $fileReference2]
-            ],
-            'file, empty' => ['file', [], null],
-            'files, empty' => ['files', [], []],
-            'filereference, empty' => ['filereference', [], null],
-            'filereferences, empty' => ['filereferences', [], []],
-        ];
-    }
-
-    public function testSupportsFindByIdentifiers(): void
-    {
-        if (!class_exists(FrontendUser::class)) {
-            $this->markTestSkipped('Skipping test with FrontendUser dependency');
-        }
-        $repository = $this->getMockBuilder(FrontendUserGroupRepository::class)
-            ->onlyMethods(['findByUid'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $repository->expects($this->exactly(2))->method('findByUid')->willReturnArgument(0);
-
-        $identifiers = ['foobar', 'foobar2'];
-
-        $result = $this->callInaccessibleMethod(
-            new FormDataTransformer(...$this->getConstructorArguments()),
-            'loadObjectsFromRepository',
-            $repository,
-            $identifiers
-        );
-        $this->assertEquals($result, ['foobar', 'foobar2']);
+        self::assertEquals($expected, $transformed);
     }
 }

@@ -44,6 +44,15 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
         $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
             'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
+        if (version_compare((string) PHP_MAJOR_VERSION, '8.0', '<')) {
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\ArrayTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\BooleanTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\FileTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\FloatTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\FunctionCallTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\IntegerTransformer::class);
+            \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer::class);
+        }
     }
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\FluidTYPO3\Flux\Updates\MigrateColPosWizard::class]
@@ -66,6 +75,11 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     ];
 
     // FormEngine integration for custom TCA field types used by Flux
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1726225012] = [
+        'nodeName' => 'fluxPageLayoutSelector',
+        'priority' => 40,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\PageLayoutSelector::class,
+    ];
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1575276512] = [
         'nodeName' => 'fluxContentTypeValidator',
         'priority' => 40,
@@ -90,6 +104,11 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         'nodeName' => 'fluxClearValue',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\ClearValueWizard::class,
+    ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1720866860] = [
+        'nodeName' => 'fluxProtectValue',
+        'priority' => 40,
+        'class' => \FluidTYPO3\Flux\Integration\FormEngine\ProtectValueWizard::class,
     ];
 
     // Small override for record-localize controller to manipulate the record listing to provide child records in list

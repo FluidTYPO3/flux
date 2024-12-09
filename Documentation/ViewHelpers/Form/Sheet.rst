@@ -1,15 +1,19 @@
+:navigation-title: form.sheet
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-sheet:
 
-==========
-form.sheet
-==========
+=========================================
+form.sheet ViewHelper `<flux:form.sheet>`
+=========================================
 
 
 FlexForm sheet ViewHelper
 
 Groups FlexForm fields into sheets.
+
+
+.. _fluidtypo3-flux-form-sheet_arguments:
 
 Arguments
 =========

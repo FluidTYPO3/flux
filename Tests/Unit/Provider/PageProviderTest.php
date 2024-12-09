@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Provider;
  */
 
 use FluidTYPO3\Flux\Builder\ViewBuilder;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Provider\PageProvider;
@@ -47,10 +48,6 @@ class PageProviderTest extends AbstractTestCase
             ->getMock();
         $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
             ->onlyMethods(['getSingle', 'update'])
-            ->getMock();
-        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
-            ->onlyMethods(['buildTemplateView', 'buildPreviewView'])
-            ->disableOriginalConstructor()
             ->getMock();
         $this->cacheService = $this->getMockBuilder(CacheService::class)
             ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
@@ -203,25 +200,26 @@ class PageProviderTest extends AbstractTestCase
     /**
      * @dataProvider getInheritanceTreeTestValues
      */
-    public function testGetInheritanceTree(array $input, array $expected): void
+    public function testGetInheritanceTree(array $input, array $forms, ?array $expected = null): void
     {
         $record = ['uid' => 1];
         $instance = $this->getMockBuilder($this->createInstanceClassName())
             ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(['loadRecordTreeFromDatabase'])
+            ->onlyMethods(['loadRecordTreeFromDatabase', 'getForm'])
             ->getMock();
+        $instance->method('getForm')->willReturnOnConsecutiveCalls(...$forms);
         $instance->method('loadRecordTreeFromDatabase')->with($record)->willReturn($input);
         $result = $this->callInaccessibleMethod($instance, 'getInheritanceTree', $record);
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($expected ?? $input, $result);
     }
 
     public function getInheritanceTreeTestValues(): array
     {
         return [
-            'empty tree returns empty' => [[], []],
+            'empty tree returns empty' => [[], [], []],
             'no sub action returns full tree' => [
                 [[PageProvider::FIELD_ACTION_MAIN => 'testmain']],
-                [[PageProvider::FIELD_ACTION_MAIN => 'testmain']]
+                [Form::create()],
             ],
             'defined sub action halts reading' => [
                 [
@@ -229,7 +227,20 @@ class PageProviderTest extends AbstractTestCase
                     [PageProvider::FIELD_ACTION_SUB => 'testsub'],
                     [PageProvider::FIELD_ACTION_SUB => 'notincluded']
                 ],
+                [Form::create(), Form::create(), Form::create()],
                 [[PageProvider::FIELD_ACTION_MAIN => ''], [PageProvider::FIELD_ACTION_SUB => 'testsub']],
+            ],
+            'inheritanceMode=unrestricted continues even if sub-template differs' => [
+                [
+                    [PageProvider::FIELD_ACTION_MAIN => ''],
+                    [PageProvider::FIELD_ACTION_SUB => 'testsub'],
+                    [PageProvider::FIELD_ACTION_SUB => 'beyondDifferent']
+                ],
+                [
+                    Form::create(),
+                    Form::create(),
+                    Form::create(['options' => [FormOption::INHERITANCE_MODE => 'unrestricted']])
+                ],
             ],
         ];
     }
@@ -361,29 +372,6 @@ class PageProviderTest extends AbstractTestCase
     }
 
     /**
-     * @test
-     */
-    public function getParentFieldValueLoadsRecordFromDatabaseIfRecordLacksParentFieldValue(): void
-    {
-        $row = Records::$contentRecordWithoutParentAndWithoutChildren;
-        $row['uid'] = 2;
-        $rowWithPid = $row;
-        $rowWithPid['pid'] = 1;
-        $className = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
-
-        $this->recordService->expects($this->exactly(1))->method('getSingle')->will($this->returnValue($rowWithPid));
-
-        $instance = $this->getMockBuilder($className)
-            ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(['getParentFieldName', 'getTableName'])
-            ->getMock();
-        $instance->expects($this->once())->method('getParentFieldName')->with($row)->will($this->returnValue('pid'));
-
-        $result = $this->callInaccessibleMethod($instance, 'getParentFieldValue', $row);
-        $this->assertEquals($rowWithPid['pid'], $result);
-    }
-
-    /**
      * @dataProvider getInheritedPropertyValueByDottedPathTestValues
      * @param mixed $expected
      */
@@ -405,6 +393,53 @@ class PageProviderTest extends AbstractTestCase
             [['foo' => 'bar'], 'bar', null],
             [['foo' => ['bar' => 'baz']], 'foo.bar', 'baz'],
             [['foo' => ['bar' => 'baz']], 'foo.foo', null],
+        ];
+    }
+
+    /**
+     * @dataProvider getInheritedConfigurationTestValues
+     */
+    public function testGetInheritedConfiguration(string $expected, array $inheritedValues): void
+    {
+        $provider = $this->getMockBuilder(PageProvider::class)
+            ->onlyMethods(['getInheritanceTree', 'getFlexFormValuesSingle'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->getMock();
+        $provider->method('getFlexFormValuesSingle')->willReturnOnConsecutiveCalls(...$inheritedValues);
+        $inheritanceTree = [];
+        foreach ($inheritedValues as $inheritedValue) {
+            $inheritanceTree[] = [PageProvider::FIELD_NAME_SUB => $inheritedValue];
+        }
+        $provider->method('getInheritanceTree')->willReturn($inheritanceTree);
+
+        $output = $this->callInaccessibleMethod($provider, 'getInheritedConfiguration', ['uid' => rand(10000, 99999)]);
+        self::assertSame($expected, $output['test']);
+    }
+
+    public function getInheritedConfigurationTestValues(): array
+    {
+        return [
+            'first parent has value' => [
+                'first-parent',
+                [
+                    ['test' => 'second-parent'],
+                    ['test' => 'first-parent'],
+                ],
+            ],
+            'first parent is empty, second parent has value' => [
+                'second-parent',
+                [
+                    ['test' => 'second-parent'],
+                    [],
+                ],
+            ],
+            'first-parent has value, second parent does not have value' => [
+                'first-parent',
+                [
+                    [],
+                    ['test' => 'first-parent'],
+                ],
+            ],
         ];
     }
 

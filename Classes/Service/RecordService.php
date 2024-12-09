@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Service;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Result;
+use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\VisibilityAspect;
@@ -55,7 +56,7 @@ class RecordService implements SingletonInterface
             $statement->setFirstResult($offset);
         }
 
-        return $statement->execute()->fetchAll();
+        return DoctrineQueryProxy::fetchAllAssociative(DoctrineQueryProxy::executeQueryOnQueryBuilder($statement));
     }
 
     public function getSingle(string $table, string $fields, int $uid): ?array
@@ -64,11 +65,12 @@ class RecordService implements SingletonInterface
             return BackendUtility::getRecord($table, $uid, $fields);
         }
         $queryBuilder = $this->getQueryBuilder($table);
-        $results = $queryBuilder->from($table)
+        $queryBuilder->from($table)
             ->select(...explode(',', $fields))
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid)))
-            ->execute()
-            ->fetchAll() ?: [];
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid)));
+        $results = DoctrineQueryProxy::fetchAllAssociative(
+            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder)
+        );
         $firstResult = reset($results);
         return $firstResult ? (array) $firstResult : null;
     }
@@ -84,7 +86,7 @@ class RecordService implements SingletonInterface
         foreach ($record as $name => $value) {
             $builder->set($name, $value);
         }
-        return $builder->execute();
+        return DoctrineQueryProxy::executeStatementOnQueryBuilder($builder);
     }
 
     /**
@@ -94,20 +96,19 @@ class RecordService implements SingletonInterface
     {
         $clauseUid = true === is_array($recordOrUid) ? $recordOrUid['uid'] : $recordOrUid;
         $queryBuilder = $this->getQueryBuilder($table);
-        return (bool) $queryBuilder->delete($table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($clauseUid)))
-            ->execute();
+        $queryBuilder->delete($table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($clauseUid)));
+        return (bool) DoctrineQueryProxy::executeStatementOnQueryBuilder($queryBuilder);
     }
 
     public function preparedGet(string $table, string $fields, string $condition, array $values = []): array
     {
-        return $this->getQueryBuilder($table)
+        $queryBuilder = $this->getQueryBuilder($table)
             ->select(...explode(',', $fields))
             ->from($table)
             ->where($condition)
-            ->setParameters($values)
-            ->execute()
-            ->fetchAll();
+            ->setParameters($values);
+        return DoctrineQueryProxy::fetchAllAssociative(DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder));
     }
 
     protected function getQueryBuilder(string $table): QueryBuilder
@@ -160,7 +161,8 @@ class RecordService implements SingletonInterface
         if (ApplicationType::fromRequest($request)->isFrontend()) {
             /** @var Context $context */
             $context = GeneralUtility::makeInstance(Context::class);
-            return (bool) $context->getPropertyFromAspect('frontend.preview', 'isPreview');
+            return $context->hasAspect('frontend.preview')
+                && $context->getPropertyFromAspect('frontend.preview', 'isPreview');
         }
         return false;
     }

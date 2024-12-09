@@ -17,7 +17,7 @@ class HtmlOutputNode extends AbstractNode implements NodeInterface
 {
     private array $parameters = [];
 
-    public function __construct(NodeFactory $nodeFactory, array $data)
+    public function __construct(NodeFactory $nodeFactory, array $data = [])
     {
         $this->parameters = $data;
     }

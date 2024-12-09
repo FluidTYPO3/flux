@@ -11,8 +11,10 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
+use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
+use FluidTYPO3\Flux\Service\PageService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
@@ -21,11 +23,16 @@ class FlexFormBuilder
 {
     protected CacheService $cacheService;
     protected ProviderResolver $providerResolver;
+    protected PageService $pageService;
 
-    public function __construct(CacheService $cacheService, ProviderResolver $providerResolver)
-    {
+    public function __construct(
+        CacheService $cacheService,
+        ProviderResolver $providerResolver,
+        PageService $pageService
+    ) {
         $this->cacheService = $cacheService;
         $this->providerResolver = $providerResolver;
+        $this->pageService = $pageService;
     }
 
     public function resolveDataStructureIdentifier(
@@ -45,12 +52,37 @@ class FlexFormBuilder
             return [];
         }
         if ((integer) ($record['uid'] ?? 0) > 0) {
+            // If we are resolving a DS for an identified record, the only thing that matters is the record's UID.
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
             $fields = GeneralUtility::trimExplode(
                 ',',
                 $GLOBALS['TCA'][$tableName]['ctrl']['useColumnsForDefaultValues'] ?? ''
             );
+            if ($tableName === 'pages' && empty($record[PageProvider::FIELD_ACTION_MAIN]) && !empty($record['pid'])) {
+                // When working with the "pages" table, template inheritance comes into play. Normally this is handled
+                // for tables like tt_content by adding the fields that determine which DS to use, to the list in TCA
+                // "useColumnsForDefaultValues" which then becomes part of the DS identifier. However, for the "pages"
+                // table these fields may be empty (meaning the template selection is inherited) and since some contexts
+                // do not pass the "uid" of the record (thus triggering the condition above) we are left with possibly
+                // empty values which result in an unresolvable DS.
+                // Therefore, we must load the possibly inherited data via the PageService, and use those resolved
+                // template selection values as part of our DS identifier.
+                // This is NOT necessary if the input record contains an explicitly selected page layout, hence the
+                // added check above before entering this condition block.
+                if ((integer) $record['pid'] < 0) {
+                    // we have uid of sibling, need parent
+                    $record['pid'] = BackendUtility::getRecord(
+                        'pages',
+                        (integer) abs($record['pid']),
+                        'uid'
+                    )['uid'] ?? 0;
+                }
+                $record = array_merge(
+                    $record,
+                    $this->pageService->getPageTemplateConfiguration($record['pid'], true) ?? []
+                );
+            }
             if ($GLOBALS['TCA'][$tableName]['ctrl']['type'] ?? false) {
                 $typeField = $GLOBALS['TCA'][$tableName]['ctrl']['type'];
                 $fields[] = $GLOBALS['TCA'][$tableName]['ctrl']['type'];
@@ -77,10 +109,10 @@ class FlexFormBuilder
 
     public function parseDataStructureByIdentifier(array $identifier): array
     {
-        if ($identifier['type'] !== 'flux') {
+        if (($identifier['type'] ?? null) !== 'flux') {
             return [];
         }
-        $record = $identifier['record'];
+        $record = $identifier['record'] ?? null;
         if (!$record) {
             return [];
         }

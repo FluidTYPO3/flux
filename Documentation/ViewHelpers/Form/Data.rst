@@ -1,10 +1,11 @@
+:navigation-title: form.data
 .. include:: /Includes.rst.txt
 
 .. _fluidtypo3-flux-form-data:
 
-=========
-form.data
-=========
+=======================================
+form.data ViewHelper `<flux:form.data>`
+=======================================
 
 
 Converts raw flexform xml into an associative array, and applies any
@@ -31,6 +32,9 @@ a link to it:
             ...
         </flux:form.data>
     </f:if>
+
+
+.. _fluidtypo3-flux-form-data_arguments:
 
 Arguments
 =========

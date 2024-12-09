@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\NormalizedData;
 
+use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
@@ -27,7 +28,7 @@ trait DataAccessTrait
         $this->settings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS
         );
-        if (!ExtensionConfigurationUtility::getOption(ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
+        if (!ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_FLEXFORM_TO_IRRE)) {
             return;
         }
 

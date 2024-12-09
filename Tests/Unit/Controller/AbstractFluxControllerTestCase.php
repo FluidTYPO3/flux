@@ -23,11 +23,13 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
@@ -36,6 +38,7 @@ use TYPO3\CMS\Extbase\Mvc\Response;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
@@ -60,6 +63,8 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
      */
     protected RequestBuilder $requestBuilder;
 
+    protected WorkspacesAwareRecordService $recordService;
+
     protected TypoScriptService $typoScriptService;
 
     protected ProviderResolver $providerResolver;
@@ -81,6 +86,10 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->getMock();
         $this->requestBuilder->method('getEnvironmentVariable')->willReturn('env');
 
+        $this->recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
             ->onlyMethods(['getSettingsForExtensionName'])
             ->disableOriginalConstructor()
@@ -101,7 +110,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         return [
             $this->renderingContextBuilder,
             $this->requestBuilder,
-            $this->getMockBuilder(WorkspacesAwareRecordService::class)->disableOriginalConstructor()->getMock(),
+            $this->recordService,
             $this->typoScriptService,
             $this->providerResolver,
             $this->resolver,
@@ -206,9 +215,19 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testCanGetRecord(): void
     {
         $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+            ->onlyMethods(['getTypoScriptFrontendController'])
             ->disableOriginalConstructor()
             ->getMock();
         $contentObjectRenderer->data = [];
+
+        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $GLOBALS['TSFE']->currentRecord = 'tt_content:123';
+
+        $contentObjectRenderer->method('getTypoScriptFrontendController')->willReturn($GLOBALS['TSFE']);
+
+        $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
 
         $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
         $instance->method('getContentObject')->willReturn($contentObjectRenderer);
@@ -287,6 +306,11 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             $this->getMockBuilder(Request::class)->disableOriginalConstructor()->getMock()
         );
         $instance->injectConfigurationManager($configurationManager);
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
 
         $output = $this->callInaccessibleMethod(
             $instance,
@@ -315,6 +339,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance->expects($this->once())->method('callSubControllerAction');
         $instance->method('createHtmlResponse')->willReturn($response);
         $this->setInaccessiblePropertyValue($instance, 'extensionName', $this->extensionName);
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
+
         $this->callInaccessibleMethod(
             $instance,
             'performSubRendering',
@@ -426,11 +456,18 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $request->expects($this->once())->method('getPluginName')->will($this->returnValue('void'));
         $this->setInaccessiblePropertyValue($instance, 'request', $request);
         $this->setInaccessiblePropertyValue($instance, 'provider', $provider);
+        $this->setInaccessiblePropertyValue($instance, 'settings', []);
         $this->setInaccessiblePropertyValue(
             $instance,
             'configurationManager',
             $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass()
         );
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
+
         $this->callInaccessibleMethod($instance, 'initializeSettings');
     }
 
@@ -564,6 +601,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $view->expects($this->once())->method('render')->will($this->returnValue('test'));
         $this->setInaccessiblePropertyValue($instance, 'extensionName', $this->shortExtensionName);
         $this->setInaccessiblePropertyValue($instance, 'view', $view);
+        if (method_exists($instance, 'injectResponseFactory')) {
+            $instance->injectResponseFactory(
+                $this->getMockBuilder(ResponseFactoryInterface::class)->getMockForAbstractClass()
+            );
+        }
+
         $result = $this->callInaccessibleMethod(
             $instance,
             'performSubRendering',
@@ -632,6 +675,11 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             'Content',
             'tx_flux_content'
         );
+
+        if ($result instanceof ResponseInterface) {
+            $result = $result->getBody()->getContents();
+        }
+
         $this->assertEquals('test', $result);
     }
 
@@ -679,21 +727,40 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance->method('getServerRequest')->willReturn(
             $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
         );
-        $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<')) {
+            $tsfe = $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+        } else {
+            $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+                ->onlyMethods(['getTypoScriptFrontendController'])
+                ->disableOriginalConstructor()
+                ->getMock();
+            $contentObjectRenderer->method('getTypoScriptFrontendController')->willReturn(
+                $tsfe = $this->getMockBuilder(TypoScriptFrontendController::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
+            );
+        }
         $contentObjectRenderer->data = [];
+        $tsfe->currentRecord = 'tt_content:123';
         $instance->method('getContentObject')->willReturn($contentObjectRenderer);
         $provider = $this->getMockBuilder(Provider::class)
             ->onlyMethods(['getFlexFormValues'])
             ->disableOriginalConstructor()
             ->getMock();
         $provider->method('getFlexFormValues')->willReturn(['settings' => ['useTypoScript' => 1]]);
+        $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
         $this->typoScriptService->method('getSettingsForExtensionName')->willReturn(['foo' => 'bar']);
         $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
         $settings = [
             'useTypoScript' => true
         ];
+        $this->setInaccessiblePropertyValue($instance, 'settings', []);
         $previousSettings = $this->getInaccessiblePropertyValue($instance, 'settings');
         $this->setInaccessiblePropertyValue($instance, 'settings', $settings);
         $this->callInaccessibleMethod($instance, 'initializeProvider');
@@ -705,16 +772,32 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     public function testCanUseFlexFormDataWhenPresent(): void
     {
         $instance = $this->testCanCreateInstanceOfCustomRegisteredController();
-        $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
-            ->disableOriginalConstructor()
-            ->setConstructorArgs($this->getConstructorArguments())
-            ->getMock();
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<')) {
+            $tsfe = $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+        } else {
+            $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+                ->onlyMethods(['getTypoScriptFrontendController'])
+                ->disableOriginalConstructor()
+                ->getMock();
+            $contentObjectRenderer->method('getTypoScriptFrontendController')->willReturn(
+                $tsfe = $this->getMockBuilder(TypoScriptFrontendController::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
+            );
+        }
         $contentObjectRenderer->data = [];
+        $tsfe->currentRecord = 'tt_content:123';
         $instance->method('getContentObject')->willReturn($contentObjectRenderer);
         $instance->injectConfigurationManager(
             $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass()
         );
 
+        $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
         $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn(
             $this->getMockBuilder(Provider::class)->disableOriginalConstructor()->getMock()
         );

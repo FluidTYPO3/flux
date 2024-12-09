@@ -35,7 +35,7 @@ class FieldViewHelper extends AbstractFieldViewHelper
             'transform',
             'string',
             'Set this to transform your value to this type - integer, array (for csv values), float, DateTime, ' .
-            'Vendor\\MyExt\\Domain\\Model\\Object or ObjectStorage with type hint. '
+            'Vendor\\MyExt\\Domain\\Model\\Object or ObjectStorage with type hint.'
         );
         $this->registerArgument(
             'onChange',
@@ -69,7 +69,16 @@ class FieldViewHelper extends AbstractFieldViewHelper
             'clear',
             'boolean',
             'If TRUE, a "clear value" checkbox is displayed next to the field which when checked, completely ' .
-            'destroys the current field value all the way down to the stored XML value',
+            'destroys the current field value all the way down to the stored XML value.',
+            false,
+            false
+        );
+        $this->registerArgument(
+            'protect',
+            'boolean',
+            'If TRUE, a "protect value" checkbox is displayed next to the field which when checked, protects the ' .
+            'value from being changed if the (normally inherited) field value is changed in a parent record. Has no ' .
+            'effect if "inherit" is disabled on the field.',
             false,
             false
         );
@@ -88,9 +97,8 @@ class FieldViewHelper extends AbstractFieldViewHelper
         /** @var array $arguments */
         $parent = static::getContainerFromRenderingContext($renderingContext);
         $field = Field::create($arguments instanceof ArgumentCollection ? $arguments->getArrayCopy() : $arguments);
-        if ($arguments['clear'] ?? false) {
-            $field->setClearable(true);
-        }
+        $field->setClearable($arguments['clear']);
+        $field->setProtectable($arguments['protect']);
 
         if (!$parent instanceof FieldContainerInterface) {
             return $field;
