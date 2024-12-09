@@ -25,7 +25,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * Gets all child content of a record based on area.
@@ -55,8 +54,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  */
 class GetViewHelper extends AbstractViewHelper
 {
-    use CompileWithRenderStatic;
-
     /**
      * @var boolean
      */
@@ -86,6 +83,14 @@ class GetViewHelper extends AbstractViewHelper
         $this->registerArgument('loadRegister', 'array', 'List of LOAD_REGISTER variable');
         $this->registerArgument('render', 'boolean', 'Optional returning variable as original table rows', false, true);
         $this->registerArgument('hideUntranslated', 'boolean', 'Exclude untranslated records', false, false);
+    }
+
+    /**
+     * @return array|string|null
+     */
+    public function render()
+    {
+        return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
     }
 
     /**

@@ -27,6 +27,14 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     const SCOPE_VARIABLE_CONTAINER = 'container';
     const SCOPE_VARIABLE_GRIDS = 'grids';
 
+    /**
+     * @return string
+     */
+    public function render()
+    {
+        return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
+    }
+
     protected function callRenderMethod(): string
     {
         return static::renderStatic(

@@ -19,7 +19,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * Converts raw flexform xml into an associative array, and applies any
@@ -47,8 +46,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  */
 class DataViewHelper extends AbstractViewHelper
 {
-    use CompileWithRenderStatic;
-
     /**
      * @var boolean
      */
@@ -68,7 +65,15 @@ class DataViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return mixed
+     * @return array
+     */
+    public function render()
+    {
+        return self::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
+    }
+
+    /**
+     * @return array
      */
     public static function renderStatic(
         array $arguments,
@@ -117,6 +122,7 @@ class DataViewHelper extends AbstractViewHelper
                 1387049117
             );
         }
+        /** @var array $dataArray */
         $dataArray = HookHandler::trigger(
             HookHandler::FORM_DATA_FETCHED,
             [
