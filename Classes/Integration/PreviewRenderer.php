@@ -56,7 +56,11 @@ class PreviewRenderer
     {
         if (!static::$assetsIncluded) {
             $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
-            $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
+            if (method_exists($this->pageRenderer, 'loadJavaScriptModule')) {
+                $this->pageRenderer->loadJavaScriptModule('@fluidtypo3/flux/FluxCollapse.js');
+            } else {
+                $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
+            }
 
             static::$assetsIncluded = true;
         }
