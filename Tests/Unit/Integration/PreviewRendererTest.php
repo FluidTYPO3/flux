@@ -13,16 +13,24 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class PreviewRendererTest extends AbstractTestCase
 {
     private PageRenderer $pageRenderer;
     private ProviderResolver $providerResolver;
+    private string $registerMethodName;
 
     protected function setUp(): void
     {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            $this->registerMethodName = 'loadJavaScriptModule';
+        } else {
+            $this->registerMethodName = 'loadRequireJsModule';
+        }
+
         $this->pageRenderer = $this->getMockBuilder(PageRenderer::class)
-            ->onlyMethods(['loadRequireJsModule'])
+            ->onlyMethods([$this->registerMethodName])
             ->disableOriginalConstructor()
             ->getMock();
         $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
@@ -56,7 +64,7 @@ class PreviewRendererTest extends AbstractTestCase
 
     public function testAttachAssets(): void
     {
-        $this->pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
+        $this->pageRenderer->expects($this->atLeastOnce())->method($this->registerMethodName);
         $subject = new PreviewRenderer($this->pageRenderer, $this->providerResolver);
         $this->callInaccessibleMethod($subject, 'attachAssets');
     }
