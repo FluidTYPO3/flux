@@ -571,7 +571,7 @@ abstract class AbstractFluxController extends ActionController
 
         [$table, $recordUid] = GeneralUtility::trimExplode(
             ':',
-            $tsfe->currentRecord
+            $tsfe->currentRecord ?: $contentObject->currentRecord
         );
         $record = $this->recordService->getSingle($table, '*', (integer) $recordUid);
         if ($record === null) {
