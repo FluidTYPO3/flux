@@ -27,7 +27,7 @@ class ColumnPositionItems
      */
     public function colPosListItemProcFunc(array &$parameters): void
     {
-        $parentRecordUid = ColumnNumberUtility::calculateParentUid($parameters['row']['colPos']);
+        $parentRecordUid = ColumnNumberUtility::calculateParentUid($parameters['row']['colPos']?? 0);
         $parentRecord = $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
         $provider = $this->providerResolver->resolvePrimaryConfigurationProvider('tt_content', null, $parentRecord);
         if ($parentRecord && $provider instanceof GridProviderInterface) {
