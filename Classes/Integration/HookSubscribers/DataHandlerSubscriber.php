@@ -163,7 +163,7 @@ class DataHandlerSubscriber
                     )
                 )
             );
-            DoctrineQueryProxy::executeQueryOnQueryBuilder($queryBuilder);
+            DoctrineQueryProxy::executeStatementOnQueryBuilder($queryBuilder);
         }
 
         static::$copiedRecords[$fieldArray['t3_origuid']] = true;
