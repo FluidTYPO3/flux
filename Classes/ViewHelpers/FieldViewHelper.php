@@ -97,8 +97,8 @@ class FieldViewHelper extends AbstractFieldViewHelper
         /** @var array $arguments */
         $parent = static::getContainerFromRenderingContext($renderingContext);
         $field = Field::create($arguments instanceof ArgumentCollection ? $arguments->getArrayCopy() : $arguments);
-        $field->setClearable($arguments['clear']);
-        $field->setProtectable($arguments['protect']);
+        $field->setClearable($arguments['clear'] ?? false);
+        $field->setProtectable($arguments['protect'] ?? false);
 
         if (!$parent instanceof FieldContainerInterface) {
             return $field;
