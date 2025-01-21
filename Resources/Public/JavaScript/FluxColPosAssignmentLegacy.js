@@ -4,38 +4,24 @@
  * For the full copyright and license information, please read the
  * LICENSE.md file that was distributed with this source code.
  */
-class FluxColPosAssignment
-{
-	constructor()
-	{
-		var targetNodes = document.querySelectorAll('.t3-flex-container');
-		var observer = new MutationObserver(this.handleMutation);
-		Array.prototype.forEach.call(targetNodes, function (targetNode) {
-			observer.observe(targetNode, { childList: true, characterData: false });
-		});
-	}
-
-	isVisibleSection(element)
-	{
+define(['jquery'], function ($) {
+	function isVisibleSection(element) {
 		var classes = element.classList;
 		return element.nodeType === Node.ELEMENT_NODE && classes.contains('t3js-flex-section') && !classes.contains('t3js-flex-section-deleted');
 	}
 
-	getSectionColPosInput(section)
-	{
+	function getSectionColPosInput(section) {
 		return section.querySelector('.flux-flex-colPos-input');
 	}
 
-	getSectionColPosText(section)
-	{
+	function getSectionColPosText(section) {
 		return section.querySelector('.flux-flex-colPos-text');
 	}
 
-	determineCurrentlyTakenColPos(container)
-	{
+	function determineCurrentlyTakenColPos(container) {
 		return Array.prototype.reduce.call(container.childNodes, function (acc, containerChild) {
-			if (colPosAssigner.isVisibleSection(containerChild)) {
-				var value = colPosAssigner.getSectionColPosInput(containerChild).value;
+			if (isVisibleSection(containerChild)) {
+				var value = getSectionColPosInput(containerChild).value;
 				if (value !== '') {
 					acc.push(parseInt(value));
 				}
@@ -44,8 +30,7 @@ class FluxColPosAssignment
 		}, []);
 	}
 
-	determineFreeColPos(minColPos, maxColPos, takenColPos)
-	{
+	function determineFreeColPos(minColPos, maxColPos, takenColPos) {
 		for (var colPos = minColPos; colPos <= maxColPos; colPos++) {
 			if (takenColPos.indexOf(colPos) === -1) {
 				return colPos;
@@ -53,9 +38,8 @@ class FluxColPosAssignment
 		}
 	}
 
-	handleAddedSection(section, container)
-	{
-		var input = colPosAssigner.getSectionColPosInput(section);
+	function handleAddedSection(section, container) {
+		var input = getSectionColPosInput(section);
 		if (input === null || input.value !== '') {
 			return;
 		}
@@ -65,28 +49,37 @@ class FluxColPosAssignment
 		if (input.dataset.takenValues !== '') {
 			takenColPos = input.dataset.takenValues.split(',').map(function (colPosStr) { return parseInt(colPosStr); });
 		}
-		takenColPos = takenColPos.concat(colPosAssigner.determineCurrentlyTakenColPos(container));
+		takenColPos = takenColPos.concat(determineCurrentlyTakenColPos(container));
 
-		var colPos = colPosAssigner.determineFreeColPos(minColPos, maxColPos, takenColPos);
+		var colPos = determineFreeColPos(minColPos, maxColPos, takenColPos);
 		input.value = colPos;
 
-		var label = colPosAssigner.getSectionColPosText(section);
+		var label = getSectionColPosText(section);
 		label.innerText = colPos;
 	}
 
-	handleMutation(mutationList)
-	{
+	function handleMutation(mutationList) {
 		mutationList.forEach(function (mutation) {
 			Array.prototype.forEach.call(mutation.addedNodes, function (addedElement) {
-				if (!colPosAssigner.isVisibleSection(addedElement)) {
+				if (!isVisibleSection(addedElement)) {
 					return;
 				}
-				colPosAssigner.handleAddedSection(addedElement, mutation.target);
+				handleAddedSection(addedElement, mutation.target);
 			});
 		});
 	}
-};
 
-var colPosAssigner = new FluxColPosAssignment;
+	function init() {
+		var targetNodes = document.querySelectorAll('.t3-flex-container');
+		var observer = new MutationObserver(handleMutation);
+		Array.prototype.forEach.call(targetNodes, function (targetNode) {
+			observer.observe(targetNode, { childList: true, characterData: false });
+		});
+	}
 
-export default colPosAssigner;
+	$(function () {
+		init();
+	});
+
+	return {};
+});

@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class PreviewRenderer
 {
@@ -55,8 +56,11 @@ class PreviewRenderer
     protected function attachAssets(): void
     {
         if (!static::$assetsIncluded) {
-            $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
-            $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
+            $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flu.css');
+            if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.4', '<')) {
+                // Collapse feature is inoperable on v12 and above.
+                $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
+            }
 
             static::$assetsIncluded = true;
         }
