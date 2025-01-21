@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class PreviewRendererTest extends AbstractTestCase
 {
@@ -22,7 +23,6 @@ class PreviewRendererTest extends AbstractTestCase
     protected function setUp(): void
     {
         $this->pageRenderer = $this->getMockBuilder(PageRenderer::class)
-            ->onlyMethods(['loadRequireJsModule'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->providerResolver = $this->getMockBuilder(ProviderResolver::class)
@@ -56,6 +56,9 @@ class PreviewRendererTest extends AbstractTestCase
 
     public function testAttachAssets(): void
     {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.4', '>=')) {
+            $this->markTestSkipped('Skipping PreviewRenderer asset attach on 12.4 - feature inoperable');
+        }
         $this->pageRenderer->expects($this->atLeastOnce())->method('loadRequireJsModule');
         $subject = new PreviewRenderer($this->pageRenderer, $this->providerResolver);
         $this->callInaccessibleMethod($subject, 'attachAssets');
