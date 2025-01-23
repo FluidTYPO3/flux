@@ -77,7 +77,9 @@ class DataHandlerSubscriber
             );
 
             foreach ($providers as $provider) {
-                $provider->postProcessRecord($command, (integer) $id, $record, $reference, []);
+                if ($provider->postProcessRecord($command, (integer) $id, $record, $reference, [])) {
+                    break;
+                }
             }
         }
 
