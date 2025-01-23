@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Integration\WizardItemsManipulator;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
+use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 
 class WizardItemsTest extends AbstractTestCase
 {
@@ -20,6 +21,10 @@ class WizardItemsTest extends AbstractTestCase
 
     protected function setUp(): void
     {
+        if (!interface_exists(NewContentElementWizardHookInterface::class)) {
+            $this->markTestSkipped('Skipping test with NewContentElementWizardHookInterface dependency');
+        }
+
         parent::setUp();
 
         $this->wizardItemsManipulator = $this->getMockBuilder(WizardItemsManipulator::class)
