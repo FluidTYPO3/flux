@@ -31,13 +31,13 @@ class DoctrineQueryProxy
     {
         if (method_exists($result, 'fetchAssociative')) {
             /** @var array|null $output */
-            $output = $result->fetchAssociative() ?: null;
+            $output = $result->fetchAssociative();
         } else {
             /** @var array|null $output */
             $output = $result->fetch(FetchMode::ASSOCIATIVE);
         }
 
-        return $output;
+        return $output ?: null;
     }
 
     public static function fetchAllAssociative(Result $result): array
