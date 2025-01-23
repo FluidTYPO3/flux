@@ -20,10 +20,7 @@ use FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Symfony\Component\DependencyInjection\ServiceLocator;
-use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Service\FlexFormService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FormDataTransformerTest extends AbstractTestCase
 {

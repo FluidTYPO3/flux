@@ -10,18 +10,16 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation\Transformer;
 
 use FluidTYPO3\Flux\Attribute\DataTransformer;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
+use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
-use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
+use TYPO3\CMS\Extbase\Persistence\Repository;
 
 class ObjectTransformerTest extends AbstractTestCase
 {
