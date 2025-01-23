@@ -71,11 +71,12 @@ class FlexFormBuilder
                 // This is NOT necessary if the input record contains an explicitly selected page layout, hence the
                 // added check above before entering this condition block.
                 if ((integer) $record['pid'] < 0) {
-                    // we have uid of sibling, need parent
-                    $record['pid'] = BackendUtility::getRecord(
+                    // we have uid of sibling, need first not-deleted parent
+                    $record['pid'] = $this->loadRecordWithoutRestriction(
                         'pages',
                         (integer) abs($record['pid']),
-                        'uid'
+                        'uid',
+                        false
                     )['uid'] ?? 0;
                 }
                 $record = array_merge(
@@ -189,8 +190,12 @@ class FlexFormBuilder
     /**
      * @codeCoverageIgnore
      */
-    protected function loadRecordWithoutRestriction(string $table, int $uid): ?array
-    {
-        return BackendUtility::getRecord($table, $uid, '*', '', false);
+    protected function loadRecordWithoutRestriction(
+        string $table,
+        int $uid,
+        string $fields = '*',
+        bool $includeDeleted = true
+    ): ?array {
+        return BackendUtility::getRecord($table, $uid, $fields, '', !$includeDeleted);
     }
 }

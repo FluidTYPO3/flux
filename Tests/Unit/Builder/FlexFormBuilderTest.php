@@ -11,10 +11,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Builder;
 use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 
 class FlexFormBuilderTest extends AbstractTestCase
@@ -49,6 +51,11 @@ class FlexFormBuilderTest extends AbstractTestCase
         parent::setUp();
     }
 
+    protected function tearDown(): void
+    {
+        unset($GLOBALS['TCA']);
+    }
+
     private function getConstructorArguments(): array
     {
         return [
@@ -61,7 +68,7 @@ class FlexFormBuilderTest extends AbstractTestCase
     /**
      * @return void
      */
-    public function testReturnsEmptyDataStructureIdentifierForNonMatchingTableAndField()
+    public function testReturnsEmptyDataStructureIdentifierForNonMatchingTableAndField(): void
     {
         $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn(null);
 
@@ -76,10 +83,53 @@ class FlexFormBuilderTest extends AbstractTestCase
     }
 
     /**
+     * @return void
+     */
+    public function testReturnsDataStructureIdentifierBasedOnDefaultValuesForPagesWithoutUid(): void
+    {
+        $GLOBALS['TCA']['pages']['ctrl']['type'] = 'typefield';
+        $GLOBALS['TCA']['pages']['ctrl']['typefield']['subtype_value_field'] = 'subtypefield';
+
+        $provider = $this->getMockBuilder(DummyPageProvider::class)->disableOriginalConstructor()->getMock();
+        $this->providerResolver->method('resolvePrimaryConfigurationProvider')->willReturn($provider);
+
+        $this->pageService->method('getPageTemplateConfiguration')->willReturn(
+            [
+                PageProvider::FIELD_ACTION_MAIN => 'mainAction',
+                PageProvider::FIELD_ACTION_SUB => 'subAction',
+            ]
+        );
+
+        $subject = new FlexFormBuilder(...$this->getConstructorArguments());
+        $subject = $this->getMockBuilder(FlexFormBuilder::class)
+            ->onlyMethods(['loadRecordWithoutRestriction'])
+            ->setConstructorArgs($this->getConstructorArguments())
+            ->getMock();
+
+        $result = $subject->resolveDataStructureIdentifier(
+            'pages',
+            'somefield',
+            ['somefield' => 'bar', 'pid' => -1]
+        );
+        $this->assertSame(
+            [
+                'type' => 'flux',
+                'tableName' => 'pages',
+                'fieldName' => 'somefield',
+                'record' => [
+                    'somefield' => 'bar'
+                ],
+                'originalIdentifier' => [],
+            ],
+            $result
+        );
+    }
+
+    /**
      * @param array $identifier
      * @dataProvider getEmptyDataStructureIdentifierTestValues
      */
-    public function testReturnsEmptyDataStructureForIdentifier(array $identifier)
+    public function testReturnsEmptyDataStructureForIdentifier(array $identifier): void
     {
         $subject = $this->getMockBuilder(FlexFormBuilder::class)
             ->setConstructorArgs($this->getConstructorArguments())
@@ -88,7 +138,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         $this->assertSame([], $result);
     }
 
-    public function testDataStructureForIdentifierFromCache()
+    public function testDataStructureForIdentifierFromCache(): void
     {
         $structure = ['foo' => 'bar'];
         $subject = new FlexFormBuilder(...$this->getConstructorArguments());
@@ -97,7 +147,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         $this->assertSame($structure, $result);
     }
 
-    public function testParseDataStructureForIdentifierThrowsExceptionIfUnableToLoadRecord()
+    public function testParseDataStructureForIdentifierThrowsExceptionIfUnableToLoadRecord(): void
     {
         $subject = $this->getMockBuilder(FlexFormBuilder::class)
             ->setConstructorArgs($this->getConstructorArguments())
@@ -111,7 +161,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         );
     }
 
-    public function testReturnsEmptyDataStructureForIdentifierReturnsEmptyArrayWithoutProvider()
+    public function testReturnsEmptyDataStructureForIdentifierReturnsEmptyArrayWithoutProvider(): void
     {
         $subject = $this->getMockBuilder(FlexFormBuilder::class)
             ->setConstructorArgs($this->getConstructorArguments())
@@ -128,7 +178,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         self::assertSame([], $result);
     }
 
-    public function testParseDataStructureForIdentifierCachesStaticDataSourceFromProvider()
+    public function testParseDataStructureForIdentifierCachesStaticDataSourceFromProvider(): void
     {
         $form = Form::create();
         $form->setOption(FormOption::STATIC, true);
@@ -152,7 +202,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         self::assertSame(['ROOT' => ['el' => []]], $result);
     }
 
-    public function testParseDataStructureForIdentifierReturnsDataSourceFromProvider()
+    public function testParseDataStructureForIdentifierReturnsDataSourceFromProvider(): void
     {
         $form = Form::create();
 
@@ -174,10 +224,7 @@ class FlexFormBuilderTest extends AbstractTestCase
         self::assertSame(['ROOT' => ['el' => []]], $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getEmptyDataStructureIdentifierTestValues()
+    public function getEmptyDataStructureIdentifierTestValues(): array
     {
         return [
             [
@@ -187,5 +234,46 @@ class FlexFormBuilderTest extends AbstractTestCase
                 ['type' => 'flux', 'record' => null]
             ],
         ];
+    }
+
+    public function testResolveDataStructureIdentifierReturnsEmptyWithNonDefaultDataStructureKey(): void
+    {
+        $subject = new FlexFormBuilder(...$this->getConstructorArguments());
+        $output = $subject->resolveDataStructureIdentifier('table', 'field', [], ['dataStructureKey' => 'non-default']);
+        self::assertSame([], $output);
+    }
+
+    public function testParseDataStructureIdentifierReturnsEmptyWithNonFluxType(): void
+    {
+        $subject = new FlexFormBuilder(...$this->getConstructorArguments());
+        $output = $subject->parseDataStructureByIdentifier(['type' => 'not-flux']);
+        self::assertSame([], $output);
+    }
+
+    public function testParseDataStructureIdentifierReturnsEmptyWithMissingRecord(): void
+    {
+        $subject = new FlexFormBuilder(...$this->getConstructorArguments());
+        $output = $subject->parseDataStructureByIdentifier(['type' => 'flux']);
+        self::assertSame([], $output);
+    }
+
+    public function testPatchTceformsWrapper(): void
+    {
+        $ds = [
+            'something' => 'test',
+            'someArray' => [
+                'someSub' => 'sub',
+                'config' => [
+                    'type' => 'a-type',
+                ],
+            ],
+        ];
+
+        $expectedDs = $ds;
+        $expectedDs['someArray'] = ['TCEforms' => $expectedDs['someArray']];
+
+        $subject = new FlexFormBuilder(...$this->getConstructorArguments());
+        $output = $this->callInaccessibleMethod($subject, 'patchTceformsWrapper', $ds);
+        self::assertSame($expectedDs, $output);
     }
 }
