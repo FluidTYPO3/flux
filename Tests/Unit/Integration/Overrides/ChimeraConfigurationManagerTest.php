@@ -31,7 +31,9 @@ class ChimeraConfigurationManagerTest extends AbstractTestCase
         parent::setUp();
 
         if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<')) {
-            self::markTestSkipped('Skipping chimera configuration manager test');
+            self::markTestSkipped('Skipping chimera configuration manager test on v10');
+        } elseif (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            self::markTestSkipped('Skipping chimera configuration manager test on v13');
         }
 
         $this->frontendConfigurationManager = $this->getMockBuilder(FrontendConfigurationManager::class)
