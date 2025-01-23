@@ -15,13 +15,13 @@ use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Form\OptionCarryingInterface;
 use FluidTYPO3\Flux\Form\Transformation\DataTransformerInterface;
+use FluidTYPO3\Flux\Proxy\ResourceFactoryProxy;
 use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
 
 /**
  * File Transformer
@@ -30,9 +30,9 @@ use TYPO3\CMS\Core\Resource\ResourceFactory;
 class FileTransformer implements DataTransformerInterface
 {
     private ConnectionPool $connectionPool;
-    private ResourceFactory $resourceFactory;
+    private ResourceFactoryProxy $resourceFactory;
 
-    public function __construct(ConnectionPool $connectionPool, ResourceFactory $resourceFactory)
+    public function __construct(ConnectionPool $connectionPool, ResourceFactoryProxy $resourceFactory)
     {
         $this->connectionPool = $connectionPool;
         $this->resourceFactory = $resourceFactory;
