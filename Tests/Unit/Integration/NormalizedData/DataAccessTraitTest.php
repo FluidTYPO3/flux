@@ -136,12 +136,12 @@ class DataAccessTraitTest extends AbstractTestCase
         $converter->method('convertData')->willReturnArgument(0);
 
         $flexFormImplementation = $this->getMockBuilder(FlexFormImplementation::class)
-            ->setMethods(['getConverterForTableFieldAndRecord'])
+            ->onlyMethods(['getConverterForTableFieldAndRecord'])
             ->disableOriginalConstructor()
             ->getMock();
 
         $formDataTransformer = $this->getMockBuilder(FormDataTransformer::class)
-            ->setMethods(['transformAccordingToConfiguration'])
+            ->onlyMethods(['transformAccordingToConfiguration'])
             ->disableOriginalConstructor()
             ->getMock();
         $formDataTransformer->expects(self::once())

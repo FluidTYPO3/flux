@@ -30,7 +30,7 @@ class HtmlOutputNodeTest extends AbstractTestCase
         $subject->method('initializeResultArray')->willReturn([]);
 
         $userFunction = $this->getMockBuilder(UserFunctions::class)
-            ->setMethods(['renderHtmlOutputField'])
+            ->onlyMethods(['renderHtmlOutputField'])
             ->disableOriginalConstructor()
             ->getMock();
         $userFunction->method('renderHtmlOutputField')->willReturn('html');
