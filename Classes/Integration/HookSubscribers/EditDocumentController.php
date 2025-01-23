@@ -5,6 +5,9 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * @codeCoverageIgnore
+ */
 class EditDocumentController
 {
     /**
@@ -14,8 +17,6 @@ class EditDocumentController
 
     /**
      * Make sure the FluxColPosAssignment JavaScript module is loaded
-     *
-     * @codeCoverageIgnore
      */
     public function requireColumnPositionJavaScript() : void
     {
