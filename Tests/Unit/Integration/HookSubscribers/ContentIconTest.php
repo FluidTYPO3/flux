@@ -13,13 +13,13 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\IconFactoryProxy;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Lang\LanguageService;
@@ -30,7 +30,7 @@ class ContentIconTest extends AbstractTestCase
     private ?ProviderResolver $providerResolver;
     private ?CacheManager $cacheManager;
     private ?FrontendInterface $cache;
-    private ?IconFactory $iconFactory;
+    private ?IconFactoryProxy $iconFactory;
 
     protected function setUp(): void
     {
@@ -38,7 +38,7 @@ class ContentIconTest extends AbstractTestCase
         $this->providerResolver = $this->createStub(ProviderResolver::class);
         $this->cacheManager = $this->createStub(CacheManager::class);
         $this->cacheManager->method('getCache')->willReturn($this->cache);
-        $this->iconFactory = $this->createStub(IconFactory::class);
+        $this->iconFactory = $this->createStub(IconFactoryProxy::class);
 
         parent::setUp();
     }
