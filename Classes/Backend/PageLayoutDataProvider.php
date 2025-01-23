@@ -11,11 +11,11 @@ namespace FluidTYPO3\Flux\Backend;
 
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -24,12 +24,12 @@ class PageLayoutDataProvider
 {
     private ConfigurationManagerInterface $configurationManager;
     private PageService $pageService;
-    private SiteFinder $siteFinder;
+    private SiteFinderProxy $siteFinder;
 
     public function __construct(
         ConfigurationManagerInterface $configurationManager,
         PageService $pageService,
-        SiteFinder $siteFinder
+        SiteFinderProxy $siteFinder
     ) {
         $this->configurationManager = $configurationManager;
         $this->pageService = $pageService;

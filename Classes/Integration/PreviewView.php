@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
@@ -24,7 +25,6 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -223,8 +223,8 @@ class PreviewView extends TemplateView
         $fluidBasedLayoutFeatureEnabled = $features->isFeatureEnabled('fluidBasedPageModule');
 
         if ($fluidBasedLayoutFeatureEnabled) {
-            /** @var SiteFinder $siteFinder */
-            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+            /** @var SiteFinderProxy $siteFinder */
+            $siteFinder = GeneralUtility::makeInstance(SiteFinderProxy::class);
             $site = $siteFinder->getSiteByPageId($pageId);
             $language = null;
             if ($row['sys_language_uid'] >= 0) {
