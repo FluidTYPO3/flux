@@ -94,7 +94,7 @@ class ExtensionNamingUtilityTest extends AbstractTestCase
      */
     public function testGetVendorNameAndExtensionKeyWithoutVendorName()
     {
-        list($vendorName, $extensionKey) = ExtensionNamingUtility::getVendorNameAndExtensionKey('FooExt');
+        [$vendorName, $extensionKey] = ExtensionNamingUtility::getVendorNameAndExtensionKey('FooExt');
         $this->assertNull($vendorName);
         $this->assertSame('foo_ext', $extensionKey);
     }
@@ -104,7 +104,7 @@ class ExtensionNamingUtilityTest extends AbstractTestCase
      */
     public function testGetVendorNameAndExtensionKeyWithVendorName()
     {
-        list($vendorName, $extensionKey) = ExtensionNamingUtility::getVendorNameAndExtensionKey('FT3.FooExt');
+        [$vendorName, $extensionKey] = ExtensionNamingUtility::getVendorNameAndExtensionKey('FT3.FooExt');
         $this->assertSame('FT3', $vendorName);
         $this->assertSame('foo_ext', $extensionKey);
     }
@@ -114,7 +114,7 @@ class ExtensionNamingUtilityTest extends AbstractTestCase
      */
     public function testGetVendorNameAndExtensionNameWithoutVendorName()
     {
-        list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName('FooExt');
+        [$vendorName, $extensionName] = ExtensionNamingUtility::getVendorNameAndExtensionName('FooExt');
         $this->assertNull($vendorName);
         $this->assertSame('FooExt', $extensionName);
     }
@@ -124,7 +124,7 @@ class ExtensionNamingUtilityTest extends AbstractTestCase
      */
     public function testGetVendorNameAndExtensionNameWithVendorName()
     {
-        list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName('FT3.FooExt');
+        [$vendorName, $extensionName] = ExtensionNamingUtility::getVendorNameAndExtensionName('FT3.FooExt');
         $this->assertSame('FT3', $vendorName);
         $this->assertSame('FooExt', $extensionName);
     }
@@ -134,7 +134,7 @@ class ExtensionNamingUtilityTest extends AbstractTestCase
      */
     public function testGetVendorNameAndExtensionNameWithoutVendorNameUnderscore()
     {
-        list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName('foo_ext');
+        [$vendorName, $extensionName] = ExtensionNamingUtility::getVendorNameAndExtensionName('foo_ext');
         $this->assertNull($vendorName);
         $this->assertSame('FooExt', $extensionName);
     }
@@ -144,7 +144,7 @@ class ExtensionNamingUtilityTest extends AbstractTestCase
      */
     public function testGetVendorNameAndExtensionNameWithVendorNameUnderscore()
     {
-        list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName('FT3.foo_ext');
+        [$vendorName, $extensionName] = ExtensionNamingUtility::getVendorNameAndExtensionName('FT3.foo_ext');
         $this->assertSame('FT3', $vendorName);
         $this->assertSame('FooExt', $extensionName);
     }
