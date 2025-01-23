@@ -64,9 +64,6 @@ parameters:
         - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on (Doctrine\\\\DBAL\\\\Driver\\\\Statement|Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement|Doctrine\\\\DBAL\\\\Result)\\|int\\.$#"
         - "#^Call to an undefined static method TYPO3\\\\CMS\\\\Backend\\\\Utility\\\\BackendUtility\\:\\:getMovePlaceholder\\(\\)\\.$#"
         - "#^Strict comparison using === between TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\ContentObjectRenderer and null will always evaluate to false\\.$#"
-
-# TEMPORARY RULE
-        - "#unused parameter \\$nodeFactory\\.$#"
     bootstrapFiles:
         - phpstan-bootstrap.php
     paths:
