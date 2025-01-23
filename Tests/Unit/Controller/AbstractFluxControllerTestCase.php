@@ -690,7 +690,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $variables = ['foo' => 'bar'];
         $row = Records::$contentRecordWithoutParentAndWithoutChildren;
         $instance = $this->getMockBuilder($controllerClassName)
-            ->onlyMethods(['getRecord', 'getServerRequest'])
+            ->onlyMethods(['getRecord', 'getServerRequest', 'getContentObject'])
             ->setConstructorArgs($this->getConstructorArguments())
             ->getMock();
         $instance->method('getServerRequest')->willReturn(

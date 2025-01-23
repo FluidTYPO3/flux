@@ -24,10 +24,12 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use PHPUnit\Framework\MockObject\MockObject;
-use TYPO3\CMS\Core\Http\ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class DataAccessTraitTest extends AbstractTestCase
 {
@@ -82,14 +84,14 @@ class DataAccessTraitTest extends AbstractTestCase
 
         $this->resolver = new Resolver();
 
-        $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequest::class)->getMockForAbstractClass();
+        $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass();
 
         parent::setUp();
     }
 
     protected function tearDown(): void
     {
-        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']);
+        unset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $GLOBALS['TYPO3_REQUEST']);
     }
 
     protected function getControllerConstructorArguments(): array
@@ -110,7 +112,9 @@ class DataAccessTraitTest extends AbstractTestCase
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
             ->getMockForAbstractClass();
         $configurationManager->method('getConfiguration')->willReturn(['foo' => 'bar']);
-        $configurationManager->method('getContentObject')->willReturn(null);
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '<')) {
+            $configurationManager->method('getContentObject')->willReturn(null);
+        }
 
         $subject = new DummyPageController(...$this->getControllerConstructorArguments());
 
@@ -130,7 +134,13 @@ class DataAccessTraitTest extends AbstractTestCase
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
             ->getMockForAbstractClass();
         $configurationManager->method('getConfiguration')->willReturn(['foo' => 'bar']);
-        $configurationManager->method('getContentObject')->willReturn($contentObject);
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '<')) {
+            $configurationManager->method('getContentObject')->willReturn($contentObject);
+        } else {
+            $tsfe = $this->getMockBuilder(TypoScriptFrontendController::class)->disableOriginalConstructor()->getMock();
+            $tsfe->cObj = $contentObject;
+            $GLOBALS['TYPO3_REQUEST']->method('getAttribute')->with('frontend.controller')->willReturn($tsfe);
+        }
 
         $converter = $this->getMockBuilder(InlineRecordDataConverter::class)->disableOriginalConstructor()->getMock();
         $converter->method('convertData')->willReturnArgument(0);
