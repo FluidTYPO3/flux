@@ -44,7 +44,11 @@ class FluidFileBasedContentTypeDefinitionTest extends AbstractTestCase
 
         self::assertSame('FluidTYPO3.Flux', $subject->getExtensionIdentity(), 'Extension identity is unexpected value');
         self::assertSame(Provider::class, $subject->getProviderClassName(), 'Provider class name is unexpected value');
-        self::assertSame('', $subject->getIconReference(), 'Icon reference is unexpected value');
+        self::assertSame(
+            'EXT:flux/Resources/Public/Icons/Extension.svg',
+            $subject->getIconReference(),
+            'Icon reference is unexpected value'
+        );
         self::assertTrue($subject->isUsingTemplateFile(), 'Return from isUsingTemplateFile() is unexpected value');
         self::assertFalse(
             $subject->isUsingGeneratedTemplateSource(),
