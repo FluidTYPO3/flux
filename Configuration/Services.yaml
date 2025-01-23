@@ -32,6 +32,8 @@ services:
   FluidTYPO3\Flux\Form\Transformation\Transformer\FileTransformer:
     public: true
 
+  FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm:
+    public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\ColumnPositionItems:
     public: true
   FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:
