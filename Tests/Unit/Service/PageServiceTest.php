@@ -18,10 +18,10 @@ use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
-use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class PageServiceTest extends AbstractTestCase
 {
@@ -102,11 +102,11 @@ class PageServiceTest extends AbstractTestCase
     {
         $renderingContext = new RenderingContext();
 
-        $templateView = $this->getMockBuilder(TemplateView::class)
-            ->onlyMethods(['getRenderingContext'])
-            ->setConstructorArgs([$renderingContext])
-            ->getMock();
+        $templateView = $this->getMockBuilder(ViewInterface::class)
+            ->addMethods(['getRenderingContext', 'getCurrentRenderingContext'])
+            ->getMockForAbstractClass();
         $templateView->method('getRenderingContext')->willReturn($renderingContext);
+        $templateView->method('getCurrentRenderingContext')->willReturn($renderingContext);
 
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)
             ->onlyMethods(['getTemplateRootPaths', 'ensureAbsolutePath'])
@@ -116,15 +116,12 @@ class PageServiceTest extends AbstractTestCase
         $templatePaths->method('ensureAbsolutePath')->willReturnArgument(0);
 
         $instance = $this->getMockBuilder(DummyPageService::class)
-            ->onlyMethods(['createTemplatePaths', 'getPageConfiguration'])
+            ->onlyMethods(['createTemplatePaths', 'getPageConfiguration', 'createViewInstance'])
             ->getMock();
         $instance->setLogger($this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass());
         $instance->method('createTemplatePaths')->willReturn($templatePaths);
         $instance->method('getPageConfiguration')->willReturn($typoScript);
-
-        // There are exactly 2 page template fixtures. We need to return exactly two mock instances of TemplateView.
-        GeneralUtility::addInstance(TemplateView::class, $templateView);
-        GeneralUtility::addInstance(TemplateView::class, $templateView);
+        $instance->method('createViewInstance')->willReturn($templateView);
 
         $result = $instance->getAvailablePageTemplateFiles();
         if (null === $expected) {
@@ -214,11 +211,23 @@ class PageServiceTest extends AbstractTestCase
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY]
             = './';
 
-        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
-            ->onlyMethods(['toArray'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $templatePaths->method('toArray')->willReturn(['foo' => 'bar']);
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+        } else {
+            $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+                ->onlyMethods(['toArray'])
+                ->disableOriginalConstructor()
+                ->getMock();
+            $templatePaths->method('toArray')->willReturn(
+                [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [],
+                ]
+            );
+        }
 
         $instance = $this->getMockBuilder(PageService::class)
             ->onlyMethods(['createTemplatePaths'])
@@ -233,7 +242,11 @@ class PageServiceTest extends AbstractTestCase
 
         self::assertEquals(
             [
-                'FluidTYPO3.Testing' => ['foo' => 'bar'],
+                'FluidTYPO3.Testing' => [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [],
+                ],
                 'FluidTYPO3.Flux' => [
                     TemplatePaths::CONFIG_TEMPLATEROOTPATHS => ['/Templates/Page/'],
                     TemplatePaths::CONFIG_PARTIALROOTPATHS => ['/Partials/'],
@@ -246,11 +259,23 @@ class PageServiceTest extends AbstractTestCase
 
     public function testGetPageConfigurationReturnsDefaultTemplatePaths(): void
     {
-        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
-            ->onlyMethods(['toArray'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $templatePaths->method('toArray')->willReturn(['foo' => 'bar']);
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+        } else {
+            $templatePaths = $this->getMockBuilder(TemplatePaths::class)
+                ->onlyMethods(['toArray'])
+                ->disableOriginalConstructor()
+                ->getMock();
+            $templatePaths->method('toArray')->willReturn(
+                [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [],
+                ]
+            );
+        }
 
         $instance = $this->getMockBuilder(PageService::class)
             ->onlyMethods(['createTemplatePaths'])
@@ -260,7 +285,14 @@ class PageServiceTest extends AbstractTestCase
 
         $result = $instance->getPageConfiguration('Flux');
 
-        self::assertEquals(['foo' => 'bar'], $result);
+        self::assertEquals(
+            [
+                TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [],
+                TemplatePaths::CONFIG_PARTIALROOTPATHS => [],
+                TemplatePaths::CONFIG_LAYOUTROOTPATHS => [],
+            ],
+            $result
+        );
     }
 
     public function testGetPageConfigurationWithoutExtensionNameReadsRegisteredProviders(): void
