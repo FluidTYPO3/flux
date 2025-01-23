@@ -77,12 +77,12 @@ class ExpressionBuilder extends \TYPO3\CMS\Core\Database\Query\Expression\Expres
         return __FUNCTION__;
     }
 
-    public function like(string $fieldName, $value): string
+    public function like(string $fieldName, $value, ?string $escapeChar = null): string
     {
         return __FUNCTION__;
     }
 
-    public function notLike(string $fieldName, $value): string
+    public function notLike(string $fieldName, $value, ?string $escapeChar = null): string
     {
         return __FUNCTION__;
     }
@@ -147,12 +147,12 @@ class ExpressionBuilder extends \TYPO3\CMS\Core\Database\Query\Expression\Expres
         return __FUNCTION__;
     }
 
-    public function trim(string $fieldName, int $position = TrimMode::UNSPECIFIED, string $char = null)
+    public function trim(string $fieldName, $position = TrimMode::UNSPECIFIED, ?string $char = null): string
     {
         return __FUNCTION__;
     }
 
-    public function literal($input, $type = Connection::PARAM_STR)
+    public function literal($input, $type = Connection::PARAM_STR): string
     {
         return __FUNCTION__;
     }
