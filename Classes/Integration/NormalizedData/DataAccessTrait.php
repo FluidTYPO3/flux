@@ -6,22 +6,13 @@ use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Utility\ContentObjectFetcher;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 trait DataAccessTrait
 {
-    /**
-     * @var ConfigurationManagerInterface
-     */
-    protected $configurationManager;
-
-    /**
-     * @var array
-     */
-    protected $settings;
-
     public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
@@ -32,7 +23,7 @@ trait DataAccessTrait
             return;
         }
 
-        $contentObject = $this->configurationManager->getContentObject();
+        $contentObject = ContentObjectFetcher::resolve($this->configurationManager);
         if ($contentObject === null) {
             throw new \UnexpectedValueException(
                 "Record of table " . $this->getFluxTableName() . ' not found',
