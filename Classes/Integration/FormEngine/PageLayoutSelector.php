@@ -33,7 +33,17 @@ class PageLayoutSelector extends AbstractNode
 
     public function __construct(?NodeFactory $nodeFactory = null, array $data = [])
     {
-        $this->nodeFactory = $nodeFactory ?? GeneralUtility::makeInstance(NodeFactory::class);
+        // Do not assign $this->nodeFactory if that method does not exist, which it does not on v13.
+        // Now, normally we'd want to simply remove this constructor - but we need it, because we have to
+        // receive three additional dependencies (see below). And we cannot add those as constructor arguments
+        // since that would make the constructor signature invalid (either won't be compatible with < v13, or
+        // would have optional arguments before mandatory ones and would need to mix automated and user-specified
+        // arguments. Yeah, it's a bit of a mess. So, until we're able to completely rewrite this constructor (which
+        // will not happen until v13 is the minimum requirement) we have to keep things like this; with redundant
+        // arguments, without dependencies as controller arguments, and with dependency creation with GU::makeInstance.
+        if (property_exists($this, 'nodeFactory')) {
+            $this->nodeFactory = $nodeFactory ?? GeneralUtility::makeInstance(NodeFactory::class);
+        }
         $this->data = $data;
         $this->pageService = GeneralUtility::makeInstance(PageService::class);
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
