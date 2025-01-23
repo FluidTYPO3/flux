@@ -4,21 +4,21 @@ namespace FluidTYPO3\Flux\Integration\FormEngine;
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Provider\Interfaces\DataStructureProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ProviderProcessor implements FormDataProviderInterface
 {
     private ProviderResolver $resolver;
     private ContentTypeManager $contentTypeManager;
-    private SiteFinder $siteFinder;
+    private SiteFinderProxy $siteFinder;
 
     public function __construct(
         ProviderResolver $resolver,
         ContentTypeManager $contentTypeManager,
-        SiteFinder $siteFinder
+        SiteFinderProxy $siteFinder
     ) {
         $this->resolver = $resolver;
         $this->contentTypeManager = $contentTypeManager;
