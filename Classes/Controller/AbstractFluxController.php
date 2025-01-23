@@ -307,7 +307,7 @@ abstract class AbstractFluxController extends ActionController
      * vanilla Provider instances when registering them for
      * content object types or other ad-hoc registrations.
      *
-     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
     public function defaultAction()
     {
@@ -317,7 +317,7 @@ abstract class AbstractFluxController extends ActionController
     /**
      * Render content
      *
-     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
     public function renderAction()
     {
@@ -353,7 +353,7 @@ abstract class AbstractFluxController extends ActionController
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
     protected function performSubRendering(
         string $extensionName,
@@ -365,6 +365,7 @@ abstract class AbstractFluxController extends ActionController
         if (property_exists($this, 'responseFactory') && $this->responseFactory instanceof ResponseFactoryInterface) {
             $response = $this->responseFactory->createResponse();
         } else {
+            /** @var ResponseInterface $response */
             $response = GeneralUtility::makeInstance(Response::class);
         }
     
@@ -435,7 +436,9 @@ abstract class AbstractFluxController extends ActionController
             ]
         )['content'];
 
-        return $content instanceof \Psr\Http\Message\ResponseInterface ? $content : $this->createHtmlResponse($content);
+        return $content instanceof \Psr\Http\Message\ResponseInterface || $content instanceof ResponseInterface
+            ? $content
+            : $this->createHtmlResponse($content);
     }
 
     protected function hasSubControllerActionOnForeignController(
