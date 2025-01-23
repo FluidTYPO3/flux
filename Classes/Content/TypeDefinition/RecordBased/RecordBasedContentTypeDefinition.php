@@ -40,7 +40,7 @@ class RecordBasedContentTypeDefinition implements FluidRenderingContentTypeDefin
     public function __construct(array $record)
     {
         $this->record = $record;
-        $this->contentTypeName = $record['content_type'];
+        $this->contentTypeName = $record['content_type'] ?? 'undefined';
     }
 
     /**
