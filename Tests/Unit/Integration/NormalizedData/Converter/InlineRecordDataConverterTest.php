@@ -9,8 +9,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\NormalizedData\Converter;
  */
 
 use FluidTYPO3\Flux\Integration\NormalizedData\Converter\InlineRecordDataConverter;
+use FluidTYPO3\Flux\Proxy\FlexFormToolsProxy;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class InlineRecordDataConverterTest extends AbstractTestCase
@@ -222,13 +222,13 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testResolveDataSourceDefinition(): void
     {
         $subject = new InlineRecordDataConverter('tt_content', 'pi_flexform', []);
-        $flexFormTools = $this->getMockBuilder(FlexFormTools::class)
-            ->setMethods(['getDataStructureIdentifier', 'parseDataStructureByIdentifier'])
+        $flexFormTools = $this->getMockBuilder(FlexFormToolsProxy::class)
+            ->onlyMethods(['getDataStructureIdentifier', 'parseDataStructureByIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
         $flexFormTools->method('getDataStructureIdentifier')->willReturn('test');
         $flexFormTools->method('parseDataStructureByIdentifier')->with('test')->willReturn(['foo' => 'bar']);
-        GeneralUtility::addInstance(FlexFormTools::class, $flexFormTools);
+        GeneralUtility::addInstance(FlexFormToolsProxy::class, $flexFormTools);
 
         $structure = [
             'processedTca' => [
@@ -249,12 +249,12 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testResolveDataSourceDefinitionSwallowsException(): void
     {
         $subject = new InlineRecordDataConverter('tt_content', 'pi_flexform', []);
-        $flexFormTools = $this->getMockBuilder(FlexFormTools::class)
-            ->setMethods(['getDataStructureIdentifier'])
+        $flexFormTools = $this->getMockBuilder(FlexFormToolsProxy::class)
+            ->onlyMethods(['getDataStructureIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
         $flexFormTools->method('getDataStructureIdentifier')->willThrowException(new \RuntimeException('test'));
-        GeneralUtility::addInstance(FlexFormTools::class, $flexFormTools);
+        GeneralUtility::addInstance(FlexFormToolsProxy::class, $flexFormTools);
 
         $structure = [
             'processedTca' => [
