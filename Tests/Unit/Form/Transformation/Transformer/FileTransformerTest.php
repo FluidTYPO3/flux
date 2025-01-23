@@ -12,12 +12,12 @@ use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\FileTransformer;
+use FluidTYPO3\Flux\Proxy\ResourceFactoryProxy;
 use FluidTYPO3\Flux\Tests\Mock\QueryBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
 use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
@@ -25,7 +25,7 @@ use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 class FileTransformerTest extends AbstractTestCase
 {
     private ConnectionPool $connectionPool;
-    private ResourceFactory $resourceFactory;
+    private ResourceFactoryProxy $resourceFactory;
     private FileTransformer $subject;
 
     protected function setUp(): void
@@ -35,7 +35,7 @@ class FileTransformerTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->resourceFactory = $this->getMockBuilder(ResourceFactory::class)
+        $this->resourceFactory = $this->getMockBuilder(ResourceFactoryProxy::class)
             ->onlyMethods(['getFileReferenceObject'])
             ->disableOriginalConstructor()
             ->getMock();

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class ColumnPositionNodeTest extends AbstractTestCase
 {
@@ -22,10 +23,18 @@ class ColumnPositionNodeTest extends AbstractTestCase
         $data = [
             'parameterArray' => [],
         ];
-        $subject = $this->getMockBuilder(ColumnPositionNode::class)
-            ->setMethods(['initializeResultArray'])
-            ->setConstructorArgs([$nodeFactory, $data])
-            ->getMock();
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            $subject = $this->getMockBuilder(ColumnPositionNode::class)
+                ->setMethods(['initializeResultArray'])
+                ->getMock();
+            $subject->setData($data);
+        } else {
+            $subject = $this->getMockBuilder(ColumnPositionNode::class)
+                ->setMethods(['initializeResultArray'])
+                ->setConstructorArgs([$nodeFactory, $data])
+                ->getMock();
+        }
+
         $subject->method('initializeResultArray')->willReturn([]);
 
         $userFunction = $this->getMockBuilder(UserFunctions::class)

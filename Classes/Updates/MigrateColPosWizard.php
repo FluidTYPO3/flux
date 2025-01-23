@@ -145,7 +145,7 @@ class MigrateColPosWizard implements
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         while ($contentRow = $statement->fetch()) {
-            list($min, $max) = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent(
+            [$min, $max] = ColumnNumberUtility::calculateMinimumAndMaximumColumnNumberWithinParent(
                 $contentRow['uid']
             );
 

@@ -11,13 +11,13 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\IconFactoryProxy;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
@@ -38,12 +38,12 @@ class ContentIcon
     ];
 
     protected ProviderResolver $providerResolver;
-    protected IconFactory $iconFactory;
+    protected IconFactoryProxy $iconFactory;
     protected FrontendInterface $cache;
 
     public function __construct(
         ProviderResolver $providerResolver,
-        IconFactory $iconFactory,
+        IconFactoryProxy $iconFactory,
         CacheManager $cacheManager
     ) {
         $this->providerResolver = $providerResolver;

@@ -1,6 +1,6 @@
 <?php
 
-$data = [
+return [
     'ctrl' => [
         'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types',
         'descriptionColumn' => 'description',
@@ -24,9 +24,6 @@ $data = [
         ],
         'iconfile' => 'EXT:flux/Resources/Public/Icons/Plugin.png',
         'searchFields' => 'uid,title',
-    ],
-    'interface' => [
-        'showRecordFieldList' => 'cruser_id,pid,hidden,starttime,endtime,fe_group,title,content_type,content_configuration,grid,template_file,template_source'
     ],
     'columns' => [
         'hidden' => [
@@ -178,9 +175,3 @@ $data = [
     ],
     'palettes' => []
 ];
-
-if (!defined('TYPO3_version') || version_compare(TYPO3_version, '10.3', '>=')) {
-    unset($data['interface']['showRecordFieldList']);
-}
-
-return $data;

@@ -50,7 +50,7 @@ class Resolver
         string $controllerName
     ): string {
         if (ExtensionNamingUtility::hasVendorName($extensionKey)) {
-            list($vendorName, $extensionName) = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionKey);
+            [$vendorName, $extensionName] = ExtensionNamingUtility::getVendorNameAndExtensionName($extensionKey);
             $potentialClassName = sprintf(
                 '%s\\%s\\Controller\\%sController',
                 $vendorName,

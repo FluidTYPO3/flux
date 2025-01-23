@@ -19,7 +19,6 @@ class ClearValueWizard extends AbstractNode
     public function render(): array
     {
         $result = $this->initializeResultArray();
-
         $fieldName = 'data' . $this->data['elementBaseName'];
         $nameSegments = explode('][', $fieldName);
         $nameSegments[count($nameSegments) - 2] .= '_clear';

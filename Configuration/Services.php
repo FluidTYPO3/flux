@@ -14,11 +14,13 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 return function (ContainerConfigurator $containerConfigurator, ContainerBuilder $container) {
     $version = VersionNumberUtility::getCurrentTypo3Version();
-    $container->removeAlias(ConfigurationManagerInterface::class);
-    $aliasClass = version_compare($version, '11.0', '<')
-        ? LegacyChimeraConfigurationManager::class
-        : ChimeraConfigurationManager::class;
-    $container->setAlias(ConfigurationManagerInterface::class, new Alias($aliasClass, true));
+    if (version_compare($version, '13.4', '<')) {
+        $container->removeAlias(ConfigurationManagerInterface::class);
+        $aliasClass = version_compare($version, '11.0', '<')
+            ? LegacyChimeraConfigurationManager::class
+            : ChimeraConfigurationManager::class;
+        $container->setAlias(ConfigurationManagerInterface::class, new Alias($aliasClass, true));
+    }
 
     $container->registerAttributeForAutoconfiguration(
         DataTransformer::class,

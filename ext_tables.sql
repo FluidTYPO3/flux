@@ -13,7 +13,8 @@ CREATE TABLE pages (
 #
 CREATE TABLE tt_content (
   tx_flux_migrated_version varchar(11) DEFAULT NULL,
-  colPos bigint(20) DEFAULT '0' NOT NULL
+  colPos bigint(20) DEFAULT '0' NOT NULL,
+  t3_origuid int(11) unsigned DEFAULT '0' NOT NULL
 );
 
 #

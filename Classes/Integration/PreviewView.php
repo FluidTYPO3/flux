@@ -14,17 +14,20 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
+use TYPO3\CMS\Backend\View\PageViewMode;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Features;
+use TYPO3\CMS\Core\Domain\RecordFactory;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -223,28 +226,45 @@ class PreviewView extends TemplateView
         $fluidBasedLayoutFeatureEnabled = $features->isFeatureEnabled('fluidBasedPageModule');
 
         if ($fluidBasedLayoutFeatureEnabled) {
-            /** @var SiteFinder $siteFinder */
-            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+            /** @var SiteFinderProxy $siteFinder */
+            $siteFinder = GeneralUtility::makeInstance(SiteFinderProxy::class);
             $site = $siteFinder->getSiteByPageId($pageId);
             $language = null;
             if ($row['sys_language_uid'] >= 0) {
                 $language = $site->getLanguageById((int) $row['sys_language_uid']);
             }
 
-            /** @var PageLayoutContext $context */
-            $context = GeneralUtility::makeInstance(
-                PageLayoutContext::class,
-                $this->fetchPageRecordWithoutOverlay($pageId),
-                $backendLayout
-            );
+            if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+                $configuration = DrawingConfiguration::create($backendLayout, [], PageViewMode::LayoutView);
+
+                /** @var PageLayoutContext $context */
+                $context = GeneralUtility::makeInstance(
+                    PageLayoutContext::class,
+                    $this->fetchPageRecordWithoutOverlay($pageId),
+                    $backendLayout,
+                    $site,
+                    $configuration,
+                    $GLOBALS['TYPO3_REQUEST']
+                );
+            } else {
+                /** @var PageLayoutContext $context */
+                $context = GeneralUtility::makeInstance(
+                    PageLayoutContext::class,
+                    $this->fetchPageRecordWithoutOverlay($pageId),
+                    $backendLayout
+                );
+                $configuration = $context->getDrawingConfiguration();
+            }
+
             if (isset($language)) {
                  $context = $context->cloneForLanguage($language);
             }
 
-            $configuration = $context->getDrawingConfiguration();
-            $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
+            if (method_exists($configuration, 'setActiveColumns')) {
+                $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
+            }
 
-            if (isset($language)) {
+            if (isset($language) && method_exists($configuration, 'setSelectedLanguageUid')) {
                 $configuration->setSelectedLanguageId($language->getLanguageId());
             }
 
@@ -311,13 +331,24 @@ class PreviewView extends TemplateView
      */
     protected function createBackendLayoutRenderer(PageLayoutContext $context): BackendLayoutRenderer
     {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            /** @var BackendViewFactory $backendViewFactory */
+            $backendViewFactory = GeneralUtility::getContainer()->get(BackendViewFactory::class);
+            /** @var RecordFactory $recordFactory */
+            $recordFactory = GeneralUtility::makeInstance(RecordFactory::class);
+            /** @var BackendLayoutRenderer $backendLayoutRenderer */
+            $backendLayoutRenderer = GeneralUtility::makeInstance(
+                BackendLayoutRenderer::class,
+                $backendViewFactory,
+                $recordFactory
+            );
+        } elseif (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
             /** @var BackendViewFactory $backendViewFactory */
             $backendViewFactory = GeneralUtility::getContainer()->get(BackendViewFactory::class);
             /** @var BackendLayoutRenderer $backendLayoutRenderer */
             $backendLayoutRenderer = GeneralUtility::makeInstance(
                 BackendLayoutRenderer::class,
-                $backendViewFactory
+                $backendViewFactory,
             );
         } else {
             /** @var BackendLayoutRenderer $backendLayoutRenderer */

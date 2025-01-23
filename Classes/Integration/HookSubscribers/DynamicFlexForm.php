@@ -9,23 +9,18 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  */
 
 use FluidTYPO3\Flux\Builder\FlexFormBuilder;
-use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use FluidTYPO3\Flux\Proxy\FlexFormToolsProxy;
 
 class DynamicFlexForm
 {
     protected FlexFormBuilder $flexFormBuilder;
-    protected FlexFormTools $flexFormTools;
+    protected FlexFormToolsProxy $flexFormTools;
 
     protected static bool $recursed = false;
 
-    public function __construct()
+    public function __construct(FlexFormBuilder $flexFormBuilder, FlexFormToolsProxy $flexFormTools)
     {
-        /** @var FlexFormBuilder $flexFormBuilder */
-        $flexFormBuilder = GeneralUtility::makeInstance(FlexFormBuilder::class);
         $this->flexFormBuilder = $flexFormBuilder;
-        /** @var FlexFormTools $flexFormTools */
-        $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
         $this->flexFormTools = $flexFormTools;
     }
 

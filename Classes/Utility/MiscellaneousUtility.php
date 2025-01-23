@@ -78,6 +78,11 @@ class MiscellaneousUtility
         return null;
     }
 
+    public static function createIconIdentifier(string $originalFile): string
+    {
+        return 'icon-' . md5($originalFile);
+    }
+
     /**
      * Returns a generated icon file into typo3temp/pics
      */
@@ -103,7 +108,7 @@ class MiscellaneousUtility
                 $iconProvider = BitmapIconProvider::class;
         }
 
-        $iconIdentifier = $identifier ?? 'icon-' . md5($originalFile);
+        $iconIdentifier = $identifier ?? self::createIconIdentifier($originalFile);
         $iconRegistry->registerIcon(
             $iconIdentifier,
             $iconProvider,

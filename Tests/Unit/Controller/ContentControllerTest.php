@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
  */
 
 use FluidTYPO3\Flux\Controller\ContentController;
-use Psr\Http\Message\ServerRequestInterface;
 
 class ContentControllerTest extends AbstractFluxControllerTestCase
 {

@@ -13,24 +13,32 @@ use FluidTYPO3\Flux\Integration\FormEngine\UserFunctions;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class HtmlOutputNodeTest extends AbstractTestCase
 {
     public function testRender(): void
     {
-        $nodeFactory = $this->getMockBuilder(NodeFactory::class)->disableOriginalConstructor()->getMock();
+
         $data = [
             'parameterArray' => ['foo' => 'bar'],
             'databaseRow' => ['uid' => 123],
         ];
-        $subject = $this->getMockBuilder(HtmlOutputNode::class)
-            ->setMethods(['initializeResultArray'])
-            ->setConstructorArgs([$nodeFactory, $data])
-            ->getMock();
-        $subject->method('initializeResultArray')->willReturn([]);
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            $subject = $this->getMockBuilder(HtmlOutputNode::class)
+                ->onlyMethods(['initializeResultArray'])
+                ->getMock();
+            $subject->setData($data);
+        } else {
+            $nodeFactory = $this->getMockBuilder(NodeFactory::class)->disableOriginalConstructor()->getMock();
+            $subject = $this->getMockBuilder(HtmlOutputNode::class)
+                ->onlyMethods(['initializeResultArray'])
+                ->setConstructorArgs([$nodeFactory, $data])
+                ->getMock();
+        }
 
         $userFunction = $this->getMockBuilder(UserFunctions::class)
-            ->setMethods(['renderHtmlOutputField'])
+            ->onlyMethods(['renderHtmlOutputField'])
             ->disableOriginalConstructor()
             ->getMock();
         $userFunction->method('renderHtmlOutputField')->willReturn('html');

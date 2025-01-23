@@ -194,13 +194,10 @@ STRING;
         $viewHelperResolver = new ViewHelperResolver();
         $viewHelperInvoker = new ViewHelperInvoker();
         $namespaceDetectionTemplateProcessor = new NamespaceDetectionTemplateProcessor();
-        $templatePaths = new TemplatePaths(
-            [
-                'partialRootPaths' => ['Tests/Fixtures/Partials/'],
-                'templateRootPaths' => ['Tests/Fixtures/Templates/'],
-                'layoutRootPaths' => ['Tests/Fixtures/Layouts/'],
-            ]
-        );
+        $templatePaths = new TemplatePaths();
+        $templatePaths->setTemplateRootPaths(['Tests/Fixtures/Templates/']);
+        $templatePaths->setPartialRootPaths(['Tests/Fixtures/Partials/']);
+        $templatePaths->setLayoutRootPaths(['Tests/Fixtures/Layouts/']);
         $request = $this->getMockBuilder(Request::class)
             ->setMethods(['getControllerExtensionName'])
             ->disableOriginalConstructor()

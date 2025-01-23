@@ -77,7 +77,9 @@ class DataHandlerSubscriber
             );
 
             foreach ($providers as $provider) {
-                $provider->postProcessRecord($command, (integer) $id, $record, $reference, []);
+                if ($provider->postProcessRecord($command, (integer) $id, $record, $reference, [])) {
+                    break;
+                }
             }
         }
 
@@ -146,18 +148,20 @@ class DataHandlerSubscriber
 
         if ($newColumnPosition > 0) {
             $queryBuilder = $this->createQueryBuilderForTable($table);
+            $expr = $queryBuilder->expr();
+            $andMethodName = method_exists($expr, 'andX') ? 'andX' : 'and';
             $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, Connection::PARAM_INT)->where(
-                $queryBuilder->expr()->eq(
+                $expr->eq(
                     'uid',
                     $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], Connection::PARAM_INT)
                 )
             )->orWhere(
-                $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->eq(
+                $expr->$andMethodName(
+                    $expr->eq(
                         't3ver_oid',
                         $queryBuilder->createNamedParameter($reference->substNEWwithIDs[$id], Connection::PARAM_INT)
                     ),
-                    $queryBuilder->expr()->eq(
+                    $expr->eq(
                         't3ver_wsid',
                         $queryBuilder->createNamedParameter($GLOBALS['BE_USER']->workspace, Connection::PARAM_INT)
                     )

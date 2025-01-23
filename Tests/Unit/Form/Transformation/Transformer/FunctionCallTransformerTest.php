@@ -10,8 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Transformation\Transformer;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\FunctionCallTransformer;
+use FluidTYPO3\Flux\Tests\Mock\ExpressionBuilder;
 use PHPUnit\Framework\TestCase;
-use TYPO3\CMS\Core\Service\FlexFormService;
 
 class FunctionCallTransformerTest extends TestCase
 {
@@ -48,12 +48,8 @@ class FunctionCallTransformerTest extends TestCase
 
     public function testTransform(): void
     {
-        $mock = $this->getMockBuilder(FlexFormService::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['convertFlexFormContentToArray'])
-            ->getMock();
         $field = Form::create()->createField(Form\Field\Input::class, 'test');
-        $output = $this->subject->transform($field, get_class($mock) . '->convertFlexFormContentToArray', 'foo');
-        self::assertSame(null, $output);
+        $output = $this->subject->transform($field, ExpressionBuilder::class . '->literal', 'foo');
+        self::assertSame('literal', $output);
     }
 }

@@ -25,9 +25,11 @@ use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
@@ -839,12 +841,17 @@ class AbstractProvider implements ProviderInterface
      */
     protected function dispatchFlashMessageForException(\Throwable $error): void
     {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            $level = ContextualFeedbackSeverity::ERROR;
+        } else {
+            $level = FlashMessage::ERROR;
+        }
         /** @var FlashMessage $flashMesasage */
         $flashMesasage = GeneralUtility::makeInstance(
             FlashMessage::class,
             $error->getMessage(),
             '',
-            FlashMessage::ERROR
+            $level
         );
         /** @var FlashMessageService $flashMessageService */
         $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);

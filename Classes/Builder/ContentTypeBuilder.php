@@ -297,7 +297,7 @@ class ContentTypeBuilder
 
         // Registration for "new content element" wizard to show our new CType
         // (otherwise, only selectable via "Content type" drop-down)
-        ExtensionManagementUtility::addPageTSConfig(
+        $GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'] .= PHP_EOL .
             sprintf(
                 'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
@@ -316,8 +316,7 @@ class ContentTypeBuilder
                 $contentType,
                 $groupName,
                 $formId
-            )
-        );
+            );
     }
 
     protected function sanitizeString(string $string): string
@@ -339,7 +338,7 @@ class ContentTypeBuilder
             return;
         }
 
-        ExtensionManagementUtility::addPageTSConfig(
+        $GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'] .= PHP_EOL .
             sprintf(
                 'mod.wizards.newContentElement.wizardItems.%s {
                     %s
@@ -348,8 +347,7 @@ class ContentTypeBuilder
                 }',
                 $groupName,
                 'header = ' . $groupLabel
-            )
-        );
+            );
         $groups[$groupName] = true;
     }
 

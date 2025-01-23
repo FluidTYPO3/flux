@@ -33,7 +33,9 @@ class PageLayoutSelector extends AbstractNode
 
     public function __construct(?NodeFactory $nodeFactory = null, array $data = [])
     {
-        $this->nodeFactory = $nodeFactory ?? GeneralUtility::makeInstance(NodeFactory::class);
+        if (property_exists($this, 'nodeFactory')) {
+            $this->nodeFactory = $nodeFactory ?? GeneralUtility::makeInstance(NodeFactory::class);
+        }
         $this->data = $data;
         $this->pageService = GeneralUtility::makeInstance(PageService::class);
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);

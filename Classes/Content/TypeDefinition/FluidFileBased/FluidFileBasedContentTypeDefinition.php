@@ -101,7 +101,22 @@ class FluidFileBasedContentTypeDefinition implements FluidRenderingContentTypeDe
 
     public function getIconReference(): string
     {
-        return '';
+        $extensionKey = ExtensionNamingUtility::getExtensionKey($this->extensionIdentity);
+        $contentType = $this->getContentTypeName();
+        $files = [
+            'EXT:' . $extensionKey . '/Resources/Public/Icons/Content/' . $contentType . '.svg',
+            'EXT:' . $extensionKey . '/Resources/Public/Icons/Content/' . $contentType . '.png',
+            'EXT:' . $extensionKey . '/Resources/Public/Icons/Content/' . $contentType . '.gif',
+        ];
+
+        foreach ($files as $potentialIconFile) {
+            $absoluteFileName = GeneralUtility::getFileAbsFileName($potentialIconFile);
+            if (file_exists($absoluteFileName)) {
+                return $potentialIconFile;
+            }
+        }
+
+        return 'EXT:flux/Resources/Public/Icons/Extension.svg';
     }
 
     public function getExtensionIdentity(): string

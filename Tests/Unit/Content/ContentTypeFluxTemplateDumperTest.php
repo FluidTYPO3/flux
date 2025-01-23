@@ -17,13 +17,12 @@ use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\TemplateValidationService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyContentTypeManager;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolver;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
 {
@@ -32,7 +31,7 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
     protected ContentTypeManager $contentTypeManager;
     protected CacheService $cacheService;
     protected TemplateValidationService $validationService;
-    protected TemplateView $templateView;
+    protected ViewInterface $templateView;
     protected ContentTypeFluxTemplateDumper $subject;
 
     protected function setUp(): void
@@ -84,13 +83,14 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
         $renderingContext->method('getViewHelperResolver')->willReturn(new ViewHelperResolver());
         $renderingContext->method('getVariableProvider')->willReturn(new StandardVariableProvider());
         $renderingContext->method('getTemplateParser')->willReturn($templateParser);
+        $renderingContext->getViewHelperResolver()->addNamespace('flux', 'FluidTYPO3\\Flux\\ViewHelpers');
 
         $templateParser->setRenderingContext($renderingContext);
 
-        $this->templateView = new TemplateView($renderingContext);
-        $this->templateView->getRenderingContext()
-            ->getViewHelperResolver()
-            ->addNamespace('flux', 'FluidTYPO3\\Flux\\ViewHelpers');
+        $this->templateView = $this->getMockBuilder(ViewInterface::class)
+            ->addMethods(['getRenderingContext'])
+            ->getMockForAbstractClass();
+        $this->templateView->method('getRenderingContext')->willReturn($renderingContext);
 
         $this->subject = new ContentTypeFluxTemplateDumper(
             new FormToFluidTemplateConverter(),
@@ -113,7 +113,7 @@ class ContentTypeFluxTemplateDumperTest extends AbstractTestCase
 
     public function testDumpTemplateFromRecordBasedContentTypeDefinition(): void
     {
-        GeneralUtility::addInstance(TemplateView::class, $this->templateView);
+        //GeneralUtility::addInstance(TemplateView::class, $this->templateView);
 
         $this->contentTypeDefinition->method('getTemplateSource')->willReturn('');
 

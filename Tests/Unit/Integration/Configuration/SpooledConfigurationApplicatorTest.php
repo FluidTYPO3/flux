@@ -23,7 +23,9 @@ use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Exception;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
@@ -37,6 +39,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
     private RequestBuilder $requestBuilder;
     private PackageManager $packageManager;
     private CacheService $cacheService;
+    private array $singletons = [];
 
     protected function setUp(): void
     {
@@ -110,7 +113,16 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
             )
             ->getMock();
 
+        $this->singletons = GeneralUtility::getSingletonInstances();
+        $iconRegistry = $this->getMockBuilder(IconRegistry::class)->disableOriginalConstructor()->getMock();
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistry);
+
         parent::setUp();
+    }
+
+    protected function tearDown(): void
+    {
+        GeneralUtility::resetSingletonInstances($this->singletons);
     }
 
     public function testProcessData(): void

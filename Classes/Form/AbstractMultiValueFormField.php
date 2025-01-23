@@ -186,7 +186,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             $items = $this->addOptionsFromResults($this->items);
         } elseif (true === is_string($this->items)) {
             if (false !== strpos($this->items, '..')) {
-                list ($low, $high) = explode('..', $this->items);
+                [$low, $high] = explode('..', $this->items);
                 $itemNames = range($low, $high, 1);
             } else {
                 $itemNames = GeneralUtility::trimExplode(',', $this->items);

@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Integration\FormEngine\ContentTypeValidatorNode;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class ContentTypeValidatorNodeTest extends AbstractTestCase
 {
@@ -23,10 +24,17 @@ class ContentTypeValidatorNodeTest extends AbstractTestCase
             'parameterArray' => ['foo' => 'bar'],
             'databaseRow' => ['uid' => 123],
         ];
-        $subject = $this->getMockBuilder(ContentTypeValidatorNode::class)
-            ->setMethods(['initializeResultArray'])
-            ->setConstructorArgs([$nodeFactory, $data])
-            ->getMock();
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            $subject = $this->getMockBuilder(ContentTypeValidatorNode::class)
+                ->setMethods(['initializeResultArray'])
+                ->getMock();
+            $subject->setData($data);
+        } else {
+            $subject = $this->getMockBuilder(ContentTypeValidatorNode::class)
+                ->setMethods(['initializeResultArray'])
+                ->setConstructorArgs([$nodeFactory, $data])
+                ->getMock();
+        }
         $subject->method('initializeResultArray')->willReturn([]);
 
         $userFunction = $this->getMockBuilder(ContentTypeValidator::class)

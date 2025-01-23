@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
@@ -17,7 +16,6 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleDataViewHelper;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataViewHelperTest extends AbstractViewHelperTestCase
@@ -107,20 +105,8 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'pi_flexform',
         ];
 
-        $statement = $this->getMockBuilder(Statement::class)
-            ->setMethods(['fetchAll'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $statement->method('fetchAll')->willReturn([]);
+        $queryBuilder = new \FluidTYPO3\Flux\Tests\Mock\QueryBuilder([]);
 
-        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
-            ->onlyMethods(['select', 'from', 'where', 'execute'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $queryBuilder->method('select')->willReturnSelf();
-        $queryBuilder->method('from')->willReturnSelf();
-        $queryBuilder->method('where')->willReturnSelf();
-        $queryBuilder->method('execute')->willReturn($statement);
         $connectionPool = $this->getMockBuilder(ConnectionPool::class)
             ->onlyMethods(['getQueryBuilderForTable'])
             ->disableOriginalConstructor()

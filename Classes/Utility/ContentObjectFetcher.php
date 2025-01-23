@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Http\ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -37,7 +37,7 @@ class ContentObjectFetcher
         return $contentObject;
     }
 
-    protected static function resolveFromRequest(ServerRequest $request): ?ContentObjectRenderer
+    protected static function resolveFromRequest(ServerRequestInterface $request): ?ContentObjectRenderer
     {
         /** @var TypoScriptFrontendController $controller */
         $controller = $request->getAttribute('frontend.controller');

@@ -56,7 +56,7 @@ class PreviewRenderer
     protected function attachAssets(): void
     {
         if (!static::$assetsIncluded) {
-            $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flu.css');
+            $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
             if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.4', '<')) {
                 // Collapse feature is inoperable on v12 and above.
                 $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');

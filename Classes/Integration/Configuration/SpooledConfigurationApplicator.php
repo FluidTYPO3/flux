@@ -54,7 +54,8 @@ class SpooledConfigurationApplicator
     public function processData(): void
     {
         // Initialize the TCA needed by "template as CType" integrations
-        $this->spoolQueuedContentTypeTableConfigurations(Core::getQueuedContentTypeRegistrations());
+        $registrations = Core::getQueuedContentTypeRegistrations();
+        $this->spoolQueuedContentTypeTableConfigurations($registrations);
 
         foreach ($this->contentTypeManager->fetchContentTypes() as $contentType) {
             if (!$contentType instanceof FluidRenderingContentTypeDefinitionInterface) {

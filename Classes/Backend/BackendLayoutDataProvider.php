@@ -12,12 +12,12 @@ namespace FluidTYPO3\Flux\Backend;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\DataProviderContextProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderInterface;
-use TYPO3\CMS\Backend\View\BackendLayout\DefaultDataProvider;
 
 class BackendLayoutDataProvider implements DataProviderInterface
 {
@@ -34,7 +34,10 @@ class BackendLayoutDataProvider implements DataProviderInterface
         DataProviderContext $dataProviderContext,
         BackendLayoutCollection $backendLayoutCollection
     ): void {
-        $backendLayout = $this->getBackendLayout('grid', $dataProviderContext->getPageId());
+        $backendLayout = $this->getBackendLayout(
+            'grid',
+            DataProviderContextProxy::readPageUidFromObject($dataProviderContext)
+        );
         if ($backendLayout) {
             $backendLayoutCollection->add($backendLayout);
         }
