@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\PageProvider;
+use FluidTYPO3\Flux\Proxy\TemplatePathsProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
@@ -30,6 +31,7 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Component\Error\ChildNotFoundException;
 use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Page Service
@@ -182,13 +184,13 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         }
         if (null !== $extensionName) {
             $templatePaths = $this->createTemplatePaths($extensionName);
-            return $templatePaths->toArray();
+            return TemplatePathsProxy::toArray($templatePaths);
         }
         $configurations = [];
         $registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Page');
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
             $templatePaths = $this->createTemplatePaths($registeredExtensionKey);
-            $configurations[$registeredExtensionKey] = $templatePaths->toArray();
+            $configurations[$registeredExtensionKey] = TemplatePathsProxy::toArray($templatePaths);
         }
         if ($plugAndPlayEnabled) {
             $configurations['FluidTYPO3.Flux'] = array_replace(
@@ -249,15 +251,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                     continue;
                 }
 
-                /** @var TemplateView $view */
-                $view = GeneralUtility::makeInstance(TemplateView::class);
-                $view->getRenderingContext()->setTemplatePaths($templatePaths);
-                $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
-                    FormViewHelper::SCOPE,
-                    FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
-                    $extensionName
-                );
-                $view->setTemplatePathAndFilename($file->getPathname());
+                $view = $this->createViewInstance($extensionName, $templatePaths, $file);
                 try {
                     $view->renderSection('Configuration');
                     $form = $view->getRenderingContext()
@@ -307,6 +301,26 @@ class PageService implements SingletonInterface, LoggerAwareInterface
             ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)
         );
         return $templatePaths;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function createViewInstance(
+        string $extensionName,
+        TemplatePaths $templatePaths,
+        \SplFileInfo $file
+    ): ViewInterface {
+        /** @var TemplateView $view */
+        $view = GeneralUtility::makeInstance(TemplateView::class);
+        $view->getRenderingContext()->setTemplatePaths($templatePaths);
+        $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
+            FormViewHelper::SCOPE,
+            FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
+            $extensionName
+        );
+        $templatePaths->setTemplatePathAndFilename($file->getPathname());
+        return $view;
     }
 
     /**
