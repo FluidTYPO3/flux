@@ -12,11 +12,11 @@ use FluidTYPO3\Flux\Backend\BackendLayoutDataProvider;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\DataProviderContextProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
-use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 
 /**
  * Class BackendLayoutDataProviderTest
@@ -150,8 +150,7 @@ class BackendLayoutDataProviderTest extends AbstractTestCase
         $instance->method('createBackendLayoutInstance')
             ->willReturn($this->createBackendLayoutMock());
         $collection = new BackendLayoutCollection('collection');
-        $context = new DataProviderContext();
-        $context->setPageId(1);
+        $context = DataProviderContextProxy::createInstance(1);
         $instance->addBackendLayouts($context, $collection);
         $all = $collection->getAll();
         $this->assertInstanceOf(BackendLayout::class, reset($all));
