@@ -25,7 +25,7 @@ class PageContentPreviewRenderingEventListener
 
         /** @var PreviewRenderer $renderer */
         $renderer = GeneralUtility::makeInstance(PreviewRenderer::class);
-        $preview = $renderer->renderPreview($record);
+        $preview = $renderer->renderPreview($record, null, $event->getPreviewContent());
         if ($preview) {
             $event->setPreviewContent($preview[1]);
         }
