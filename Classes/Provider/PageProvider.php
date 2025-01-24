@@ -111,10 +111,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $form = parent::getForm($row, $forField);
         }
 
-        if ($form) {
-            $form->setOption(PreviewOption::PREVIEW, [PreviewOption::MODE => 'none']);
-        }
-
         return $form;
     }
 
@@ -353,6 +349,18 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         );
 
         return parent::processTableConfiguration($row, $configuration);
+    }
+
+    public function getPreview(array $row): array
+    {
+        $previewContent = $this->viewBuilder->buildPreviewView(
+            $this->getControllerExtensionKeyFromRecord($row),
+            $this->getControllerNameFromRecord($row),
+            $this->getControllerActionFromRecord($row),
+            $this->getPluginName() ?? $this->getControllerNameFromRecord($row),
+            $this->getTemplatePathAndFilename($row)
+        )->getPreview($this, $row, true);
+        return [null, $previewContent, empty($previewContent)];
     }
 
     /**

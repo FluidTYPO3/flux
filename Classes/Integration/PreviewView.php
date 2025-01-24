@@ -58,14 +58,14 @@ class PreviewView extends TemplateView
         $this->workspacesAwareRecordService = $workspacesAwareRecordService;
     }
 
-    public function getPreview(ProviderInterface $provider, array $row): string
+    public function getPreview(ProviderInterface $provider, array $row, bool $withoutGrid = false): string
     {
         $form = $provider->getForm($row);
         $options = $this->getPreviewOptions($form);
         $mode = $this->getOptionMode($options);
         $previewContent = (string) $this->renderPreviewSection($provider, $row, $form);
 
-        if (PreviewOption::MODE_NONE === $mode || !is_object($form)) {
+        if ($withoutGrid || PreviewOption::MODE_NONE === $mode || !is_object($form)) {
             return $previewContent;
         }
 

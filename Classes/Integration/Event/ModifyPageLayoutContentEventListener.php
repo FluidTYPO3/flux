@@ -36,14 +36,27 @@ class ModifyPageLayoutContentEventListener
             return;
         }
 
-        // Force the preview to *not* generate content column HTML in preview
-        $form->setOption(PreviewOption::PREVIEW, [
-            PreviewOption::MODE => PreviewOption::MODE_NONE
-        ]);
-
         [, $previewContent, ] = $this->pageProvider->getPreview($row);
-        if (!empty($previewContent)) {
-            $event->setHeaderContent($previewContent);
+        if (empty($previewContent)) {
+            return;
+        }
+
+        $previewOptions = $form->getOption(PreviewOption::PREVIEW);
+        $previewMode = is_array($previewOptions) ? $previewOptions[PreviewOption::MODE] ?? null : $previewOptions;
+
+        switch ($previewMode) {
+            case PreviewOption::MODE_NONE:
+                return;
+            case PreviewOption::MODE_PREPEND:
+                $event->setHeaderContent($previewContent . $event->getHeaderContent());
+                break;
+            case PreviewOption::MODE_REPLACE:
+                $event->setHeaderContent($previewContent);
+                break;
+            default:
+            case PreviewOption::MODE_APPEND:
+                $event->addHeaderContent($previewContent);
+                break;
         }
     }
 

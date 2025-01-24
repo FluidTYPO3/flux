@@ -8,6 +8,7 @@ class PreviewOption
     public const MODE = 'mode';
     public const MODE_APPEND = 'append';
     public const MODE_PREPEND = 'prepend';
+    public const MODE_REPLACE = 'replace';
     public const MODE_NONE = 'none';
     public const TOGGLE = 'toggle';
 }
