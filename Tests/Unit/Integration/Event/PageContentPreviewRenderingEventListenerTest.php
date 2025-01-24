@@ -56,7 +56,7 @@ class PageContentPreviewRenderingEventListenerTest extends AbstractTestCase
     {
         return [
             'with mismatched table' => [null, 'mismatched', ''],
-            'without preview' => ['', 'tt_content', ''],
+            'without preview' => [null, 'tt_content', ''],
             'with preview' => ['preview', 'tt_content', 'preview'],
         ];
     }
