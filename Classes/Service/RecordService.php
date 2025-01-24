@@ -146,8 +146,11 @@ class RecordService implements SingletonInterface
      */
     protected function isBackendOrPreviewContext(): bool
     {
-        /** @var ServerRequest $request */
-        $request = $GLOBALS['TYPO3_REQUEST'];
+        /** @var ServerRequest|null $request */
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        if ($request === null) {
+            return true;
+        }
         return !ApplicationType::fromRequest($request)->isFrontend() || $this->isPreviewContext();
     }
 
@@ -156,8 +159,11 @@ class RecordService implements SingletonInterface
      */
     protected function isPreviewContext(): bool
     {
-        /** @var ServerRequest $request */
+        /** @var ServerRequest|null $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
+        if ($request === null) {
+            return false;
+        }
         if (ApplicationType::fromRequest($request)->isFrontend()) {
             /** @var Context $context */
             $context = GeneralUtility::makeInstance(Context::class);
