@@ -236,6 +236,7 @@ class PreviewView extends TemplateView
 
             if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
                 $configuration = DrawingConfiguration::create($backendLayout, [], PageViewMode::LayoutView);
+                $configuration->setSelectedLanguageId($language->getLanguageId());
 
                 /** @var PageLayoutContext $context */
                 $context = GeneralUtility::makeInstance(
