@@ -47,7 +47,7 @@
             'config' => [
                 'type' => 'flex',
                 'ds' => [
-                    'default' => '<T3DataStructure><ROOT><el></el></ROOT></T3DataStructure>'
+                    'default' => '<T3DataStructure><ROOT><el><dummy><config><type>input</type></config></dummy></el></ROOT></T3DataStructure>'
                 ]
             ]
         ],
@@ -57,7 +57,7 @@
             'config' => [
                 'type' => 'flex',
                 'ds' => [
-                    'default' => '<T3DataStructure><ROOT><el></el></ROOT></T3DataStructure>'
+                    'default' => '<T3DataStructure><ROOT><el><dummy><config><type>input</type></config></dummy></el></ROOT></T3DataStructure>'
                 ]
             ]
         ],
