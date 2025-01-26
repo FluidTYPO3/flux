@@ -866,15 +866,4 @@ class AbstractProvider implements ProviderInterface
     {
         return $file === null ? null : GeneralUtility::getFileAbsFileName($file);
     }
-
-    /**
-     * @param string|array $extensionKeyOrConfiguration
-     * @codeCoverageIgnore
-     */
-    protected function createTemplatePaths($extensionKeyOrConfiguration): TemplatePaths
-    {
-        /** @var TemplatePaths $paths */
-        $paths = GeneralUtility::makeInstance(TemplatePaths::class, $extensionKeyOrConfiguration);
-        return $paths;
-    }
 }

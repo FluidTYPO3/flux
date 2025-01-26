@@ -970,10 +970,11 @@ XML;
         $templatePaths = $this->getMockBuilder(TemplatePaths::class)->disableOriginalConstructor()->getMock();
         $provider = $this->getMockBuilder($this->createInstanceClassName())
             ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(['createTemplatePaths', 'resolveAbsolutePathToFile'])
+            ->onlyMethods(['resolveAbsolutePathToFile'])
             ->getMock();
-        $provider->method('createTemplatePaths')->willReturn($templatePaths);
         $provider->method('resolveAbsolutePathToFile')->willReturnArgument(0);
+
+        $this->viewBuilder->method('buildTemplatePaths')->willReturn($templatePaths);
 
         $record = $this->getBasicRecord();
 
