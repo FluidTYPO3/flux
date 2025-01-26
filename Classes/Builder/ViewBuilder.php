@@ -10,7 +10,9 @@ namespace FluidTYPO3\Flux\Builder;
  */
 
 use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
@@ -69,5 +71,49 @@ class ViewBuilder
         $view = GeneralUtility::makeInstance($viewClassName);
         $view->setRenderingContext($renderingContext);
         return $view;
+    }
+
+    /**
+     * @param string|array $extensionKeyOrConfiguration
+     * @codeCoverageIgnore
+     */
+    public function buildTemplatePaths($extensionKeyOrConfiguration): TemplatePaths
+    {
+        /** @var TemplatePaths $paths */
+        $paths = GeneralUtility::makeInstance(TemplatePaths::class);
+
+        if (is_array($extensionKeyOrConfiguration)) {
+            $paths->setTemplateRootPaths($extensionKeyOrConfiguration[TemplatePaths::CONFIG_TEMPLATEROOTPATHS]);
+            $paths->setLayoutRootPaths($extensionKeyOrConfiguration[TemplatePaths::CONFIG_LAYOUTROOTPATHS]);
+            $paths->setPartialRootPaths($extensionKeyOrConfiguration[TemplatePaths::CONFIG_PARTIALROOTPATHS]);
+        } else {
+            $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKeyOrConfiguration);
+            try {
+                $paths->fillDefaultsByPackageName($extensionKey);
+            } catch (\RuntimeException $exception) {
+                if ($exception->getCode() !== 1700841298) {
+                    throw $exception;
+                }
+                $paths->setTemplateRootPaths(
+                    $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_TEMPLATES_DIRECTORY)
+                );
+                $paths->setLayoutRootPaths(
+                    $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_LAYOUTS_DIRECTORY)
+                );
+                $paths->setPartialRootPaths(
+                    $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_PARTIALS_DIRECTORY)
+                );
+            }
+        }
+
+        return $paths;
+    }
+
+    private function createFluidPathSet(string $extensionKey, string $subPath): array
+    {
+        return [
+            'EXT:flux/' . $subPath,
+            'EXT:' . $extensionKey . '/' . $subPath,
+        ];
     }
 }

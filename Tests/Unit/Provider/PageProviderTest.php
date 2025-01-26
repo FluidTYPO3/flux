@@ -33,6 +33,7 @@ class PageProviderTest extends AbstractTestCase
     protected PageService $pageService;
     protected CacheService $cacheService;
     protected TypoScriptService $typoScriptService;
+    protected ViewBuilder $viewBuilder;
     protected string $configurationProviderClassName = PageProvider::class;
 
     protected function setUp(): void
@@ -61,6 +62,10 @@ class PageProviderTest extends AbstractTestCase
             ->onlyMethods(['getPageTemplateConfiguration'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     protected function getConstructorArguments(): array
@@ -68,7 +73,7 @@ class PageProviderTest extends AbstractTestCase
         return [
             $this->formDataTransformer,
             $this->recordService,
-            $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock(),
+            $this->viewBuilder,
             $this->cacheService,
             $this->typoScriptService,
             $this->pageService,
@@ -172,9 +177,9 @@ class PageProviderTest extends AbstractTestCase
             ->willReturn('Tests/Fixtures/Templates/Page/Dummy.html');
         $instance = $this->getMockBuilder(PageProvider::class)
             ->setConstructorArgs($this->getConstructorArguments())
-            ->onlyMethods(['createTemplatePaths'])
+            ->addMethods(['dummy'])
             ->getMock();
-        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+        $this->viewBuilder->method('buildTemplatePaths')->willReturn($templatePaths);
         $record = [
             $fieldName => 'Flux->dummy',
         ];
