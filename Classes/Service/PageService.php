@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Enum\ExtensionOption;
@@ -16,7 +17,6 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Proxy\TemplatePathsProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
-use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -45,13 +45,16 @@ class PageService implements SingletonInterface, LoggerAwareInterface
 
     protected WorkspacesAwareRecordService $workspacesAwareRecordService;
     protected FrontendInterface $runtimeCache;
+    protected ViewBuilder $viewBuilder;
 
     public function __construct(
         WorkspacesAwareRecordService $recordService,
-        CacheManager $cacheManager
+        CacheManager $cacheManager,
+        ViewBuilder $viewBuilder
     ) {
         $this->workspacesAwareRecordService = $recordService;
         $this->runtimeCache = $cacheManager->getCache('runtime');
+        $this->viewBuilder = $viewBuilder;
     }
 
     /**
@@ -183,13 +186,13 @@ class PageService implements SingletonInterface, LoggerAwareInterface
             ];
         }
         if (null !== $extensionName) {
-            $templatePaths = $this->createTemplatePaths($extensionName);
+            $templatePaths = $this->viewBuilder->buildTemplatePaths($extensionName);
             return TemplatePathsProxy::toArray($templatePaths);
         }
         $configurations = [];
         $registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Page');
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-            $templatePaths = $this->createTemplatePaths($registeredExtensionKey);
+            $templatePaths = $this->viewBuilder->buildTemplatePaths($registeredExtensionKey);
             $configurations[$registeredExtensionKey] = TemplatePathsProxy::toArray($templatePaths);
         }
         if ($plugAndPlayEnabled) {
@@ -236,7 +239,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                 continue;
             }
             $output[$extensionName] = [];
-            $templatePaths = $this->createTemplatePaths($extensionName);
+            $templatePaths = $this->viewBuilder->buildTemplatePaths($extensionName);
             $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
                 /** @var \SplFileInfo $file */
@@ -288,19 +291,6 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         }
         $this->runtimeCache->set($cacheKey, $output);
         return $output;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function createTemplatePaths(string $registeredExtensionKey): TemplatePaths
-    {
-        /** @var TemplatePaths $templatePaths */
-        $templatePaths = GeneralUtility::makeInstance(
-            TemplatePaths::class,
-            ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)
-        );
-        return $templatePaths;
     }
 
     /**

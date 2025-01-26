@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
 
 use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
 use FluidTYPO3\Flux\Controller\ContentController;
 use FluidTYPO3\Flux\Core;
@@ -71,6 +72,8 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
     protected Resolver $resolver;
 
+    protected ViewBuilder $viewBuilder;
+
     protected function setUp(): void
     {
         $renderingContext = new RenderingContext();
@@ -102,6 +105,11 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
         $this->resolver = new Resolver();
 
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         parent::setUp();
     }
 
@@ -114,6 +122,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             $this->typoScriptService,
             $this->providerResolver,
             $this->resolver,
+            $this->viewBuilder,
         ];
     }
 

@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\NormalizedData;
 
 use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Integration\NormalizedData\Converter\InlineRecordDataConverter;
@@ -51,6 +52,7 @@ class DataAccessTraitTest extends AbstractTestCase
     protected TypoScriptService $typoScriptService;
     protected ProviderResolver $providerResolver;
     protected Resolver $resolver;
+    protected ViewBuilder $viewBuilder;
 
     protected function setUp(): void
     {
@@ -84,6 +86,8 @@ class DataAccessTraitTest extends AbstractTestCase
 
         $this->resolver = new Resolver();
 
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)->disableOriginalConstructor()->getMock();
+
         $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass();
 
         parent::setUp();
@@ -104,6 +108,7 @@ class DataAccessTraitTest extends AbstractTestCase
             $this->typoScriptService,
             $this->providerResolver,
             $this->resolver,
+            $this->viewBuilder,
         ];
     }
 
