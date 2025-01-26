@@ -24,12 +24,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ProviderResolver implements SingletonInterface
 {
     protected array $providers = [];
-    protected TypoScriptService $typoScriptService;
-
-    public function __construct(TypoScriptService $typoScriptService)
-    {
-        $this->typoScriptService = $typoScriptService;
-    }
 
     /**
      * Resolve fluidpages specific configuration provider. Always
@@ -123,34 +117,10 @@ class ProviderResolver implements SingletonInterface
     /**
      * @return ProviderInterface[]
      */
-    public function loadTypoScriptConfigurationProviderInstances(): array
-    {
-        /** @var array[] $providerConfigurations */
-        $providerConfigurations = (array) $this->typoScriptService->getTypoScriptByPath('plugin.tx_flux.providers');
-        $providers = [];
-        foreach ($providerConfigurations as $name => $providerSettings) {
-            $className = Provider::class;
-            if (isset($providerSettings['className']) && class_exists($providerSettings['className'])) {
-                $className = $providerSettings['className'];
-            }
-            /** @var ProviderInterface $provider */
-            $provider = GeneralUtility::makeInstance($className);
-            $provider->setName($name);
-            $provider->loadSettings($providerSettings);
-            $providers[$name] = $provider;
-        }
-        return $providers;
-    }
-
-    /**
-     * @return ProviderInterface[]
-     */
     protected function getAllRegisteredProviderInstances(): array
     {
         if (empty($this->providers)) {
             $providers = $this->loadCoreRegisteredProviders();
-            $typoScriptConfigurationProviders = $this->loadTypoScriptConfigurationProviderInstances();
-            $providers = array_merge($providers, $typoScriptConfigurationProviders);
             $this->providers = $this->validateAndInstantiateProviders($providers);
         }
         return $this->providers;
