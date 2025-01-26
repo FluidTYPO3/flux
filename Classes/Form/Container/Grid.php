@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Form\ContainerInterface;
 use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class Grid extends AbstractFormContainer implements ContainerInterface
 {
@@ -177,9 +176,7 @@ class Grid extends AbstractFormContainer implements ContainerInterface
     {
         return new BackendLayout(
             $name,
-            (string) LocalizationUtility::translate($label)
-                ? $label
-                : 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
+            $label ?: 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.grid.grids.grid',
             $configuration
         );
     }
