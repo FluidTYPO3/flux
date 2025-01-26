@@ -12,7 +12,6 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProviderInterface;
-use FluidTYPO3\Flux\Service\TypoScriptService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

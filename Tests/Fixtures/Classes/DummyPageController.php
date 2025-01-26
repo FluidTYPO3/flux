@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Integration\Resolver;
 use FluidTYPO3\Flux\Provider\Interfaces\ControllerProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
-use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use PHPUnit\Framework\MockObject\Generator;

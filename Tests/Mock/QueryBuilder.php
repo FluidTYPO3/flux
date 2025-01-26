@@ -2,8 +2,6 @@
 declare(strict_types=1);
 namespace FluidTYPO3\Flux\Tests\Mock;
 
-use Doctrine\DBAL\Statement;
-use FluidTYPO3\Flux\Tests\Mock\Result;
 use TYPO3\CMS\Core\Database\Connection;
 
 class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
