@@ -39,9 +39,14 @@ class ViewBuilder
             $extensionIdentity,
             $controllerName,
             $controllerAction,
-            $pluginName,
-            $templatePathAndFilename
+            $pluginName
         );
+
+        $templatePaths = $this->buildTemplatePaths($extensionIdentity);
+        if ($templatePathAndFilename) {
+            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
+        }
+        $renderingContext->setTemplatePaths($templatePaths);
 
         /** @var PreviewView $view */
         $view = GeneralUtility::makeInstance($viewClassName);
@@ -63,9 +68,14 @@ class ViewBuilder
             $extensionIdentity,
             $controllerName,
             $controllerAction,
-            $pluginName,
-            $templatePathAndFilename
+            $pluginName
         );
+
+        $templatePaths = $this->buildTemplatePaths($extensionIdentity);
+        if ($templatePathAndFilename) {
+            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
+        }
+        $renderingContext->setTemplatePaths($templatePaths);
 
         /** @var TemplateView $view */
         $view = GeneralUtility::makeInstance($viewClassName);

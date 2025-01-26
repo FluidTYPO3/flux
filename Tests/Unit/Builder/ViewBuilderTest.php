@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -37,7 +38,12 @@ class ViewBuilderTest extends AbstractTestCase
         $view = $this->getMockBuilder(TemplateView::class)->disableOriginalConstructor()->getMock();
         GeneralUtility::addInstance(TemplateView::class, $view);
 
-        $subject = new ViewBuilder($this->renderingContextBuilder);
+        $subject = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
+            ->setConstructorArgs([$this->renderingContextBuilder])
+            ->getMock();
+        $subject->method('buildTemplatePaths')->willReturn(new TemplatePaths());
+
         $view = $subject->buildTemplateView('FluidTYPO3.Flux', 'Default', 'default', 'defaut');
         self::assertInstanceOf(TemplateView::class, $view);
     }
@@ -47,7 +53,12 @@ class ViewBuilderTest extends AbstractTestCase
         $view = $this->getMockBuilder(PreviewView::class)->disableOriginalConstructor()->getMock();
         GeneralUtility::addInstance(PreviewView::class, $view);
 
-        $subject = new ViewBuilder($this->renderingContextBuilder);
+        $subject = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
+            ->setConstructorArgs([$this->renderingContextBuilder])
+            ->getMock();
+        $subject->method('buildTemplatePaths')->willReturn(new TemplatePaths());
+
         $view = $subject->buildPreviewView('FluidTYPO3.Flux', 'Default', 'default', 'default');
         self::assertInstanceOf(PreviewView::class, $view);
     }

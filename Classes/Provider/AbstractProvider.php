@@ -31,7 +31,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 

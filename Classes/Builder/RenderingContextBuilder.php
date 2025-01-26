@@ -33,8 +33,7 @@ class RenderingContextBuilder implements SingletonInterface
         string $extensionIdentity,
         string $controllerName,
         string $controllerActionName,
-        string $pluginName,
-        ?string $templatePathAndFilename = null
+        string $pluginName
     ): RenderingContextInterface {
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionIdentity);
 
@@ -69,13 +68,6 @@ class RenderingContextBuilder implements SingletonInterface
         }
         if (method_exists($renderingContext, 'setControllerName')) {
             $renderingContext->setControllerName($controllerName);
-        }
-
-        $templatePaths = $renderingContext->getTemplatePaths();
-        $templatePaths->fillDefaultsByPackageName($extensionKey);
-
-        if ($templatePathAndFilename) {
-            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
         }
 
         return $renderingContext;

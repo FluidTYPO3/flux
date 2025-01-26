@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Service\PageService;
@@ -115,11 +116,17 @@ class PageServiceTest extends AbstractTestCase
         $templatePaths->method('getTemplateRootPaths')->willReturn([__DIR__ . '/../../Fixtures/Templates']);
         $templatePaths->method('ensureAbsolutePath')->willReturnArgument(0);
 
-        $instance = $this->getMockBuilder(DummyPageService::class)
-            ->onlyMethods(['createTemplatePaths', 'getPageConfiguration', 'createViewInstance'])
+        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
+            ->disableOriginalConstructor()
             ->getMock();
+        $viewBuilder->method('buildTemplatePaths')->willReturn($templatePaths);
+
+        $instance = $this->getMockBuilder(DummyPageService::class)
+            ->onlyMethods(['getPageConfiguration', 'createViewInstance'])
+            ->getMock();
+        $instance->setViewBuilder($viewBuilder);
         $instance->setLogger($this->getMockBuilder(LoggerInterface::class)->getMockForAbstractClass());
-        $instance->method('createTemplatePaths')->willReturn($templatePaths);
         $instance->method('getPageConfiguration')->willReturn($typoScript);
         $instance->method('createViewInstance')->willReturn($templateView);
 
@@ -229,11 +236,14 @@ class PageServiceTest extends AbstractTestCase
             );
         }
 
-        $instance = $this->getMockBuilder(PageService::class)
-            ->onlyMethods(['createTemplatePaths'])
+        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
             ->disableOriginalConstructor()
             ->getMock();
-        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+        $viewBuilder->method('buildTemplatePaths')->willReturn($templatePaths);
+
+        $instance = new DummyPageService();
+        $instance->setViewBuilder($viewBuilder);
 
         Core::registerProviderExtensionKey('FluidTYPO3.Testing', 'Page');
         $result = $instance->getPageConfiguration(null);
@@ -277,11 +287,14 @@ class PageServiceTest extends AbstractTestCase
             );
         }
 
-        $instance = $this->getMockBuilder(PageService::class)
-            ->onlyMethods(['createTemplatePaths'])
+        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
             ->disableOriginalConstructor()
             ->getMock();
-        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+        $viewBuilder->method('buildTemplatePaths')->willReturn($templatePaths);
+
+        $instance = new DummyPageService();
+        $instance->setViewBuilder($viewBuilder);
 
         $result = $instance->getPageConfiguration('Flux');
 
@@ -298,11 +311,14 @@ class PageServiceTest extends AbstractTestCase
     public function testGetPageConfigurationWithoutExtensionNameReadsRegisteredProviders(): void
     {
         $templatePaths = new TemplatePaths();
-        $instance = $this->getMockBuilder(PageService::class)
-            ->onlyMethods(['createTemplatePaths'])
+        $viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths'])
             ->disableOriginalConstructor()
             ->getMock();
-        $instance->method('createTemplatePaths')->willReturn($templatePaths);
+        $viewBuilder->method('buildTemplatePaths')->willReturn($templatePaths);
+        $instance = new DummyPageService();
+        $instance->setViewBuilder($viewBuilder);
+
         Core::registerProviderExtensionKey('foo', 'Page');
         Core::registerProviderExtensionKey('bar', 'Page');
         $result = $instance->getPageConfiguration();
