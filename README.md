@@ -22,7 +22,7 @@ Bonus feature: nested content areas to create content grids.
 Documentation
 -------------
 
-* [ViewHelper Reference for Flux](https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/)
+* [ViewHelper Reference for Flux](https://docs.typo3.org/p/fluidtypo3/flux/main/en-us/)
 * [How to use the Flux APIs](https://fluidtypo3.org/documentation/templating-manual/templating/creating-templates/flux-fields.html)
 
 
