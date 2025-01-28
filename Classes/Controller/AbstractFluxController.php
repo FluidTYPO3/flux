@@ -585,6 +585,10 @@ abstract class AbstractFluxController extends ActionController
                 1729864698
             );
         }
+        
+        if (is_array($record)) {
+            $record = $tsfe->sys_page->getLanguageOverlay($table, $record);
+        }
 
         if ($record['_LOCALIZED_UID'] ?? false) {
             $record = array_merge(
