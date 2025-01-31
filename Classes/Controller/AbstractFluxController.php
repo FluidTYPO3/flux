@@ -370,7 +370,7 @@ abstract class AbstractFluxController extends ActionController
             /** @var ResponseInterface $response */
             $response = GeneralUtility::makeInstance(Response::class);
         }
-    
+
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         $foreignControllerClass = null;
         $content = null;
@@ -586,13 +586,13 @@ abstract class AbstractFluxController extends ActionController
             );
         }
 
-        if ($record['_LOCALIZED_UID'] ?? false) {
+        if ($contentObject->data['_LOCALIZED_UID'] ?? false) {
             $record = array_merge(
                 $record,
                 $this->recordService->getSingle(
                     (string) $this->getFluxTableName(),
                     '*',
-                    $record['_LOCALIZED_UID']
+                    $contentObject->data['_LOCALIZED_UID']
                 ) ?? $record
             );
         }
