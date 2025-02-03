@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" product-name="flux" date="2025-02-03T16:23:42+01:00">
+		<header/>
+		<body>
+			<trans-unit id="siteConfiguration.tab">
+				<source>Flux Providers</source>
+				<target>Flux-Provider</target>
+			</trans-unit>
+			<trans-unit id="siteConfiguration.pageTemplates">
+				<source>Available page layouts/templates (empty selection means allow-all)</source>
+				<target>Verfügbare Seitenlayouts/-templates (leere Auswahl bedeutet "alles erlaubt")</target>
+			</trans-unit>
+			<trans-unit id="siteConfiguration.contentTypes">
+				<source>Available content types (empty selection means allow-all)</source>
+				<target>Verfügbare Inhaltselemente (leere Auswahl bedeutet "alles erlaubt")</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.debugMode">
+				<source>Debug Mode: Display debug information about every Flux template being rendered and every ConfigurationProvider being used. Value "0" (production) means debug messages are disabled and Exceptions may be suppressed. Value "1" (development) means every debug message is displayed. Value "2" (staging, testing) means only severe errors' messages are displayed.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.handleErrors">
+				<source>Error handling: If enabled, all Flux controllers are permitted to handle their own errors in ways that are far more flexible than traditional error catching. Enable with care - if your plugin, content or page template collection does not contain an Error.html template, your site may risk breaking with an extremely basic and not very informative error á la "Template not found for action foobar" but when enabled and combined with proper error templates you can customise pretty much any error which might happen anywhere when a Flux controller subclass is in play. Best turned off on development sites unless you are developing exactly error templates as it greatly limits debug output!</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.autoload">
+				<source>Automatic initialisation: If enabled, Flux will automatically create the TypoScript setup that is required to render Flux templates in the frontend, and will use it on every page. Unchecking this option instead registers a static TypoScript file which can be loaded as needed.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.plugAndPlay">
+				<source>Plug-and-play templates: If enabled, Flux will automatically create a template directory structure under your project folder (public folder) into which you can place Content and Page templates which are then automatically integrated as page- and content types.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.plugAndPlayDirectory">
+				<source>Plug-and-play templates directory: The directory name of plug-and-play templates, automatically created under the project folder ("public" directory). You can change this value to use a different directory name, but it will still be created under the "public" directory. Only relative paths are allowed - note that attempting to use "../" will not work as it causes the path to be sanitised and removed by TYPO3 itself.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.doktypes">
+				<source>Doktypes: CSV list of doktypes to add the page layout selectors to in addition to the default standard pages and shortcuts (0,1,4). Possible use cases are sysfolders (254) or custom page types.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.pageIntegration">
+				<source>Page Integration: If enabled, Flux will integrate with pages to make templates you place in the "Pages" template folder selectable in page properties (the features previously provided by the "Fluidpages" extension). You must flush system caches after changing this option!</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.flexFormToIrre">
+				<source>EXPERIMENTAL - FlexForm-to-IRRE: FlexForm XML to IRRE storage. WARNING - destroys existing FlexForm data in DB when saving records! Enabling this option makes Flux capable of storing FlexForm XML data structures as normalized IRRE records. By using the DataAccessTrait, classes such as controllers can read out the data in an array structure compatible with vanilla FlexForm data.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.inheritanceMode">
+				<source>Default mode of Form value inheritance: The default mode is "restricted" which means inheritance follows the Flux pre 10.1.x rules that page variable inheritance only happens if the parent page uses the same page layout as the child page. This can be set to "unrestrited" to remove that constraint and allow inheritance when parent and child pages do not use the same page layout. This option changes the global default - individual templates can also set the mode which that specific template uses, with the flux:form.option.inheritanceMode ViewHelper.</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.uniqueFileFieldNames">
+				<source>Unique file field names: When this is enabled, FAL reference fields within a Flux context will be prefixed with the parent field name. This is done in order to ensure that references written to sys_file_reference will contain a unique value in "fieldname". Without this option enabled, any record which renders the same Flux form in two fields (e.g. pages when "this page" and "subpages" templates are identical) will show the same references in both fields because the "fieldname" saved in sys_file_reference is the same for both contexts. So, in order to avoid this duplication symptom, you can prefix the "fieldname" value stored in DB. Note: although this is handled transparently when you use transform="file" (and other file transformations) the prefix must manually be added to the field name when using e.g. v:resources.record.fal. CHANGING THIS OPTION WILL ORPHAN ALL EXISTING RELATIONS - TOGGLE IT ON FOR NEW SITES BUT LEAVE OLD SITES USING THE OPTION VALUE THEY WERE BORN WITH, OR YOU WILL NEED TO MIGRATE YOUR FILE REFERENCES!</source>
+			</trans-unit>
+			<trans-unit id="extension_configuration.customLayoutSelector">
+				<source>Custom Layout Selector: (Requires TYPO3v11 or higher). When enabled, uses a fully custom page layout selector instead of the default "select" type for the "Page Layouts" fields in page properties. The custom page layout selector can be further configured through TCA overrides for TCA.pages.columns.tx_fed_page_controller_action.config and TCA.pages.columns.tx_fed_page_controller_action_sub.config. Supported settings are: "iconHeight" (integer, sets the height of icons, defaults to 200), titles (boolean, whether to render template titles in the selector, defaults to true) and descriptions (boolean, whether to render template descriptions in the selector, defaults to true).</source>
+			</trans-unit>
+			<trans-unit id="content_types">
+				<source>Flux-based Content Type</source>
+				<target>Flux-basierte Inhaltselemente</target>
+			</trans-unit>
+			<trans-unit id="content_types.extension_identity">
+				<source>Extension identity (Vendor.ExtensionName format, should be your own extension). Determines where a partial and layout template files are resolved, and where a controller class may potentially be found.</source>
+				<target>Erweiterungsidentität (Format "Vendor.ExtensionName", sollte deine Erweiterung sein). Legt fest, wo Partials und Layout-Dateien aufgelöst werden, und wo Controllerklassen gefunden werden können.</target>
+			</trans-unit>
+			<trans-unit id="content_types.icon">
+				<source>Icon file or icon name (if custom icon name you must manually register the icon in TYPO3)</source>
+				<target>Icondatei oder Iconname (wenn es ein eigener Iconname ist, muss der manuell in TYPO3 registriert werden)</target>
+			</trans-unit>
+			<trans-unit id="content_types.content_type">
+				<source>Content type name, must be a value using only a-z and 0-9, but never starting with a number, and must use signature of extension you put in "extension identity" as prefix, e.g. extension "MyVendor.MySpecialExt" means prefix must be "myspecialext_".</source>
+			</trans-unit>
+			<trans-unit id="content_types.content_configuration">
+				<source>Content type configuration options</source>
+				<target>Inhaltselementkonfiguration</target>
+			</trans-unit>
+			<trans-unit id="content_types.grid_configuration">
+				<source>Grid configuration options</source>
+				<target>Rasterkonfiguration</target>
+			</trans-unit>
+			<trans-unit id="content_types.template_file">
+				<source>Template file - if you use this, it overrides "template source" below. If you also enter a source it is available as {contentType.templateSource} in your own template. Use EXT:... file reference format.</source>
+				<target>Template-Datei - wenn das benutzt wird, wird die "Template-Quelle" unten überschrieben. Wenn auch die Template-Quelle eingetragen ist, ist sie als {contentType.templateSource} im Template verfügbar. Nutze das "EXT:..."-Dateireferenzformat</target>
+			</trans-unit>
+			<trans-unit id="content_types.template_source">
+				<source>Template source</source>
+				<target>Template-Quelle</target>
+			</trans-unit>
+			<trans-unit id="content_types.validation">
+				<source>Content type validation</source>
+				<target>Inhaltstypenprüfung</target>
+			</trans-unit>
+			<trans-unit id="content_types.template_dump">
+				<source>Flux template source (copy-paste to template file rendered by Flux)</source>
+				<target>Flux-Template-Quelle (copy-paste in die von Flux gerenderte Templatedatei)</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheetName">
+				<source>Sheet name (a-z, 0-9 and _)</source>
+				<target>Blattname (a-z, 0-9 und _)</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheetLabel">
+				<source>Sheet label (any characters you need)</source>
+				<target>Blattbezeichnung (alle Zeichen, die benötigt werden)</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheetDescription">
+				<source>Add fields or modify fields that appear in this sheet when editors edit the content type.
+					The properties of fields follow TCA standards with a few exceptions. If you need it, there is
+					documentation about this API on https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/ -
+					which although it is for the ViewHelper API of Flux also documents the attributes used here.</source>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.context">
+				<source>Context</source>
+				<target>Kontext</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.formFields">
+				<source>Form Fields</source>
+				<target>Formularfelder</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.grid">
+				<source>Grid</source>
+				<target>Raster</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.template">
+				<source>Fluid Template</source>
+				<target>Fluid-Template</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.export">
+				<source>Export Template</source>
+				<target>Export-Template</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.universal.name">
+				<source>Field name (a-z, 0-9, _ and .)</source>
+				<target>Feldname (a-z, 0-9, _ and .)</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.label">
+				<source>Label, can be LLL:EXT: reference or LLL:keyname which resolves the label in the content type's extension context, file locallang.xlf</source>
+				<target>Bezeichnung, kann eine LLL:EXT:-Referenz oder LLL:keyname sein, der das Label im Kontext der Erweiterung lädt, Datei locallang.xlf</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.transform">
+				<source>Data type transformation, enter for example "array" to cast CSV values to array. See Flux documentation about possible values.</source>
+				<target>Datentyptransformation, z.B. "array" um CSV-Werte auf einen Array zu konvertieren. Siehe Flux-Dokumentation für mögliche Werte.</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.clearable">
+				<source>Field can be cleared (add "clear" checkbox wizard beside field)</source>
+				<target>Feld kann geleert werden ("Leeren"-Checkbox neben dem Feld)</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.default.value">
+				<source>Default value</source>
+				<target>Standardwert</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.default.state">
+				<source>Default state</source>
+				<target>Standardzustand</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.input">
+				<source>Input</source>
+				<target>Eingabefeld</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.text">
+				<source>Text</source>
+				<target>Text</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.checkbox">
+				<source>Checkbox</source>
+				<target>Checkbox</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.radio">
+				<source>Radio</source>
+				<target>Radio</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.dateTime">
+				<source>DateTime</source>
+				<target>Datum + Zeit</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.select">
+				<source>Select</source>
+				<target>Select</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.select.items">
+				<source>Items (CSV)</source>
+				<target>Optionen (CSV)</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.relation">
+				<source>Relation</source>
+				<target>Verknüpfung</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.size">
+				<source>Size of fields (number of possible entries)</source>
+				<target>Größe der Felder (Anzahl möglicher Enträge)</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.minItems">
+				<source>Minimum number of items that can be selected</source>
+				<target>Minimale Anzahl an Einträgen, die ausgewählt werden können</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.maxItems">
+				<source>Maximum number of items that can be selected</source>
+				<target>Maximale Anzahl an Einträgen, die ausgewählt werden können</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.multiple">
+				<source>Allow multiple selections of the same value/record</source>
+				<target>Erlaube mehrfache Auswahl desselben Werts/Datensatzes</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.emptyOption">
+				<source>Add an empty option before as first option</source>
+				<target>Füge leere Option vor der ersten Option hinzu</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.foreignTableField">
+				<source>Field name on foreign table that contains UID of origin record. Empty means only one item can be related and UID is stored in origin record.</source>
+				<target>Feldname in der Fremdtabelle, der die UID des Originaldatensatzes enthält. Leer bedeutet, daß nur ein Eintrag verknüpft werden kann und die UID im Originaldatensatz gespeichert wird.</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.multiRelation">
+				<source>MultiRelation</source>
+				<target>Mehrfachverknüpfung</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.inline">
+				<source>Inline</source>
+				<target>Eingebettet</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.file">
+				<source>File</source>
+				<target>Datei</target>
+			</trans-unit>
+
+			<trans-unit id="content_types.fields.function">
+				<source>Function</source>
+				<target>Funktion</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.function.userFunc">
+				<source>User function reference, e.g. MyClass->myFunction. Class must be registered with autoloader to be usable.</source>
+				<target>Benutzerfunktionsreferenz, z.B. MyClass->myFunction. Klasse muss beim  Autoloader registriert sein.</target>
+			</trans-unit>
+
+			<trans-unit id="flux.backendLayout.columnsInParent">
+				<source>Columns in parent</source>
+				<target>Spalten im Elternelement</target>
+			</trans-unit>
+			<trans-unit id="flux.newContentWizard.fluxContent">
+				<source>Flux content</source>
+				<target>Flux-Inhalt</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_flux_options">
+				<source>Options</source>
+				<target>Optionen</target>
+			</trans-unit>
+			<trans-unit id="tt_content.pi_flexform">
+				<source>Content-type options</source>
+				<target>Inhaltstypoptionen</target>
+			</trans-unit>
+			<trans-unit id="flux.clearValue">
+				<source>Clear value</source>
+				<target>Wert leeren</target>
+			</trans-unit>
+			<trans-unit id="flux.clearValue.help">
+				<source>Destroy the value that is saved in the database, allowing the value to either be inherited again from a parent or reset to the default value if there is no inherited value.</source>
+				<target>Lösche den Wert, der in der Datenbank gespeichert ist. Damit kann der Wert entweder von einem Elterndatensatz geerbt werden, oder wird auf den Standardwert gesetzt, wenn es keinen geerbten Wert gibt.</target>
+			</trans-unit>
+			<trans-unit id="flux.protectValue">
+				<source>Protect value</source>
+				<target>Wert schützen</target>
+			</trans-unit>
+			<trans-unit id="flux.protectValue.help">
+				<source>Protected values will remain the same even if the (inherited) value changes in a parent record.</source>
+				<target>Geschützte Werte werden gleich bleiben, auch wenn sich der (geerbte) Wert im Elterndatensatz ändert.</target>
+			</trans-unit>
+			<trans-unit id="reference">
+				<source>Reference to content on page '%s' - click to jump to original</source>
+				<target>Referenz zu Inhalt auf Seite '%s' - klicken, um zum Original zu springen</target>
+			</trans-unit>
+			<trans-unit id="user.no_fields">
+				<source>No fields found in form</source>
+				<target>Keine Felder in diesem Formular gefunden</target>
+			</trans-unit>
+			<trans-unit id="user.no_selection">
+				<source>No form selected/configured (enabling Flux debug will produce more information)</source>
+				<target>Kein Formular ausgewählt/konfiguriert (Aktivieren von Flux-Debug wird mehr Informationen liefern)</target>
+			</trans-unit>
+			<trans-unit id="user.no_template">
+				<source>No FlexForm source selected. This is usually caused by incorrect template paths being returned by a
+				ConfigurationProvider - in the case of FED/FluidContent/FluidPages this can also be caused by not having selected a page template
+				or Fluid content element type, which can be considered a safe "error" that is only reported because debug mode is enabled in Flux.
+				The parameters which lead to this error were:</source>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist.fields.input" xml:space="preserve">
+				<source>flux.this_table_does_not_exist.fields.input</source>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist" xml:space="preserve">
+				<source>flux.this_table_does_not_exist</source>
+			</trans-unit>
+			<trans-unit id="new">
+				<source>Insert new content element in this position</source>
+				<target>Neues Inhaltselement an dieser Stelle einfügen</target>
+			</trans-unit>
+			<trans-unit id="paste">
+				<source>Paste in this position</source>
+				<target>An dieser Stelle einfügen</target>
+			</trans-unit>
+			<trans-unit id="paste_reference">
+				<source>Paste as reference in this position</source>
+				<target>An dieser Stelle als Referenz einfügen</target>
+			</trans-unit>
+			<trans-unit id="toggle_content">
+				<source>Show or hide the grid</source>
+				<target>Raster anzeigen oder verstecken</target>
+			</trans-unit>
+			<trans-unit id="flux.grid.grids.grid">
+				<source>Columns from selected "Page Layout"</source>
+				<target>Spalten vom gewählten Seitenlayout</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action">
+				<source>Page Layout - this page</source>
+				<target>Seitenlayout - diese Seite</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action.default">
+				<source>Parent decides</source>
+				<target>Elternseite entscheidet</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action_sub">
+				<source>Page Layout - subpages</source>
+				<target>Seitenlayout - Unterseiten</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_flexform">
+				<source>Page Configuration</source>
+				<target>Seitenkonfiguration</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_flexform_sub">
+				<source>Page Configuration - subpages</source>
+				<target>Seitenkonfiguration - Unterseiten</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_package">
+				<source>Package</source>
+				<target>Paket</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_layoutselect">
+				<source>Page Layouts</source>
+				<target>Seitenlayouts</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_configuration">
+				<source>Page Configuration</source>
+				<target>Seitenkonfiguration</target>
+			</trans-unit>
+			<trans-unit id="pages.doktype.187">
+				<source>Raw Fluid template</source>
+				<target>Reines Fluid-Template</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_templatefile">
+				<source>Template file reference</source>
+				<target>Template-Datei-Referenz</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_templatefile.placeholder">
+				<source>EXT:... or site-relative path</source>
+				<target>EXT:... oder site-relativer Pfad</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_layout">
+				<source>Layout to use for rendering</source>
+				<target>Layout zur Anzeige</target>
+			</trans-unit>
+			<trans-unit id="fluidContentArea">
+				<source>Fluid Content Area</source>
+				<target>Fluid-Inhaltsbereich</target>
+			</trans-unit>
+			<trans-unit id="flux.grid.grids.grid">
+				<source>Columns from selected "Page Layout"</source>
+				<target>Spalten vom gewählten Seitenlayout</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
