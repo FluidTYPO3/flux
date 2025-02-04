@@ -22,16 +22,15 @@ class ContentObjectFetcher
             ? $configurationManager->getRequest()
             : ($GLOBALS['TYPO3_REQUEST'] ?? null);
 
-        if ($request && $configurationManager === null) {
+        if ($request) {
             $contentObject = static::resolveFromRequest($request);
         }
 
-        if ($contentObject === null) {
-            if ($configurationManager !== null && method_exists($configurationManager, 'getContentObject')) {
-                $contentObject = $configurationManager->getContentObject();
-            } else {
-                $contentObject = static::resolveFromRequest($request);
-            }
+        if ($contentObject === null
+            && $configurationManager !== null
+            && method_exists($configurationManager, 'getContentObject')
+        ) {
+            $contentObject = $configurationManager->getContentObject();
         }
 
         return $contentObject;
@@ -39,6 +38,9 @@ class ContentObjectFetcher
 
     protected static function resolveFromRequest(ServerRequestInterface $request): ?ContentObjectRenderer
     {
+        if (($cObject = $request->getAttribute('currentContentObject')) instanceof ContentObjectRenderer) {
+            return $cObject;
+        }
         /** @var TypoScriptFrontendController $controller */
         $controller = $request->getAttribute('frontend.controller');
         return $controller instanceof TypoScriptFrontendController ? $controller->cObj : null;
