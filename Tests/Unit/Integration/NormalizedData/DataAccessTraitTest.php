@@ -139,12 +139,10 @@ class DataAccessTraitTest extends AbstractTestCase
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
             ->getMockForAbstractClass();
         $configurationManager->method('getConfiguration')->willReturn(['foo' => 'bar']);
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '<')) {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.4', '<')) {
             $configurationManager->method('getContentObject')->willReturn($contentObject);
         } else {
-            $tsfe = $this->getMockBuilder(TypoScriptFrontendController::class)->disableOriginalConstructor()->getMock();
-            $tsfe->cObj = $contentObject;
-            $GLOBALS['TYPO3_REQUEST']->method('getAttribute')->with('frontend.controller')->willReturn($tsfe);
+            $GLOBALS['TYPO3_REQUEST']->method('getAttribute')->with('currentContentObject')->willReturn($contentObject);
         }
 
         $converter = $this->getMockBuilder(InlineRecordDataConverter::class)->disableOriginalConstructor()->getMock();
