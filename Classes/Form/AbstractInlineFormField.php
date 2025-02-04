@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Form;
 
 use FluidTYPO3\Flux\Enum\InlineFieldControls;
 use FluidTYPO3\Flux\Enum\InlineFieldNewRecordButtonPosition;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 abstract class AbstractInlineFormField extends AbstractRelationFormField implements InlineRelationFieldInterface
 {
@@ -115,6 +116,10 @@ abstract class AbstractInlineFormField extends AbstractRelationFormField impleme
             'headerThumbnail' => $this->getHeaderThumbnail(),
             'levelLinksPosition' => $this->getLevelLinksPosition(),
         ];
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+            unset($configuration['appearance']['showRemovedLocalizationRecords']);
+        }
+
         $configuration['behaviour'] = [
             'localizationMode' => $this->getLocalizationMode(),
             'disableMovingChildrenWithParent' => $this->getDisableMovingChildrenWithParent(),
