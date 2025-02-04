@@ -79,6 +79,7 @@ return [
                 'type' => 'input',
                 'size' => 60,
                 'eval' => 'required',
+                'required' => true,
             ],
         ],
         'content_type' => [
@@ -87,6 +88,7 @@ return [
                 'type' => 'input',
                 'size' => 60,
                 'eval' => 'required',
+                'required' => true,
                 'placeholder' => 'flux_newtype',
             ],
         ],
