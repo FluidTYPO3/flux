@@ -1,6 +1,6 @@
 <?php
 
-return [
+$table = [
     'ctrl' => [
         'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types',
         'descriptionColumn' => 'description',
@@ -177,3 +177,11 @@ return [
     ],
     'palettes' => []
 ];
+
+if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+    unset($table['ctrl']['cruser_id']);
+    unset($table['columns']['title']['config']['eval']);
+    unset($table['columns']['content_type']['config']['eval']);
+}
+
+return $table;
