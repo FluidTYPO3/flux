@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Form\Field;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Tests\Unit\Form\Field\AbstractFieldTest;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
@@ -173,12 +174,24 @@ class SelectTest extends AbstractFieldTest
         $form->add($instance);
 
         $instance->setItems('foo,bar');
-        $this->assertEquals([['foo', 'foo'], ['bar', 'bar']], $instance->getItems());
+        $expected = [
+            (new SelectOption('foo', 'foo'))->toArray(),
+            (new SelectOption('bar', 'bar'))->toArray()
+        ];
+        $this->assertEquals($expected, $instance->getItems());
         $instance->setTranslateCsvItems(true);
 
         $expected = [
-            ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.foo', 'foo'],
-            ['LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.parent.fields.child.option.bar', 'bar']
+            (new SelectOption(
+                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf'
+                    . ':flux.parent.fields.child.option.foo',
+                'foo'
+            ))->toArray(),
+            (new SelectOption(
+                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf'
+                    . ':flux.parent.fields.child.option.bar',
+                'bar'
+            ))->toArray()
         ];
 
         $this->assertEquals($expected, $instance->getItems());

@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\SectionObject;
 use FluidTYPO3\Flux\Form\Field\Input;
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 
 class SectionTest extends AbstractContainerTest
 {
@@ -40,6 +41,21 @@ class SectionTest extends AbstractContainerTest
 
     public function testCreateSectionWithContentContainer(): void
     {
+        $colspanItems = [
+            (new SelectOption(1, 1))->toArray(),
+            (new SelectOption(2, 2))->toArray(),
+            (new SelectOption(3, 3))->toArray(),
+            (new SelectOption(4, 4))->toArray(),
+            (new SelectOption(5, 5))->toArray(),
+            (new SelectOption(6, 6))->toArray(),
+            (new SelectOption(7, 7))->toArray(),
+            (new SelectOption(8, 8))->toArray(),
+            (new SelectOption(9, 9))->toArray(),
+            (new SelectOption(10, 10))->toArray(),
+            (new SelectOption(11, 11))->toArray(),
+            (new SelectOption(12, 12))->toArray(),
+        ];
+
         $expected = [
             'type' => 'array',
             'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.sections.test',
@@ -76,20 +92,7 @@ class SectionTest extends AbstractContainerTest
                                 'minitems' => 0,
                                 'multiple' => false,
                                 'renderType' => 'selectSingle',
-                                'items' => [
-                                    [1, 1],
-                                    [2, 2],
-                                    [3, 3],
-                                    [4, 4],
-                                    [5, 5],
-                                    [6, 6],
-                                    [7, 7],
-                                    [8, 8],
-                                    [9, 9],
-                                    [10, 10],
-                                    [11, 11],
-                                    [12, 12],
-                                ],
+                                'items' => $colspanItems
                             ],
                         ],
                     ],
