@@ -149,7 +149,7 @@ class DataHandlerSubscriber
         if ($newColumnPosition > 0) {
             $queryBuilder = $this->createQueryBuilderForTable($table);
             $expr = $queryBuilder->expr();
-            $andMethodName = method_exists($expr, 'andX') ? 'andX' : 'and';
+            $andMethodName = method_exists($expr, 'and') ? 'and' : 'andX';
             $queryBuilder->update($table)->set('colPos', $newColumnPosition, true, Connection::PARAM_INT)->where(
                 $expr->eq(
                     'uid',
