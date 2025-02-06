@@ -12,6 +12,7 @@ namespace FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface
 {
@@ -125,11 +126,17 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     protected function prepareConfiguration(string $type): array
     {
-        return [
+        $config = [
             'type' => $type,
             'transform' => $this->getTransform(),
             'default' => $this->getDefault(),
         ];
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')
+            && $this->getRequired()
+        ) {
+            $config['required'] = $this->getRequired();
+        }
+        return $config;
     }
 
     public function isNative(): bool
@@ -229,6 +236,10 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     public function getValidate(): ?string
     {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+            return $this->validate;
+        }
+
         if (!$this->getRequired()) {
             $validate = $this->validate;
         } else {
