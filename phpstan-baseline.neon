@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Parameter \\#4 \\$_ of method TYPO3\\\\CMS\\\\Core\\\\DataHandling\\\\DataHandler\\:\\:log\\(\\) expects null, int given\\.$#"
+            count: 1
+            path: Classes/Integration/HookSubscribers/DataHandlerSubscriber.php
+        -
             message: "#^Parameter \\$size of method FluidTYPO3\\\\Flux\\\\Proxy\\\\IconFactoryProxy\\:\\:getIcon\\(\\) has invalid type TYPO3\\\\CMS\\\\Core\\\\Imaging\\\\IconSize\\.$#"
             count: 1
             path: Classes/Proxy/IconFactoryProxy.php
