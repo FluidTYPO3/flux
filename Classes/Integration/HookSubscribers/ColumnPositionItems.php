@@ -27,9 +27,12 @@ class ColumnPositionItems
      */
     public function colPosListItemProcFunc(array &$parameters): void
     {
-        $parentRecordUid = ColumnNumberUtility::calculateParentUid($parameters['row']['colPos']);
+        $colPos = isset($parameters['row']['colPos']) ? (int)$parameters['row']['colPos'] : 0;
+
+        $parentRecordUid = ColumnNumberUtility::calculateParentUid($colPos);
         $parentRecord = $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
         $provider = $this->providerResolver->resolvePrimaryConfigurationProvider('tt_content', null, $parentRecord);
+
         if ($parentRecord && $provider instanceof GridProviderInterface) {
             $grid = $provider->getGrid($parentRecord);
             /** @var SelectOption $dividerItem */
@@ -39,6 +42,7 @@ class ColumnPositionItems
                 '--div--'
             );
             $parameters['items'][] = $dividerItem->toArray();
+
             foreach ($grid->getRows() as $row) {
                 foreach ($row->getColumns() as $column) {
                     /** @var SelectOption $item */
