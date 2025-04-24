@@ -67,11 +67,15 @@ class PageLayoutDataProvider
             try {
                 $site = $this->siteFinder->getSiteByPageId($pageUid);
                 $siteConfiguration = $site->getConfiguration();
-                $allowedTemplates = GeneralUtility::trimExplode(
-                    ',',
-                    $siteConfiguration['flux_page_templates'] ?? '',
-                    true
-                );
+                if (is_array($siteConfiguration['flux_page_templates'] ?? null)) {
+                    $allowedTemplates = $siteConfiguration['flux_page_templates'];
+                } else {
+                    $allowedTemplates = GeneralUtility::trimExplode(
+                        ',',
+                        $siteConfiguration['flux_page_templates'] ?? '',
+                        true
+                    );
+                }
             } catch (SiteNotFoundException $exception) {
                 $allowedTemplates = [];
             }
