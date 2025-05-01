@@ -4,24 +4,38 @@
  * For the full copyright and license information, please read the
  * LICENSE.md file that was distributed with this source code.
  */
-define(['jquery'], function ($) {
-	function isVisibleSection(element) {
+class FluxColPosAssignment
+{
+	constructor()
+	{
+		var targetNodes = document.querySelectorAll('.t3-flex-container');
+		var observer = new MutationObserver(this.handleMutation);
+		Array.prototype.forEach.call(targetNodes, function (targetNode) {
+			observer.observe(targetNode, { childList: true, characterData: false });
+		});
+	}
+
+	isVisibleSection(element)
+	{
 		var classes = element.classList;
 		return element.nodeType === Node.ELEMENT_NODE && classes.contains('t3js-flex-section') && !classes.contains('t3js-flex-section-deleted');
 	}
 
-	function getSectionColPosInput(section) {
+	getSectionColPosInput(section)
+	{
 		return section.querySelector('.flux-flex-colPos-input');
 	}
 
-	function getSectionColPosText(section) {
+	getSectionColPosText(section)
+	{
 		return section.querySelector('.flux-flex-colPos-text');
 	}
 
-	function determineCurrentlyTakenColPos(container) {
+	determineCurrentlyTakenColPos(container)
+	{
 		return Array.prototype.reduce.call(container.childNodes, function (acc, containerChild) {
-			if (isVisibleSection(containerChild)) {
-				var value = getSectionColPosInput(containerChild).value;
+			if (colPosAssigner.isVisibleSection(containerChild)) {
+				var value = colPosAssigner.getSectionColPosInput(containerChild).value;
 				if (value !== '') {
 					acc.push(parseInt(value));
 				}
@@ -30,7 +44,8 @@ define(['jquery'], function ($) {
 		}, []);
 	}
 
-	function determineFreeColPos(minColPos, maxColPos, takenColPos) {
+	determineFreeColPos(minColPos, maxColPos, takenColPos)
+	{
 		for (var colPos = minColPos; colPos <= maxColPos; colPos++) {
 			if (takenColPos.indexOf(colPos) === -1) {
 				return colPos;
@@ -38,8 +53,9 @@ define(['jquery'], function ($) {
 		}
 	}
 
-	function handleAddedSection(section, container) {
-		var input = getSectionColPosInput(section);
+	handleAddedSection(section, container)
+	{
+		var input = colPosAssigner.getSectionColPosInput(section);
 		if (input === null || input.value !== '') {
 			return;
 		}
@@ -49,37 +65,28 @@ define(['jquery'], function ($) {
 		if (input.dataset.takenValues !== '') {
 			takenColPos = input.dataset.takenValues.split(',').map(function (colPosStr) { return parseInt(colPosStr); });
 		}
-		takenColPos = takenColPos.concat(determineCurrentlyTakenColPos(container));
+		takenColPos = takenColPos.concat(colPosAssigner.determineCurrentlyTakenColPos(container));
 
-		var colPos = determineFreeColPos(minColPos, maxColPos, takenColPos);
+		var colPos = colPosAssigner.determineFreeColPos(minColPos, maxColPos, takenColPos);
 		input.value = colPos;
 
-		var label = getSectionColPosText(section);
+		var label = colPosAssigner.getSectionColPosText(section);
 		label.innerText = colPos;
 	}
 
-	function handleMutation(mutationList) {
+	handleMutation(mutationList)
+	{
 		mutationList.forEach(function (mutation) {
 			Array.prototype.forEach.call(mutation.addedNodes, function (addedElement) {
-				if (!isVisibleSection(addedElement)) {
+				if (!colPosAssigner.isVisibleSection(addedElement)) {
 					return;
 				}
-				handleAddedSection(addedElement, mutation.target);
+				colPosAssigner.handleAddedSection(addedElement, mutation.target);
 			});
 		});
 	}
+};
 
-	function init() {
-		var targetNodes = document.querySelectorAll('.t3-flex-container');
-		var observer = new MutationObserver(handleMutation);
-		Array.prototype.forEach.call(targetNodes, function (targetNode) {
-			observer.observe(targetNode, { childList: true, characterData: false });
-		});
-	}
+var colPosAssigner = new FluxColPosAssignment;
 
-	$(function () {
-		init();
-	});
-
-	return {};
-});
+export default colPosAssigner;

@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
@@ -186,14 +187,14 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             $items = $this->addOptionsFromResults($this->items);
         } elseif (true === is_string($this->items)) {
             if (false !== strpos($this->items, '..')) {
-                list ($low, $high) = explode('..', $this->items);
+                [$low, $high] = explode('..', $this->items);
                 $itemNames = range($low, $high, 1);
             } else {
                 $itemNames = GeneralUtility::trimExplode(',', $this->items);
             }
             if (!$this->getTranslateCsvItems()) {
                 foreach ($itemNames as $itemName) {
-                    array_push($items, [$itemName, $itemName]);
+                    array_push($items, (new SelectOption((string) $itemName, $itemName))->toArray());
                 }
             } else {
                 foreach ($itemNames as $itemName) {
@@ -201,7 +202,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
                         '',
                         $this->getPath() . '.option.' . $itemName
                     );
-                    array_push($items, [$resolvedLabel, $itemName]);
+                    array_push($items, (new SelectOption((string) $resolvedLabel, $itemName))->toArray());
                 }
             }
         } elseif (true === is_array($this->items) || true === $this->items instanceof \Traversable) {
@@ -209,7 +210,7 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
                 if (true === is_array($itemValue) || true === $itemValue instanceof \ArrayObject) {
                     array_push($items, $itemValue);
                 } else {
-                    array_push($items, [$itemValue, $itemIndex]);
+                    array_push($items, (new SelectOption($itemValue, $itemIndex))->toArray());
                 }
             }
         }
@@ -218,9 +219,10 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             if (is_array($emptyOption)) {
                 array_unshift($items, $emptyOption);
             } else {
-                array_unshift($items, [$emptyOption, '']);
+                array_unshift($items, (new SelectOption((string) $emptyOption, ''))->toArray());
             }
         }
+
         return $items;
     }
 

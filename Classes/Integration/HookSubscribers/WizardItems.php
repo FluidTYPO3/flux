@@ -13,6 +13,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 class WizardItems implements NewContentElementWizardHookInterface
 {
     protected WizardItemsManipulator $wizardItemsManipulator;

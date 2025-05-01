@@ -15,6 +15,7 @@ use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
@@ -24,7 +25,6 @@ use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -348,11 +348,11 @@ class PreviewViewTest extends AbstractTestCase
         $features->method('isFeatureEnabled')->willReturn(true);
         GeneralUtility::addInstance(Features::class, $features);
 
-        $siteFinder = $this->getMockBuilder(SiteFinder::class)
+        $siteFinder = $this->getMockBuilder(SiteFinderProxy::class)
             ->setMethods(['getSiteByPageId'])
             ->disableOriginalConstructor()
             ->getMock();
-        GeneralUtility::addInstance(SiteFinder::class, $siteFinder);
+        GeneralUtility::addInstance(SiteFinderProxy::class, $siteFinder);
 
         $pageLayoutContext = $this->getMockBuilder(PageLayoutContext::class)
             ->setMethods(['getDrawingConfiguration'])

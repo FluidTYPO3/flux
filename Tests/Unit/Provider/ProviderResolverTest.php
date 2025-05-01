@@ -38,10 +38,9 @@ class ProviderResolverTest extends AbstractTestCase
     public function testResolveConfigurationProvidersFiltersProviders(): void
     {
         $subject = $this->getMockBuilder(ProviderResolver::class)
-            ->onlyMethods(['loadTypoScriptConfigurationProviderInstances', 'validateAndInstantiateProviders'])
+            ->onlyMethods(['validateAndInstantiateProviders'])
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->method('loadTypoScriptConfigurationProviderInstances')->willReturn([]);
         $subject->method('validateAndInstantiateProviders')->willReturnArgument(0);
 
         $provider1 = $this->getMockBuilder(DummyConfigurationProvider::class)->disableOriginalConstructor()->getMock();
@@ -66,49 +65,6 @@ class ProviderResolverTest extends AbstractTestCase
         self::assertSame([], $resolved);
 
         AccessibleCore::setRegisteredProviders([]);
-    }
-
-    /**
-     * @test
-     */
-    public function loadTypoScriptProvidersReturnsEmptyArrayEarlyIfSetupNotFound()
-    {
-        $this->typoScriptService->expects($this->once())->method('getTypoScriptByPath')->will($this->returnValue([]));
-
-        $instance = new ProviderResolver($this->typoScriptService);
-
-        $providers = $instance->loadTypoScriptConfigurationProviderInstances();
-        $this->assertIsArray($providers);
-        $this->assertEmpty($providers);
-    }
-
-    /**
-     * @test
-     */
-    public function loadTypoScriptProvidersSupportsCustomClassName()
-    {
-        $mockedTypoScript = [
-            'dummy.' => [
-                'className' => DummyConfigurationProvider::class,
-            ]
-        ];
-
-        $this->typoScriptService->expects($this->once())
-            ->method('getTypoScriptByPath')
-            ->willReturn($mockedTypoScript);
-
-        $instance = new ProviderResolver($this->typoScriptService);
-
-        $dummyProvider = $this->getMockBuilder(DummyConfigurationProvider::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        GeneralUtility::addInstance(DummyConfigurationProvider::class, $dummyProvider);
-
-        $providers = $instance->loadTypoScriptConfigurationProviderInstances();
-        $this->assertIsArray($providers);
-        $this->assertNotEmpty($providers);
-        $this->assertContains($dummyProvider, $providers);
-        $this->assertInstanceOf(DummyConfigurationProvider::class, reset($providers));
     }
 
     /**

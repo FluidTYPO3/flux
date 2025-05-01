@@ -9,8 +9,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\NormalizedData\Converter;
  */
 
 use FluidTYPO3\Flux\Integration\NormalizedData\Converter\InlineRecordDataConverter;
+use FluidTYPO3\Flux\Proxy\FlexFormToolsProxy;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class InlineRecordDataConverterTest extends AbstractTestCase
@@ -29,7 +29,7 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testConvertData(): void
     {
         $subject = $this->getMockBuilder(InlineRecordDataConverter::class)
-            ->setMethods(['fetchConfigurationRecords', 'fetchFieldData'])
+            ->onlyMethods(['fetchConfigurationRecords', 'fetchFieldData'])
             ->disableOriginalConstructor()
             ->getMock();
         $subject->method('fetchConfigurationRecords')->willReturn([['uid' => 1], ['uid' => 2]]);
@@ -54,7 +54,7 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testConvertStructureReturnsUntouchedStructureWithoutSource(): void
     {
         $subject = $this->getMockBuilder(InlineRecordDataConverter::class)
-            ->setMethods(['resolveDataSourceDefinition'])
+            ->onlyMethods(['resolveDataSourceDefinition'])
             ->setConstructorArgs(['tt_content', 'pi_flexform', ['uid' => 123, 'pi_flexform' => '']])
             ->getMock();
         $subject->method('resolveDataSourceDefinition')->willReturn(null);
@@ -69,7 +69,7 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testConvertStructureReturnsUntouchedStructureWithoutSheets(): void
     {
         $subject = $this->getMockBuilder(InlineRecordDataConverter::class)
-            ->setMethods(['resolveDataSourceDefinition'])
+            ->onlyMethods(['resolveDataSourceDefinition'])
             ->setConstructorArgs(['tt_content', 'pi_flexform', ['uid' => 123, 'pi_flexform' => '']])
             ->getMock();
         $subject->method('resolveDataSourceDefinition')->willReturn([]);
@@ -84,7 +84,7 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testConvertStructureCallsSynchroniseConfigurationRecords(): void
     {
         $subject = $this->getMockBuilder(InlineRecordDataConverter::class)
-            ->setMethods(['resolveDataSourceDefinition', 'synchroniseConfigurationRecords'])
+            ->onlyMethods(['resolveDataSourceDefinition', 'synchroniseConfigurationRecords'])
             ->setConstructorArgs(['tt_content', 'pi_flexform', ['uid' => 123, 'pi_flexform' => '']])
             ->getMock();
         $subject->method('resolveDataSourceDefinition')->willReturn(['sheets' => ['foo' => []]]);
@@ -170,7 +170,7 @@ class InlineRecordDataConverterTest extends AbstractTestCase
         ];
 
         $subject = $this->getMockBuilder(InlineRecordDataConverter::class)
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'resolveDataSourceDefinition',
                     'fetchSheetRecord',
@@ -201,7 +201,7 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testAssertArrayHasKey(bool $expected, array $data, string $key): void
     {
         $subject = $this->getMockBuilder(InlineRecordDataConverter::class)
-            ->setMethods(['dummy'])
+            ->addMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
         $result = $this->callInaccessibleMethod($subject, 'assertArrayHasKey', $data, $key);
@@ -222,13 +222,13 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testResolveDataSourceDefinition(): void
     {
         $subject = new InlineRecordDataConverter('tt_content', 'pi_flexform', []);
-        $flexFormTools = $this->getMockBuilder(FlexFormTools::class)
-            ->setMethods(['getDataStructureIdentifier', 'parseDataStructureByIdentifier'])
+        $flexFormTools = $this->getMockBuilder(FlexFormToolsProxy::class)
+            ->onlyMethods(['getDataStructureIdentifier', 'parseDataStructureByIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
         $flexFormTools->method('getDataStructureIdentifier')->willReturn('test');
         $flexFormTools->method('parseDataStructureByIdentifier')->with('test')->willReturn(['foo' => 'bar']);
-        GeneralUtility::addInstance(FlexFormTools::class, $flexFormTools);
+        GeneralUtility::addInstance(FlexFormToolsProxy::class, $flexFormTools);
 
         $structure = [
             'processedTca' => [
@@ -249,12 +249,12 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testResolveDataSourceDefinitionSwallowsException(): void
     {
         $subject = new InlineRecordDataConverter('tt_content', 'pi_flexform', []);
-        $flexFormTools = $this->getMockBuilder(FlexFormTools::class)
-            ->setMethods(['getDataStructureIdentifier'])
+        $flexFormTools = $this->getMockBuilder(FlexFormToolsProxy::class)
+            ->onlyMethods(['getDataStructureIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
         $flexFormTools->method('getDataStructureIdentifier')->willThrowException(new \RuntimeException('test'));
-        GeneralUtility::addInstance(FlexFormTools::class, $flexFormTools);
+        GeneralUtility::addInstance(FlexFormToolsProxy::class, $flexFormTools);
 
         $structure = [
             'processedTca' => [
@@ -275,7 +275,7 @@ class InlineRecordDataConverterTest extends AbstractTestCase
     public function testAssignVariableByDottedPath(array $expected, array $data, string $key, string $value): void
     {
         $subject = $this->getMockBuilder(InlineRecordDataConverter::class)
-            ->setMethods(['dummy'])
+            ->addMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
 

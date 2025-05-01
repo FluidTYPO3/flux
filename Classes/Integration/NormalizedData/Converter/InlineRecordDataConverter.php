@@ -2,8 +2,8 @@
 declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\NormalizedData\Converter;
 
+use FluidTYPO3\Flux\Proxy\FlexFormToolsProxy;
 use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
-use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -144,8 +144,8 @@ class InlineRecordDataConverter implements ConverterInterface
      */
     protected function resolveDataSourceDefinition(array $structure): ?array
     {
-        /** @var FlexFormTools $flexFormTools */
-        $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
+        /** @var FlexFormToolsProxy $flexFormTools */
+        $flexFormTools = GeneralUtility::makeInstance(FlexFormToolsProxy::class);
         $config = $structure['processedTca']['columns'][$this->field]['config'];
         try {
             $identifier = $flexFormTools->getDataStructureIdentifier(

@@ -12,6 +12,7 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\FormInterface;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -26,6 +27,20 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     const SCOPE_VARIABLE_FORM = 'form';
     const SCOPE_VARIABLE_CONTAINER = 'container';
     const SCOPE_VARIABLE_GRIDS = 'grids';
+
+    protected function overrideArgument(
+        $name,
+        $type,
+        $description,
+        $required = false,
+        $defaultValue = null,
+        $escape = null
+    ) {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            return parent::registerArgument($name, $type, $description, $required, $defaultValue, $escape);
+        }
+        return parent::overrideArgument($name, $type, $description, $required, $defaultValue, $escape);
+    }
 
     /**
      * @return string

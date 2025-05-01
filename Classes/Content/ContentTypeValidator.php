@@ -61,13 +61,13 @@ class ContentTypeValidator
         $view->assign('recordIsNew', $recordIsNew);
 
         if ($recordIsNew) {
-            return $view->render();
+            return is_string($output = $view->render()) ? $output : '';
         }
 
         $contentType = $this->contentTypeManager->determineContentTypeForTypeString($record['content_type']);
         if (!$contentType) {
             $view->assign('recordIsNew', true);
-            return $view->render();
+            return is_string($output = $view->render()) ? $output : '';
         }
 
         $usesTemplateFile = true;
@@ -91,7 +91,7 @@ class ContentTypeValidator
             ],
         ]);
 
-        return $view->render();
+        return is_string($output = $view->render()) ? $output : '';
     }
 
     protected function validateContextMatchesSignature(ContentTypeDefinitionInterface $definition): bool

@@ -17,18 +17,18 @@ use FluidTYPO3\Flux\Integration\WizardItemsManipulator;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Site\SiteFinder;
 
 class WizardItemsManipulatorTest extends AbstractTestCase
 {
     private ProviderResolver $providerResolver;
     private WorkspacesAwareRecordService $recordService;
-    private SiteFinder $siteFinder;
+    private SiteFinderProxy $siteFinder;
     private Site $site;
     private ContentTypeManager $contentTypeManager;
     private WizardItemsManipulator $subject;
@@ -47,7 +47,7 @@ class WizardItemsManipulatorTest extends AbstractTestCase
             ->onlyMethods(['fetchContentTypeNames'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->siteFinder = $this->getMockBuilder(SiteFinder::class)
+        $this->siteFinder = $this->getMockBuilder(SiteFinderProxy::class)
             ->onlyMethods(['getSiteByPageId'])
             ->disableOriginalConstructor()
             ->getMock();

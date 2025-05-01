@@ -12,11 +12,16 @@ use FluidTYPO3\Flux\Integration\Configuration\SpooledConfigurationApplicator;
 use FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\TypoScript\TemplateService;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class StaticTypoScriptIncluisionTest extends AbstractTestCase
 {
     public function test(): void
     {
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '>=')) {
+            $this->markTestSkipped('Skipping test of feature that is only active on TYPO3 v10.4');
+        }
+
         $templateService = $this->getMockBuilder(TemplateService::class)
             ->disableOriginalConstructor()
             ->getMock();

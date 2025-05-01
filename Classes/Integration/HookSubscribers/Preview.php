@@ -38,7 +38,7 @@ class Preview implements PageLayoutViewDrawItemHookInterface
     ): void {
         /** @var PreviewRenderer $renderer */
         $renderer = GeneralUtility::makeInstance(PreviewRenderer::class);
-        $preview = $renderer->renderPreview($row);
+        $preview = $renderer->renderPreview($row, $headerContent, $itemContent);
         if (empty($preview)) {
             return;
         }

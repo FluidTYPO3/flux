@@ -7,49 +7,61 @@ parameters:
     treatPhpDocTypesAsCertain: false
     checkGenericClassInNonGenericObjectType: false
     ignoreErrors:
-        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:getControllerContext\\(\\)\\.$#"
+        - "#no value type specified in iterable#"
+
         - "#^Call to an undefined method SplFileInfo\\:\\:getRelativePathname\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:getControllerContext\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:setControllerContext\\(\\)\\.#"
+        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3\\\\CMS\\\\Core\\\\Database\\\\Query\\\\QueryBuilder\\:\\:execute\\(\\)\\.$#"
+        - "#^Call to an undefined method TYPO3\\\\CMS\\\\Core\\\\Page\\\\PageRenderer\\:\\:loadRequireJsModule\\(\\)\\.$#"
         - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
         - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:renderSection\\(\\)\\.$#"
+
+        - "#(invalid (return )?type|unknown class) Doctrine\\\\DBAL\\\\FetchMode#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\AfterPageColumnsSelectedForLocalizationEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\ModifyNewContentElementWizardItemsEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\ModifyPageLayoutContentEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\View\\\\Event\\\\PageContentPreviewRenderingEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutView#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\Event\\\\BeforeFlexFormDataStructureIdentifierInitializedEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\Event\\\\BeforeFlexFormDataStructureParsedEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Core\\\\Event\\\\BootCompletedEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Http\\\\JsonResponse#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\TemplateService#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerContext#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\EnvironmentService#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextFactory#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Recordlist\\\\RecordList\\\\DatabaseRecordList#"
+
+        - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutView not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\AST\\\\Node\\\\RootNode not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\ResponseInterface not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response not found\\.$#"
+
+        - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection#"
         - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException#"
-        - "#^Call to an undefined method TYPO3Fluid\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextInterface\\:\\:setControllerContext\\(\\)\\.#"
+        - "#TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source#"
+
         - "#^Instanceof between (iterable|array) and TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection will always evaluate to false\\.$#"
         - "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
-        - "#no value type specified in iterable#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutView#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\EnvironmentService#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerContext#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\ModifyPageLayoutContentEvent#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\ModifyNewContentElementWizardItemsEvent#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\Event\\\\BeforeFlexFormDataStructureIdentifierInitializedEvent#"
-        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\Event\\\\BeforeFlexFormDataStructureParsedEvent.#"
-        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\ExtensionConfiguration#"
-        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Service\\\\FlexFormService#"
-        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService#"
-        - "#^Class TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\AST\\\\Node\\\\RootNode not found\\.$#"
-        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Service\\\\FlexFormService not found\\.$#"
-        - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutView not found\\.$#"
-        - "#^Class TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection not found\\.#"
-        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder#"
-        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Information\\\\Typo3Version#"
-        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request#"
-        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request not found\\.$#"
-        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response#"
-        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response not found\\.$#"
-        - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response not found\\.$#"
-        - "#unknown class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response#"
-        - "#unknown class TYPO3\\\\CMS\\\\Core\\\\Context\\\\Context#"
-        - "#unknown class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Event\\\\PageContentPreviewRenderingEvent#"
-        - "#unknown class TYPO3\\\\CMS\\\\Fluid\\\\Core\\\\Rendering\\\\RenderingContextFactory#"
-        - "#invalid type TYPO3\\\\CMS\\\\Backend\\\\View\\\\Event\\\\PageContentPreviewRenderingEvent#"
-        - "#invalid type TYPO3\\\\CMS\\\\Core\\\\Core\\\\Event\\\\BootCompletedEvent#"
-        - "#invalid (return)? type TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response#"
-        - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with [2-9] parameters, 1 required\\.$#"
+
+        - "#Access to constant [A-Z]+ on an unknown class TYPO3\\\\CMS\\\\Core\\\\Type\\\\ContextualFeedbackSeverity\\.#"
+        - "#Access to undefined constant TYPO3\\\\CMS\\\\Core\\\\Messaging\\\\FlashMessage\\:\\:#"
+
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Dispatcher\\:\\:dispatch\\(\\) invoked with 2 parameters, 1 required\\.$#"
         - "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerInterface\\:\\:processRequest\\(\\) invoked with 2 parameters, 1 required\\.$#"
+        - "#^Method TYPO3\\\\CMS\\\\Core\\\\Database\\\\Connection\\:\\:lastInsertId\\(\\) invoked with 1 parameter, 0 required\\.$#"
         - "#^Cannot call method (rowCount|fetch|fetchAssociative|fetchAll|fetchAllAssociative)\\(\\) on (Doctrine\\\\DBAL\\\\Driver\\\\Statement|Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement|Doctrine\\\\DBAL\\\\Result)\\|int\\.$#"
-        - "#^Static method TYPO3\\\\CMS\\\\Extbase\\\\Reflection\\\\ObjectAccess\\:\\:getProperty\\(\\) invoked with 3 parameters, 2 required\\.$#"
         - "#^Call to an undefined static method TYPO3\\\\CMS\\\\Backend\\\\Utility\\\\BackendUtility\\:\\:getMovePlaceholder\\(\\)\\.$#"
         - "#^Strict comparison using === between TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\ContentObjectRenderer and null will always evaluate to false\\.$#"
     bootstrapFiles:
@@ -58,13 +70,11 @@ parameters:
         - Classes
         - Configuration
     excludePaths:
-        - Classes/Updates/MigrateColPosWizard.php
-        - Classes/Integration/Event/IsContentUsedOnPageLayoutEventListener.php
         - Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
-        - Classes/Integration/PreviewView.php
-        - Classes/Integration/Overrides/LocalizationController.php
-        - Classes/Integration/Overrides/PageLayoutView.php
+        - Classes/Integration/Event/IsContentUsedOnPageLayoutEventListener.php
         - Classes/Integration/HookSubscribers/Preview.php
         - Classes/Integration/HookSubscribers/TableConfigurationPostProcessor.php
-        - Classes/Outlet/Pipe/EmailPipe.php
-        - Classes/Utility/ContextUtility.php
+        - Classes/Integration/HookSubscribers/WizardItems.php
+        - Classes/Integration/Overrides/*
+        - Classes/Integration/PreviewView.php
+        - Classes/Updates/MigrateColPosWizard.php

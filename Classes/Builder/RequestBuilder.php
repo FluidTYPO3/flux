@@ -97,6 +97,8 @@ class RequestBuilder implements SingletonInterface
             $frontendTypoScript = GeneralUtility::makeInstance(
                 FrontendTypoScript::class,
                 GeneralUtility::makeInstance(RootNode::class),
+                [],
+                [],
                 []
             );
             $frontendTypoScript->setSetupArray([]);

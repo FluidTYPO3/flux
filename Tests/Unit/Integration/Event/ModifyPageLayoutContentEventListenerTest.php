@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Event;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\Event\ModifyPageLayoutContentEventListener;
 use FluidTYPO3\Flux\Provider\PageProvider;
@@ -73,13 +74,31 @@ class ModifyPageLayoutContentEventListenerTest extends AbstractTestCase
         self::assertSame('', $this->event->getHeaderContent());
     }
 
-    public function testGeneratesPreview(): void
+    /**
+     * @dataProvider getPreviewTestValues
+     */
+    public function testGeneratesPreview(string $expected, string $returnedPreview, ?string $mode): void
     {
         $form = Form::create();
+        if ($mode) {
+            $form->setOption(PreviewOption::PREVIEW, [PreviewOption::MODE => $mode]);
+        }
         $this->subject->method('getRecord')->willReturn(['uid' => 123]);
         $this->pageProvider->method('getForm')->willReturn($form);
-        $this->pageProvider->method('getPreview')->willReturn(['', 'preview', '']);
+        $this->pageProvider->method('getPreview')->willReturn(['', $returnedPreview, '']);
         $this->subject->renderPreview($this->event);
-        self::assertSame('preview', $this->event->getHeaderContent());
+        self::assertSame($expected, $this->event->getHeaderContent());
+    }
+
+    public function getPreviewTestValues(): array
+    {
+        return [
+            'mode append' => ['preview', 'preview', PreviewOption::MODE_APPEND],
+            'mode prepend' => ['preview', 'preview', PreviewOption::MODE_PREPEND],
+            'mode replace' => ['preview', 'preview', PreviewOption::MODE_REPLACE],
+            'mode none' => ['', 'preview', PreviewOption::MODE_NONE],
+            'mode not set' => ['preview', 'preview', null],
+            'no preview returned' => ['', '', null],
+        ];
     }
 }

@@ -20,19 +20,19 @@ class ExtensionNamingUtility
 
     public static function getVendorName(string $qualifiedExtensionName): ?string
     {
-        list($vendorName, ) = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
+        [$vendorName, ] = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
         return $vendorName;
     }
 
     public static function getExtensionKey(string $qualifiedExtensionName): string
     {
-        list(, $extensionKey) = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
+        [, $extensionKey] = static::getVendorNameAndExtensionKey($qualifiedExtensionName);
         return $extensionKey;
     }
 
     public static function getExtensionName(string $qualifiedExtensionName): string
     {
-        list(, $extensionName) = static::getVendorNameAndExtensionName($qualifiedExtensionName);
+        [, $extensionName] = static::getVendorNameAndExtensionName($qualifiedExtensionName);
         return (string) $extensionName;
     }
 
@@ -54,7 +54,7 @@ class ExtensionNamingUtility
             return $cache[$qualifiedExtensionName];
         }
         if (true === static::hasVendorName($qualifiedExtensionName)) {
-            list($vendorName, $extensionKey) = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
+            [$vendorName, $extensionKey] = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
         } else {
             $vendorName = null;
             $extensionKey = $qualifiedExtensionName;
@@ -71,7 +71,7 @@ class ExtensionNamingUtility
             return $cache[$qualifiedExtensionName];
         }
         if (true === static::hasVendorName($qualifiedExtensionName)) {
-            list($vendorName, $extensionName) = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
+            [$vendorName, $extensionName] = GeneralUtility::trimExplode('.', $qualifiedExtensionName);
         } else {
             $vendorName = null;
             $extensionName = $qualifiedExtensionName;

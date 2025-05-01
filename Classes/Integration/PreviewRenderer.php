@@ -8,9 +8,11 @@ namespace FluidTYPO3\Flux\Integration;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class PreviewRenderer
 {
@@ -24,27 +26,64 @@ class PreviewRenderer
         $this->providerResolver = $providerResolver;
     }
 
-    public function renderPreview(array $row): ?array
+    public function renderPreview(array $row, ?string $currentHeader, ?string $currentPreview): ?array
     {
-        $preview = null;
         $fieldName = null;
-        $headerContent = null;
+        $headerContent = $currentHeader;
         $drawItem = true;
-        $itemContent = '<a name="c' . $row['uid'] . '"></a>';
+        $itemContent = $currentPreview;
+        $preview = [$headerContent, $itemContent, $drawItem];
+        $anchorLink = '<a name="c' . $row['uid'] . '"></a>';
         $providers = $this->providerResolver->resolveConfigurationProviders('tt_content', $fieldName, $row);
         foreach ($providers as $provider) {
             /** @var ProviderInterface $provider */
+            $form = $provider->getForm($row);
+            if (!$form) {
+                continue;
+            }
+
+            $previewOptions = $form->getOption(PreviewOption::PREVIEW);
+            $previewOptionValue = is_array($previewOptions) ? $previewOptions[PreviewOption::MODE] ?? null : null;
+
+            if ($previewOptionValue === PreviewOption::MODE_NONE) {
+                continue;
+            }
+
             [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);
-            if (!empty($previewHeader)) {
-                $headerContent = $previewHeader . (!empty($headerContent) ? ': ' . $headerContent : '');
-                $drawItem = false;
-            }
             if (!empty($previewContent)) {
-                $itemContent .= $previewContent;
                 $drawItem = false;
+                switch ($previewOptionValue) {
+                    case PreviewOption::MODE_PREPEND:
+                        $itemContent = $anchorLink . $previewContent . $currentPreview;
+                        break;
+                    case PreviewOption::MODE_APPEND:
+                        $itemContent = $anchorLink . $currentPreview . $previewContent;
+                        break;
+                    case PreviewOption::MODE_REPLACE:
+                    default:
+                        $itemContent = $anchorLink . $previewContent;
+                        break;
+                }
             }
+
+            if (!empty($previewHeader)) {
+                $drawItem = false;
+                switch ($previewOptionValue) {
+                    case PreviewOption::MODE_PREPEND:
+                        $headerContent = $previewHeader . (!empty($currentHeader) ? ': ' . $currentHeader : '');
+                        break;
+                    case PreviewOption::MODE_APPEND:
+                        $headerContent = (!empty($currentHeader) ? $currentHeader . ': ' : '') . $previewHeader;
+                        break;
+                    case PreviewOption::MODE_REPLACE:
+                    default:
+                        $headerContent = $previewHeader;
+                        break;
+                }
+            }
+
             $preview = [$headerContent, $itemContent, $drawItem];
-            if (false === $continueDrawing) {
+            if (!$continueDrawing) {
                 break;
             }
         }
@@ -52,11 +91,17 @@ class PreviewRenderer
         return $preview;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function attachAssets(): void
     {
         if (!static::$assetsIncluded) {
             $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
-            $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
+            if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.4', '<')) {
+                // Collapse feature is inoperable on v12 and above.
+                $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
+            }
 
             static::$assetsIncluded = true;
         }

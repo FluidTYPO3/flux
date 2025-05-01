@@ -9,8 +9,8 @@ namespace FluidTYPO3\Flux\Integration;
  */
 
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\DataHandling\ItemProcessingService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MultipleItemsProcFunc
 {

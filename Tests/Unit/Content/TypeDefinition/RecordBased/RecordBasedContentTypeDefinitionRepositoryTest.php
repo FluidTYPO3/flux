@@ -10,15 +10,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Content\TypeDefinition\RecordBased;
  */
 
 use Doctrine\DBAL\Exception\TableNotFoundException;
-use Doctrine\DBAL\Statement;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinitionRepository;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleExtensionManagementUtility;
 use FluidTYPO3\Flux\Tests\Mock\QueryBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
 use TYPO3\CMS\Core\Package\PackageManager;
 
 class RecordBasedContentTypeDefinitionRepositoryTest extends AbstractTestCase

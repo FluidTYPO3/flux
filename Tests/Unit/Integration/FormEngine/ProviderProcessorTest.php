@@ -12,10 +12,10 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Integration\FormEngine\ProviderProcessor;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Site\SiteFinder;
 
 class ProviderProcessorTest extends AbstractTestCase
 {
@@ -26,7 +26,7 @@ class ProviderProcessorTest extends AbstractTestCase
         $subject = new ProviderProcessor(
             $this->getMockBuilder(ProviderResolver::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContentTypeManager::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(SiteFinder::class)->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(SiteFinderProxy::class)->disableOriginalConstructor()->getMock()
         );
         self::expectExceptionCode(1666816552);
         $subject->addData([]);
@@ -37,7 +37,7 @@ class ProviderProcessorTest extends AbstractTestCase
         $subject = new ProviderProcessor(
             $this->getMockBuilder(ProviderResolver::class)->disableOriginalConstructor()->getMock(),
             $this->getMockBuilder(ContentTypeManager::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(SiteFinder::class)->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(SiteFinderProxy::class)->disableOriginalConstructor()->getMock()
         );
         self::expectExceptionCode(1666816552);
         $subject->addData(['tableName' => 'test']);
@@ -60,7 +60,7 @@ class ProviderProcessorTest extends AbstractTestCase
         $instance = new ProviderProcessor(
             $providerResolver,
             $this->getMockBuilder(ContentTypeManager::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(SiteFinder::class)->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(SiteFinderProxy::class)->disableOriginalConstructor()->getMock()
         );
 
         $result = $instance->addData(['tableName' => 'foo', 'databaseRow' => []]);
@@ -75,7 +75,7 @@ class ProviderProcessorTest extends AbstractTestCase
             ->getMock();
         $site->method('getConfiguration')->willReturn(['flux_content_types' => 'flux_test,flux_test2']);
 
-        $siteFinder = $this->getMockBuilder(SiteFinder::class)
+        $siteFinder = $this->getMockBuilder(SiteFinderProxy::class)
             ->setMethods(['getSiteByPageId'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -141,7 +141,7 @@ class ProviderProcessorTest extends AbstractTestCase
             ->getMock();
         $site->method('getConfiguration')->willReturn(['flux_content_types' => 'flux_test,flux_test2']);
 
-        $siteFinder = $this->getMockBuilder(SiteFinder::class)
+        $siteFinder = $this->getMockBuilder(SiteFinderProxy::class)
             ->setMethods(['getSiteByPageId'])
             ->disableOriginalConstructor()
             ->getMock();

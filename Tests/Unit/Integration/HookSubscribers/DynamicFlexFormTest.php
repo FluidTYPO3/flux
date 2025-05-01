@@ -10,9 +10,8 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Builder\FlexFormBuilder;
 use FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm;
+use FluidTYPO3\Flux\Proxy\FlexFormToolsProxy;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * DynamicFlexFormTest
@@ -20,29 +19,26 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class DynamicFlexFormTest extends AbstractTestCase
 {
     protected ?FlexFormBuilder $flexFormBuilder = null;
-    protected ?FlexFormTools $flexFormTools = null;
+    protected ?FlexFormToolsProxy $flexFormTools = null;
 
     protected function setUp(): void
     {
         $this->flexFormBuilder = $this->getMockBuilder(FlexFormBuilder::class)
-            ->setMethods(['resolveDataStructureIdentifier', 'parseDataStructureByIdentifier'])
+            ->onlyMethods(['resolveDataStructureIdentifier', 'parseDataStructureByIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->flexFormTools = $this->getMockBuilder(FlexFormTools::class)
+        $this->flexFormTools = $this->getMockBuilder(FlexFormToolsProxy::class)
             ->onlyMethods(['getDataStructureIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
-
-        GeneralUtility::addInstance(FlexFormBuilder::class, $this->flexFormBuilder);
-        GeneralUtility::addInstance(FlexFormTools::class, $this->flexFormTools);
 
         parent::setUp();
     }
 
     public function testCreatesInstancesInConstructor(): void
     {
-        $subject = new DynamicFlexForm();
+        $subject = new DynamicFlexForm($this->flexFormBuilder, $this->flexFormTools);
         self::assertInstanceOf(
             FlexFormBuilder::class,
             $this->getInaccessiblePropertyValue($subject, 'flexFormBuilder')
@@ -52,10 +48,7 @@ class DynamicFlexFormTest extends AbstractTestCase
     public function testGetDataStructureIdentifierPreProcessDelegatesToFlexFormBuilder(): void
     {
         $GLOBALS['TCA']['table']['columns']['field']['config'] = [];
-        $subject = $this->getMockBuilder(DynamicFlexForm::class)
-            ->setMethods(['getDataStructureIdentifier'])
-            ->getMock();
-        $subject->method('getDataStructureIdentifier')->willReturn('{"foo": "bar"}');
+        $subject = new DynamicFlexForm($this->flexFormBuilder, $this->flexFormTools);
         $this->flexFormBuilder->method('resolveDataStructureIdentifier')
             ->with()
             ->willReturn(['foo' => 'bar']);
@@ -67,7 +60,7 @@ class DynamicFlexFormTest extends AbstractTestCase
     public function testParseDataStructureByIdentifierPreProcessDelegatesToFlexFormBuilder(): void
     {
         $identifier = ['foo' => 'bar'];
-        $subject = new DynamicFlexForm();
+        $subject = new DynamicFlexForm($this->flexFormBuilder, $this->flexFormTools);
         $this->flexFormBuilder->expects(self::once())->method('parseDataStructureByIdentifier')->with($identifier);
         $subject->parseDataStructureByIdentifierPreProcess($identifier);
     }

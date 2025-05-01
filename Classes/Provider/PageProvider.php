@@ -12,7 +12,6 @@ namespace FluidTYPO3\Flux\Provider;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
-use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
 use FluidTYPO3\Flux\Service\CacheService;
@@ -111,10 +110,6 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             $form = parent::getForm($row, $forField);
         }
 
-        if ($form) {
-            $form->setOption(PreviewOption::PREVIEW, [PreviewOption::MODE => 'none']);
-        }
-
         return $form;
     }
 
@@ -134,7 +129,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         if (!empty($action)) {
             $pathsOrExtensionKey = $this->templatePaths
                 ?? ExtensionNamingUtility::getExtensionKey($this->getControllerExtensionKeyFromRecord($row, $forField));
-            $templatePaths = $this->createTemplatePaths($pathsOrExtensionKey);
+            $templatePaths = $this->viewBuilder->buildTemplatePaths($pathsOrExtensionKey);
             $action = ucfirst($action);
             $templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat(
                 $this->getControllerNameFromRecord($row),
@@ -353,6 +348,18 @@ class PageProvider extends AbstractProvider implements ProviderInterface
         );
 
         return parent::processTableConfiguration($row, $configuration);
+    }
+
+    public function getPreview(array $row): array
+    {
+        $previewContent = $this->viewBuilder->buildPreviewView(
+            $this->getControllerExtensionKeyFromRecord($row),
+            $this->getControllerNameFromRecord($row),
+            $this->getControllerActionFromRecord($row),
+            $this->getPluginName() ?? $this->getControllerNameFromRecord($row),
+            $this->getTemplatePathAndFilename($row)
+        )->getPreview($this, $row, true);
+        return [null, $previewContent, empty($previewContent)];
     }
 
     /**

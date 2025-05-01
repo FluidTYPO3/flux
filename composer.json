@@ -27,11 +27,11 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "ext-dom": "*",
-        "typo3/cms-core": "^10 || ^11 || ^12 || dev-master",
-        "typo3/cms-fluid": "^10 || ^11 || ^12 || dev-master",
-        "typo3/cms-backend": "^10 || ^11 || ^12 || dev-master",
-        "typo3/cms-frontend": "^10 || ^11 || ^12 || dev-master",
-        "typo3/cms-recordlist": "^10 || ^11 || ^12 || dev-master"
+        "typo3/cms-core": "^10 || ^11 || ^12 || ^13 || dev-main",
+        "typo3/cms-fluid": "^10 || ^11 || ^12 || ^13 || dev-main",
+        "typo3/cms-backend": "^10 || ^11 || ^12 || ^13 || dev-main",
+        "typo3/cms-frontend": "^10 || ^11 || ^12 || ^13 || dev-main",
+        "typo3/cms-recordlist": "^10 || ^11 || ^12 || ^13 || dev-main"
     },
     "extra": {
         "typo3/cms": {
@@ -44,7 +44,6 @@
     "require-dev": {
         "phpstan/phpstan": "^1.8",
         "phpunit/phpunit": "^5.7 || ^9.5",
-        "php-coveralls/php-coveralls": "^2.5",
         "squizlabs/php_codesniffer": "^3.7",
         "mikey179/vfsstream": "^1.6",
         "phpspec/prophecy": "*"

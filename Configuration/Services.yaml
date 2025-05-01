@@ -7,6 +7,10 @@ services:
   FluidTYPO3\Flux\:
     resource: '../Classes/*'
 
+  FluidTYPO3\Flux\Proxy\:
+    resource: '../Classes/Proxy/*'
+    public: true
+
   cache.flux:
     class: TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
     factory: ['TYPO3\CMS\Core\Core\Bootstrap', 'createCache']
@@ -28,6 +32,8 @@ services:
   FluidTYPO3\Flux\Form\Transformation\Transformer\FileTransformer:
     public: true
 
+  FluidTYPO3\Flux\Integration\HookSubscribers\DynamicFlexForm:
+    public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\ColumnPositionItems:
     public: true
   FluidTYPO3\Flux\Backend\BackendLayoutDataProvider:

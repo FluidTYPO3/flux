@@ -59,6 +59,35 @@ class TypoScriptServiceTest extends AbstractTestCase
         $this->assertEquals(['foo' => 'bar'], $result);
     }
 
+    public function testGetTypoScriptByPathSwallowsSpecificException(): void
+    {
+        $cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
+        $configurationManager->method('getConfiguration')
+            ->willThrowException(new \RuntimeException('dummy', 1700841298));
+
+        $service = new TypoScriptService($cacheService, $configurationManager);
+        self::assertSame(null, $service->getTypoScriptByPath('void'));
+    }
+
+    public function testGetTypoScriptByPathRethrowsEveryOtherException(): void
+    {
+        $cacheService = $this->getMockBuilder(CacheService::class)
+            ->onlyMethods(['setInCaches', 'getFromCaches', 'remove'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
+        $configurationManager->method('getConfiguration')
+            ->willThrowException(new \RuntimeException('dummy', 1234567890));
+
+        $service = new TypoScriptService($cacheService, $configurationManager);
+        self::expectExceptionCode(1234567890);
+        $service->getTypoScriptByPath('void');
+    }
+
     /**
      * @test
      */

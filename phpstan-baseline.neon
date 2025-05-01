@@ -1,9 +1,33 @@
 parameters:
     ignoreErrors:
         -
-            message: "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, string\\|TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
+            message: "#^Parameter \\#4 \\$_ of method TYPO3\\\\CMS\\\\Core\\\\DataHandling\\\\DataHandler\\:\\:log\\(\\) expects null, int given\\.$#"
             count: 1
-            path: Classes/ViewHelpers/InlineViewHelper.php
+            path: Classes/Integration/HookSubscribers/DataHandlerSubscriber.php
+        -
+            message: "#^Parameter \\$size of method FluidTYPO3\\\\Flux\\\\Proxy\\\\IconFactoryProxy\\:\\:getIcon\\(\\) has invalid type TYPO3\\\\CMS\\\\Core\\\\Imaging\\\\IconSize\\.$#"
+            count: 1
+            path: Classes/Proxy/IconFactoryProxy.php
+        -
+            message: "#^Parameter \\$state of method FluidTYPO3\\\\Flux\\\\Proxy\\\\IconFactoryProxy\\:\\:getIcon\\(\\) has invalid type TYPO3\\\\CMS\\\\Core\\\\Imaging\\\\IconState\\.$#"
+            count: 1
+            path: Classes/Proxy/IconFactoryProxy.php
+        -
+            message: "#^Parameter \\#2 \\$size of method TYPO3\\\\CMS\\\\Core\\\\Imaging\\\\IconFactory\\:\\:getIcon\\(\\) expects string, string\\|TYPO3\\\\CMS\\\\Core\\\\Imaging\\\\IconSize given\\.$#"
+            count: 1
+            path: Classes/Proxy/IconFactoryProxy.php
+        -
+            message: "#^Parameter \\#4 \\$state of method TYPO3\\\\CMS\\\\Core\\\\Imaging\\\\IconFactory\\:\\:getIcon\\(\\) expects TYPO3\\\\CMS\\\\Core\\\\Type\\\\Icon\\\\IconState\\|null, TYPO3\\\\CMS\\\\Core\\\\Imaging\\\\IconState\\|TYPO3\\\\CMS\\\\Core\\\\Type\\\\Icon\\\\IconState\\|null given\\.$#"
+            count: 1
+            path: Classes/Proxy/IconFactoryProxy.php
+        -
+            message: "#^Access to protected property TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\DataProviderContext\\:\\:\\$pageId\\.$#"
+            count: 1
+            path: Classes/Proxy/DataProviderContextProxy.php
+        -
+            message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\DataProviderContext does not have a constructor and must be instantiated without any parameters\\.$#"
+            count: 1
+            path: Classes/Proxy/DataProviderContextProxy.php
         -
             message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Result\\:\\:fetch(All)?\\(\\)\\.$#"
             count: 2
@@ -24,26 +48,6 @@ parameters:
             message: "#^Variable \\$EM_CONF might not be defined\\.$#"
             count: 1
             path: Classes/Backend/PageLayoutDataProvider.php
-        -
-            message: "#^Call to an undefined (static )?method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\(Frontend|Backend)?ConfigurationManager\\:\\:setRequest\\(\\)\\.$#"
-            count: 3
-            path: Classes/Integration/Overrides/AbstractChimeraConfigurationManager.php
-        -
-            message: "#^Instanceof between mixed and TYPO3\\\\CMS\\\\Core\\\\Http\\\\ServerRequest will always evaluate to false\\.$#"
-            count: 1
-            path: Classes/Integration/Overrides/AbstractChimeraConfigurationManager.php
-        -
-            message: "#^Access to an undefined property FluidTYPO3\\\\Flux\\\\Integration\\\\Overrides\\\\LegacyChimeraConfigurationManager\\:\\:\\$objectManager\\.$#"
-            count: 2
-            path: Classes/Integration/Overrides/LegacyChimeraConfigurationManager.php
-        -
-            message: "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\ConfigurationManager\\:\\:__construct\\(\\) invoked with 1 parameter, 2 required\\.$#"
-            count: 1
-            path: Classes/Integration/Overrides/ChimeraConfigurationManager.php
-        -
-            message: "#^Parameter \\#1 \\$objectManager of method TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\ConfigurationManager\\:\\:__construct\\(\\) expects TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface, Psr\\\\Container\\\\ContainerInterface given\\.$#"
-            count: 1
-            path: Classes/Integration/Overrides/ChimeraConfigurationManager.php
         -
             message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\RecordService\\:\\:update\\(\\) has invalid return type Doctrine\\\\DBAL\\\\Driver\\\\ResultStatement\\.$#"
             count: 1
@@ -81,213 +85,50 @@ parameters:
             count: 1
             path: Classes/Integration/BackendLayoutRenderer.php
         -
-            message: "#Elseif branch is unreachable because previous condition is always true\\.$#"
-            count: 1
-            path: Classes/ViewHelpers/AbstractFormViewHelper.php
-        -
-            message: "#Call to an undefined method TYPO3Fluid\\\\Fluid\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
-            count: 2
-            path: Classes/Provider/AbstractProvider.php
-        -
-            message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\FluxService\\:\\:getFlexFormService\\(\\) has invalid return type TYPO3\\\\CMS\\\\(Core|Extbase)\\\\Service\\\\FlexFormService\\.$#"
-            count: 1
-            path: Classes/Service/FluxService.php
-        -
-            message: "#^Right side of \\|\\| is always false\\.$#"
-            count: 1
-            path: Configuration/TCA/content_types.php
-
-        -
             message: "#^Method FluidTYPO3\\\\Flux\\\\Service\\\\RecordService\\:\\:update\\(\\) has invalid return type Doctrine\\\\DBAL\\\\Result\\.$#"
             count: 1
             path: Classes/Service/RecordService.php
-
         -
             message: "#^Property TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ActionController\\:\\:\\$responseFactory \\(Psr\\\\Http\\\\Message\\\\ResponseFactoryInterface\\) in isset\\(\\) is not nullable\\.$#"
             count: 2
             path: Classes/Controller/AbstractFluxController.php
-
         -
             message: "#^Access to an undefined property FluidTYPO3\\\\Flux\\\\Controller\\\\AbstractFluxController\\:\\:\\$response\\.$#"
             count: 2
             path: Classes/Controller/AbstractFluxController.php
-
-        -
-            message: "#^Parameter \\$caller of method FluidTYPO3\\\\Flux\\\\Integration\\\\HookSubscribers\\\\ContentIcon\\:\\:addSubIcon\\(\\) has invalid type TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem\\.$#"
-            count: 1
-            path: Classes/Integration/HookSubscribers/ContentIcon.php
-
-        -
-            message: "#^Cannot call method getContent\\(\\) on class-string\\|object\\.$#"
-            count: 1
-            path: Classes/Controller/AbstractFluxController.php
-
         -
             message: "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerInterface\\:\\:processRequest\\(\\) invoked with 1 parameter, 2 required\\.$#"
             count: 1
             path: Classes/Controller/AbstractFluxController.php
-
         -
             message: "#^Method TYPO3\\\\CMS\\\\Core\\\\Database\\\\Query\\\\QueryBuilder\\:\\:set\\(\\) invoked with 4 parameters, 2-3 required\\.$#"
             count: 1
             path: Classes/Integration/HookSubscribers/DataHandlerSubscriber.php
-
         -
             message: "#^Offset 'function' on array(.+) on left side of \\?\\? always exists and is not nullable\\.$#"
             count: 1
             path: Classes/Integration/ContentTypeBuilder.php
-
-        -
-            message: "#^Strict comparison using === between TYPO3\\\\CMS\\\\Extbase\\\\Validation\\\\Validator\\\\ValidatorInterface and null will always evaluate to false\\.$#"
-            count: 1
-            path: Classes/Outlet/OutletArgument.php
-
-        -
-            message: "#^If condition is always true\\.$#"
-            count: 1
-            path: Classes/Service/RecordService.php
-
         -
             message: "#^Strict comparison using === between 'CLI' and 'BE' will always evaluate to false\\.$#"
             count: 1
             path: Classes/Service/RecordService.php
-
-        -
-            message: "#^Else branch is unreachable because previous condition is always true\\.$#"
-            count: 1
-            path: Classes/ViewHelpers/AbstractFormViewHelper.php
-
-        -
-            message: "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with 2 parameters, 1 required\\.$#"
-            count: 1
-            path: Classes/Controller/AbstractFluxController.php
-
-        -
-            message: "#^Method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) invoked with 2 parameters, 1 required\\.$#"
-            count: 1
-            path: Classes/Form/Transformation/FormDataTransformer.php
-
-        -
-            message: "#^Call to method setPayload\\(\\) on an unknown class TYPO3\\\\CMS\\\\Core\\\\Http\\\\JsonResponse\\.$#"
-            count: 1
-            path: Classes/Integration/Overrides/LocalizationController.php
-
         -
             message: "#^Method TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Page\\\\LocalizationController\\:\\:getRecordLocalizeSummary\\(\\) invoked with 2 parameters, 1 required\\.$#"
             count: 1
             path: Classes/Integration/Overrides/LocalizationController.php
-
-        -
-            message: "#^Call to method setAspect\\(\\) on an unknown class TYPO3\\\\CMS\\\\Core\\\\Context\\\\Context\\.$#"
-            count: 1
-            path: Classes/Service/RecordService.php
-
-        -
-            message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\TemplateSourceDumperNode has an unused parameter \\$nodeFactory\\.$#"
-            count: 1
-            path: Classes/Integration/FormEngine/TemplateSourceDumperNode.php
-
-        -
-            message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\HtmlOutputNode has an unused parameter \\$nodeFactory\\.$#"
-            count: 1
-            path: Classes/Integration/FormEngine/HtmlOutputNode.php
-
-        -
-            message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\ContentTypeValidatorNode has an unused parameter \\$nodeFactory\\.$#"
-            count: 1
-            path: Classes/Integration/FormEngine/ContentTypeValidatorNode.php
-
-        -
-            message: "#^Constructor of class FluidTYPO3\\\\Flux\\\\Integration\\\\FormEngine\\\\ColumnPositionNode has an unused parameter \\$nodeFactory\\.$#"
-            count: 1
-            path: Classes/Integration/FormEngine/ColumnPositionNode.php
-
         -
             message: "#^Static method TYPO3\\\\CMS\\\\Extbase\\\\Utility\\\\ExtensionUtility\\:\\:registerPlugin\\(\\) invoked with 5 parameters, 3-4 required\\.$#"
             count: 1
             path: Classes/Integration/ContentTypeBuilder.php
-
-        -
-            message: "#^Caught class TYPO3\\\\CMS\\\\Core\\\\Exception\\\\SiteNotFoundException not found\\.$#"
-            count: 1
-            path: Classes/Backend/PageLayoutDataProvider.php
-
         -
             message: "#^Undefined variable\\: \\$EM_CONF$#"
             count: 1
             path: Classes/Backend/PageLayoutDataProvider.php
-
-        -
-            message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
-            count: 1
-            path: Classes/Service/TemplateValidationService.php
-
-        -
-            message: "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, string\\|TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
-            count: 1
-            path: Classes/Service/TemplateValidationService.php
-
-        -
-            message: "#^Parameter \\$event of method FluidTYPO3\\\\Flux\\\\Integration\\\\Event\\\\AfterLocalizationControllerColumnsEventListener\\:\\:modifyColumnsManifest\\(\\) has invalid type TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\AfterPageColumnsSelectedForLocalizationEvent\\.$#"
-            count: 1
-            path: Classes/Integration/Event/AfterLocalizationControllerColumnsEventListener.php
-
-        -
-            message: "#^Caught class TYPO3\\\\CMS\\\\Core\\\\Exception\\\\SiteNotFoundException not found\\.$#"
-            count: 1
-            path: Classes/Integration/FormEngine/ProviderProcessor.php
-
-        -
-            message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem not found\\.$#"
-            count: 1
-            path: Classes/Integration/HookSubscribers/ContentIcon.php
-
-        -
-            message: "#^Caught class TYPO3\\\\CMS\\\\Core\\\\Exception\\\\SiteNotFoundException not found\\.$#"
-            count: 1
-            path: Classes/Integration/HookSubscribers/WizardItems.php
-
         -
             message: "#^Call to an undefined method FluidTYPO3\\\\Flux\\\\Integration\\\\Overrides\\\\LocalizationController\\:\\:getPageColumns\\(\\)\\.$#"
             count: 1
             path: Classes/Integration/Overrides/LocalizationController.php
-
         -
             message: "#^Instantiated class TYPO3\\\\CMS\\\\Core\\\\Http\\\\JsonResponse not found\\.$#"
             count: 2
             path: Classes/Integration/Overrides/LocalizationController.php
-
-        -
-            message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer not found\\.$#"
-            count: 2
-            path: Classes/Integration/PreviewView.php
-
-        -
-            message: "#^Class TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteFinder not found\\.$#"
-            count: 1
-            path: Classes/Integration/PreviewView.php
-
-        -
-            message: "#^Caught class TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException not found\\.$#"
-            count: 1
-            path: Classes/Service/PageService.php
-
-        -
-            message: "#^Instantiated class TYPO3\\\\CMS\\\\Core\\\\Context\\\\Context not found\\.$#"
-            count: 1
-            path: Classes/Service/RecordService.php
-
-        -
-            message: "#^Call to an undefined static method TYPO3\\\\CMS\\\\Extbase\\\\Utility\\\\ExtensionUtility\\:\\:resolveVendorFromExtensionAndControllerClassName\\(\\)\\.$#"
-            count: 1
-            path: Classes/ViewHelpers/AbstractFormViewHelper.php
-
-        -
-            message: "#^Instantiated class TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source not found\\.$#"
-            count: 1
-            path: Classes/ViewHelpers/InlineViewHelper.php
-
-        -
-            message: "#^Call to an undefined method object\\:\\:setSetupArray\\(\\)\\.$#"
-            count: 1
-            path: Classes/Utility/RequestBuilder.php

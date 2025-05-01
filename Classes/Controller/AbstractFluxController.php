@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Controller;
 
 use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Integration\NormalizedData\DataAccessTrait;
 use FluidTYPO3\Flux\Integration\Resolver;
@@ -36,7 +37,6 @@ use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\Response;
 use TYPO3\CMS\Extbase\Mvc\ResponseInterface;
-use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -67,6 +67,7 @@ abstract class AbstractFluxController extends ActionController
     protected TypoScriptService $typoScriptService;
     protected ProviderResolver $providerResolver;
     protected Resolver $resolver;
+    protected ViewBuilder $viewBuilder;
     protected ?ControllerProviderInterface $provider = null;
 
     public function __construct(
@@ -75,7 +76,8 @@ abstract class AbstractFluxController extends ActionController
         WorkspacesAwareRecordService $recordService,
         TypoScriptService $typoScriptService,
         ProviderResolver $providerResolver,
-        Resolver $resolver
+        Resolver $resolver,
+        ViewBuilder $viewBuilder
     ) {
         $this->renderingContextBuilder = $renderingContextBuilder;
         $this->requestBuilder = $requestBuilder;
@@ -83,6 +85,7 @@ abstract class AbstractFluxController extends ActionController
         $this->typoScriptService = $typoScriptService;
         $this->providerResolver = $providerResolver;
         $this->resolver = $resolver;
+        $this->viewBuilder = $viewBuilder;
 
         /** @var Arguments $arguments */
         $arguments = GeneralUtility::makeInstance(Arguments::class);
@@ -251,8 +254,7 @@ abstract class AbstractFluxController extends ActionController
         $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
         $controllerActionName = $this->provider->getControllerActionFromRecord($record);
 
-        /** @var TemplatePaths $templatePaths */
-        $templatePaths = GeneralUtility::makeInstance(TemplatePaths::class, $extensionKey);
+        $templatePaths = $this->viewBuilder->buildTemplatePaths($extensionKey);
 
         /** @var RenderingContextInterface $renderingContext */
         $renderingContext = $view->getRenderingContext();
@@ -307,7 +309,7 @@ abstract class AbstractFluxController extends ActionController
      * vanilla Provider instances when registering them for
      * content object types or other ad-hoc registrations.
      *
-     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
     public function defaultAction()
     {
@@ -317,7 +319,7 @@ abstract class AbstractFluxController extends ActionController
     /**
      * Render content
      *
-     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
     public function renderAction()
     {
@@ -353,7 +355,7 @@ abstract class AbstractFluxController extends ActionController
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
     protected function performSubRendering(
         string $extensionName,
@@ -365,6 +367,7 @@ abstract class AbstractFluxController extends ActionController
         if (property_exists($this, 'responseFactory') && $this->responseFactory instanceof ResponseFactoryInterface) {
             $response = $this->responseFactory->createResponse();
         } else {
+            /** @var ResponseInterface $response */
             $response = GeneralUtility::makeInstance(Response::class);
         }
     
@@ -435,7 +438,9 @@ abstract class AbstractFluxController extends ActionController
             ]
         )['content'];
 
-        return $content instanceof \Psr\Http\Message\ResponseInterface ? $content : $this->createHtmlResponse($content);
+        return $content instanceof \Psr\Http\Message\ResponseInterface || $content instanceof ResponseInterface
+            ? $content
+            : $this->createHtmlResponse($content);
     }
 
     protected function hasSubControllerActionOnForeignController(

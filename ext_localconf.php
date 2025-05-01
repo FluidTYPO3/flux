@@ -3,6 +3,8 @@
 $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
 (function () use ($conf) {
+    $coreVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version();
+
     if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] ?? null)) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
             'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
@@ -32,18 +34,19 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Enum\ExtensionOption::OPTION_AUTOLOAD)) {
             \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptConstants(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/constants.txt')));
             \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(file_get_contents(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('flux', 'Configuration/TypoScript/setup.txt')));
-        } else {
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile('flux', 'Configuration/TypoScript', 'Flux PAGE rendering');
         }
 
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['BackendLayoutDataProvider']['flux'] = \FluidTYPO3\Flux\Backend\BackendLayoutDataProvider::class;
 
-        if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '12', '<')) {
+        if (version_compare($coreVersion, '12', '<')) {
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/db_layout.php']['drawHeaderHook'][] = \FluidTYPO3\Flux\Integration\HookSubscribers\PagePreviewRenderer::class . '->render';
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
-            'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
+        if (version_compare($coreVersion, '13.4', '<')) {
+            $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
+                'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
+        }
+
         if (version_compare((string) PHP_MAJOR_VERSION, '8.0', '<')) {
             \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\ArrayTransformer::class);
             \FluidTYPO3\Flux\Form\Transformation\DataTransformerRegistry::registerTransformerOnLegacyPhpVersion(\FluidTYPO3\Flux\Form\Transformation\Transformer\BooleanTransformer::class);
@@ -116,9 +119,11 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class]['className'] = \FluidTYPO3\Flux\Integration\Overrides\LocalizationController::class;
     }
 
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Extbase\Configuration\ConfigurationManager::class]['className'] = version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.0', '<')
-        ? \FluidTYPO3\Flux\Integration\Overrides\LegacyChimeraConfigurationManager::class
-        : \FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager::class;
+    if (version_compare($coreVersion, '13.4', '<')) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Extbase\Configuration\ConfigurationManager::class]['className'] = version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.0', '<')
+            ? \FluidTYPO3\Flux\Integration\Overrides\LegacyChimeraConfigurationManager::class
+            : \FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager::class;
+    }
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
@@ -127,7 +132,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class . '->clearCacheCommand';
 
-    if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '12', '<')) {
+    if (version_compare($coreVersion, '12', '<')) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['record_is_used']['flux'] =
             \FluidTYPO3\Flux\Integration\HookSubscribers\ContentUsedDecision::class . '->isContentElementUsed';
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools::class]['flexParsing']['flux'] =
@@ -138,7 +143,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
             \FluidTYPO3\Flux\Integration\HookSubscribers\WizardItems::class;
     }
 
-    if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11', '<')) {
+    if (version_compare($coreVersion, '11', '<')) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['recStatInfoHooks']['flux'] =
             \FluidTYPO3\Flux\Integration\HookSubscribers\ContentIcon::class . '->addSubIcon';
         // The following is a dual registration of the same TCA-manipulating hook; the reason for registering it twice for two

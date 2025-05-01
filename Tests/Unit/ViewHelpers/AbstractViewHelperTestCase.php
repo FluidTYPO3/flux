@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyViewHelperNode;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Reflection\ReflectionService;
@@ -157,11 +158,25 @@ abstract class AbstractViewHelperTestCase extends AbstractTestCase
         if (method_exists($instance, 'injectConfigurationManager')) {
             $cObject = $this->getMockBuilder(ContentObjectRenderer::class)->disableOriginalConstructor()->getMock();
             $cObject->start(Records::$contentRecordWithoutParentAndWithoutChildren, 'tt_content');
-            /** @var ConfigurationManagerInterface $configurationManager */
-            $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
-                ->getMockForAbstractClass();
-            $configurationManager->method('getContentObject')->willReturn($cObject);
-            $instance->injectConfigurationManager($configurationManager);
+            if (method_exists(ConfigurationManagerInterface::class, 'getContentObject')) {
+                /** @var ConfigurationManagerInterface $configurationManager */
+                $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMock();
+                $configurationManager->method('getContentObject')->willReturn($cObject);
+            } else {
+                $request = $this->getMockBuilder(ServerRequestInterface::class)->getMock();
+                $request->method('getAttribute')->willReturnMap(
+                    [
+                        ['currentContentObject', $cObject],
+                    ]
+                );
+                /** @var ConfigurationManagerInterface $configurationManager */
+                $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
+                    ->onlyMethods(['getConfiguration', 'setConfiguration', 'setRequest'])
+                    ->addMethods(['getRequest'])
+                    ->getMock();
+                $configurationManager->method('getRequest')->willReturn($request);
+                $instance->injectConfigurationManager($configurationManager);
+            }
         }
         $instance->setRenderingContext($this->renderingContext);
         return $instance;

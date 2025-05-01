@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace FluidTYPO3\Flux\Tests\Mock;
 
-use FluidTYPO3\Flux\Tests\Mock\Result;
 use TYPO3\CMS\Core\Database\Connection;
 
 class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
@@ -36,7 +35,7 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this;
     }
 
-    public function set(string $key, $value, bool $createNamedParameter = true, int $type = \PDO::PARAM_STR): self
+    public function set(string $key, $value, bool $createNamedParameter = true, $type = Connection::PARAM_STR): self
     {
         return $this;
     }
@@ -62,12 +61,12 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this->expressionBuilder;
     }
 
-    public function createNamedParameter($value, int $type = Connection::PARAM_STR, string $placeHolder = null): string
+    public function createNamedParameter($value, $type = Connection::PARAM_STR, string $placeHolder = null): string
     {
         return 'p';
     }
 
-    public function setMaxResults(int $maxResults): self
+    public function setMaxResults($maxResults = null): self
     {
         return $this;
     }
@@ -97,7 +96,7 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this;
     }
 
-    public function setParameter($key, $value, int $type = null): self
+    public function setParameter($key, $value, $type = null): self
     {
         return $this;
     }
@@ -155,9 +154,5 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
     public function getQueryParts(): array
     {
         return [];
-    }
-
-    protected function addAdditionalWhereConditions()
-    {
     }
 }

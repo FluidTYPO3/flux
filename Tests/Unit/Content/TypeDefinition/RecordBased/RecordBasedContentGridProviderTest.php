@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
+use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -88,6 +89,11 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
 
     public function testPostProcessDataStructureReturnsStructureFromContentGridForm(): void
     {
+        $gridModeItems = [
+            (new SelectOption('rows', 'rows'))->toArray(),
+            (new SelectOption('columns', 'columns'))->toArray(),
+        ];
+
         $expected = [
             'meta' => [
                 'langDisable' => 1,
@@ -113,10 +119,7 @@ class RecordBasedContentGridProviderTest extends AbstractTestCase
                                     'minitems' => 0,
                                     'multiple' => false,
                                     'renderType' => 'selectSingle',
-                                    'items' => [
-                                        ['rows' ,'rows'],
-                                        ['columns', 'columns'],
-                                    ],
+                                    'items' => $gridModeItems,
                                 ],
                             ],
                             'autoColumns' => [

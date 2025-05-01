@@ -6,10 +6,10 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class WizardItemsManipulator
@@ -17,13 +17,13 @@ class WizardItemsManipulator
     protected ProviderResolver $providerResolver;
     protected WorkspacesAwareRecordService $recordService;
     protected ContentTypeManager $contentTypeManager;
-    protected SiteFinder $siteFinder;
+    protected SiteFinderProxy $siteFinder;
 
     public function __construct(
         ProviderResolver $providerResolver,
         WorkspacesAwareRecordService $recordService,
         ContentTypeManager $contentTypeManager,
-        SiteFinder $siteFinder
+        SiteFinderProxy $siteFinder
     ) {
         $this->providerResolver = $providerResolver;
         $this->recordService = $recordService;

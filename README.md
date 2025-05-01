@@ -3,7 +3,7 @@
 Flux
 ====
 
-[![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/flux/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/flux)  [![Documentation](http://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://fluidtypo3.org/documentation/templating-manual/introduction.html) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/fluidtypo3-testing/master.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/fluidtypo3-testing) [![Performance profiling sponsored by Blackfire](https://img.shields.io/badge/performance_profiling_sponsored_by-blackfire-red?style=flat-square)](https://blackfire.io/)
+[![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/flux/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/flux)  [![Documentation](http://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://fluidtypo3.org/documentation/templating-manual/introduction.html) [![Performance profiling sponsored by Blackfire](https://img.shields.io/badge/performance_profiling_sponsored_by-blackfire-red?style=flat-square)](https://blackfire.io/)
 
 > Flux automates integration of Fluid with TYPO3 and makes Fluid the entry point for developers. The name "Flux" has
 > multiple meanings but in this context, it mainly refers to the gel-like fluid used when soldering components together
@@ -22,7 +22,7 @@ Bonus feature: nested content areas to create content grids.
 Documentation
 -------------
 
-* [ViewHelper Reference for Flux](https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/)
+* [ViewHelper Reference for Flux](https://docs.typo3.org/p/fluidtypo3/flux/main/en-us/)
 * [How to use the Flux APIs](https://fluidtypo3.org/documentation/templating-manual/templating/creating-templates/flux-fields.html)
 
 

@@ -1,6 +1,6 @@
 <?php
 
-$data = [
+$table = [
     'ctrl' => [
         'title' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:content_types',
         'descriptionColumn' => 'description',
@@ -24,9 +24,6 @@ $data = [
         ],
         'iconfile' => 'EXT:flux/Resources/Public/Icons/Plugin.png',
         'searchFields' => 'uid,title',
-    ],
-    'interface' => [
-        'showRecordFieldList' => 'cruser_id,pid,hidden,starttime,endtime,fe_group,title,content_type,content_configuration,grid,template_file,template_source'
     ],
     'columns' => [
         'hidden' => [
@@ -82,6 +79,7 @@ $data = [
                 'type' => 'input',
                 'size' => 60,
                 'eval' => 'required',
+                'required' => true,
             ],
         ],
         'content_type' => [
@@ -90,6 +88,7 @@ $data = [
                 'type' => 'input',
                 'size' => 60,
                 'eval' => 'required',
+                'required' => true,
                 'placeholder' => 'flux_newtype',
             ],
         ],
@@ -122,7 +121,7 @@ $data = [
             'config' => [
                 'type' => 'flex',
                 'ds' => [
-                    'default' => '<T3DataStructure><ROOT><el></el></ROOT></T3DataStructure>',
+                    'default' => '<T3DataStructure><ROOT><el><dummy><config><type>input</type></config></dummy></el></ROOT></T3DataStructure>',
                 ],
             ],
         ],
@@ -131,7 +130,7 @@ $data = [
             'config' => [
                 'type' => 'flex',
                 'ds' => [
-                    'default' => '<T3DataStructure><ROOT><el></el></ROOT></T3DataStructure>',
+                    'default' => '<T3DataStructure><ROOT><el><dummy><config><type>input</type></config></dummy></el></ROOT></T3DataStructure>',
                 ],
             ],
         ],
@@ -179,8 +178,10 @@ $data = [
     'palettes' => []
 ];
 
-if (!defined('TYPO3_version') || version_compare(TYPO3_version, '10.3', '>=')) {
-    unset($data['interface']['showRecordFieldList']);
+if (version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+    unset($table['ctrl']['cruser_id']);
+    unset($table['columns']['title']['config']['eval']);
+    unset($table['columns']['content_type']['config']['eval']);
 }
 
-return $data;
+return $table;

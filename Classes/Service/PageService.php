@@ -8,14 +8,15 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\PageProvider;
+use FluidTYPO3\Flux\Proxy\TemplatePathsProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
-use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -30,6 +31,7 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Component\Error\ChildNotFoundException;
 use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Page Service
@@ -43,13 +45,16 @@ class PageService implements SingletonInterface, LoggerAwareInterface
 
     protected WorkspacesAwareRecordService $workspacesAwareRecordService;
     protected FrontendInterface $runtimeCache;
+    protected ViewBuilder $viewBuilder;
 
     public function __construct(
         WorkspacesAwareRecordService $recordService,
-        CacheManager $cacheManager
+        CacheManager $cacheManager,
+        ViewBuilder $viewBuilder
     ) {
         $this->workspacesAwareRecordService = $recordService;
         $this->runtimeCache = $cacheManager->getCache('runtime');
+        $this->viewBuilder = $viewBuilder;
     }
 
     /**
@@ -181,14 +186,14 @@ class PageService implements SingletonInterface, LoggerAwareInterface
             ];
         }
         if (null !== $extensionName) {
-            $templatePaths = $this->createTemplatePaths($extensionName);
-            return $templatePaths->toArray();
+            $templatePaths = $this->viewBuilder->buildTemplatePaths($extensionName);
+            return TemplatePathsProxy::toArray($templatePaths);
         }
         $configurations = [];
         $registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Page');
         foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-            $templatePaths = $this->createTemplatePaths($registeredExtensionKey);
-            $configurations[$registeredExtensionKey] = $templatePaths->toArray();
+            $templatePaths = $this->viewBuilder->buildTemplatePaths($registeredExtensionKey);
+            $configurations[$registeredExtensionKey] = TemplatePathsProxy::toArray($templatePaths);
         }
         if ($plugAndPlayEnabled) {
             $configurations['FluidTYPO3.Flux'] = array_replace(
@@ -234,7 +239,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                 continue;
             }
             $output[$extensionName] = [];
-            $templatePaths = $this->createTemplatePaths($extensionName);
+            $templatePaths = $this->viewBuilder->buildTemplatePaths($extensionName);
             $finder = Finder::create()->in($templatePaths->getTemplateRootPaths())->name('*.html')->sortByName();
             foreach ($finder->files() as $file) {
                 /** @var \SplFileInfo $file */
@@ -249,15 +254,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                     continue;
                 }
 
-                /** @var TemplateView $view */
-                $view = GeneralUtility::makeInstance(TemplateView::class);
-                $view->getRenderingContext()->setTemplatePaths($templatePaths);
-                $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
-                    FormViewHelper::SCOPE,
-                    FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
-                    $extensionName
-                );
-                $view->setTemplatePathAndFilename($file->getPathname());
+                $view = $this->createViewInstance($extensionName, $templatePaths, $file);
                 try {
                     $view->renderSection('Configuration');
                     $form = $view->getRenderingContext()
@@ -299,14 +296,21 @@ class PageService implements SingletonInterface, LoggerAwareInterface
     /**
      * @codeCoverageIgnore
      */
-    protected function createTemplatePaths(string $registeredExtensionKey): TemplatePaths
-    {
-        /** @var TemplatePaths $templatePaths */
-        $templatePaths = GeneralUtility::makeInstance(
-            TemplatePaths::class,
-            ExtensionNamingUtility::getExtensionKey($registeredExtensionKey)
+    protected function createViewInstance(
+        string $extensionName,
+        TemplatePaths $templatePaths,
+        \SplFileInfo $file
+    ): ViewInterface {
+        /** @var TemplateView $view */
+        $view = GeneralUtility::makeInstance(TemplateView::class);
+        $view->getRenderingContext()->setTemplatePaths($templatePaths);
+        $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
+            FormViewHelper::SCOPE,
+            FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
+            $extensionName
         );
-        return $templatePaths;
+        $templatePaths->setTemplatePathAndFilename($file->getPathname());
+        return $view;
     }
 
     /**
