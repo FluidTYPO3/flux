@@ -98,20 +98,21 @@ class ViewBuilder
             $paths->setPartialRootPaths($extensionKeyOrConfiguration[TemplatePaths::CONFIG_PARTIALROOTPATHS]);
         } else {
             $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKeyOrConfiguration);
-            $templateRootPaths = $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_TEMPLATES_DIRECTORY);
-            $partialRootPaths = $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_PARTIALS_DIRECTORY);
-            $layoutRootPaths = $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_LAYOUTS_DIRECTORY);
             try {
-                $paths->setTemplateRootPaths($templateRootPaths);
-                $paths->setLayoutRootPaths($layoutRootPaths);
-                $paths->setPartialRootPaths($partialRootPaths);
+                $paths->fillDefaultsByPackageName($extensionKey);
             } catch (\RuntimeException $exception) {
                 if ($exception->getCode() !== 1700841298) {
                     throw $exception;
                 }
-                $paths->setTemplateRootPaths($templateRootPaths);
-                $paths->setLayoutRootPaths($layoutRootPaths);
-                $paths->setPartialRootPaths($partialRootPaths);
+                $paths->setTemplateRootPaths(
+                    $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_TEMPLATES_DIRECTORY)
+                );
+                $paths->setLayoutRootPaths(
+                    $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_LAYOUTS_DIRECTORY)
+                );
+                $paths->setPartialRootPaths(
+                    $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_PARTIALS_DIRECTORY)
+                );
             }
         }
 
