@@ -234,6 +234,13 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->getMock();
         $GLOBALS['TSFE']->currentRecord = 'tt_content:123';
 
+        $sys_page = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['getLanguageOverlay'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $sys_page->method('getLanguageOverlay')->willReturn([]);
+        $GLOBALS['TSFE']->sys_page = $sys_page;
+        
         $contentObjectRenderer->method('getTypoScriptFrontendController')->willReturn($GLOBALS['TSFE']);
 
         $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
@@ -755,6 +762,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
                     ->getMock()
             );
         }
+        $sys_page = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['getLanguageOverlay'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $sys_page->method('getLanguageOverlay')->willReturn([]);
+        $tsfe->sys_page = $sys_page;
         $contentObjectRenderer->data = [];
         $tsfe->currentRecord = 'tt_content:123';
         $instance->method('getContentObject')->willReturn($contentObjectRenderer);
@@ -799,6 +812,12 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
                     ->getMock()
             );
         }
+        $sys_page = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['getLanguageOverlay'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $sys_page->method('getLanguageOverlay')->willReturn([]);
+        $tsfe->sys_page = $sys_page;
         $contentObjectRenderer->data = [];
         $tsfe->currentRecord = 'tt_content:123';
         $instance->method('getContentObject')->willReturn($contentObjectRenderer);
