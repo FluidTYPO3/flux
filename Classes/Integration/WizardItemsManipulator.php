@@ -46,7 +46,7 @@ class WizardItemsManipulator
                 $items = array_filter(
                     $items,
                     function (array $item) use ($enabledContentTypes, $fluxContentTypeNames) {
-                        $contentType = $item['tt_content_defValues']['CType'] ?? null;
+                        $contentType = $item['defaultValues']['CType'] ?? null;
                         return !in_array($contentType, $fluxContentTypeNames, true) ||
                             in_array($contentType, $enabledContentTypes, true);
                     }
@@ -199,7 +199,7 @@ class WizardItemsManipulator
         if (0 < count($blacklist)) {
             foreach ($blacklist as $contentElementType) {
                 foreach ($items as $name => $item) {
-                    if (($item['tt_content_defValues']['CType'] ?? null) === $contentElementType) {
+                    if (($item['defaultValues']['CType'] ?? null) === $contentElementType) {
                         unset($items[$name]);
                     }
                 }
@@ -213,7 +213,7 @@ class WizardItemsManipulator
         $whitelist = array_unique($whitelist);
         if (0 < count($whitelist)) {
             foreach ($items as $name => $item) {
-                $contentType = $item['tt_content_defValues']['CType'] ?? '';
+                $contentType = $item['defaultValues']['CType'] ?? '';
                 if (strpos($name, '_') !== false && !in_array($contentType, $whitelist, true)) {
                     unset($items[$name]);
                 }
