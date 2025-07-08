@@ -369,7 +369,7 @@ class DataHandlerSubscriber
      */
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processCmdmap_postProcess(
-        &$command,
+        $command,
         $table,
         $id,
         &$relativeTo,
