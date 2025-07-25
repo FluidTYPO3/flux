@@ -72,8 +72,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     {
         $copy = false;
         if ($this->hasWorkspacesSupport($table)) {
-            $copy = $record;
-            $this->overlayRecordInternal($table, $copy);
+            $copy = $this->overlayRecordInternal($table, $record);
         }
         return $copy === false ? $record : $copy;
     }
