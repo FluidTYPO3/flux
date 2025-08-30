@@ -94,7 +94,7 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
     protected function overlayRecordInternal(string $table, array $copy)
     {
         BackendUtility::workspaceOL($table, $copy, -99, false);
-        /** array|false */
+        /** @var array|false $copy */
         return $copy;
     }
 }
