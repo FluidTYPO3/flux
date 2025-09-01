@@ -14,7 +14,7 @@ use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 
 /**
  * ## Main form rendering ViewHelper

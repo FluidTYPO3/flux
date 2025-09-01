@@ -39,19 +39,15 @@ class RenderingContextBuilder implements SingletonInterface
 
         $renderingContext = $this->createRenderingContextInstance();
 
-        /** @var RequestInterface&Request $request */
-        $request = $this->requestBuilder->buildRequestFor(
-            $extensionIdentity,
-            $controllerName,
-            $controllerActionName,
-            $pluginName
-        );
-
-        if (method_exists($renderingContext, 'setRequest')) {
-            $renderingContext->setRequest($request);
-        }
-
         if (method_exists($renderingContext, 'getControllerContext')) {
+            /** @var RequestInterface&Request $request */
+            $request = $this->requestBuilder->buildRequestFor(
+                $extensionIdentity,
+                $controllerName,
+                $controllerActionName,
+                $pluginName
+            );
+
             /** @var ControllerContext $controllerContext */
             $controllerContext = $this->buildControllerContext($request);
             try {

@@ -40,7 +40,6 @@ use TYPO3\CMS\Extbase\Mvc\ResponseInterface;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
@@ -245,33 +244,27 @@ abstract class AbstractFluxController extends ActionController
                 1672082347
             );
         }
-        /** @var TemplateView $view */
-        $view = GeneralUtility::makeInstance(TemplateView::class);
+
         $record = $this->getRecord();
         $extensionKey = ExtensionNamingUtility::getExtensionKey(
             $this->provider->getControllerExtensionKeyFromRecord($record)
         );
-        $extensionName = ExtensionNamingUtility::getExtensionName($extensionKey);
-        $controllerActionName = $this->provider->getControllerActionFromRecord($record);
 
-        $templatePaths = $this->viewBuilder->buildTemplatePaths($extensionKey);
-
-        /** @var RenderingContextInterface $renderingContext */
-        $renderingContext = $view->getRenderingContext();
-
-        $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
-            $extensionName,
-            $this->resolver->resolveControllerNameFromControllerClassName(get_class($this)),
-            $controllerActionName,
-            $this->provider->getPluginName() ?? $this->provider->getControllerNameFromRecord($record)
-        );
-        if (method_exists($renderingContext, 'setRequest')) {
-            $renderingContext->setRequest($this->request);
+        $templatePathAndFilename = null;
+        if ($this->provider instanceof FluidProviderInterface) {
+            $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($record);
         }
-        $renderingContext->setTemplatePaths($templatePaths);
-        $renderingContext->setControllerAction($controllerActionName);
 
-        $view->setRenderingContext($renderingContext);
+        $view = $this->viewBuilder->buildTemplateView(
+            $extensionKey,
+            $this->resolver->resolveControllerNameFromControllerClassName(get_class($this)),
+            $this->provider->getControllerActionFromRecord($record),
+            $this->provider->getPluginName() ?? $this->provider->getControllerNameFromRecord($record),
+            $templatePathAndFilename,
+            $this->request
+        );
+
+        $renderingContext = $view->getRenderingContext();
 
         $this->initializeViewVariables($view);
         $this->initializeViewHelperVariableContainer($renderingContext->getViewHelperVariableContainer());
@@ -391,10 +384,6 @@ abstract class AbstractFluxController extends ActionController
                     $this->request = $this->request->withControllerExtensionName($vendorLessExtensionName);
                 }
 
-                if (method_exists($renderingContext, 'setRequest')) {
-                    $renderingContext->setRequest($this->request);
-                }
-
                 $this->configurationManager->setConfiguration(
                     array_merge(
                         (array) $this->configurationManager->getConfiguration(
@@ -405,9 +394,6 @@ abstract class AbstractFluxController extends ActionController
                             'extensionName' => $vendorLessExtensionName,
                         ]
                     )
-                );
-                $paths->fillDefaultsByPackageName(
-                    GeneralUtility::camelCaseToLowerCaseUnderscored($vendorLessExtensionName)
                 );
                 $paths->setTemplatePathAndFilename((string) $templatePathAndFilename);
             }

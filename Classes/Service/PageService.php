@@ -28,7 +28,6 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
-use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3Fluid\Fluid\Component\Error\ChildNotFoundException;
 use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
 use TYPO3Fluid\Fluid\View\ViewInterface;
@@ -301,15 +300,13 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         TemplatePaths $templatePaths,
         \SplFileInfo $file
     ): ViewInterface {
-        /** @var TemplateView $view */
-        $view = GeneralUtility::makeInstance(TemplateView::class);
+        $view = $this->viewBuilder->buildTemplateView($extensionName, 'Page', 'default', 'Page', $file->getPathname());
         $view->getRenderingContext()->setTemplatePaths($templatePaths);
         $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
             FormViewHelper::SCOPE,
             FormViewHelper::SCOPE_VARIABLE_EXTENSIONNAME,
             $extensionName
         );
-        $templatePaths->setTemplatePathAndFilename($file->getPathname());
         return $view;
     }
 
