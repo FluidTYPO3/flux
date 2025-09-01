@@ -11,18 +11,28 @@ namespace FluidTYPO3\Flux\Builder;
 
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Core\View\ViewFactoryData;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Extbase\Mvc\Request;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class ViewBuilder
 {
     protected RenderingContextBuilder $renderingContextBuilder;
+    protected RequestBuilder $requestBuilder;
 
-    public function __construct(RenderingContextBuilder $renderingContextBuilder)
+    public function __construct(RenderingContextBuilder $renderingContextBuilder, RequestBuilder $requestBuilder)
     {
         $this->renderingContextBuilder = $renderingContextBuilder;
+        $this->requestBuilder = $requestBuilder;
     }
 
     public function buildPreviewView(
@@ -42,24 +52,32 @@ class ViewBuilder
             $pluginName
         );
 
-        $templatePaths = $this->buildTemplatePaths($extensionIdentity);
-        if ($templatePathAndFilename) {
-            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
-        }
-        $renderingContext->setTemplatePaths($templatePaths);
-
         /** @var PreviewView $view */
-        $view = GeneralUtility::makeInstance($viewClassName);
-        $view->setRenderingContext($renderingContext);
+        $view = $this->createViewInstance(
+            $viewClassName,
+            $extensionIdentity,
+            $renderingContext,
+            $templatePathAndFilename,
+            $this->requestBuilder->buildRequestFor(
+                $extensionIdentity,
+                $controllerName,
+                $controllerAction,
+                $pluginName
+            )
+        );
         return $view;
     }
 
+    /**
+     * @param ServerRequestInterface|RequestInterface|null $request
+     */
     public function buildTemplateView(
         string $extensionIdentity,
         string $controllerName,
         string $controllerAction,
         string $pluginName,
-        ?string $templatePathAndFilename = null
+        ?string $templatePathAndFilename = null,
+        $request = null
     ): ViewInterface {
         /** @var class-string $viewClassName */
         $viewClassName = TemplateView::class;
@@ -71,16 +89,13 @@ class ViewBuilder
             $pluginName
         );
 
-        $templatePaths = $this->buildTemplatePaths($extensionIdentity);
-        if ($templatePathAndFilename) {
-            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
-        }
-        $renderingContext->setTemplatePaths($templatePaths);
-
-        /** @var TemplateView $view */
-        $view = GeneralUtility::makeInstance($viewClassName);
-        $view->setRenderingContext($renderingContext);
-        return $view;
+        return $this->createViewInstance(
+            $viewClassName,
+            $extensionIdentity,
+            $renderingContext,
+            $templatePathAndFilename,
+            $request
+        );
     }
 
     /**
@@ -91,6 +106,18 @@ class ViewBuilder
     {
         /** @var TemplatePaths $paths */
         $paths = GeneralUtility::makeInstance(TemplatePaths::class);
+
+        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+            if (!is_array($extensionKeyOrConfiguration)) {
+                $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKeyOrConfiguration);
+                $resources = ExtensionManagementUtility::extPath($extensionKey) . 'Resources/Private/';
+                $extensionKeyOrConfiguration = [
+                    TemplatePaths::CONFIG_TEMPLATEROOTPATHS => [$resources . 'Templates/'],
+                    TemplatePaths::CONFIG_PARTIALROOTPATHS => [$resources . 'Partials/'],
+                    TemplatePaths::CONFIG_LAYOUTROOTPATHS => [$resources . 'Layouts/'],
+                ];
+            }
+        }
 
         if (is_array($extensionKeyOrConfiguration)) {
             $paths->setTemplateRootPaths($extensionKeyOrConfiguration[TemplatePaths::CONFIG_TEMPLATEROOTPATHS]);
@@ -119,6 +146,53 @@ class ViewBuilder
         return $paths;
     }
 
+    /**
+     * @param string&class-string $viewClassName
+     * @param ServerRequestInterface|RequestInterface|null $request
+     */
+    protected function createViewInstance(
+        string $viewClassName,
+        string $extensionIdentity,
+        RenderingContextInterface $renderingContext,
+        ?string $templatePathAndFilename,
+        $request = null
+    ): ViewInterface {
+        if (interface_exists(ViewFactoryInterface::class)) {
+            $templatePaths = $this->buildTemplatePaths($extensionIdentity);
+
+            $viewFactoryData = GeneralUtility::makeInstance(
+                ViewFactoryData::class,
+                $templatePaths->getTemplateRootPaths(),
+                $templatePaths->getPartialRootPaths(),
+                $templatePaths->getLayoutRootPaths(),
+                $templatePathAndFilename,
+                $request
+            );
+            /** @var ViewFactoryInterface $factory */
+            $factory = GeneralUtility::makeInstance(ViewFactoryInterface::class);
+            /** @var ViewInterface $view */
+            $view = $factory->create($viewFactoryData);
+        } else {
+            $templatePaths = $this->buildTemplatePaths($extensionIdentity);
+            if ($templatePathAndFilename) {
+                $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
+            }
+            $renderingContext->setTemplatePaths($templatePaths);
+
+            if ($request && method_exists($renderingContext, 'setRequest')) {
+                $renderingContext->setRequest($request);
+            }
+
+            /** @var ViewInterface $view */
+            $view = GeneralUtility::makeInstance($viewClassName);
+            if (method_exists($view, 'setRenderingContext')) {
+                $view->setRenderingContext($renderingContext);
+            }
+        }
+
+        return $view;
+    }
+    
     private function createFluidPathSet(string $extensionKey, string $subPath): array
     {
         return [
