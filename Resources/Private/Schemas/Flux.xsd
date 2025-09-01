@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://typo3.org/ns/FluidTYPO3/Flux/ViewHelpers">
+  <xsd:element name="abstract">
+    <xsd:annotation>
+      <xsd:documentation><![CDATA[]]></xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType mixed="true">
+      <xsd:sequence>
+        <xsd:any minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="content.get">
     <xsd:annotation>
       <xsd:documentation><![CDATA[Gets all child content of a record based on area.
