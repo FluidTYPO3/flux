@@ -105,10 +105,22 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
         $this->resolver = new Resolver();
 
-        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
-            ->onlyMethods(['buildTemplatePaths'])
+        $viewHelperVariableContainer = $this->getMockBuilder(ViewHelperVariableContainer::class)->getMock();
+
+        $renderingContext = $this->getMockBuilder(RenderingContextInterface::class)->getMock();
+        $renderingContext->method('getViewHelperVariableContainer')->willReturn($viewHelperVariableContainer);
+
+        $view = $this->getMockBuilder(TemplateView::class)
+            ->onlyMethods(['getRenderingContext'])
             ->disableOriginalConstructor()
             ->getMock();
+        $view->method('getRenderingContext')->willReturn($renderingContext);
+
+        $this->viewBuilder = $this->getMockBuilder(ViewBuilder::class)
+            ->onlyMethods(['buildTemplatePaths', 'buildTemplateView'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->viewBuilder->method('buildTemplateView')->willReturn($view);
 
         parent::setUp();
     }

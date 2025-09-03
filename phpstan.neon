@@ -17,6 +17,7 @@ parameters:
         - "#^Call to an undefined method TYPO3\\\\CMS\\\\Core\\\\Page\\\\PageRenderer\\:\\:loadRequireJsModule\\(\\)\\.$#"
         - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
         - "#^Call to an undefined method TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface\\:\\:renderSection\\(\\)\\.$#"
+        - "#^Call to an undefined static method FluidTYPO3\\\\Flux\\\\ViewHelpers\\\\AbstractViewHelper\\:\\:renderStatic\\(\\)\\.$#"
 
         - "#(invalid (return )?type|unknown class) Doctrine\\\\DBAL\\\\FetchMode#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\AfterPageColumnsSelectedForLocalizationEvent#"
@@ -47,6 +48,8 @@ parameters:
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\ResponseInterface not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response not found\\.$#"
+        - "#^Class TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Core\\\\View\\\\ViewFactoryData not found\\.$#"
 
         - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection#"
         - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException#"

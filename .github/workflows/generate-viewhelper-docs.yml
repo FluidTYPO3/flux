@@ -37,6 +37,7 @@ jobs:
         if: ${{ contains(github.event.head_commit.message, '[TASK] Update XSD schema') }}
         working-directory: ./generator
         run: |
+          composer req "typo3fluid/fluid:~4.4.2"
           echo "${{steps.set_changedfile.outputs.changedfile}}"
           composer install --no-dev -n -o --no-progress
           mkdir -p schemas/fluidtypo3/flux/development/

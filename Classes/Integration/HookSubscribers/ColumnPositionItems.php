@@ -27,6 +27,9 @@ class ColumnPositionItems
      */
     public function colPosListItemProcFunc(array &$parameters): void
     {
+        if (!isset($parameters['row']['colPos'])) {
+            return;
+        }
         $parentRecordUid = ColumnNumberUtility::calculateParentUid($parameters['row']['colPos']);
         $parentRecord = $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
         $provider = $this->providerResolver->resolvePrimaryConfigurationProvider('tt_content', null, $parentRecord);
