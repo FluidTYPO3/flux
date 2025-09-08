@@ -52,19 +52,18 @@ class ViewBuilder
             $pluginName
         );
 
-        /** @var PreviewView $view */
-        $view = $this->createViewInstance(
-            $viewClassName,
-            $extensionIdentity,
-            $renderingContext,
-            $templatePathAndFilename,
-            $this->requestBuilder->buildRequestFor(
-                $extensionIdentity,
-                $controllerName,
-                $controllerAction,
-                $pluginName
-            )
-        );
+        $templatePaths = $this->buildTemplatePaths($extensionIdentity);
+        if ($templatePathAndFilename) {
+            $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
+        }
+        $renderingContext->setTemplatePaths($templatePaths);
+
+        /** @var ViewInterface&PreviewView $view */
+        $view = GeneralUtility::makeInstance($viewClassName);
+        if (method_exists($view, 'setRenderingContext')) {
+            $view->setRenderingContext($renderingContext);
+        }
+
         return $view;
     }
 
