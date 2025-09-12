@@ -31,6 +31,7 @@ parameters:
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Core\\\\Event\\\\BootCompletedEvent#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Http\\\\JsonResponse#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\TemplateService#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\FrontendTyposcript#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ControllerContext#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\View\\\\ViewInterface#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response#"

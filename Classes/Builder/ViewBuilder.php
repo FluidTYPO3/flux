@@ -158,7 +158,9 @@ class ViewBuilder
         $request = null
     ): ViewInterface {
         $typoScriptViewConfiguration = null;
-        if ($request && ($typoScript = $request->getAttribute('frontend.typoscript')) instanceof FrontendTypoScript) {
+        if ($request instanceof ServerRequestInterface
+            && ($typoScript = $request->getAttribute('frontend.typoscript')) instanceof FrontendTypoScript
+        ) {
             $extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionIdentity);
             $typoScriptViewConfiguration = GeneralUtility::removeDotsFromTS(
                 $typoScript->getSetupArray()['plugin.']['tx_' . $extensionSignature . '.']['view.'] ?? []
