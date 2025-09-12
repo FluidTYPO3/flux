@@ -45,6 +45,7 @@ parameters:
         - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutView not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\AST\\\\Node\\\\RootNode not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\FrontendTyposcript not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\ResponseInterface not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Request not found\\.$#"
