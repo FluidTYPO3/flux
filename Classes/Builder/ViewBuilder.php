@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Builder;
  */
 
 use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
@@ -29,11 +30,16 @@ class ViewBuilder
 {
     protected RenderingContextBuilder $renderingContextBuilder;
     protected RequestBuilder $requestBuilder;
+    protected TypoScriptService $typoScriptService;
 
-    public function __construct(RenderingContextBuilder $renderingContextBuilder, RequestBuilder $requestBuilder)
-    {
+    public function __construct(
+        RenderingContextBuilder $renderingContextBuilder,
+        RequestBuilder $requestBuilder,
+        TypoScriptService $typoScriptService
+    ) {
         $this->renderingContextBuilder = $renderingContextBuilder;
         $this->requestBuilder = $requestBuilder;
+        $this->typoScriptService = $typoScriptService;
     }
 
     public function buildPreviewView(
@@ -157,12 +163,16 @@ class ViewBuilder
         $request = null
     ): ViewInterface {
         $typoScriptViewConfiguration = null;
+        $extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionIdentity);
         if ($request instanceof ServerRequestInterface
             && ($typoScript = $request->getAttribute('frontend.typoscript')) instanceof FrontendTypoScript
         ) {
-            $extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionIdentity);
             $typoScriptViewConfiguration = GeneralUtility::removeDotsFromTS(
                 $typoScript->getSetupArray()['plugin.']['tx_' . $extensionSignature . '.']['view.'] ?? []
+            );
+        } else {
+            $typoScriptViewConfiguration = (array) $this->typoScriptService->getTypoScriptByPath(
+                'plugin.tx_' . $extensionSignature . '.view'
             );
         }
 

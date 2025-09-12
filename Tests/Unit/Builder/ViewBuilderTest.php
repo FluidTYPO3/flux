@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Builder\RenderingContextBuilder;
 use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Integration\PreviewView;
+use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\View\ViewInterface;
@@ -23,6 +24,7 @@ class ViewBuilderTest extends AbstractTestCase
 {
     protected RenderingContextBuilder $renderingContextBuilder;
     protected RequestBuilder $requestBuilder;
+    protected TypoScriptService $typoScriptService;
 
     protected function setUp(): void
     {
@@ -34,7 +36,11 @@ class ViewBuilderTest extends AbstractTestCase
         $this->requestBuilder = $this->getMockBuilder(RequestBuilder::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->renderingContextBuilder->method('buildRenderingContextFor')->willReturn($renderingContext);
+        $this->typoScriptService->method('getTypoScriptByPath')->willReturn(null);
 
         parent::setUp();
     }
@@ -46,7 +52,7 @@ class ViewBuilderTest extends AbstractTestCase
 
         $subject = $this->getMockBuilder(ViewBuilder::class)
             ->onlyMethods(['buildTemplatePaths', 'createViewInstance'])
-            ->setConstructorArgs([$this->renderingContextBuilder, $this->requestBuilder])
+            ->setConstructorArgs([$this->renderingContextBuilder, $this->requestBuilder, $this->typoScriptService])
             ->getMock();
         $subject->method('buildTemplatePaths')->willReturn(new TemplatePaths());
         $subject->method('createViewInstance')->willReturn(
@@ -64,7 +70,7 @@ class ViewBuilderTest extends AbstractTestCase
 
         $subject = $this->getMockBuilder(ViewBuilder::class)
             ->onlyMethods(['buildTemplatePaths', 'createViewInstance'])
-            ->setConstructorArgs([$this->renderingContextBuilder, $this->requestBuilder])
+            ->setConstructorArgs([$this->renderingContextBuilder, $this->requestBuilder, $this->typoScriptService])
             ->getMock();
         $subject->method('buildTemplatePaths')->willReturn(new TemplatePaths());
         $subject->method('createViewInstance')->willReturn(
