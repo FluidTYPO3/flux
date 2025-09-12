@@ -139,9 +139,6 @@ class PreviewView extends TemplateView
         $renderingContext = $this->getRenderingContext();
         $renderingContext->setControllerName($provider->getControllerNameFromRecord($row));
         $renderingContext->setControllerAction($provider->getControllerActionFromRecord($row));
-        $renderingContext->getTemplatePaths()->fillDefaultsByPackageName(
-            ExtensionNamingUtility::getExtensionKey($extensionKey)
-        );
         $renderingContext->getTemplatePaths()->setTemplatePathAndFilename($templatePathAndFilename);
         return $this->renderSection('Preview', $variables, true);
     }
