@@ -12,6 +12,7 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
@@ -156,9 +157,21 @@ class ViewBuilder
         ?string $templatePathAndFilename,
         $request = null
     ): ViewInterface {
-        if (interface_exists(ViewFactoryInterface::class)) {
-            $templatePaths = $this->buildTemplatePaths($extensionIdentity);
+        $typoScriptViewConfiguration = null;
+        if ($request && ($typoScript = $request->getAttribute('frontend.typoscript')) instanceof FrontendTypoScript) {
+            $extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionIdentity);
+            $typoScriptViewConfiguration = GeneralUtility::removeDotsFromTS(
+                $typoScript->getSetupArray()['plugin.']['tx_' . $extensionSignature . '.']['view.'] ?? []
+            );
+        }
 
+        if (!empty($typoScriptViewConfiguration)) {
+            $templatePaths = $this->buildTemplatePaths($typoScriptViewConfiguration);
+        } else {
+            $templatePaths = $this->buildTemplatePaths($extensionIdentity);
+        }
+
+        if (interface_exists(ViewFactoryInterface::class)) {
             $viewFactoryData = GeneralUtility::makeInstance(
                 ViewFactoryData::class,
                 $templatePaths->getTemplateRootPaths(),
@@ -172,7 +185,6 @@ class ViewBuilder
             /** @var ViewInterface $view */
             $view = $factory->create($viewFactoryData);
         } else {
-            $templatePaths = $this->buildTemplatePaths($extensionIdentity);
             if ($templatePathAndFilename) {
                 $templatePaths->setTemplatePathAndFilename($templatePathAndFilename);
             }
