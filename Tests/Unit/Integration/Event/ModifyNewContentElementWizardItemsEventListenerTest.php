@@ -11,6 +11,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Event;
 use FluidTYPO3\Flux\Integration\Event\ModifyNewContentElementWizardItemsEventListener;
 use FluidTYPO3\Flux\Integration\WizardItemsManipulator;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 
 class ModifyNewContentElementWizardItemsEventListenerTest extends AbstractTestCase
@@ -31,7 +32,8 @@ class ModifyNewContentElementWizardItemsEventListenerTest extends AbstractTestCa
             ->getMock();
         $manipulator->method('manipulateWizardItems')->willReturn(['foo' => 'bar']);
 
-        $event = new ModifyNewContentElementWizardItemsEvent([], ['uid' => 123], 0, 1, 1);
+        $requestMock = $this->getMockBuilder(ServerRequestInterface::class)->getMock();
+        $event = new ModifyNewContentElementWizardItemsEvent([], ['uid' => 123], 0, 1, 1, $requestMock);
 
         $subject = new ModifyNewContentElementWizardItemsEventListener($manipulator);
         $subject->manipulateWizardItems($event);
