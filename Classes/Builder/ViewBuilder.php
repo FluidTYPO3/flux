@@ -126,11 +126,6 @@ class ViewBuilder
         } else {
             $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKeyOrConfiguration);
             try {
-                $paths->fillDefaultsByPackageName($extensionKey);
-            } catch (\RuntimeException $exception) {
-                if ($exception->getCode() !== 1700841298) {
-                    throw $exception;
-                }
                 $paths->setTemplateRootPaths(
                     $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_TEMPLATES_DIRECTORY)
                 );
@@ -140,6 +135,10 @@ class ViewBuilder
                 $paths->setPartialRootPaths(
                     $this->createFluidPathSet($extensionKey, TemplatePaths::DEFAULT_PARTIALS_DIRECTORY)
                 );
+            } catch (\RuntimeException $exception) {
+                if ($exception->getCode() !== 1700841298) {
+                    throw $exception;
+                }
             }
         }
 
