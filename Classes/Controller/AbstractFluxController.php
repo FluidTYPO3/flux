@@ -59,6 +59,7 @@ abstract class AbstractFluxController extends ActionController
     protected ?string $fluxRecordField = 'pi_flexform';
     protected ?string $fluxTableName = 'tt_content';
     protected array $data = [];
+    private ?array $record = null;
 
     protected RenderingContextBuilder $renderingContextBuilder;
     protected RequestBuilder $requestBuilder;
@@ -539,6 +540,10 @@ abstract class AbstractFluxController extends ActionController
 
     public function getRecord(): array
     {
+        if ($this->record !== null) {
+            return $this->record;
+        }
+
         $contentObject = $this->getContentObject();
         if ($contentObject === null) {
             throw new \UnexpectedValueException(
@@ -582,7 +587,7 @@ abstract class AbstractFluxController extends ActionController
                 ) ?? $record
             );
         }
-        return $record;
+        return $this->record = $record;
     }
 
     protected function getContentObject(): ?ContentObjectRenderer
