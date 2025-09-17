@@ -32,6 +32,23 @@ class FalViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
+    public function supportsDescription()
+    {
+        $arguments = [
+            'name' => 'test',
+            'description' => 'testdesc'
+        ];
+        $instance = $this->buildViewHelperInstance($arguments, []);
+        $component = $instance->getComponent(
+            $this->renderingContext,
+            $this->buildViewHelperArguments($instance, $arguments)
+        );
+        $this->assertEquals($arguments['description'], $component->getDescription());
+    }
+
+    /**
+     * @test
+     */
     public function supportsHeaderThumbnail()
     {
         $arguments = [

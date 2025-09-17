@@ -17,6 +17,20 @@ class TextViewHelperTest extends AbstractFieldViewHelperTestCase
     /**
      * @test
      */
+    public function supportsDescription()
+    {
+        $arguments = ['name' => 'test', 'description' => 'testdesc'];
+        $instance = $this->buildViewHelperInstance($arguments);
+        $component = $instance->getComponent(
+            $this->getInaccessiblePropertyValue($instance, 'renderingContext'),
+            $this->getInaccessiblePropertyValue($instance, 'arguments')
+        );
+        $this->assertSame($arguments['description'], $component->getDescription());
+    }
+
+    /**
+     * @test
+     */
     public function supportsPlaceholders()
     {
         $arguments = ['name' => 'test', 'placeholder' => 'test'];
