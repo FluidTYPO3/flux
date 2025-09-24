@@ -190,11 +190,24 @@ class WizardItemsManipulatorTest extends AbstractTestCase
         $this->assertNotEmpty($items);
     }
 
-    public function testManipulateWizardItemsFiltersAllowedContentTypes(): void
+    public function testManipulateWizardItemsFiltersAllowedContentTypesWithStringSetting(): void
+    {
+        $this->runManipulateWizardItemsFiltersAllowedContentTypes('type1');
+    }
+
+    public function testManipulateWizardItemsFiltersAllowedContentTypesWithArraySetting(): void
+    {
+        $this->runManipulateWizardItemsFiltersAllowedContentTypes(['type1']);
+    }
+
+    /**
+     * @param array|string $contentTypeSetting
+     */
+    public function runManipulateWizardItemsFiltersAllowedContentTypes($contentTypeSetting): void
     {
         $this->contentTypeManager->method('fetchContentTypeNames')->willReturn(['type1', 'type2']);
         $this->siteFinder->method('getSiteByPageId')->willReturn($this->site);
-        $this->site->method('getConfiguration')->willReturn(['flux_content_types' => 'type1']);
+        $this->site->method('getConfiguration')->willReturn(['flux_content_types' => $contentTypeSetting]);
 
         $type1 = ['tt_content_defValues' => ['CType' => 'type1'], 'params' => ''];
         $type2 = ['tt_content_defValues' => ['CType' => 'type2'], 'params' => ''];

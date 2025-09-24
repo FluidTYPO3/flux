@@ -40,11 +40,15 @@ class ProviderProcessor implements FormDataProviderInterface
                 try {
                     $site = $this->siteFinder->getSiteByPageId($pageUid);
                     $siteConfiguration = $site->getConfiguration();
-                    $enabledContentTypes = GeneralUtility::trimExplode(
-                        ',',
-                        $siteConfiguration['flux_content_types'] ?? '',
-                        true
-                    );
+                    if (is_array($siteConfiguration['flux_content_types'] ?? null)) {
+                        $enabledContentTypes = $siteConfiguration['flux_content_types'];
+                    } else {
+                        $enabledContentTypes = GeneralUtility::trimExplode(
+                            ',',
+                            $siteConfiguration['flux_content_types'] ?? '',
+                            true
+                        );
+                    }
                 } catch (SiteNotFoundException $exception) {
                     // Suppressed; sites not being found isn't a fatal problem here.
                 }

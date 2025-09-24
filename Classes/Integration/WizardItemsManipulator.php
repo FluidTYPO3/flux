@@ -36,11 +36,15 @@ class WizardItemsManipulator
         try {
             $site = $this->siteFinder->getSiteByPageId($pageUid);
             $siteConfiguration = $site->getConfiguration();
-            $enabledContentTypes = GeneralUtility::trimExplode(
-                ',',
-                $siteConfiguration['flux_content_types'] ?? '',
-                true
-            );
+            if (is_array($siteConfiguration['flux_content_types'] ?? null)) {
+                $enabledContentTypes = $siteConfiguration['flux_content_types'];
+            } else {
+                $enabledContentTypes = GeneralUtility::trimExplode(
+                    ',',
+                    $siteConfiguration['flux_content_types'] ?? '',
+                    true
+                );
+            }
             if (!empty($enabledContentTypes)) {
                 $fluxContentTypeNames = (array) $this->contentTypeManager->fetchContentTypeNames();
                 $items = array_filter(
