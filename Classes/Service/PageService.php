@@ -254,7 +254,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                     continue;
                 }
 
-                $view = $this->createViewInstance($extensionName, $templatePaths, $file);
+                $view = $this->createViewInstance($extensionName, clone $templatePaths, $file);
                 try {
                     $view->renderSection('Configuration');
                     $form = $view->getRenderingContext()
@@ -301,6 +301,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         TemplatePaths $templatePaths,
         \SplFileInfo $file
     ): ViewInterface {
+        $templatePaths->setTemplatePathAndFilename($file->getPathname());
         $view = $this->viewBuilder->buildTemplateView($extensionName, 'Page', 'default', 'Page', $file->getPathname());
         $view->getRenderingContext()->setTemplatePaths($templatePaths);
         $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(
