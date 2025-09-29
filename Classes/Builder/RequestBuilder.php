@@ -102,7 +102,9 @@ class RequestBuilder implements SingletonInterface
                 []
             );
             $frontendTypoScript->setSetupArray([]);
-            $frontendTypoScript->setConfigArray(['cache_clearAtMidnight' => true]);
+            if (method_exists($frontendTypoScript, 'setConfigArray')) {
+                $frontendTypoScript->setConfigArray(['cache_clearAtMidnight' => true]);
+            }
             $request = $request->withAttribute('frontend.typoscript', $frontendTypoScript);
         }
         return $request;
