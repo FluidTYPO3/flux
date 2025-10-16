@@ -30,6 +30,7 @@ use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\Component\Error\ChildNotFoundException;
 use TYPO3Fluid\Fluid\View\Exception\InvalidSectionException;
+use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
@@ -253,7 +254,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                     continue;
                 }
 
-                $view = $this->createViewInstance($extensionName, $templatePaths, $file);
+                $view = $this->createViewInstance($extensionName, clone $templatePaths, $file);
                 try {
                     $view->renderSection('Configuration');
                     $form = $view->getRenderingContext()
@@ -281,7 +282,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
                     $form->setOption(FormOption::TEMPLATE_FILE_RELATIVE, substr($file->getRelativePathname(), 5, -5));
                     $form->setExtensionName($extensionName);
                     $output[$extensionName][$filename] = $form;
-                } catch (InvalidSectionException | ChildNotFoundException $error) {
+                } catch (InvalidSectionException | ChildNotFoundException | InvalidTemplateResourceException $error) {
                     if ($this->logger instanceof LoggerInterface) {
                         $this->logger->log('error', $error->getMessage());
                     }
@@ -300,6 +301,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         TemplatePaths $templatePaths,
         \SplFileInfo $file
     ): ViewInterface {
+        $templatePaths->setTemplatePathAndFilename($file->getPathname());
         $view = $this->viewBuilder->buildTemplateView($extensionName, 'Page', 'default', 'Page', $file->getPathname());
         $view->getRenderingContext()->setTemplatePaths($templatePaths);
         $view->getRenderingContext()->getViewHelperVariableContainer()->addOrUpdate(

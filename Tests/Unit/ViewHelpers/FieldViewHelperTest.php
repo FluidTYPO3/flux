@@ -16,4 +16,18 @@ class FieldViewHelperTest extends AbstractFieldViewHelperTestCase
         'name' => 'test',
         'type' => 'input',
     ];
+
+    /**
+     * @test
+     */
+    public function supportsDescription()
+    {
+        $arguments = ['name' => 'test', 'type' => 'input', 'description' => 'testdesc'];
+        $instance = $this->buildViewHelperInstance($arguments);
+        $component = $instance->getComponent(
+            $this->getInaccessiblePropertyValue($instance, 'renderingContext'),
+            $this->getInaccessiblePropertyValue($instance, 'arguments')
+        );
+        $this->assertSame($arguments['description'], $component->getDescription());
+    }
 }

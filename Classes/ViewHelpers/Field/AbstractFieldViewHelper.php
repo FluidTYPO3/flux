@@ -30,6 +30,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
             'the name of the field.'
         );
         $this->registerArgument('default', 'string', 'Default value for this attribute');
+        $this->registerArgument('description', 'string', 'Field description', false);
         $this->registerArgument(
             'native',
             'boolean',
@@ -161,6 +162,7 @@ abstract class AbstractFieldViewHelper extends AbstractFormViewHelper
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
         $component->setDefault($arguments['default']);
+        $component->setDescription($arguments['description']);
         $component->setRequired($arguments['required']);
         $component->setExclude($arguments['exclude']);
         $component->setEnabled($arguments['enabled']);
