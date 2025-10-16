@@ -82,6 +82,19 @@ default
 :aspect:`Description`
    Default value for this attribute
 
+.. _field.multirelation_description:
+
+description
+-----------
+
+:aspect:`DataType`
+   string
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field description
+
 .. _field.multirelation_native:
 
 native

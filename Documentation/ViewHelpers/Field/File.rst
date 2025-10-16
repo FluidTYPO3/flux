@@ -68,6 +68,19 @@ default
 :aspect:`Description`
    Default value for this attribute
 
+.. _field.file_description:
+
+description
+-----------
+
+:aspect:`DataType`
+   string
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field description
+
 .. _field.file_native:
 
 native
