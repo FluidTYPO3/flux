@@ -29,7 +29,8 @@ class RequestBuilder implements SingletonInterface
         string $controllerName,
         string $controllerActionName,
         string $pluginName,
-        array $arguments = []
+        array $arguments = [],
+        array $attributes = []
     ): RequestInterface {
         $serverRequest = $this->getServerRequest();
 
@@ -75,6 +76,12 @@ class RequestBuilder implements SingletonInterface
         }
         if (method_exists($request, 'setBaseUri')) {
             $request->setBaseUri($this->getEnvironmentVariable('TYPO3_SITE_URL'));
+        }
+
+        // Transfer original request attributes, except for the rebuilt "extbase" attribute
+        unset($attributes['extbase']);
+        foreach ($attributes as $attributeName => $attributeValue) {
+            $request = $request->withAttribute($attributeName, $attributeValue);
         }
 
         return $request;
