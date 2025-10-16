@@ -273,6 +273,11 @@ Defines a single field data structure.
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -429,6 +434,11 @@ is not important; the order and the sheet location don't matter.
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
@@ -650,6 +660,11 @@ is not important; the order and the sheet location don't matter.
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -766,6 +781,11 @@ is not important; the order and the sheet location don't matter.
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -876,6 +896,11 @@ Use `<flux:field.inline.fal>` if you want this feature.
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
@@ -1067,6 +1092,11 @@ Use `<flux:field.inline.fal>` if you want this feature.
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
@@ -1461,6 +1491,11 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -1804,6 +1839,11 @@ The crop configuration can now be passed to the image viewhelper:
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -1957,6 +1997,11 @@ Add a wizard to search for content elements, instead of opening a popup:
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
@@ -2208,6 +2253,11 @@ but which cannot be edited.
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -2307,6 +2357,11 @@ but which cannot be edited.
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
@@ -2492,6 +2547,11 @@ https://docs.typo3.org/typo3cms/TCAReference/ColumnsConfig/Type/Select.html#fore
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
@@ -2766,6 +2826,11 @@ You can translate those labels by putting a LLL reference in the first property:
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -2932,6 +2997,11 @@ You can translate those labels by putting a LLL reference in the first property:
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -3076,6 +3146,11 @@ You can translate those labels by putting a LLL reference in the first property:
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
@@ -3359,6 +3434,11 @@ You can translate those labels by putting a LLL reference in the first property:
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[If TRUE, this field will treated as a native TCA field (requiring a matching SQL column). If the "name" of this field is an already existing field, that original field will be replaced by this field. If the field is a new field (which doesn't already exist in TCA). You can control where this field visually appears in the editing form by specifying the "position" argument, which supports the same syntax as \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes (after:X before:X and replace:X). Note that when declaring a field as "native" it will no longer be rendered as part of the FlexForm where Flux fields are normally rendered.]]></xsd:documentation>
@@ -3638,6 +3718,11 @@ You can translate those labels by putting a LLL reference in the first property:
       <xsd:attribute type="xsd:string" name="default" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Default value for this attribute]]></xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute type="xsd:string" name="description" default="NULL">
+        <xsd:annotation>
+          <xsd:documentation><![CDATA[Field description]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="native" default="false">
