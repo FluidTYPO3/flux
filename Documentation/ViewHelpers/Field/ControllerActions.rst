@@ -116,6 +116,19 @@ default
 :aspect:`Description`
    Default value for this attribute
 
+.. _field.controlleractions_description:
+
+description
+-----------
+
+:aspect:`DataType`
+   string
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field description
+
 .. _field.controlleractions_native:
 
 native
