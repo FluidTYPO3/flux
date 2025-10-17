@@ -39,7 +39,7 @@ class OptionViewHelper extends AbstractFormViewHelper
         /** @var string $option */
         $option = $arguments['name'] ?? static::$option;
         $container = static::getContainerFromRenderingContext($renderingContext);
-        $value = $renderChildrenClosure();
+        $value = $arguments['value'] ?? $renderChildrenClosure();
         if ($container instanceof OptionCarryingInterface) {
             $container->setOption($option, $value);
             return '';
