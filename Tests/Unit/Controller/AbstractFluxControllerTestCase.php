@@ -655,9 +655,9 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->setConstructorArgs($this->getConstructorArguments())
             ->getMock();
 
-        $instance->method('getServerRequest')->willReturn(
-            $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
-        );
+        $serverRequest = $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass();
+        $serverRequest->method('getAttributes')->willReturn([]);
+        $instance->method('getServerRequest')->willReturn($serverRequest);
 
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
 

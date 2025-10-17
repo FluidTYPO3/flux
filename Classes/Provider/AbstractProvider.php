@@ -430,7 +430,7 @@ class AbstractProvider implements ProviderInterface
     public function getFlexFormValues(array $row, ?string $forField = null): array
     {
         $fieldName = $forField ?? $this->getFieldName($row);
-        $form = $this->getForm($row);
+        $form = $this->getForm($row, $fieldName);
         return $this->formDataTransformer->convertFlexFormContentToArray($row[$fieldName] ?? '', $form);
     }
 

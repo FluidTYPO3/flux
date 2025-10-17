@@ -4,7 +4,7 @@
 fluidtypo3/flux
 ===============
 
-* 4 ViewHelpers documented
+* 5 ViewHelpers documented
 * 4 Sub namespaces
 
 .. toctree::
@@ -12,6 +12,7 @@ fluidtypo3/flux
    :glob:
 
    */Index
+   Abstract
    Field
    Form
    Grid

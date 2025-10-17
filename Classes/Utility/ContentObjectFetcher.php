@@ -15,10 +15,12 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class ContentObjectFetcher
 {
-    public static function resolve(?ConfigurationManagerInterface $configurationManager = null): ?ContentObjectRenderer
-    {
+    public static function resolve(
+        ?ConfigurationManagerInterface $configurationManager = null,
+        ?ServerRequestInterface $request = null
+    ): ?ContentObjectRenderer {
         $contentObject = null;
-        $request = $configurationManager !== null && method_exists($configurationManager, 'getRequest')
+        $request ??= $configurationManager !== null && method_exists($configurationManager, 'getRequest')
             ? $configurationManager->getRequest()
             : ($GLOBALS['TYPO3_REQUEST'] ?? null);
 

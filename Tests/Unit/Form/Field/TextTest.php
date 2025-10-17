@@ -41,6 +41,15 @@ class TextTest extends InputTest
         $this->assertTrue($instance->getEnableRichText());
     }
 
+    public function testBuildDescription()
+    {
+        $subject = Text::create(['name' => 'test', 'description' => 'desc']);
+        $config = $subject->build();
+        $this->assertArrayHasKey('label', $config);
+        $this->assertArrayHasKey('description', $config);
+        $this->assertEquals('desc', $config['description']);
+    }
+
     public function testBuildConfigurationWithRteResolving(): void
     {
         $subject = $this->getMockBuilder(Text::class)

@@ -364,7 +364,7 @@ abstract class AbstractFluxController extends ActionController
             /** @var ResponseInterface $response */
             $response = GeneralUtility::makeInstance(Response::class);
         }
-    
+
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         $foreignControllerClass = null;
         $content = null;
@@ -470,7 +470,8 @@ abstract class AbstractFluxController extends ActionController
             ),
             $controllerActionName,
             $pluginName,
-            $arguments
+            $arguments,
+            $serverRequest->getAttributes()
         );
 
         /** @var ControllerInterface $potentialControllerInstance */
@@ -565,6 +566,10 @@ abstract class AbstractFluxController extends ActionController
             );
         }
 
+        if (!empty($contentObject->data)) {
+            return $this->record = $contentObject->data;
+        }
+
         [$table, $recordUid] = GeneralUtility::trimExplode(
             ':',
             $tsfe->currentRecord ?: $contentObject->currentRecord
@@ -592,11 +597,17 @@ abstract class AbstractFluxController extends ActionController
 
     protected function getContentObject(): ?ContentObjectRenderer
     {
-        return ContentObjectFetcher::resolve($this->configurationManager);
+        return ContentObjectFetcher::resolve(
+            $this->configurationManager,
+            $this->request instanceof ServerRequestInterface ? $this->request : null
+        );
     }
 
     protected function getServerRequest(): ServerRequestInterface
     {
+        if ($this->request instanceof ServerRequestInterface) {
+            return $this->request;
+        }
         /** @var ServerRequestInterface $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
         return $request;

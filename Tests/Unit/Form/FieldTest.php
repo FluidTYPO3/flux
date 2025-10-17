@@ -60,6 +60,20 @@ class FieldTest extends AbstractTestCase
         );
     }
 
+    public function testBuildSupportsDescription(): void
+    {
+        $settings = [
+            'type' => 'input',
+            'name' => 'test',
+            'description' => 'desc',
+        ];
+        $subject = Field::create($settings);
+        $output = $subject->build();
+
+        self::assertArrayHasKey('description', $output);
+        self::assertEquals('desc', $output['description']);
+    }
+
     public function testCanGetAndSetType(): void
     {
         $this->assertGetterAndSetterWorks('type', 'sometype', null, true);
