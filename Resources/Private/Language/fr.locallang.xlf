@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" product-name="flux" date="2025-0914-05T14:13:00+01:00">
+		<header/>
+		<body>
+			<trans-unit id="siteConfiguration.tab">
+				<target>Fournisseurs Flux</target>
+			</trans-unit>
+			<trans-unit id="siteConfiguration.pageTemplates">
+				<target>Mises en page/modèles de page disponibles (une sélection vide signifie tout autoriser)</target>
+			</trans-unit>
+			<trans-unit id="siteConfiguration.contentTypes">
+				<target>Types de contenu disponibles (une sélection vide signifie tout autoriser)</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.debugMode">
+				<target>Mode Debug : Affiche les informations de débogage pour chaque modèle Flux rendu et chaque ConfigurationProvider utilisé. La valeur "0" (production) désactive les messages de débogage et peut supprimer les exceptions. La valeur "1" (développement) affiche tous les messages de débogage. La valeur "2" (pré-production, test) n'affiche que les messages d'erreurs graves.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.handleErrors">
+				<target>Gestion des erreurs : Si activé, tous les contrôleurs Flux sont autorisés à gérer leurs propres erreurs de manière beaucoup plus flexible que la gestion traditionnelle des erreurs. Activez cette option avec précaution : si votre extension, votre contenu ou votre collection de modèles de page ne contient pas de modèle Error.html, votre site risque de planter avec une erreur basique et peu informative du type "Modèle introuvable pour l'action foobar". Cependant, si cette option est activée et combinée avec des modèles d'erreur appropriés, vous pouvez personnaliser presque toutes les erreurs qui pourraient survenir lorsqu'un sous-contrôleur Flux est en jeu. Il est préférable de désactiver cette option sur les sites de développement, sauf si vous développez précisément des modèles d'erreur, car cela limite considérablement la sortie de débogage.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.autoload">
+				<target>Initialisation automatique : Si activé, Flux créera automatiquement la configuration TypoScript nécessaire pour rendre les modèles Flux dans le frontend, et l'utilisera sur chaque page. Désactiver cette option enregistre plutôt un fichier TypoScript statique qui peut être chargé selon les besoins.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.plugAndPlay">
+				<target>Modèles Plug-and-play : Si activé, Flux créera automatiquement une structure de répertoire de modèles sous le dossier de votre projet (dossier public) dans laquelle vous pourrez placer des modèles de contenu et de page qui seront automatiquement intégrés comme types de page et de contenu.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.plugAndPlayDirectory">
+				<target>Répertoire des modèles Plug-and-play : Le nom du répertoire des modèles Plug-and-play, créé automatiquement sous le dossier du projet (dossier "public"). Vous pouvez modifier cette valeur pour utiliser un nom de répertoire différent, mais il sera toujours créé sous le dossier "public". Seuls les chemins relatifs sont autorisés - notez que l'utilisation de "../" ne fonctionnera pas car cela entraîne la suppression du chemin par TYPO3.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.doktypes">
+				<target>Doktypes : Liste CSV des doktypes auxquels ajouter les sélecteurs de mise en page, en plus des pages standard et des raccourcis par défaut (0,1,4). Les cas d'utilisation possibles sont les dossiers système (254) ou les types de page personnalisés.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.pageIntegration">
+				<target>Intégration de page : Si activé, Flux s'intégrera aux pages pour rendre les modèles que vous placez dans le dossier "Pages" sélectionnables dans les propriétés de la page (les fonctionnalités précédemment fournies par l'extension "Fluidpages"). Vous devez vider les caches système après avoir modifié cette option !</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.flexFormToIrre">
+				<target>EXPÉRIMENTAL - FlexForm-to-IRRE : Stockage de XML FlexForm en IRRE. ATTENTION - détruit les données FlexForm existantes dans la base de données lors de l'enregistrement des enregistrements ! L'activation de cette option permet à Flux de stocker les structures de données XML FlexForm sous forme d'enregistrements IRRE normalisés. En utilisant le DataAccessTrait, les classes telles que les contrôleurs peuvent lire les données dans une structure de tableau compatible avec les données FlexForm classiques.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.inheritanceMode">
+				<target>Mode par défaut d'héritage des valeurs de formulaire : Le mode par défaut est "restreint", ce qui signifie que l'héritage suit les règles de Flux avant la version 10.1.x, selon lesquelles l'héritage des variables de page ne se produit que si la page parente utilise le même modèle de page que la page enfant. Cela peut être défini comme "illimité" pour supprimer cette contrainte et permettre l'héritage lorsque les pages parent et enfant n'utilisent pas le même modèle de page. Cette option modifie la valeur par défaut globale - les modèles individuels peuvent également définir le mode utilisé par ce modèle spécifique, avec le ViewHelper flux:form.option.inheritanceMode.</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.uniqueFileFieldNames">
+				<target>Noms de champs de fichier uniques : Lorsque cette option est activée, les champs de référence FAL dans un contexte Flux seront préfixés par le nom du champ parent. Cela est fait pour garantir que les références écrites dans sys_file_reference contiennent une valeur unique dans "fieldname". Sans cette option activée, tout enregistrement qui rend le même formulaire Flux dans deux champs (par exemple, les pages lorsque les modèles "cette page" et "sous-pages" sont identiques) affichera les mêmes références dans les deux champs car le "fieldname" enregistré dans sys_file_reference est le même pour les deux contextes. Ainsi, pour éviter ce symptôme de duplication, vous pouvez préfixer la valeur "fieldname" stockée dans la base de données. Remarque : bien que cela soit géré de manière transparente lorsque vous utilisez transform="file" (et d'autres transformations de fichiers), le préfixe doit être ajouté manuellement au nom du champ lors de l'utilisation de v:resources.record.fal. LE CHANGEMENT DE CETTE OPTION RENDRA ORPHELINES TOUTES LES RELATIONS EXISTANTES - ACTIVEZ-LA POUR LES NOUVEAUX SITES, MAIS LAISSEZ LES ANCIENS SITES AVEC LA VALEUR D'OPTION QU'ILS AVAIENT À L'ORIGINE, SINON VOUS DEVREZ MIGRER VOS RÉFÉRENCES DE FICHIERS !</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.customLayoutSelector">
+				<target>Sélecteur de mise en page personnalisé : (Nécessite TYPO3 v11 ou supérieur). Si activé, utilise un sélecteur de mise en page entièrement personnalisé au lieu du type "select" par défaut pour les champs "Mises en page" dans les propriétés de la page. Le sélecteur de mise en page personnalisé peut être configuré davantage via des surcharges TCA pour TCA.pages.columns.tx_fed_page_controller_action.config et TCA.pages.columns.tx_fed_page_controller_action_sub.config. Les paramètres pris en charge sont : "iconHeight" (entier, définit la hauteur des icônes, par défaut 200), titles (booléen, indique si les titres des modèles doivent être affichés dans le sélecteur, par défaut vrai) et descriptions (booléen, indique si les descriptions des modèles doivent être affichées dans le sélecteur, par défaut vrai).</target>
+			</trans-unit>
+			<trans-unit id="content_types">
+				<target>Type de contenu basé sur Flux</target>
+			</trans-unit>
+			<trans-unit id="content_types.extension_identity">
+				<target>Identité de l'extension (format Vendeur.NomExtension, doit être votre propre extension). Détermine où les fichiers de modèle partiel et de mise en page sont résolus, et où une classe de contrôleur peut éventuellement être trouvée.</target>
+			</trans-unit>
+			<trans-unit id="content_types.icon">
+				<target>Fichier d'icône ou nom d'icône (si nom d'icône personnalisé, vous devez enregistrer manuellement l'icône dans TYPO3)</target>
+			</trans-unit>
+			<trans-unit id="content_types.content_type">
+				<target>Nom du type de contenu, doit être une valeur utilisant uniquement a-z et 0-9, mais ne commençant jamais par un chiffre, et doit utiliser le préfixe de l'extension que vous avez indiquée dans "identité de l'extension", par exemple l'extension "MyVendor.MySpecialExt" signifie que le préfixe doit être "myspecialext_".</target>
+			</trans-unit>
+			<trans-unit id="content_types.content_configuration">
+				<target>Options de configuration du type de contenu</target>
+			</trans-unit>
+			<trans-unit id="content_types.grid_configuration">
+				<target>Options de configuration de la grille</target>
+			</trans-unit>
+			<trans-unit id="content_types.template_file">
+				<target>Fichier de modèle - si vous utilisez ceci, il remplace la "source de modèle" ci-dessous. Si vous entrez également une source, elle est disponible sous {contentType.templateSource} dans votre propre modèle. Utilisez le format de référence de fichier EXT:...</target>
+			</trans-unit>
+			<trans-unit id="content_types.template_source">
+				<target>Source du modèle</target>
+			</trans-unit>
+			<trans-unit id="content_types.validation">
+				<target>Validation du type de contenu</target>
+			</trans-unit>
+			<trans-unit id="content_types.template_dump">
+				<target>Source du modèle Flux (copier-coller dans le fichier de modèle rendu par Flux)</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheetName">
+				<target>Nom de la feuille (a-z, 0-9 et _)</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheetLabel">
+				<target>Libellé de la feuille (tous les caractères nécessaires)</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheetDescription">
+				<target>Ajoutez ou modifiez les champs qui apparaissent dans cette feuille lorsque les éditeurs modifient le type de contenu.
+					Les propriétés des champs suivent les normes TCA avec quelques exceptions. Si nécessaire, il existe
+					une documentation sur cette API à l'adresse https://viewhelpers.fluidtypo3.org/fluidtypo3/flux/ -
+					bien qu'elle soit destinée à l'API ViewHelper de Flux, elle documente également les attributs utilisés ici.</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.context">
+				<target>Contexte</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.formFields">
+				<target>Champs de formulaire</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.grid">
+				<target>Grille</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.template">
+				<target>Modèle Fluid</target>
+			</trans-unit>
+			<trans-unit id="content_types.sheet.export">
+				<target>Exporter le modèle</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.name">
+				<target>Nom du champ (a-z, 0-9, _ et .)</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.label">
+				<target>Libellé, peut être une référence LLL:EXT: ou LLL:keyname qui résout le libellé dans le contexte de l'extension du type de contenu, fichier locallang.xlf</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.transform">
+				<target>Transformation du type de données, entrez par exemple "array" pour convertir les valeurs CSV en tableau. Voir la documentation de Flux pour les valeurs possibles.</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.clearable">
+				<target>Le champ peut être effacé (ajoute une case à cocher "effacer" à côté du champ)</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.default.value">
+				<target>Valeur par défaut</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.universal.default.state">
+				<target>État par défaut</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.input">
+				<target>Saisie</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.text">
+				<target>Texte</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.checkbox">
+				<target>Case à cocher</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.radio">
+				<target>Bouton radio</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.dateTime">
+				<target>DateHeure</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.select">
+				<target>Sélection</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.select.items">
+				<target>Éléments (CSV)</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation">
+				<target>Relation</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.size">
+				<target>Taille des champs (nombre d'entrées possibles)</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.minItems">
+				<target>Nombre minimum d'éléments pouvant être sélectionnés</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.maxItems">
+				<target>Nombre maximum d'éléments pouvant être sélectionnés</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.multiple">
+				<target>Autoriser les sélections multiples de la même valeur/enregistrement</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.emptyOption">
+				<target>Ajouter une option vide en premier</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.relation.foreignTableField">
+				<target>Nom du champ sur la table étrangère qui contient l'UID de l'enregistrement d'origine. Vide signifie qu'un seul élément peut être lié et que l'UID est stocké dans l'enregistrement d'origine.</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.multiRelation">
+				<target>MultiRelation</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.inline">
+				<target>En ligne</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.file">
+				<target>Fichier</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.function">
+				<target>Fonction</target>
+			</trans-unit>
+			<trans-unit id="content_types.fields.function.userFunc">
+				<target>Référence de fonction utilisateur, par exemple MyClass->myFunction. La classe doit être enregistrée avec l'autoloader pour être utilisable.</target>
+			</trans-unit>
+			<trans-unit id="flux.backendLayout.columnsInParent">
+				<target>Colonnes dans le parent</target>
+			</trans-unit>
+			<trans-unit id="flux.newContentWizard.fluxContent">
+				<target>Contenu Flux</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_flux_options">
+				<target>Options</target>
+			</trans-unit>
+			<trans-unit id="tt_content.pi_flexform">
+				<target>Options de type de contenu</target>
+			</trans-unit>
+			<trans-unit id="flux.clearValue">
+				<target>Effacer la valeur</target>
+			</trans-unit>
+			<trans-unit id="flux.clearValue.help">
+				<target>Détruit la valeur enregistrée dans la base de données, permettant à la valeur d'être soit héritée à nouveau d'un parent, soit réinitialisée à la valeur par défaut s'il n'y a pas de valeur héritée.</target>
+			</trans-unit>
+			<trans-unit id="flux.protectValue">
+				<target>Protéger la valeur</target>
+			</trans-unit>
+			<trans-unit id="flux.protectValue.help">
+				<target>Les valeurs protégées resteront les mêmes même si la valeur (héritée) change dans un enregistrement parent.</target>
+			</trans-unit>
+			<trans-unit id="reference">
+				<target>Référence au contenu de la page '%s' - cliquez pour accéder à l'original</target>
+			</trans-unit>
+			<trans-unit id="user.no_fields">
+				<target>Aucun champ trouvé dans le formulaire</target>
+			</trans-unit>
+			<trans-unit id="user.no_selection">
+				<target>Aucun formulaire sélectionné/configuré (l'activation du débogage Flux fournira plus d'informations)</target>
+			</trans-unit>
+			<trans-unit id="user.no_template">
+				<target>Aucune source FlexForm sélectionnée. Cela est généralement causé par des chemins de modèle incorrects retournés par un ConfigurationProvider - dans le cas de FED/FluidContent/FluidPages, cela peut également être causé par le fait de ne pas avoir sélectionné de modèle de page ou de type d'élément de contenu Fluid, ce qui peut être considéré comme une "erreur" sûre qui n'est signalée que parce que le mode débogage est activé dans Flux. Les paramètres ayant conduit à cette erreur étaient :</target>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist.fields.input" xml:space="preserve">
+				<target>flux.this_table_does_not_exist.fields.input</target>
+			</trans-unit>
+			<trans-unit id="flux.this_table_does_not_exist" xml:space="preserve">
+				<target>flux.this_table_does_not_exist</target>
+			</trans-unit>
+			<trans-unit id="new">
+				<target>Insérer un nouvel élément de contenu à cet endroit</target>
+			</trans-unit>
+			<trans-unit id="paste">
+				<target>Coller à cet endroit</target>
+			</trans-unit>
+			<trans-unit id="paste_reference">
+				<target>Coller comme référence à cet endroit</target>
+			</trans-unit>
+			<trans-unit id="toggle_content">
+				<target>Afficher ou masquer la grille</target>
+			</trans-unit>
+			<trans-unit id="flux.grid.grids.grid">
+				<target>Colonnes de la "Mise en page" sélectionnée</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action">
+				<target>Gabarit de page - cette page</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action.default">
+				<target>Le parent décide</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_controller_action_sub">
+				<target>Gabarit de page - sous-pages</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_flexform">
+				<target>Configuration de la page</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_flexform_sub">
+				<target>Configuration de la page - sous-pages</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_package">
+				<target>Package</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_layoutselect">
+				<target>Gabarit de page</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fed_page_configuration">
+				<target>Configuration de la page</target>
+			</trans-unit>
+			<trans-unit id="pages.doktype.187">
+				<target>Modèle Fluid brut</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_templatefile">
+				<target>Référence du fichier de modèle</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_templatefile.placeholder">
+				<target>EXT:... ou chemin relatif au site</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_fluidpages_layout">
+				<target>Mise en page à utiliser pour le rendu</target>
+			</trans-unit>
+			<trans-unit id="fluidContentArea">
+				<target>Zone de contenu Fluid</target>
+			</trans-unit>
+			<trans-unit id="flux.grid.grids.grid">
+				<target>Colonnes de la "Mise en page" sélectionnée</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -133,13 +133,26 @@ class ProviderProcessorTest extends AbstractTestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testSetsEnabledContentTypesFromSiteConfigurationButIgnoresSiteNotFound(): void
+    public function testSetsEnabledContentTypesFromSiteConfigurationButIgnoresSiteNotFoundWithStringSetting(): void
+    {
+        $this->runSetsEnabledContentTypesFromSiteConfigurationButIgnoresSiteNotFound('flux_test,flux_test2');
+    }
+
+    public function testSetsEnabledContentTypesFromSiteConfigurationButIgnoresSiteNotFoundWithArraySetting(): void
+    {
+        $this->runSetsEnabledContentTypesFromSiteConfigurationButIgnoresSiteNotFound(['flux_test', 'flux_test2']);
+    }
+
+    /**
+     * @param array|string $contentTypesSetting
+     */
+    public function runSetsEnabledContentTypesFromSiteConfigurationButIgnoresSiteNotFound($contentTypesSetting): void
     {
         $site = $this->getMockBuilder(Site::class)
             ->setMethods(['getConfiguration'])
             ->disableOriginalConstructor()
             ->getMock();
-        $site->method('getConfiguration')->willReturn(['flux_content_types' => 'flux_test,flux_test2']);
+        $site->method('getConfiguration')->willReturn(['flux_content_types' => $contentTypesSetting]);
 
         $siteFinder = $this->getMockBuilder(SiteFinderProxy::class)
             ->setMethods(['getSiteByPageId'])

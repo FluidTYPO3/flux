@@ -102,6 +102,9 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             'exclude' => intval($this->getExclude()),
             'config' => $configuration
         ];
+        if (($description = $this->getDescription()) && $description !== null) {
+            $fieldStructureArray['description'] = $this->getDescription();
+        }
         if (($displayCondition = $this->getDisplayCondition())) {
             $fieldStructureArray['displayCond'] = $displayCondition;
         }

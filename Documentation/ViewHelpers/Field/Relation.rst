@@ -76,6 +76,19 @@ default
 :aspect:`Description`
    Default value for this attribute
 
+.. _field.relation_description:
+
+description
+-----------
+
+:aspect:`DataType`
+   string
+
+:aspect:`Required`
+   false
+:aspect:`Description`
+   Field description
+
 .. _field.relation_native:
 
 native
