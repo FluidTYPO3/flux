@@ -285,7 +285,7 @@ abstract class AbstractFluxController extends ActionController
     /**
      * @return \Psr\Http\Message\ResponseInterface|Response
      */
-    protected function createHtmlResponse(string $html = null)
+    protected function createHtmlResponse(?string $html = null)
     {
         if (method_exists($this, 'htmlResponse')) {
             return parent::htmlResponse($html);

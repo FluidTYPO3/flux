@@ -47,7 +47,7 @@ class ProviderResolver implements SingletonInterface
     public function resolvePrimaryConfigurationProvider(
         ?string $table,
         ?string $fieldName,
-        array $row = null,
+        ?array $row = null,
         ?string $extensionKey = null,
         array $interfaces = [ProviderInterface::class]
     ) {
@@ -66,7 +66,7 @@ class ProviderResolver implements SingletonInterface
     public function resolveConfigurationProviders(
         ?string $table,
         ?string $fieldName,
-        array $row = null,
+        ?array $row = null,
         ?string $extensionKey = null,
         array $interfaces = [ProviderInterface::class]
     ) {

@@ -46,7 +46,7 @@ class FormDataTransformer
      */
     public function convertFlexFormContentToArray(
         string $flexFormContent,
-        Form $form = null,
+        ?Form $form = null,
         ?string $languagePointer = 'lDEF',
         ?string $valuePointer = 'vDEF'
     ): array {

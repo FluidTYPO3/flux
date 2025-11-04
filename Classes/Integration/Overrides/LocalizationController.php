@@ -24,7 +24,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
      */
     public function getRecordLocalizeSummary(
         ServerRequestInterface $request,
-        ResponseInterface $response = null
+        ?ResponseInterface $response = null
     ): ResponseInterface {
         $params = $request->getQueryParams();
         if (!isset($params['pageId'], $params['destLanguageId'], $params['languageId'])) {

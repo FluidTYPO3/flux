@@ -115,7 +115,7 @@ abstract class AbstractFormTest extends AbstractTestCase
     /**
      * @test
      */
-    public function canChainAllChainableSetters(array $chainPropertiesAndValues = null): FormInterface
+    public function canChainAllChainableSetters(?array $chainPropertiesAndValues = null): FormInterface
     {
         if (null === $chainPropertiesAndValues) {
             $chainPropertiesAndValues = $this->chainProperties;

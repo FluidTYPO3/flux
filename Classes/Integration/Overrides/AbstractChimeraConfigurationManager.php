@@ -24,8 +24,8 @@ abstract class AbstractChimeraConfigurationManager extends ConfigurationManager
 
     public function getConfiguration(
         string $configurationType,
-        string $extensionName = null,
-        string $pluginName = null
+        ?string $extensionName = null,
+        ?string $pluginName = null
     ): array {
         $configurationManager = $this->resolveConfigurationManager();
 
