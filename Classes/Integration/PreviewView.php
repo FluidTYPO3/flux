@@ -262,7 +262,7 @@ class PreviewView extends TemplateView
                 $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
             }
 
-            if (isset($language) && method_exists($configuration, 'setSelectedLanguageUid')) {
+            if (isset($language) && method_exists($configuration, 'setSelectedLanguageId')) {
                 $configuration->setSelectedLanguageId($language->getLanguageId());
             }
 
