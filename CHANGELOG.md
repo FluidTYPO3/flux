@@ -1,7 +1,8 @@
-Latest release: 11.1.1 (2026/01/08 10:21:33)
+Latest release: 11.1.2 (2026/02/09 13:11:08)
 
 All previous release change logs:
 
+* [11.1.2 (2026/02/09)](Documentation/Changelog/11.1.2.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/11.1.1...11.1.2)
 * [11.1.1 (2026/01/08)](Documentation/Changelog/11.1.1.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/11.1.0...11.1.1)
 * [11.1.0 (2025/10/17)](Documentation/Changelog/11.1.0.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/11.0.7...11.1.0)
 * [11.0.7 (2025/09/15)](Documentation/Changelog/11.0.7.md) [Full list of changes](https://github.com/FluidTYPO3/flux/compare/11.0.6...11.0.7)
