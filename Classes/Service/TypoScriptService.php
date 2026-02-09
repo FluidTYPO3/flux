@@ -12,6 +12,7 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Configuration\Exception\NoServerRequestGivenException;
 
 class TypoScriptService implements SingletonInterface
 {
@@ -52,6 +53,10 @@ class TypoScriptService implements SingletonInterface
             $all = $this->configurationManager->getConfiguration(
                 ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
             );
+        } catch (NoServerRequestGivenException $error) {
+            // This case may happen when trying to read TypoScript from a CLI context. In this case, rather than just
+            // giving up, we return an empty set of TypoScript.
+            $all = [];
         } catch (\RuntimeException $exception) {
             if ($exception->getCode() !== 1700841298) {
                 throw $exception;
