@@ -52,6 +52,7 @@ parameters:
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Web\\\\Response not found\\.$#"
         - "#^Class TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Core\\\\View\\\\ViewFactoryData not found\\.$#"
+        - "#TYPO3\\\\CMS\\\\Extbase\\\\Configuration\\\\Exception\\\\NoServerRequestGivenException not found\\.$#"
 
         - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection#"
         - "#TYPO3Fluid\\\\Fluid\\\\Component\\\\Error\\\\ChildNotFoundException#"
