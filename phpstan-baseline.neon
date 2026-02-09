@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
         -
+            message: "#^Dead catch - RuntimeException is never thrown in the try block\\.$#"
+            count: 1
+            path: Classes/Service/TypoScriptService.php
+        -
             message: "#^Parameter \\#4 \\$_ of method TYPO3\\\\CMS\\\\Core\\\\DataHandling\\\\DataHandler\\:\\:log\\(\\) expects null, int given\\.$#"
             count: 1
             path: Classes/Integration/HookSubscribers/DataHandlerSubscriber.php
