@@ -27,7 +27,7 @@ class ColumnPositionItems
      */
     public function colPosListItemProcFunc(array &$parameters): void
     {
-        if (!isset($parameters['row']['colPos'])) {
+        if (!isset($parameters['row']['colPos']) || ((string) $parameters['row']['colPos']) === '') {
             return;
         }
         $parentRecordUid = ColumnNumberUtility::calculateParentUid($parameters['row']['colPos']);
