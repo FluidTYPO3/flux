@@ -160,7 +160,7 @@ class RecordService implements SingletonInterface
     protected function isPreviewContext(): bool
     {
         /** @var ServerRequest|null $request */
-        $request = $GLOBALS['TYPO3_REQUEST'];
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
         if ($request === null) {
             return false;
         }
