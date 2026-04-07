@@ -566,7 +566,11 @@ abstract class AbstractFluxController extends ActionController
             );
         }
 
-        if (!empty($contentObject->data)) {
+        if (!empty($contentObject->data) && $this->fluxTableName === $contentObject->getCurrentTable()) {
+            // Possible short-cut: ContentObjectRenderer->data may be non-empty, but isn't completely trustworthy since
+            // the data array may actually belong to a page record while rendering a *_INT content record. So we check
+            // that the data is non-empty AND that the controller's table name matches the ContentObjectRenderer's
+            // stored value for the table name currently being processed, which DOES contain the right table name.
             return $this->record = $contentObject->data;
         }
 
