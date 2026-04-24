@@ -191,7 +191,7 @@ class MiscellaneousUtility
         $dataNodes = $dom->getElementsByTagName('data');
         /** @var DOMElement $dataNode */
         $dataNode = $dataNodes->item(0);
-        if (null === $dataNode) {
+        if ($dataNode === null) {
             return '';
         }
         $elements = $dataNode->getElementsByTagName('sheet');
