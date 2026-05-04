@@ -78,37 +78,37 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     ];
 
     // FormEngine integration for custom TCA field types used by Flux
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1726225012] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxPageLayoutSelector'] = [
         'nodeName' => 'fluxPageLayoutSelector',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\PageLayoutSelector::class,
     ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1575276512] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxContentTypeValidator'] = [
         'nodeName' => 'fluxContentTypeValidator',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\ContentTypeValidatorNode::class,
     ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1575277301] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxTemplateSourceDumper'] = [
         'nodeName' => 'fluxTemplateSourceDumper',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\TemplateSourceDumperNode::class,
     ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1578613431] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxColumnPosition'] = [
         'nodeName' => 'fluxColumnPosition',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\ColumnPositionNode::class,
     ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1593341585] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxHtmlOutput'] = [
         'nodeName' => 'fluxHtmlOutput',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\HtmlOutputNode::class,
     ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1661337814] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxClearValue'] = [
         'nodeName' => 'fluxClearValue',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\ClearValueWizard::class,
     ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1720866860] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxProtectValue'] = [
         'nodeName' => 'fluxProtectValue',
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\ProtectValueWizard::class,
