@@ -96,7 +96,8 @@ class SpooledConfigurationApplicator
         }
 
         if (class_exists(TcaSchemaFactory::class)) {
-            // fix TYPO3 13+ loading order of TCA for schemaFactory, flux dose its TCA stuff to late, so we rebuild the tcaSchema after flux has done its work.
+            // Fix TYPO3 13+ loading order of TCA for schemaFactory, Flux does its TCA stuff after initial TCA is
+            // compiled, so we rebuild the TCA schema after Flux as processed content types.
             /** @var TcaSchemaFactory $tcaSchemaFactory */
             $tcaSchemaFactory = GeneralUtility::makeInstance(TcaSchemaFactory::class);
             $tcaSchemaFactory->rebuild($GLOBALS['TCA']);
