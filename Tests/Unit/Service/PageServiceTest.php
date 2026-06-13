@@ -16,7 +16,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
+use TYPO3\CMS\Core\Cache\Backend\TransientBackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -42,9 +42,9 @@ class PageServiceTest extends AbstractTestCase
     {
         $runtimeCache = new VariableFrontend(
             'runtime',
-            $this->getMockBuilder(BackendInterface::class)->onlyMethods(['get'])->getMockForAbstractClass()
+            $this->getMockBuilder(TransientBackendInterface::class)->onlyMethods(['get'])->getMockForAbstractClass()
         );
-        $runtimeCache->getBackend()->method('get')->willReturn('N;');
+        $runtimeCache->getBackend()->method('get')->willReturn([]);
         $instance = $this->getMockBuilder(DummyPageService::class)
             ->onlyMethods(['getRootLine'])
             ->getMock();
