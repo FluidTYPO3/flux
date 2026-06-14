@@ -21,11 +21,11 @@ use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
  */
 abstract class AbstractFormViewHelper extends AbstractViewHelper
 {
-    const SCOPE = FormViewHelper::class;
-    const SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
-    const SCOPE_VARIABLE_FORM = 'form';
-    const SCOPE_VARIABLE_CONTAINER = 'container';
-    const SCOPE_VARIABLE_GRIDS = 'grids';
+    public const string SCOPE = FormViewHelper::class;
+    public const string SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
+    public const string SCOPE_VARIABLE_FORM = 'form';
+    public const string SCOPE_VARIABLE_CONTAINER = 'container';
+    public const string SCOPE_VARIABLE_GRIDS = 'grids';
 
     protected function overrideArgument(
         $name,

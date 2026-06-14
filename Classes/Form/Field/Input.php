@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Form\FieldInterface;
 
 class Input extends AbstractFormField implements FieldInterface
 {
-    const DEFAULT_VALIDATE = 'trim';
+    public const string DEFAULT_VALIDATE = 'trim';
 
     protected int $size = 32;
     protected ?int $maxCharacters = null;

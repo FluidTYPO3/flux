@@ -36,10 +36,10 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class PageProvider extends AbstractProvider implements ProviderInterface
 {
-    const FIELD_NAME_MAIN = 'tx_fed_page_flexform';
-    const FIELD_NAME_SUB = 'tx_fed_page_flexform_sub';
-    const FIELD_ACTION_MAIN = 'tx_fed_page_controller_action';
-    const FIELD_ACTION_SUB = 'tx_fed_page_controller_action_sub';
+    public const string FIELD_NAME_MAIN = 'tx_fed_page_flexform';
+    public const string FIELD_NAME_SUB = 'tx_fed_page_flexform_sub';
+    public const string FIELD_ACTION_MAIN = 'tx_fed_page_controller_action';
+    public const string FIELD_ACTION_SUB = 'tx_fed_page_controller_action_sub';
 
     protected ?string $tableName = 'pages';
     protected ?string $parentFieldName = 'pid';

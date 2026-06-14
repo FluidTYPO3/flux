@@ -37,7 +37,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 abstract class ColumnNumberUtility
 {
-    const MULTIPLIER = 100;
+    public const int MULTIPLIER = 100;
 
     public static function calculateLocalColumnNumber(int $colPos): int
     {

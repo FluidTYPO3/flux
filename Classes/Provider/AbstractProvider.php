@@ -35,7 +35,7 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class AbstractProvider implements ProviderInterface
 {
-    const FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
+    public const string FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
     const CONTENT_OBJECT_TYPE_LIST = 'list';
 
     /**

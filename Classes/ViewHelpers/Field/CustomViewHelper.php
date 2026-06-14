@@ -16,7 +16,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class CustomViewHelper extends UserFuncViewHelper
 {
-    const DEFAULT_USERFUNCTION = 'FluidTYPO3\\Flux\\UserFunction\\HtmlOutput->renderField';
+    public const string DEFAULT_USERFUNCTION = 'FluidTYPO3\\Flux\\UserFunction\\HtmlOutput->renderField';
 
     public function initializeArguments(): void
     {

@@ -15,7 +15,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExtensionConfigurationUtility
 {
-    public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
+    public const string OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
     protected static array $defaults = [
         ExtensionOption::OPTION_DEBUG_MODE => false,

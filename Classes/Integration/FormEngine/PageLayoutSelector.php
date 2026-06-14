@@ -23,7 +23,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class PageLayoutSelector extends AbstractNode
 {
-    private const DEFAULT_ICON_WIDTH = 200;
+    private const int DEFAULT_ICON_WIDTH = 200;
 
     private static bool $assetsIncluded = false;
 

@@ -10,16 +10,16 @@ namespace FluidTYPO3\Flux\Enum;
 
 class FormOption
 {
-    public const STATIC = 'static';
-    public const SORTING = 'sorting';
-    public const GROUP = 'group';
-    public const ICON = 'icon';
-    public const TEMPLATE_FILE = 'templateFile';
-    public const TEMPLATE_FILE_RELATIVE = 'templateFileRelative';
-    public const RECORD = 'record';
-    public const RECORD_FIELD = 'recordField';
-    public const RECORD_TABLE = 'recordTable';
-    public const TRANSFORM = 'transform';
-    public const HIDE_NATIVE_FIELDS = 'hideNativeFields';
-    public const INHERITANCE_MODE = 'inheritanceMode';
+    public const string STATIC = 'static';
+    public const string SORTING = 'sorting';
+    public const string GROUP = 'group';
+    public const string ICON = 'icon';
+    public const string TEMPLATE_FILE = 'templateFile';
+    public const string TEMPLATE_FILE_RELATIVE = 'templateFileRelative';
+    public const string RECORD = 'record';
+    public const string RECORD_FIELD = 'recordField';
+    public const string RECORD_TABLE = 'recordTable';
+    public const string TRANSFORM = 'transform';
+    public const string HIDE_NATIVE_FIELDS = 'hideNativeFields';
+    public const string INHERITANCE_MODE = 'inheritanceMode';
 }

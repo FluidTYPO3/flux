@@ -25,7 +25,7 @@ use TYPO3\CMS\Core\SingletonInterface;
  */
 class ContentTypeManager implements SingletonInterface
 {
-    const CACHE_IDENTIFIER = 'flux_content_types';
+    public const string CACHE_IDENTIFIER = 'flux_content_types';
 
     protected CacheService $cacheService;
 
