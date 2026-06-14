@@ -24,9 +24,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
             'Page',
             [
                 \FluidTYPO3\Flux\Controller\PageController::class => 'render,error',
-            ],
-            [],
-            \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_PLUGIN
+            ]
         );
 
         \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Provider\PageProvider::class);
