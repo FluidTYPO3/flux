@@ -81,16 +81,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         'priority' => 40,
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\PageLayoutSelector::class,
     ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxContentTypeValidator'] = [
-        'nodeName' => 'fluxContentTypeValidator',
-        'priority' => 40,
-        'class' => \FluidTYPO3\Flux\Integration\FormEngine\ContentTypeValidatorNode::class,
-    ];
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxTemplateSourceDumper'] = [
-        'nodeName' => 'fluxTemplateSourceDumper',
-        'priority' => 40,
-        'class' => \FluidTYPO3\Flux\Integration\FormEngine\TemplateSourceDumperNode::class,
-    ];
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']['fluxColumnPosition'] = [
         'nodeName' => 'fluxColumnPosition',
         'priority' => 40,
@@ -122,8 +112,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
         \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class;
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][] =
-        \FluidTYPO3\Flux\Integration\HookSubscribers\DataHandlerSubscriber::class . '->clearCacheCommand';
 
     if (version_compare($coreVersion, '12', '<')) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['record_is_used']['flux'] =
@@ -170,11 +158,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
                 rowDescription'
         ]
     );
-
-    if (class_exists(\FluidTYPO3\Flux\Core::class)) {
-        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\ContentTypeProvider::class);
-        \FluidTYPO3\Flux\Core::registerConfigurationProvider(\FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider::class);
-    }
 
     if (\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::getOption(\FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility::OPTION_FLEXFORM_TO_IRRE)) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][\FluidTYPO3\Flux\Integration\FormEngine\NormalizedDataStructureProvider::class] = [
