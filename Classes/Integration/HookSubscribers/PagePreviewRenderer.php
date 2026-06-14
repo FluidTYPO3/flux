@@ -25,7 +25,7 @@ class PagePreviewRenderer
         $idProperty->setAccessible(true);
         $id = $idProperty->getValue($pageLayoutController);
 
-        $row = $this->getRecord(is_scalar($id) ? (integer) $id : 0);
+        $row = $this->getRecord(is_scalar($id) ? (int) $id : 0);
         if (!$row) {
             return '';
         }

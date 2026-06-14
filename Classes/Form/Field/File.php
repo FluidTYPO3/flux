@@ -94,7 +94,7 @@ class File extends AbstractMultiValueFormField
 
     public function getShowThumbnails(): bool
     {
-        return (boolean) $this->showThumbnails;
+        return (bool) $this->showThumbnails;
     }
 
     public function setUseFalRelation(bool $useFalRelation): self

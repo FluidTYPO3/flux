@@ -120,7 +120,7 @@ class GetViewHelper extends AbstractViewHelper
 
         if (is_numeric($workspaceId) && $workspaceId > 0) {
             $placeholder = BackendUtility::getWorkspaceVersionOfRecord(
-                (integer) $workspaceId,
+                (int) $workspaceId,
                 'tt_content',
                 $record['uid'] ?? 0
             );
@@ -137,7 +137,7 @@ class GetViewHelper extends AbstractViewHelper
         $grid = $provider->getGrid($record);
         $rows = static::getContentRecords($arguments, $record, $grid);
 
-        $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
+        $elements = false === (bool) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
         if (empty($arguments['as'])) {
             $content = $elements;
         } else {

@@ -269,7 +269,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     public function setClearable(bool $clearable): self
     {
-        $this->clearable = (boolean) $clearable;
+        $this->clearable = (bool) $clearable;
         return $this;
     }
 

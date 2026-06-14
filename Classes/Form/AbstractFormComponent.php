@@ -150,7 +150,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     public function setEnabled(bool $enabled): self
     {
-        $this->enabled = (boolean) $enabled;
+        $this->enabled = (bool) $enabled;
         return $this;
     }
 
@@ -267,7 +267,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     public function setDisableLocalLanguageLabels(bool $disableLocalLanguageLabels): self
     {
-        $this->disableLocalLanguageLabels = (boolean) $disableLocalLanguageLabels;
+        $this->disableLocalLanguageLabels = (bool) $disableLocalLanguageLabels;
         return $this;
     }
 
@@ -399,7 +399,7 @@ abstract class AbstractFormComponent implements FormInterface
                             $propertyValue = (bool) $propertyValue;
                             break;
                         case 'int':
-                            $propertyValue = (integer) $propertyValue;
+                            $propertyValue = (int) $propertyValue;
                             break;
                         case 'array':
                             $propertyValue = is_array($propertyValue)

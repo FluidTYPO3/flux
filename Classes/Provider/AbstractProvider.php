@@ -342,7 +342,7 @@ class AbstractProvider implements ProviderInterface
                 FormOption::TEMPLATE_FILE,
                 $this->getTemplatePathAndFilename($row, $forField)
             );
-            $cachePersistent = (boolean) $variables['form']->getOption(FormOption::STATIC);
+            $cachePersistent = (bool) $variables['form']->getOption(FormOption::STATIC);
         }
 
         $this->cacheService->setInCaches(
@@ -570,7 +570,7 @@ class AbstractProvider implements ProviderInterface
                 } else {
                     $wizardFieldName = $sheetFieldName . $wizardTagName;
                     if (isset($data[$sheetName]['lDEF'][$wizardFieldName]['vDEF'])) {
-                        if ((boolean) $data[$sheetName]['lDEF'][$wizardFieldName]['vDEF']) {
+                        if ((bool) $data[$sheetName]['lDEF'][$wizardFieldName]['vDEF']) {
                             $fieldNames[] = $sheetFieldName;
                         }
                     }

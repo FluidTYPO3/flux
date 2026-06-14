@@ -69,7 +69,7 @@ class RenderViewHelper extends AbstractViewHelper
             'databaseRow' => $record,
             'inlineStructure' => [],
             'parameterArray' => [
-                'itemFormElName' => sprintf('data[%s][%d][%s]', $table, (integer) $record['uid'], $field),
+                'itemFormElName' => sprintf('data[%s][%d][%s]', $table, (int) $record['uid'], $field),
                 'itemFormElValue' => static::convertXmlToArray($record[$field]),
                 'fieldChangeFunc' => [],
                 'fieldConf' => [
