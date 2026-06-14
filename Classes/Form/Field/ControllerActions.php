@@ -311,7 +311,7 @@ class ControllerActions extends Select
             return $label;
         }
         $methodReflection = $this->reflectAction($controllerName, $actionName);
-        $hasRequiredArguments = (boolean) ($methodReflection->getNumberOfRequiredParameters() > 0);
+        $hasRequiredArguments = (bool) ($methodReflection->getNumberOfRequiredParameters() > 0);
         $prefixOnRequiredArguments = $this->getPrefixOnRequiredArguments();
         $prefix = !empty($prefixOnRequiredArguments) && $hasRequiredArguments ? $prefixOnRequiredArguments : null;
         if (null !== $prefix) {

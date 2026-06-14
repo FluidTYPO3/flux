@@ -128,7 +128,7 @@ abstract class AbstractRelationFormField extends AbstractMultiValueFormField imp
         $configuration['symmetricField'] = $this->getSymmetricField();
         $configuration['localizationMode'] = $this->getLocalizationMode();
         $configuration['disableMovingChildrenWithParent'] =
-            (integer) $this->getDisableMovingChildrenWithParent();
+            (int) $this->getDisableMovingChildrenWithParent();
         $configuration['showThumbs'] = intval($this->getShowThumbnails());
         $configuration['MM'] = $this->getManyToMany();
         $configuration['MM_match_fields'] = $this->getMatchFields();

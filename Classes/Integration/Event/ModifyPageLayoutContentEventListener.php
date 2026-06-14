@@ -26,7 +26,7 @@ class ModifyPageLayoutContentEventListener
     {
         $id = $event->getRequest()->getQueryParams()['id'] ?? 0;
 
-        $row = $this->getRecord(is_scalar($id) ? (integer) $id : 0);
+        $row = $this->getRecord(is_scalar($id) ? (int) $id : 0);
         if ($row === null) {
             return;
         }

@@ -113,7 +113,7 @@ class PreviewView extends TemplateView
 
     protected function getOptionToggle(array $options = []): bool
     {
-        return (boolean) ($options[PreviewOption::TOGGLE] ?? true);
+        return (bool) ($options[PreviewOption::TOGGLE] ?? true);
     }
 
     protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null): ?string
@@ -411,6 +411,6 @@ class PreviewView extends TemplateView
      */
     protected function getActiveWorkspaceId(): int
     {
-        return (integer) ($GLOBALS['BE_USER']->workspace ?? 0);
+        return (int) ($GLOBALS['BE_USER']->workspace ?? 0);
     }
 }

@@ -99,7 +99,7 @@ class DataViewHelper extends AbstractViewHelper
         }
         if (isset($GLOBALS['TCA'][$table]) && isset($GLOBALS['TCA'][$table]['columns'][$field])) {
             if (!$record) {
-                $record = static::getRecordService()->getSingle($table, 'uid,' . $field, (integer) $uid);
+                $record = static::getRecordService()->getSingle($table, 'uid,' . $field, (int) $uid);
             }
             if (!$record) {
                 throw new Exception(

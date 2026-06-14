@@ -51,7 +51,7 @@ class FlexFormBuilder
         if (($originalIdentifier['dataStructureKey'] ?? 'default') !== 'default') {
             return [];
         }
-        if ((integer) ($record['uid'] ?? 0) > 0) {
+        if ((int) ($record['uid'] ?? 0) > 0) {
             // If we are resolving a DS for an identified record, the only thing that matters is the record's UID.
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
@@ -70,11 +70,11 @@ class FlexFormBuilder
                 // template selection values as part of our DS identifier.
                 // This is NOT necessary if the input record contains an explicitly selected page layout, hence the
                 // added check above before entering this condition block.
-                if ((integer) $record['pid'] < 0) {
+                if ((int) $record['pid'] < 0) {
                     // we have uid of sibling, need first not-deleted parent
                     $record['pid'] = $this->loadRecordWithoutRestriction(
                         'pages',
-                        (integer) abs($record['pid']),
+                        (int) abs($record['pid']),
                         'uid',
                         false
                     )['uid'] ?? 0;
@@ -127,7 +127,7 @@ class FlexFormBuilder
         }
         if (count($record) === 1 && isset($record['uid']) && is_numeric($record['uid'])) {
             // The record is a stub, has only "uid" and "uid" is numeric. Reload the full record from DB.
-            $record = $this->loadRecordWithoutRestriction($identifier['tableName'], (integer) $record['uid']);
+            $record = $this->loadRecordWithoutRestriction($identifier['tableName'], (int) $record['uid']);
         }
         if (empty($record)) {
             throw new \UnexpectedValueException('Unable to resolve record for DS processing', 1668011937);

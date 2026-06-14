@@ -46,7 +46,7 @@ class PageLayoutDataProvider
         } else {
             $hideInheritFieldSiteRoot = false;
         }
-        $pageIsSiteRoot = (boolean) ($parameters['row']['is_siteroot'] ?? false);
+        $pageIsSiteRoot = (bool) ($parameters['row']['is_siteroot'] ?? false);
         $forceDisplayInheritSiteRoot = 'tx_fed_page_controller_action_sub' === ($parameters['field'] ?? null)
             && !$hideInheritFieldSiteRoot;
         $forceHideInherit = (0 === (int) ($parameters['row']['pid'] ?? 0));

@@ -577,7 +577,7 @@ abstract class AbstractFluxController extends ActionController
             ':',
             $tsfe->currentRecord ?: $contentObject->currentRecord
         );
-        $record = $this->recordService->getSingle($table, '*', (integer) $recordUid);
+        $record = $this->recordService->getSingle($table, '*', (int) $recordUid);
         if ($record === null) {
             throw new \UnexpectedValueException(
                 "Record of table " . $this->getFluxTableName() . ' not found',

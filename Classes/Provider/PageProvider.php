@@ -100,7 +100,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             }
 
             $pageTemplateConfiguration = $this->pageService->getPageTemplateConfiguration(
-                (integer) $pageUid,
+                (int) $pageUid,
                 $pageUidIsParent
             );
 
@@ -172,7 +172,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                 : $row[self::FIELD_ACTION_SUB];
         }
         if (isset($row['uid'])) {
-            $configuration = $this->pageService->getPageTemplateConfiguration((integer) $row['uid']);
+            $configuration = $this->pageService->getPageTemplateConfiguration((int) $row['uid']);
             $fieldName = self::FIELD_ACTION_SUB;
             if ($forField === self::FIELD_NAME_MAIN) {
                 $fieldName = self::FIELD_ACTION_MAIN;
@@ -235,8 +235,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                     $parent = $field->getParent();
                     $fieldName = (string) $field->getName();
                     $sheetName = (string) $parent->getName();
-                    $inherit = (boolean) $field->getInherit();
-                    $inheritEmpty = (boolean) $field->getInheritEmpty();
+                    $inherit = (bool) $field->getInherit();
+                    $inheritEmpty = (bool) $field->getInheritEmpty();
                     if (is_array($record[$tableFieldName]['data'] ?? null)) {
                         $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'] ?? null;
                         $inheritedConfiguration = $this->getInheritedConfiguration($record);
@@ -549,7 +549,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             return [];
         }
         /** @var RootlineUtility $rootLineUtility */
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, (integer) ($record['uid'] ?? 0));
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, (int) ($record['uid'] ?? 0));
         return array_slice($rootLineUtility->get(), 1);
     }
 }

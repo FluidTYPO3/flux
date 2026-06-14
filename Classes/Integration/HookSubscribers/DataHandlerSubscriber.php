@@ -42,7 +42,7 @@ class DataHandlerSubscriber
     public function processDatamap_afterDatabaseOperations($command, $table, $id, $fieldArray, $reference)
     {
         if ($GLOBALS['BE_USER']->workspace) {
-            $record = BackendUtility::getRecord($table, (integer) $id);
+            $record = BackendUtility::getRecord($table, (int) $id);
         } else {
             $record = $reference->datamap[$table][$id] ?? null;
         }
@@ -58,7 +58,7 @@ class DataHandlerSubscriber
             );
 
             foreach ($providers as $provider) {
-                if ($provider->postProcessRecord($command, (integer) $id, $record, $reference, [])) {
+                if ($provider->postProcessRecord($command, (int) $id, $record, $reference, [])) {
                     break;
                 }
             }
@@ -104,7 +104,7 @@ class DataHandlerSubscriber
             // of parent, rather, parent was pasted somewhere else).
             // If language of child record is different from resolved parent (copyToLanguage occurred), resolve the
             // right parent for the language and update the column position accordingly.
-            $recordUid = (integer) ($record['uid'] ?? $id);
+            $recordUid = (int) ($record['uid'] ?? $id);
             $originalParentUid = ColumnNumberUtility::calculateParentUid($fieldArray['colPos']);
             $originalParent = $this->getSingleRecordWithoutRestrictions($table, $originalParentUid, 'sys_language_uid');
             $currentRecordLanguageUid = $fieldArray['sys_language_uid']
@@ -229,7 +229,7 @@ class DataHandlerSubscriber
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
             $uidInDefaultLanguage = $record['l18n_parent'] ?? null;
             if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
-                $fieldArray['colPos'] = (integer) $dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'];
+                $fieldArray['colPos'] = (int) $dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'];
             }
         }
     }
@@ -286,7 +286,7 @@ class DataHandlerSubscriber
                         case 'move':
                             // Verify that the target column is not within the element or any child hereof.
                             if (is_array($value) && isset($value['update']['colPos'])) {
-                                $invalidColumnNumbers = $this->fetchAllColumnNumbersBeneathParent((integer) $id);
+                                $invalidColumnNumbers = $this->fetchAllColumnNumbersBeneathParent((int) $id);
                                 // Only react to move commands which contain a target colPos
                                 if (in_array((int) $value['update']['colPos'], $invalidColumnNumbers, true)) {
                                     // Invalid target detected - delete the "move" command so it does not happen, and
@@ -294,7 +294,7 @@ class DataHandlerSubscriber
                                     unset($dataHandler->cmdmap[$table][$id]);
                                     $dataHandler->log(
                                         $table,
-                                        (integer) $id,
+                                        (int) $id,
                                         4,
                                         0,
                                         1,
@@ -392,7 +392,7 @@ class DataHandlerSubscriber
 
         [$originalRecord, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
-            (integer) $id,
+            (int) $id,
             'uid, pid, colPos',
             false,
             $command
@@ -411,7 +411,7 @@ class DataHandlerSubscriber
         } else {
             $relativeRecord = $this->getSingleRecordWithoutRestrictions(
                 $table,
-                (integer) abs((integer) $relativeTo),
+                (int) abs((int) $relativeTo),
                 'pid'
             );
             $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
@@ -420,7 +420,7 @@ class DataHandlerSubscriber
         $this->recursivelyMoveChildRecords(
             $table,
             $recordsToProcess,
-            (integer) $destinationPid,
+            (int) $destinationPid,
             $languageUid,
             $reference
         );
