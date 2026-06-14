@@ -12,13 +12,13 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Proxy\IconFactoryProxy;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
-use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList;
 
 /**
@@ -31,10 +31,6 @@ class ContentIcon
                             <div class="btn-group btn-group-sm" role="group">
                             <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a> 
                         </div></div>',
-        'legacyGridToggle' => '</div><div class="fluidcontent-toggler">
-                            <div class="btn-group btn-group-sm" role="group">
-                            <a class="btn btn-default %s" title="%s" data-toggler-uid="%s">%s</a>
-                        </div></div><div>',
     ];
 
     protected ProviderResolver $providerResolver;
@@ -52,11 +48,11 @@ class ContentIcon
     }
 
     /**
-     * @param PageLayoutView|GridColumnItem|DatabaseRecordList $caller
+     * @param GridColumnItem|DatabaseRecordList $caller
      */
     public function addSubIcon(array $parameters, $caller = null): string
     {
-        if (!($caller instanceof PageLayoutView || $caller instanceof GridColumnItem)) {
+        if (!($caller instanceof GridColumnItem)) {
             return '';
         }
         [$table, $uid, $record] = $parameters;
@@ -106,14 +102,13 @@ class ContentIcon
 
     protected function drawGridToggle(array $row): string
     {
-        $collapseIcon = $this->iconFactory->getIcon('actions-view-list-collapse', Icon::SIZE_SMALL)->render();
-        $expandIcon = $this->iconFactory->getIcon('actions-view-list-expand', Icon::SIZE_SMALL)->render();
+        $iconSize = VersionUtility::isCoreBelow14() ? Icon::SIZE_SMALL : IconSize::SMALL;
+        $collapseIcon = $this->iconFactory->getIcon('actions-view-list-collapse', $iconSize)->render();
+        $expandIcon = $this->iconFactory->getIcon('actions-view-list-expand', $iconSize)->render();
         $label = $this->translate('LLL:EXT:flux/Resources/Private/Language/locallang.xlf:toggle_content');
         $icon = $collapseIcon . $expandIcon;
 
-        $template = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11', '<')
-            ? $this->templates['legacyGridToggle']
-            : $this->templates['gridToggle'];
+        $template = $this->templates['gridToggle'];
 
         $rendered = sprintf(
             $template,
