@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\Utility\RequestResolver;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
@@ -387,7 +388,7 @@ class PreviewView extends TemplateView
      */
     protected function getBackendUser(): BackendUserAuthentication
     {
-        return $GLOBALS['BE_USER'];
+        return RequestResolver::getBackendUser();
     }
 
     /**

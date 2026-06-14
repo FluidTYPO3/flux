@@ -8,6 +8,8 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Utility\RequestResolver;
+
 class PageController extends AbstractFluxController
 {
     protected ?string $fluxRecordField = 'tx_fed_page_flexform';
@@ -15,6 +17,6 @@ class PageController extends AbstractFluxController
 
     public function getRecord(): array
     {
-        return $GLOBALS['TSFE']->page ?? [];
+        return RequestResolver::getPageInformation()->getPageRecord();
     }
 }
