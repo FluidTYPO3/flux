@@ -8,6 +8,7 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Utility\RequestResolver;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -79,8 +80,9 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 
     protected function hasWorkspacesSupport(string $table): bool
     {
-        return (
+        $backendUser = RequestResolver::getBackendUser();
             $GLOBALS['BE_USER'] instanceof BackendUserAuthentication
+        return $backendUser
             && ExtensionManagementUtility::isLoaded('workspaces')
             && BackendUtility::isTableWorkspaceEnabled($table)
         );
