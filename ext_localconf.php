@@ -114,11 +114,6 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\ProtectValueWizard::class,
     ];
 
-    // Small override for record-localize controller to manipulate the record listing to provide child records in list
-    if (!class_exists(\TYPO3\CMS\Backend\Controller\Event\AfterPageColumnsSelectedForLocalizationEvent::class)) {
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class]['className'] = \FluidTYPO3\Flux\Integration\Overrides\LocalizationController::class;
-    }
-
     if (version_compare($coreVersion, '13.4', '<')) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Extbase\Configuration\ConfigurationManager::class]['className'] = version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.0', '<')
             ? \FluidTYPO3\Flux\Integration\Overrides\LegacyChimeraConfigurationManager::class
