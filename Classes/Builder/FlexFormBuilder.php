@@ -153,10 +153,6 @@ class FlexFormBuilder
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '<')) {
-            $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-        }
-
         if ($form && $form->getOption(FormOption::STATIC)) {
             // This provider has requested static DS caching; stop attempting
             // to process any other DS, cache and return this DS as final result:
@@ -165,26 +161,6 @@ class FlexFormBuilder
         }
 
         return $dataStructArray;
-    }
-
-    /**
-     * Temporary method during FormEngine transition!
-     *
-     * Performs a duplication in data source, applying a wrapper
-     * around field configurations which require it for correct
-     * rendering in flex form containers.
-     */
-    protected function patchTceformsWrapper(array $dataStructure, ?string $parentIndex = null): array
-    {
-        foreach ($dataStructure as $index => $subStructure) {
-            if (is_array($subStructure)) {
-                $dataStructure[$index] = $this->patchTceformsWrapper($subStructure, $index);
-            }
-        }
-        if (isset($dataStructure['config']['type']) && $parentIndex !== 'TCEforms') {
-            $dataStructure = ['TCEforms' => $dataStructure];
-        }
-        return $dataStructure;
     }
 
     /**

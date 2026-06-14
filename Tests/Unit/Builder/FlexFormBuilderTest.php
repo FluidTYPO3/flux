@@ -256,24 +256,4 @@ class FlexFormBuilderTest extends AbstractTestCase
         $output = $subject->parseDataStructureByIdentifier(['type' => 'flux']);
         self::assertSame([], $output);
     }
-
-    public function testPatchTceformsWrapper(): void
-    {
-        $ds = [
-            'something' => 'test',
-            'someArray' => [
-                'someSub' => 'sub',
-                'config' => [
-                    'type' => 'a-type',
-                ],
-            ],
-        ];
-
-        $expectedDs = $ds;
-        $expectedDs['someArray'] = ['TCEforms' => $expectedDs['someArray']];
-
-        $subject = new FlexFormBuilder(...$this->getConstructorArguments());
-        $output = $this->callInaccessibleMethod($subject, 'patchTceformsWrapper', $ds);
-        self::assertSame($expectedDs, $output);
-    }
 }
