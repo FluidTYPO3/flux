@@ -34,7 +34,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
  */
 class ContentTypeBuilder
 {
-    const DEFAULT_SHOWITEM = 'defaultShowItem';
+    public const string DEFAULT_SHOWITEM = 'defaultShowItem';
 
     /**
      * @param string $providerExtensionName

@@ -26,13 +26,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DropInContentTypeDefinition extends FluidFileBasedContentTypeDefinition
 {
-    public const DESIGN_DIRECTORY = 'design/';
-    public const TEMPLATES_DIRECTORY = 'Templates/';
-    public const PARTIALS_DIRECTORY = 'Partials/';
-    public const LAYOUTS_DIRECTORY = 'Layouts/';
-    public const TEMPLATES_PATTERN = '*.html';
-    public const CONTENT_DIRECTORY = 'Content/';
-    public const PAGE_DIRECTORY = 'Page/';
+    public const string DESIGN_DIRECTORY = 'design/';
+    public const string TEMPLATES_DIRECTORY = 'Templates/';
+    public const string PARTIALS_DIRECTORY = 'Partials/';
+    public const string LAYOUTS_DIRECTORY = 'Layouts/';
+    public const string TEMPLATES_PATTERN = '*.html';
+    public const string CONTENT_DIRECTORY = 'Content/';
+    public const string PAGE_DIRECTORY = 'Page/';
 
     protected string $extensionIdentity = 'FluidTYPO3.Flux';
     protected string $basePath = 'design/';

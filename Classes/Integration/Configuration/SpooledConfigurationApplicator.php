@@ -29,7 +29,7 @@ use TYPO3Fluid\Fluid\Exception;
 
 class SpooledConfigurationApplicator
 {
-    private const CACHE_ID_SORTINGS = 'flux_contentType_sortingValues';
+    private const string CACHE_ID_SORTINGS = 'flux_contentType_sortingValues';
 
     private ContentTypeBuilder $contentTypeBuilder;
     private ContentTypeManager $contentTypeManager;

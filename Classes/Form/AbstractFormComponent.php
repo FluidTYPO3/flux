@@ -26,8 +26,8 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 abstract class AbstractFormComponent implements FormInterface
 {
-    const NAMESPACE_FIELD = 'FluidTYPO3\\Flux\\Form\\Field';
-    const NAMESPACE_CONTAINER = 'FluidTYPO3\\Flux\\Form\\Container';
+    public const string NAMESPACE_FIELD = 'FluidTYPO3\\Flux\\Form\\Field';
+    public const string NAMESPACE_CONTAINER = 'FluidTYPO3\\Flux\\Form\\Container';
 
     protected ?string $name = null;
     protected bool $enabled = true;

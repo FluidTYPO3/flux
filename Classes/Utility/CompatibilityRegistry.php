@@ -163,7 +163,7 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
  */
 abstract class CompatibilityRegistry
 {
-    const VERSION_DEFAULT = 'default';
+    public const string VERSION_DEFAULT = 'default';
 
     protected static array $registry = [];
     protected static array $featureFlags = [];

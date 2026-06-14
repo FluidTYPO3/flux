@@ -12,12 +12,12 @@ use FluidTYPO3\Flux\Form\AbstractRelationFormField;
 
 class Tree extends AbstractRelationFormField
 {
-    const DEFAULT_ALLOW_RECURSIVE_MODE = false;
-    const DEFAULT_EXPAND_ALL = false;
-    const DEFAULT_NON_SELECTABLE_LEVELS  = '0';
-    const DEFAULT_MAX_LEVELS = 2;
-    const DEFAULT_SHOW_HEADER = false;
-    const DEFAULT_WIDTH = 280;
+    public const bool DEFAULT_ALLOW_RECURSIVE_MODE = false;
+    public const bool DEFAULT_EXPAND_ALL = false;
+    public const string DEFAULT_NON_SELECTABLE_LEVELS  = '0';
+    public const int DEFAULT_MAX_LEVELS = 2;
+    public const bool DEFAULT_SHOW_HEADER = false;
+    public const int DEFAULT_WIDTH = 280;
 
     protected ?string $parentField = null;
     protected bool $allowRecursiveMode = self::DEFAULT_ALLOW_RECURSIVE_MODE;

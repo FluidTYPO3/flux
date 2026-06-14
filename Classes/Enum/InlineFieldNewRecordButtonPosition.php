@@ -10,8 +10,8 @@ namespace FluidTYPO3\Flux\Enum;
 
 class InlineFieldNewRecordButtonPosition
 {
-    public const TOP = 'top';
-    public const BOTTOM = 'bottom';
-    public const BOTH = 'both';
-    public const NONE = 'none';
+    public const string TOP = 'top';
+    public const string BOTTOM = 'bottom';
+    public const string BOTH = 'both';
+    public const string NONE = 'none';
 }
