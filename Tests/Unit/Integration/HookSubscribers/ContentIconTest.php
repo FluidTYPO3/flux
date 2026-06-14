@@ -20,7 +20,6 @@ use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Lang\LanguageService;
 
@@ -72,16 +71,12 @@ class ContentIconTest extends AbstractTestCase
         $instance->method('drawGridToggle')->willReturn('foobar');
         $this->setInaccessiblePropertyValue($instance, 'cache', $this->cache);
 
-        $callerClassName = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<=')
-            ? PageLayoutView::class
-            : GridColumnItem::class;
-
         $result = $instance->addSubIcon(
             [
                 'tt_content', 123,
                 ['foo' => 'bar']
             ],
-            $this->createStub($callerClassName)
+            $this->createStub(GridColumnItem::class)
         );
         $this->assertEquals('icon', $result);
     }
@@ -125,13 +120,9 @@ class ContentIconTest extends AbstractTestCase
             ->getMock();
         $subject->method('translate')->willReturnArgument(0);
 
-        $callerClassName = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<=')
-            ? PageLayoutView::class
-            : GridColumnItem::class;
-
         $icon = $subject->addSubIcon(
             $parameters,
-            $this->createStub($callerClassName)
+            $this->createStub(GridColumnItem::class)
         );
         $this->assertSame('', $icon);
     }
@@ -167,16 +158,12 @@ class ContentIconTest extends AbstractTestCase
 
     public function testReturnsEmptyStringWithInvalidTable(): void
     {
-        $callerClassName = version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<=')
-            ? PageLayoutView::class
-            : GridColumnItem::class;
-
         $subject = new ContentIcon(...$this->getConstructorArguments());
         self::assertSame(
             '',
             $subject->addSubIcon(
                 ['foo', '', ''],
-                $this->createStub($callerClassName)
+                $this->createStub(GridColumnItem::class)
             )
         );
     }
