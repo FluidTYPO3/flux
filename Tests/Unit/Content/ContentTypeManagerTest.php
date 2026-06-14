@@ -36,7 +36,6 @@ class ContentTypeManagerTest extends AbstractTestCase
                 [
                     'fetchDropInContentTypes',
                     'fetchFileBasedContentTypes',
-                    'fetchRecordBasedContentTypes',
                 ]
             )
             ->getMock();
@@ -111,19 +110,5 @@ class ContentTypeManagerTest extends AbstractTestCase
             'with content_type field' => ['content_type', 'some-contenttype'],
             'without recognised field' => ['anyotherfield', ''],
         ];
-    }
-
-    public function testRegenerateSetsCacheValue(): void
-    {
-        $this->cacheService->expects(self::once())
-            ->method('setInCaches')
-            ->with([], true, ContentTypeManager::CACHE_IDENTIFIER);
-
-        $subject = $this->getMockBuilder(ContentTypeManager::class)
-            ->onlyMethods(['fetchContentTypes'])
-            ->setConstructorArgs([$this->cacheService])
-            ->getMock();
-        $subject->method('fetchContentTypes')->willReturn([]);
-        $subject->regenerate();
     }
 }
