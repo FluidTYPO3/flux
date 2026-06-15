@@ -20,11 +20,14 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Exception\Page\PageNotFoundException;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Exception;
 
 class SpooledConfigurationApplicator
@@ -91,6 +94,13 @@ class SpooledConfigurationApplicator
             foreach ($finder as $fileInfo) {
                 $scopedRequire($fileInfo->getPathname());
             }
+        }
+
+        if (VersionUtility::isCoreAtLeast13()) {
+            // Fix TYPO3 13+ loading order of TCA for schemaFactory, flux does its TCA stuff too late, so we rebuild
+            // the tcaSchema after flux has done its work.
+            $tcaSchemaFactory = GeneralUtility::makeInstance(TcaSchemaFactory::class);
+            $tcaSchemaFactory->rebuild($GLOBALS['TCA']);
         }
     }
 
