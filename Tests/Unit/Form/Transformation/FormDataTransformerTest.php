@@ -19,7 +19,9 @@ use FluidTYPO3\Flux\Form\Transformation\Transformer\IntegerTransformer;
 use FluidTYPO3\Flux\Form\Transformation\Transformer\ObjectTransformer;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Service\FlexFormService;
 
 class FormDataTransformerTest extends AbstractTestCase
@@ -53,10 +55,15 @@ class FormDataTransformerTest extends AbstractTestCase
             ]
         );
 
-        $this->flexFormService = $this->getMockBuilder(FlexFormService::class)
-            ->onlyMethods(['convertFlexFormContentToArray'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        if (VersionUtility::isCoreAtLeast14()) {
+            $this->flexFormService = (new \ReflectionClass(FlexFormService::class))->newInstanceWithoutConstructor();
+        } else {
+            $this->flexFormService = $this->getMockBuilder(FlexFormService::class)
+                ->onlyMethods(['convertFlexFormContentToArray'])
+                ->disableOriginalConstructor()
+                ->getMock();
+        }
+
 
         $this->registry = new DataTransformerRegistry($serviceLocator);
         $this->subject = new FormDataTransformer($this->flexFormService, $this->registry);
@@ -81,13 +88,16 @@ class FormDataTransformerTest extends AbstractTestCase
      * @dataProvider getConvertFlexFormContentToArrayTestValues
      */
     public function testConvertFlexFormContentToArray(
-        string $flexFormContent,
+        string|FlexFormFieldValues $flexFormContent,
         ?Form $form,
         ?string $languagePointer,
         ?string $valuePointer,
         array $expected
     ) : void {
-        $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
+        if (VersionUtility::isCoreBelow14()) {
+            $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
+        }
+
         $instance = new FormDataTransformer(...$this->getConstructorArguments());
 
         $result = $instance->convertFlexFormContentToArray($flexFormContent, $form, $languagePointer, $valuePointer);
@@ -96,11 +106,18 @@ class FormDataTransformerTest extends AbstractTestCase
 
     public function getConvertFlexFormContentToArrayTestValues(): array
     {
+        $emptyValue = '';
+        $filledValue = Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD;
+        if (VersionUtility::isCoreAtLeast14()) {
+            $emptyValue = new FlexFormFieldValues([]);
+            $filledValue = new FlexFormFieldValues(['settings' => ['input' => '0']]);
+        }
+
         $form = $this->getMockBuilder(Form::class)->addMethods(['dummy'])->getMock();
         return [
-            ['', null, '', '', []],
-            ['', $form, '', '', []],
-            [Xml::SIMPLE_FLEXFORM_SOURCE_DEFAULT_SHEET_ONE_FIELD, $form, '', '', ['settings' => ['input' => 0]]]
+            [$emptyValue, null, '', '', []],
+            [$emptyValue, $form, '', '', []],
+            [$filledValue, $form, '', '', ['settings' => ['input' => 0]]]
         ];
     }
 
@@ -111,13 +128,18 @@ class FormDataTransformerTest extends AbstractTestCase
         ];
 
         $flexFormContent = 'abc';
+        if (VersionUtility::isCoreAtLeast14()) {
+            $flexFormContent = new FlexFormFieldValues(['foo' => 'bar']);
+        }
         $languagePointer = null;
         $valuePointer = null;
 
         $form = Form::create();
         $form->setOption(FormOption::TRANSFORM, true);
 
-        $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
+        if (VersionUtility::isCoreBelow14()) {
+            $this->flexFormService->method('convertFlexFormContentToArray')->willReturn($expected);
+        }
 
         $instance = $this->getMockBuilder(FormDataTransformer::class)
             ->onlyMethods(['transformAccordingToConfiguration'])

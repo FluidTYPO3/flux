@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Form\Field\Inline\Fal;
 use FluidTYPO3\Flux\Form\FieldInterface;
 use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
+use TYPO3\CMS\Core\Domain\FlexFormFieldValues;
 use TYPO3\CMS\Core\Service\FlexFormService;
 
 class FormDataTransformer
@@ -37,15 +38,15 @@ class FormDataTransformer
      *
      * Note: multi-language flexForms are not supported yet
      *
-     * @param string $flexFormContent flexForm xml string
-     * @param Form $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this
+     * @param string|FlexFormFieldValues $flexFormContent flexForm xml string or on v14+ instance of FlexFormFieldValues
+     * @param Form|null $form An instance of \FluidTYPO3\Flux\Form. If transformation instructions are contained in this
      *                   configuration they are applied after conversion to array
      * @param string|null $languagePointer language pointer used in the flexForm
      * @param string|null $valuePointer value pointer used in the flexForm
      */
     public function convertFlexFormContentToArray(
-        string $flexFormContent,
-        Form $form = null,
+        string|FlexFormFieldValues $flexFormContent,
+        ?Form $form = null,
         ?string $languagePointer = 'lDEF',
         ?string $valuePointer = 'vDEF'
     ): array {
@@ -58,11 +59,15 @@ class FormDataTransformer
         if (true === empty($valuePointer)) {
             $valuePointer = 'vDEF';
         }
-        $settings = $this->flexFormService->convertFlexFormContentToArray(
-            $flexFormContent,
-            $languagePointer,
-            $valuePointer
-        );
+        if ($flexFormContent instanceof FlexFormFieldValues) {
+            $settings = $flexFormContent->toArray();
+        } else {
+            $settings = $this->flexFormService->convertFlexFormContentToArray(
+                $flexFormContent,
+                $languagePointer,
+                $valuePointer
+            );
+        }
 
         if ($form !== null) {
             if (ExtensionConfigurationUtility::getOption(ExtensionOption::OPTION_UNIQUE_FILE_FIELD_NAMES)) {
