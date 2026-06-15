@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -26,18 +27,20 @@ use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\TextNode;
 
 class RenderViewHelperTest extends AbstractViewHelperTestCase
 {
+    protected ?ContentObjectRenderer $contentObjectRenderer = null;
+
     protected function setUp(): void
     {
         parent::setUp();
-        $GLOBALS['TSFE'] = $this->getMockBuilder(TypoScriptFrontendController::class)
+
+        $this->contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $GLOBALS['TSFE']->cObj = $this->getMockBuilder(ContentObjectRenderer::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getRecords', 'cObjGetSingle'])
-            ->getMock();
-        $GLOBALS['TSFE']->cObj->method('getRecords')->willReturn([]);
-        $GLOBALS['TSFE']->cObj->method('cObjGetSingle')->willReturn('object');
+
+        $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequestInterface::class)->getMock();
+        $GLOBALS['TYPO3_REQUEST']->method('getAttribute')
+            ->with('currentContentObject')
+            ->willReturn($this->contentObjectRenderer);
 
         $GLOBALS['TCA']['tt_content']['ctrl'] = [];
 
@@ -107,7 +110,7 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
      */
     public function isUnaffectedByRenderArgumentBeingFalse()
     {
-        $GLOBALS['TSFE']->cObj->expects($this->once())->method('getRecords')->willReturn([]);
+        $this->contentObjectRenderer->expects($this->once())->method('getRecords')->willReturn([]);
         $arguments = [
             'area' => 'void',
             'render' => false,
