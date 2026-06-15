@@ -10,7 +10,7 @@ namespace FluidTYPO3\Flux\Utility;
 
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Enum\ExtensionOption;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use FluidTYPO3\Flux\Proxy\ExtensionConfigurationProxy;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExtensionConfigurationUtility
@@ -38,8 +38,8 @@ class ExtensionConfigurationUtility
 
         if (empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'])) {
             $legacyConfiguration = &$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'];
-            /** @var ExtensionConfiguration $extensionConfigurationManager */
-            $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+            /** @var ExtensionConfigurationProxy $extensionConfigurationManager */
+            $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfigurationProxy::class);
             $legacyConfiguration = $extensionConfigurationManager->get('flux');
         }
     }
