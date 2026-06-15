@@ -10,7 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 
 use TYPO3Fluid\Fluid\Core\Parser\Source;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 
 /**
  * Inline Fluid rendering ViewHelper
