@@ -4,7 +4,6 @@ namespace FluidTYPO3\Flux;
 
 use FluidTYPO3\Flux\Attribute\DataTransformer;
 use FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager;
-use FluidTYPO3\Flux\Integration\Overrides\LegacyChimeraConfigurationManager;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,10 +15,7 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
     $version = VersionNumberUtility::getCurrentTypo3Version();
     if (version_compare($version, '13.4', '<')) {
         $container->removeAlias(ConfigurationManagerInterface::class);
-        $aliasClass = version_compare($version, '11.0', '<')
-            ? LegacyChimeraConfigurationManager::class
-            : ChimeraConfigurationManager::class;
-        $container->setAlias(ConfigurationManagerInterface::class, new Alias($aliasClass, true));
+        $container->setAlias(ConfigurationManagerInterface::class, new Alias(ChimeraConfigurationManager::class, true));
     }
 
     $container->registerAttributeForAutoconfiguration(
