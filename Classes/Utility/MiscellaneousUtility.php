@@ -89,10 +89,6 @@ class MiscellaneousUtility
             return $originalFile;
         }
 
-        if (strpos($originalFile, 'EXT:') === 0 || $originalFile[0] !== '/') {
-            $originalFile = GeneralUtility::getFileAbsFileName($originalFile);
-        }
-
         if (VersionUtility::isCoreAtLeast14()) {
             $iconSizeConstant = IconSize::DEFAULT;
         } else {
