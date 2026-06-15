@@ -27,6 +27,8 @@ class BootCompletedEventListenerTest extends AbstractTestCase
 
     public function testSpoolQueuedTcaOperations(): void
     {
+        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'] = ['foo' => ''];
+
         $event = new BootCompletedEvent(false);
 
         $applicator = $this->getMockBuilder(SpooledConfigurationApplicator::class)
@@ -38,5 +40,15 @@ class BootCompletedEventListenerTest extends AbstractTestCase
 
         $subject = new BootCompletedEventListener();
         $subject->spoolQueuedTcaOperations($event);
+
+        unset($GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']);
+    }
+
+    public function testSpoolQueuedTcaOperationsReturnsEarlyWithoutDatabaseConfiguration(): void
+    {
+        $event = new BootCompletedEvent(false);
+        $subject = new BootCompletedEventListener();
+        $subject->spoolQueuedTcaOperations($event);
+        self::assertFalse($event->isCachingEnabled());
     }
 }
