@@ -9,3 +9,4 @@ composer.lock
 /typo3_src
 /public
 /preflight
+/var
