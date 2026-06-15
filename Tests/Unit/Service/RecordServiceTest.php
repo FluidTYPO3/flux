@@ -11,9 +11,13 @@ namespace FluidTYPO3\Flux\Tests\Unit\Service;
 use FluidTYPO3\Flux\Service\RecordService;
 use FluidTYPO3\Flux\Tests\Mock\QueryBuilder;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
+use TYPO3\CMS\Core\Schema\Field\FieldCollection;
+use TYPO3\CMS\Core\Schema\TcaSchema;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -21,6 +25,21 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RecordServiceTest extends AbstractTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (VersionUtility::isCoreAtLeast14()) {
+            $schema = new TcaSchema('test', new FieldCollection([]), []);
+            $schemaFactory = $this->getMockBuilder(TcaSchemaFactory::class)
+                ->onlyMethods(['get'])
+                ->disableOriginalConstructor()
+                ->getMock();
+            $schemaFactory->method('get')->willReturn($schema);
+            GeneralUtility::addInstance(TcaSchemaFactory::class, $schemaFactory);
+        }
+    }
+
     /**
      * @param array $methods
      * @return RecordService|MockObject
