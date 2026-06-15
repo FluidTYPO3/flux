@@ -27,7 +27,6 @@ use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -112,21 +111,6 @@ class DataAccessTraitTest extends AbstractTestCase
         ];
     }
 
-    public function testTraitThrowsUnexpectedValueExceptionOnMissingRecord(): void
-    {
-        $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
-            ->getMockForAbstractClass();
-        $configurationManager->method('getConfiguration')->willReturn(['foo' => 'bar']);
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '<')) {
-            $configurationManager->method('getContentObject')->willReturn(null);
-        }
-
-        $subject = new DummyPageController(...$this->getControllerConstructorArguments());
-
-        self::expectExceptionCode(1666538343);
-        $subject->injectConfigurationManager($configurationManager);
-    }
-
     public function testTraitBehavior(): void
     {
         FlexFormImplementation::registerForTableAndField('pages', 'tx_fed_page_flexform');
@@ -139,11 +123,8 @@ class DataAccessTraitTest extends AbstractTestCase
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)
             ->getMockForAbstractClass();
         $configurationManager->method('getConfiguration')->willReturn(['foo' => 'bar']);
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.4', '<')) {
-            $configurationManager->method('getContentObject')->willReturn($contentObject);
-        } else {
-            $GLOBALS['TYPO3_REQUEST']->method('getAttribute')->with('currentContentObject')->willReturn($contentObject);
-        }
+
+        $GLOBALS['TYPO3_REQUEST']->method('getAttribute')->with('currentContentObject')->willReturn($contentObject);
 
         $converter = $this->getMockBuilder(InlineRecordDataConverter::class)->disableOriginalConstructor()->getMock();
         $converter->method('convertData')->willReturnArgument(0);

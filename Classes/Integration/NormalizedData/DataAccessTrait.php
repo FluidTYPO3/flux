@@ -30,12 +30,6 @@ trait DataAccessTrait
         }
 
         $contentObject = ContentObjectFetcher::resolve($this->configurationManager);
-        if ($contentObject === null) {
-            throw new \UnexpectedValueException(
-                "Record of table " . $this->getFluxTableName() . ' not found',
-                1666538343
-            );
-        }
         $table = $this->fluxTableName ?? $contentObject->getCurrentTable();
         $field = $this->fluxRecordField ?? 'pi_flexform';
         $record = $contentObject->data;
