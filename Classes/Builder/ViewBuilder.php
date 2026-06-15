@@ -11,14 +11,13 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\View\ViewFactoryData;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
-use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
@@ -48,9 +47,6 @@ class ViewBuilder
         string $pluginName,
         ?string $templatePathAndFilename = null
     ): PreviewView {
-        /** @var class-string $viewClassName */
-        $viewClassName = PreviewView::class;
-
         $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionIdentity,
             $controllerName,
@@ -65,7 +61,7 @@ class ViewBuilder
         $renderingContext->setTemplatePaths($templatePaths);
 
         /** @var ViewInterface&PreviewView $view */
-        $view = GeneralUtility::makeInstance($viewClassName);
+        $view = GeneralUtility::makeInstance(PreviewView::class);
         if (method_exists($view, 'setRenderingContext')) {
             $view->setRenderingContext($renderingContext);
         }
@@ -82,11 +78,8 @@ class ViewBuilder
         string $controllerAction,
         string $pluginName,
         ?string $templatePathAndFilename = null,
-        $request = null
+        ServerRequestInterface|RequestInterface|null $request = null
     ): ViewInterface {
-        /** @var class-string $viewClassName */
-        $viewClassName = TemplateView::class;
-
         $renderingContext = $this->renderingContextBuilder->buildRenderingContextFor(
             $extensionIdentity,
             $controllerName,
@@ -95,7 +88,6 @@ class ViewBuilder
         );
 
         return $this->createViewInstance(
-            $viewClassName,
             $extensionIdentity,
             $renderingContext,
             $templatePathAndFilename,
@@ -103,16 +95,12 @@ class ViewBuilder
         );
     }
 
-    /**
-     * @param string|array $extensionKeyOrConfiguration
-     * @codeCoverageIgnore
-     */
-    public function buildTemplatePaths($extensionKeyOrConfiguration): TemplatePaths
+    public function buildTemplatePaths(string|array $extensionKeyOrConfiguration): TemplatePaths
     {
         /** @var TemplatePaths $paths */
         $paths = GeneralUtility::makeInstance(TemplatePaths::class);
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+        if (VersionUtility::isCoreAtLeast13()) {
             if (!is_array($extensionKeyOrConfiguration)) {
                 $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKeyOrConfiguration);
                 $resources = ExtensionManagementUtility::extPath($extensionKey) . 'Resources/Private/';
@@ -150,16 +138,11 @@ class ViewBuilder
         return $paths;
     }
 
-    /**
-     * @param string&class-string $viewClassName
-     * @param ServerRequestInterface|RequestInterface|null $request
-     */
     protected function createViewInstance(
-        string $viewClassName,
         string $extensionIdentity,
         RenderingContextInterface $renderingContext,
         ?string $templatePathAndFilename,
-        $request = null
+        ServerRequestInterface|RequestInterface|null $request = null
     ): ViewInterface {
         $typoScriptViewConfiguration = null;
         $extensionSignature = ExtensionNamingUtility::getExtensionSignature($extensionIdentity);
@@ -181,7 +164,7 @@ class ViewBuilder
             $templatePaths = $this->buildTemplatePaths($extensionIdentity);
         }
 
-        if (interface_exists(ViewFactoryInterface::class)) {
+        if (VersionUtility::isCoreAtLeast13()) {
             $viewFactoryData = GeneralUtility::makeInstance(
                 ViewFactoryData::class,
                 $templatePaths->getTemplateRootPaths(),
@@ -205,7 +188,7 @@ class ViewBuilder
             }
 
             /** @var ViewInterface $view */
-            $view = GeneralUtility::makeInstance($viewClassName);
+            $view = GeneralUtility::makeInstance(TemplateView::class);
             if (method_exists($view, 'setRenderingContext')) {
                 $view->setRenderingContext($renderingContext);
             }
