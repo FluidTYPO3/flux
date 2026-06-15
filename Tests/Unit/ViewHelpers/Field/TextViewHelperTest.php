@@ -22,7 +22,7 @@ class TextViewHelperTest extends AbstractFieldViewHelperTestCase
         $arguments = ['name' => 'test', 'description' => 'testdesc'];
         $instance = $this->buildViewHelperInstance($arguments);
         $component = $instance->getComponent(
-            $this->getInaccessiblePropertyValue($instance, 'renderingContext'),
+            $this->renderingContext,
             $this->getInaccessiblePropertyValue($instance, 'arguments')
         );
         $this->assertSame($arguments['description'], $component->getDescription());
@@ -36,7 +36,7 @@ class TextViewHelperTest extends AbstractFieldViewHelperTestCase
         $arguments = ['name' => 'test', 'placeholder' => 'test'];
         $instance = $this->buildViewHelperInstance($arguments);
         $component = $instance->getComponent(
-            $this->getInaccessiblePropertyValue($instance, 'renderingContext'),
+            $this->renderingContext,
             $this->getInaccessiblePropertyValue($instance, 'arguments')
         );
         $this->assertSame($arguments['placeholder'], $component->getPlaceholder());

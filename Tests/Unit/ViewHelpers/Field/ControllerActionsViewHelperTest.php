@@ -59,6 +59,8 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
      */
     public function throwsExceptionOnInvalidExtensionPluginNameAndActionsCombination(): void
     {
+        $this->simulateRequestWithExtbaseParameters('');
+
         $arguments = [
             'label' => 'Test field',
             'controllerExtensionName' => '',
@@ -136,13 +138,14 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         ];
         $instance = $this->buildViewHelperInstance($arguments);
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getExtbaseAttribute'])
+            ->setMethods(['getExtbaseAttribute', 'getAttribute'])
             ->disableOriginalConstructor()
             ->getMock();
         if (class_exists(ExtbaseRequestParameters::class)) {
             $parameters = new ExtbaseRequestParameters(ContentController::class);
             $parameters->setControllerExtensionName('Flux');
             $request->method('getExtbaseAttribute')->willReturn($parameters);
+            $request->method('getAttribute')->willReturn($parameters);
         } else {
             $request->setControllerExtensionName('Flux');
         }

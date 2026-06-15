@@ -25,7 +25,7 @@ class FieldViewHelperTest extends AbstractFieldViewHelperTestCase
         $arguments = ['name' => 'test', 'type' => 'input', 'description' => 'testdesc'];
         $instance = $this->buildViewHelperInstance($arguments);
         $component = $instance->getComponent(
-            $this->getInaccessiblePropertyValue($instance, 'renderingContext'),
+            $this->renderingContext,
             $this->getInaccessiblePropertyValue($instance, 'arguments')
         );
         $this->assertSame($arguments['description'], $component->getDescription());
