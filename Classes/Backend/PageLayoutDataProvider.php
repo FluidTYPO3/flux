@@ -119,8 +119,6 @@ class PageLayoutDataProvider
         $thumbnail = MiscellaneousUtility::getIconForTemplate($form);
         if ($thumbnail) {
             $thumbnail = ltrim($thumbnail, '/');
-            $thumbnail = GeneralUtility::getFileAbsFileName($thumbnail);
-            $thumbnail = $thumbnail ? MiscellaneousUtility::createIcon($thumbnail) : null;
         }
         /** @var string|null $template */
         $template = $form->getOption(FormOption::TEMPLATE_FILE_RELATIVE);
