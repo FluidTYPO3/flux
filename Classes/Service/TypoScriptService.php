@@ -17,12 +17,10 @@ use TYPO3\CMS\Extbase\Configuration\Exception\NoServerRequestGivenException;
 class TypoScriptService implements SingletonInterface
 {
     private CacheService $cacheService;
-    private ConfigurationManagerInterface $configurationManager;
 
-    public function __construct(CacheService $cacheService, ConfigurationManagerInterface $configurationManager)
+    public function __construct(CacheService $cacheService)
     {
         $this->cacheService = $cacheService;
-        $this->configurationManager = $configurationManager;
     }
 
     /**
@@ -50,7 +48,7 @@ class TypoScriptService implements SingletonInterface
         }
 
         try {
-            $all = $this->configurationManager->getConfiguration(
+            $all = $this->getConfigurationManager()->getConfiguration(
                 ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
             );
         } catch (NoServerRequestGivenException $error) {
@@ -91,5 +89,12 @@ class TypoScriptService implements SingletonInterface
         }
         $this->cacheService->setInCaches($value, true, $cacheId);
         return $value;
+    }
+
+    protected function getConfigurationManager(): ConfigurationManagerInterface
+    {
+        /** @var ConfigurationManagerInterface $configurationManager */
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManagerInterface::class);
+        return $configurationManager;
     }
 }
