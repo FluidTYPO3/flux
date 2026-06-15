@@ -20,10 +20,17 @@ class DataTransformerRegistry
 
     private static array $legacy = [];
 
-    public function __construct(ServiceLocator $locator)
+    public function __construct(private ServiceLocator $locator)
     {
+    }
+
+    private function instanceTransformers(): array
+    {
+        if (!empty($this->transformers)) {
+            return $this->transformers;
+        }
         /** @var DataTransformerInterface[] $transformers */
-        $transformers = array_map([$locator, 'get'], array_keys($locator->getProvidedServices()));
+        $transformers = array_map([$this->locator, 'get'], array_keys($this->locator->getProvidedServices()));
         $this->transformers = $transformers;
         usort(
             $this->transformers,
@@ -31,6 +38,7 @@ class DataTransformerRegistry
                 return $b->getPriority() <=> $a->getPriority();
             }
         );
+        return $this->transformers;
     }
 
     public static function registerTransformerOnLegacyPhpVersion(string $transformerClassName): void
@@ -40,7 +48,7 @@ class DataTransformerRegistry
 
     public function resolveDataTransformerByType(string $type): DataTransformerInterface
     {
-        foreach ($this->transformers as $transformer) {
+        foreach ($this->instanceTransformers() as $transformer) {
             if ($transformer->canTransformToType($type)) {
                 return $transformer;
             }
