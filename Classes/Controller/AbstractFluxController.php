@@ -600,10 +600,7 @@ abstract class AbstractFluxController extends ActionController
 
     protected function getContentObject(): ?ContentObjectRenderer
     {
-        return ContentObjectFetcher::resolve(
-            $this->configurationManager,
-            $this->request instanceof ServerRequestInterface ? $this->request : null
-        );
+        return ContentObjectFetcher::resolve($this->configurationManager, $this->getServerRequest());
     }
 
     protected function getServerRequest(): ServerRequestInterface

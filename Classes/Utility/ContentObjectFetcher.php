@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Utility;
  */
 
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -18,7 +19,7 @@ class ContentObjectFetcher
     public static function resolve(
         ?ConfigurationManagerInterface $configurationManager = null,
         ?ServerRequestInterface $request = null
-    ): ?ContentObjectRenderer {
+    ): ContentObjectRenderer {
         $contentObject = null;
         $request ??= $configurationManager !== null && method_exists($configurationManager, 'getRequest')
             ? $configurationManager->getRequest()
@@ -33,6 +34,10 @@ class ContentObjectFetcher
             && method_exists($configurationManager, 'getContentObject')
         ) {
             $contentObject = $configurationManager->getContentObject();
+        }
+
+        if ($contentObject === null) {
+            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         }
 
         return $contentObject;
