@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -92,6 +93,12 @@ class MiscellaneousUtility
             $originalFile = GeneralUtility::getFileAbsFileName($originalFile);
         }
 
+        if (VersionUtility::isCoreAtLeast14()) {
+            $iconSizeConstant = IconSize::DEFAULT;
+        } else {
+            $iconSizeConstant = Icon::SIZE_DEFAULT;
+        }
+
         $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
         switch (strtolower($extension)) {
             case 'svg':
@@ -106,7 +113,7 @@ class MiscellaneousUtility
         $iconRegistry->registerIcon(
             $iconIdentifier,
             $iconProvider,
-            ['source' => $originalFile, 'size' => Icon::SIZE_DEFAULT]
+            ['source' => $originalFile, 'size' => $iconSizeConstant]
         );
         return $iconIdentifier;
     }
