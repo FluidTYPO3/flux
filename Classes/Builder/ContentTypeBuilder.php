@@ -37,13 +37,7 @@ class ContentTypeBuilder
     public const string DEFAULT_SHOWITEM = 'defaultShowItem';
 
     /**
-     * @param string $providerExtensionName
-     * @param string $templateFilename
      * @param class-string $providerClassName
-     * @param string|null $contentType
-     * @param string $defaultControllerExtensionName
-     * @param string|null $controllerActionName
-     * @return ProviderInterface
      */
     public function configureContentTypeFromTemplateFile(
         string $providerExtensionName,
