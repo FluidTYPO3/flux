@@ -12,13 +12,12 @@ use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Hooks\HookHandler;
-use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
-use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use FluidTYPO3\Flux\Utility\RequestResolver;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
@@ -27,10 +26,8 @@ use TYPO3\CMS\Backend\View\PageViewMode;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Domain\RecordFactory;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -46,7 +43,7 @@ class PreviewView extends TemplateView
     protected ConfigurationManagerInterface $configurationManager;
     protected WorkspacesAwareRecordService $workspacesAwareRecordService;
 
-    public function __construct(RenderingContextInterface $context = null)
+    public function __construct(?RenderingContextInterface $context = null)
     {
         parent::__construct($context);
 
@@ -95,7 +92,7 @@ class PreviewView extends TemplateView
         )['preview'];
     }
 
-    protected function getPreviewOptions(Form $form = null): array
+    protected function getPreviewOptions(?Form $form = null): array
     {
         if (!is_object($form) || !$form->hasOption(PreviewOption::PREVIEW)) {
             return [
@@ -117,7 +114,7 @@ class PreviewView extends TemplateView
         return (bool) ($options[PreviewOption::TOGGLE] ?? true);
     }
 
-    protected function renderPreviewSection(ProviderInterface $provider, array $row, Form $form = null): ?string
+    protected function renderPreviewSection(ProviderInterface $provider, array $row, ?Form $form = null): ?string
     {
         $templatePathAndFilename = $provider->getTemplatePathAndFilename($row);
         if (!$templatePathAndFilename) {
@@ -169,24 +166,13 @@ class PreviewView extends TemplateView
                 $workspaceVersion = $this->fetchWorkspaceVersionOfRecord($workspaceId, $row['uid']);
                 $pageUid = $workspaceVersion['pid'] ?? $pageUid;
             }
-            $pageLayoutView = $this->getInitializedPageLayoutView($provider, $row);
-            if ($pageLayoutView instanceof BackendLayoutRenderer) {
-                if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
-                    $content .= $pageLayoutView->drawContent(
-                        $GLOBALS['TYPO3_REQUEST'],
-                        $pageLayoutView->getContext(),
-                        $form->getOption(FormOption::RECORD_TABLE) === 'pages' // render unused area only for "pages"
-                    );
-                } else {
-                    $content .= $pageLayoutView->drawContent(false);
-                }
-            } elseif (method_exists($pageLayoutView, 'start') && method_exists($pageLayoutView, 'generateList')) {
-                $pageLayoutView->start($pageUid, 'tt_content', 0);
-                $pageLayoutView->generateList();
-                $content .= $pageLayoutView->HTMLcode;
-            } else {
-                $content .= $pageLayoutView->getTable_tt_content($row['pid']);
-            }
+            $pageLayoutView = $this->getInitializedBackendLayoutView($provider, $row);
+
+            $content .= $pageLayoutView->drawContent(
+                $GLOBALS['TYPO3_REQUEST'],
+                $pageLayoutView->getContext(),
+                $form->getOption(FormOption::RECORD_TABLE) === 'pages' // render unused area only for "pages"
+            );
 
             $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = $tcaBackup;
         }
@@ -198,10 +184,7 @@ class PreviewView extends TemplateView
         return sprintf($this->templates['gridToggle'], $row['uid'], $content);
     }
 
-    /**
-     * @return PageLayoutView|BackendLayoutRenderer
-     */
-    protected function getInitializedPageLayoutView(ProviderInterface $provider, array $row)
+    protected function getInitializedBackendLayoutView(ProviderInterface $provider, array $row): BackendLayoutRenderer
     {
         $pageId = (int) $row['pid'];
         $pageRecord = $this->workspacesAwareRecordService->getSingle('pages', '*', $pageId);
@@ -214,115 +197,84 @@ class PreviewView extends TemplateView
             $moduleData['tt_content_showHidden'] = 1;
         }
 
-        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0 ? $row['l18n_parent'] : ($row['t3ver_oid'] ?: $row['uid']);
+        $parentRecordUid = ($row['l18n_parent'] ?? 0) > 0
+            ? $row['l18n_parent']
+            : (($row['t3ver_oid'] ?? null) ?: $row['uid']);
 
         $backendLayout = $provider->getGrid($row)->buildBackendLayout($parentRecordUid);
         $layoutConfiguration = $backendLayout->getStructure();
 
-        /** @var Features $features */
-        $features = GeneralUtility::makeInstance(Features::class);
-        $fluidBasedLayoutFeatureEnabled = $features->isFeatureEnabled('fluidBasedPageModule');
-
-        if ($fluidBasedLayoutFeatureEnabled) {
-            /** @var SiteFinderProxy $siteFinder */
-            $siteFinder = GeneralUtility::makeInstance(SiteFinderProxy::class);
-            $site = $siteFinder->getSiteByPageId($pageId);
-            $language = null;
-            if ($row['sys_language_uid'] >= 0) {
-                $language = $site->getLanguageById((int) $row['sys_language_uid']);
-            }
-
-            if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
-                $configuration = DrawingConfiguration::create($backendLayout, [], PageViewMode::LayoutView);
-                $configuration->setSelectedLanguageId($language->getLanguageId());
-
-                /** @var PageLayoutContext $context */
-                $context = GeneralUtility::makeInstance(
-                    PageLayoutContext::class,
-                    $this->fetchPageRecordWithoutOverlay($pageId),
-                    $backendLayout,
-                    $site,
-                    $configuration,
-                    $GLOBALS['TYPO3_REQUEST']
+        if (VersionUtility::isCoreBelow14()) {
+            /** @var Features $features */
+            $features = GeneralUtility::makeInstance(Features::class);
+            $fluidBasedLayoutFeatureEnabled = $features->isFeatureEnabled('fluidBasedPageModule');
+            if (!$fluidBasedLayoutFeatureEnabled) {
+                throw new \UnexpectedValueException(
+                    'Flux requires the "fluidBasedPageModule" feature flag to be ENABLED',
+                    1776970729
                 );
-            } else {
-                /** @var PageLayoutContext $context */
-                $context = GeneralUtility::makeInstance(
-                    PageLayoutContext::class,
-                    $this->fetchPageRecordWithoutOverlay($pageId),
-                    $backendLayout
-                );
-                $configuration = $context->getDrawingConfiguration();
             }
-
-            if (isset($language)) {
-                 $context = $context->cloneForLanguage($language);
-            }
-
-            if (method_exists($configuration, 'setActiveColumns')) {
-                $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
-            }
-
-            if (isset($language) && method_exists($configuration, 'setSelectedLanguageId')) {
-                $configuration->setSelectedLanguageId($language->getLanguageId());
-            }
-
-            $backendLayoutRenderer = $this->createBackendLayoutRenderer($context);
-
-            $backendLayoutRenderer->setContext($context);
-
-            return $backendLayoutRenderer;
         }
 
-        $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
-
-        /** @var PageLayoutView $view */
-        $view = GeneralUtility::makeInstance(PageLayoutView::class, $eventDispatcher);
-        $view->setProvider($provider);
-        $view->setRecord($row);
-
-        $contentTypeLabels = [];
-        foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
-            $contentTypeLabels[$val[1]] = $this->getLanguageService()->sL($val[0]);
-        }
-        $itemLabels = [];
-        foreach ($GLOBALS['TCA']['tt_content']['columns'] as $name => $val) {
-            $itemLabels[$name] = ($val['label'] ?? false) ? $this->getLanguageService()->sL($val['label']) : '';
+        /** @var SiteFinderProxy $siteFinder */
+        $siteFinder = GeneralUtility::makeInstance(SiteFinderProxy::class);
+        $site = $siteFinder->getSiteByPageId($pageId);
+        $language = null;
+        if (($row['sys_language_uid'] ?? -1) >= 0) {
+            $language = $site->getLanguageById((int) $row['sys_language_uid']);
         }
 
-        array_push(
-            $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'],
-            ...($layoutConfiguration['__items'] ?? [])
-        );
+        $request = RequestResolver::getRequest();
 
-        $columnsAsCSV = implode(',', $layoutConfiguration['__colPosList'] ?? []);
+        if (VersionUtility::isCoreAtLeast14()) {
+            // @TODO: fix this instancing
+            $context = GeneralUtility::makeInstance(
+                PageLayoutContext::class,
+                $request->getAttribute('pageContext'),
+                $backendLayout,
+                $configuration = DrawingConfiguration::create($backendLayout, [], PageViewMode::LayoutView),
+                $request
+            );
+        } elseif (VersionUtility::isCoreAtLeast13()) {
+            $configuration = DrawingConfiguration::create($backendLayout, [], PageViewMode::LayoutView);
+            $configuration->setSelectedLanguageId($language->getLanguageId());
 
-        $view->script = 'db_layout.php';
-        $view->showIcon = 1;
-        $view->setLMargin = 0;
-        $view->doEdit = 1;
-        $view->no_noWrap = 1;
-        $view->ext_CALC_PERMS = $this->getBackendUser()->calcPerms($pageRecord);
-        $view->id = $row['pid'];
-        $view->table = 'tt_content';
-        $view->tableList = 'tt_content';
-        $view->currentTable = 'tt_content';
-        $view->tt_contentConfig['showCommands'] = 1;
-        $view->tt_contentConfig['showInfo'] = 1;
-        $view->tt_contentConfig['single'] = 0;
-        $view->nextThree = 1;
-        $view->tt_contentConfig['sys_language_uid'] = (int) $row['sys_language_uid'];
-        $view->tt_contentConfig['showHidden'] = $showHiddenRecords;
-        $view->tt_contentConfig['activeCols'] = $columnsAsCSV;
-        $view->tt_contentConfig['cols'] = $columnsAsCSV;
-        $view->CType_labels = $contentTypeLabels;
-        $view->itemLabels = $itemLabels;
-
-        if (($pageInfo = $this->checkAccessToPage($pageId))) {
-            $view->setPageinfo($pageInfo);
+            /** @var PageLayoutContext $context */
+            $context = GeneralUtility::makeInstance(
+                PageLayoutContext::class,
+                $this->fetchPageRecordWithoutOverlay($pageId),
+                $backendLayout,
+                $site,
+                $configuration,
+                $request
+            );
+        } else {
+            /** @var PageLayoutContext $context */
+            $context = GeneralUtility::makeInstance(
+                PageLayoutContext::class,
+                $this->fetchPageRecordWithoutOverlay($pageId),
+                $backendLayout
+            );
+            $configuration = $context->getDrawingConfiguration();
         }
 
-        return $view;
+        if (isset($language)) {
+             $context = $context->cloneForLanguage($language);
+        }
+
+        if (method_exists($configuration, 'setActiveColumns')) {
+            $configuration->setActiveColumns($backendLayout->getColumnPositionNumbers());
+        }
+
+        if (isset($language) && method_exists($configuration, 'setSelectedLanguageId')) {
+            $configuration->setSelectedLanguageId($language->getLanguageId());
+        }
+
+        $backendLayoutRenderer = $this->createBackendLayoutRenderer($context);
+
+        $backendLayoutRenderer->setContext($context);
+
+        return $backendLayoutRenderer;
     }
 
     /**
@@ -330,7 +282,7 @@ class PreviewView extends TemplateView
      */
     protected function createBackendLayoutRenderer(PageLayoutContext $context): BackendLayoutRenderer
     {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+        if (VersionUtility::isCoreAtLeast13()) {
             /** @var BackendViewFactory $backendViewFactory */
             $backendViewFactory = GeneralUtility::getContainer()->get(BackendViewFactory::class);
             /** @var RecordFactory $recordFactory */
@@ -341,7 +293,7 @@ class PreviewView extends TemplateView
                 $backendViewFactory,
                 $recordFactory
             );
-        } elseif (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
+        } else {
             /** @var BackendViewFactory $backendViewFactory */
             $backendViewFactory = GeneralUtility::getContainer()->get(BackendViewFactory::class);
             /** @var BackendLayoutRenderer $backendLayoutRenderer */
@@ -349,9 +301,6 @@ class PreviewView extends TemplateView
                 BackendLayoutRenderer::class,
                 $backendViewFactory
             );
-        } else {
-            /** @var BackendLayoutRenderer $backendLayoutRenderer */
-            $backendLayoutRenderer = GeneralUtility::makeInstance(BackendLayoutRenderer::class, $context);
         }
         return $backendLayoutRenderer;
     }
