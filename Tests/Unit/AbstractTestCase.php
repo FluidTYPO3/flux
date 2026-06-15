@@ -40,16 +40,6 @@ abstract class AbstractTestCase extends TestCase
         if (!defined('LF')) {
             define('LF', PHP_EOL);
         }
-        if (!defined('TYPO3_REQUESTTYPE')) {
-            define('TYPO3_REQUESTTYPE', 1);
-        }
-        if (!defined('TYPO3_REQUESTTYPE_FE')) {
-            define('TYPO3_REQUESTTYPE_FE', 1);
-        }
-
-        if (!defined('TYPO3_version')) { // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
-            define('TYPO3_version', '9.5.0'); // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
-        }
 
         $GLOBALS['EXEC_TIME'] = time();
         $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
