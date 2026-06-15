@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
-use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
@@ -88,14 +87,14 @@ STRING;
     public function testBuildExtendedBackendLayoutForPageLevelColumns(): void
     {
         $virtualColumn = [
-            'foo3', 8001, 'baz3',
+            'label' => 'foo3', 'value' => 8001, 'icon' => 'baz3',
         ];
         $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'] = [
             [
-                'foo1', 1, 'baz1',
+                'label' => 'foo1', 'value' => 1, 'icon' => 'baz1',
             ],
             [
-                'foo2', 2, 'baz2',
+                'label' => 'foo2', 'value' => 2, 'icon' => 'baz2',
             ],
             $virtualColumn,
         ];
@@ -153,16 +152,16 @@ STRING;
                 2 + $colPosModifier => 2 + $colPosModifier,
             ],
             '__items' => [
-                (new SelectOption(
-                    'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column1',
-                    1 + $colPosModifier,
-                    null,
-                ))->toArray(),
-                (new SelectOption(
-                    'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column2',
-                    2 + $colPosModifier,
-                    null,
-                ))->toArray(),
+                [
+                    'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column1',
+                    'value' => 1 + $colPosModifier,
+                    'icon' => null,
+                ],
+                [
+                    'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.test.columns.column2',
+                    'value' => 2 + $colPosModifier,
+                    'icon' => null,
+                ],
             ],
         ];
     }

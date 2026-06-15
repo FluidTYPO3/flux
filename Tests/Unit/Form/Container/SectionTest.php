@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\Form\Container\SectionObject;
 use FluidTYPO3\Flux\Form\Field\Input;
-use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 
 class SectionTest extends AbstractContainerTest
 {
@@ -41,20 +40,11 @@ class SectionTest extends AbstractContainerTest
 
     public function testCreateSectionWithContentContainer(): void
     {
-        $colspanItems = [
-            (new SelectOption(1, 1))->toArray(),
-            (new SelectOption(2, 2))->toArray(),
-            (new SelectOption(3, 3))->toArray(),
-            (new SelectOption(4, 4))->toArray(),
-            (new SelectOption(5, 5))->toArray(),
-            (new SelectOption(6, 6))->toArray(),
-            (new SelectOption(7, 7))->toArray(),
-            (new SelectOption(8, 8))->toArray(),
-            (new SelectOption(9, 9))->toArray(),
-            (new SelectOption(10, 10))->toArray(),
-            (new SelectOption(11, 11))->toArray(),
-            (new SelectOption(12, 12))->toArray(),
-        ];
+        $colspanItems = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $colspanItems[] = ['label' => $i, 'value' => $i];
+        }
 
         $expected = [
             'type' => 'array',

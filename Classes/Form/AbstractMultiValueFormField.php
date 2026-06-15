@@ -8,7 +8,6 @@ namespace FluidTYPO3\Flux\Form;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
@@ -194,7 +193,10 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
             }
             if (!$this->getTranslateCsvItems()) {
                 foreach ($itemNames as $itemName) {
-                    array_push($items, (new SelectOption((string) $itemName, $itemName))->toArray());
+                    $items[] = [
+                        'label' => $itemName,
+                        'value' => $itemName,
+                    ];
                 }
             } else {
                 foreach ($itemNames as $itemName) {
@@ -202,24 +204,33 @@ abstract class AbstractMultiValueFormField extends AbstractFormField implements 
                         '',
                         $this->getPath() . '.option.' . $itemName
                     );
-                    array_push($items, (new SelectOption((string) $resolvedLabel, $itemName))->toArray());
+                    $items[] = [
+                        'label' => $resolvedLabel,
+                        'value' => $itemName,
+                    ];
                 }
             }
         } elseif (true === is_array($this->items) || true === $this->items instanceof \Traversable) {
             foreach ($this->items as $itemIndex => $itemValue) {
                 if (true === is_array($itemValue) || true === $itemValue instanceof \ArrayObject) {
-                    array_push($items, $itemValue);
+                    $items[] = $itemValue;
                 } else {
-                    array_push($items, (new SelectOption($itemValue, $itemIndex))->toArray());
+                    $items[] = [
+                        'label' => $itemValue,
+                        'value' => $itemIndex,
+                    ];
                 }
             }
         }
         $emptyOption = $this->getEmptyOption();
         if (false !== $emptyOption) {
             if (is_array($emptyOption)) {
-                array_unshift($items, $emptyOption);
+                $items[] = $emptyOption;
             } else {
-                array_unshift($items, (new SelectOption((string) $emptyOption, ''))->toArray());
+                $items[] = [
+                    'label' => $emptyOption,
+                    'value' => '',
+                ];
             }
         }
 

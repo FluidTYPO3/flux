@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
@@ -42,25 +41,19 @@ class ColumnPositionItems
         $provider = $this->providerResolver->resolvePrimaryConfigurationProvider('tt_content', null, $parentRecord);
         if ($parentRecord && $provider instanceof GridProviderInterface) {
             $grid = $provider->getGrid($parentRecord);
-            /** @var SelectOption $dividerItem */
-            $dividerItem = GeneralUtility::makeInstance(
-                SelectOption::class,
-                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent',
-                '--div--'
-            );
-            $parameters['items'][] = $dividerItem->toArray();
+            $parameters['items'][] = [
+                'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent',
+                'value' => '--div--',
+            ];
             foreach ($grid->getRows() as $row) {
                 foreach ($row->getColumns() as $column) {
-                    /** @var SelectOption $item */
-                    $item = GeneralUtility::makeInstance(
-                        SelectOption::class,
-                        $column->getLabel(),
-                        ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
+                    $parameters['items'][] = [
+                        'label' => $column->getLabel(),
+                        'value' => ColumnNumberUtility::calculateColumnNumberForParentAndColumn(
                             $parentRecordUid,
                             $column->getColumnPosition()
-                        )
-                    );
-                    $parameters['items'][] = $item->toArray();
+                        ),
+                    ];
                 }
             }
         }
