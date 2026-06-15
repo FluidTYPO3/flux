@@ -10,12 +10,14 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
+use TYPO3\CMS\Core\Charset\CharsetProvider;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class AbstractTestCase extends TestCase
@@ -41,8 +43,13 @@ abstract class AbstractTestCase extends TestCase
             define('LF', PHP_EOL);
         }
 
+        $charsetProvider = null;
+        if (VersionUtility::isCoreAtLeast14()) {
+            $charsetProvider = new CharsetProvider();
+        }
+
         $GLOBALS['EXEC_TIME'] = time();
-        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
+        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter($charsetProvider)];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fluid_template'] = [

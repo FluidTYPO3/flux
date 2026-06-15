@@ -11,13 +11,16 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Input;
 use FluidTYPO3\Flux\Outlet\StandardOutlet;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\PassthroughArgumentProcessor;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
+use TYPO3Fluid\Fluid\Core\Parser\Configuration;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
 use TYPO3Fluid\Fluid\Core\Parser\TemplateProcessor\NamespaceDetectionTemplateProcessor;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInvoker;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolver;
@@ -62,22 +65,7 @@ class FormTest extends AbstractTestCase
             ->getMock();
         $request->method('getControllerExtensionName')->willReturn('Flux');
 
-        $renderingContext = $this->getMockBuilder(RenderingContext::class)->setMethods(
-            [
-                'getTemplatePaths',
-                'getViewHelperVariableContainer',
-                'getVariableProvider',
-                'getTemplateCompiler',
-                'getViewHelperInvoker',
-                'getTemplateParser',
-                'getViewHelperResolver',
-                'getTemplateProcessors',
-                'getExpressionNodeTypes',
-                'getControllerName',
-                'getControllerAction',
-                'getControllerContext',
-            ]
-        )->disableOriginalConstructor()->getMock();
+        $renderingContext = $this->getMockBuilder(RenderingContextInterface::class)->getMock();
         $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
         $renderingContext->method('getViewHelperVariableContainer')->willReturn($viewHelperVariableContainer);
         $renderingContext->method('getVariableProvider')->willReturn($variableProvider);
@@ -89,10 +77,12 @@ class FormTest extends AbstractTestCase
         $renderingContext->method('getExpressionNodeTypes')->willReturn([]);
         $renderingContext->method('getControllerName')->willReturn('Content');
         $renderingContext->method('getControllerAction')->willReturn(basename($template, '.html'));
-        if (class_exists(ControllerContext::class)) {
-            $controllerContext = new ControllerContext();
-            $controllerContext->setRequest($request);
-            $renderingContext->method('getControllerContext')->willReturn($controllerContext);
+
+        if (VersionUtility::isCoreAtLeast14()) {
+            $renderingContext->method('getArgumentProcessor')->willReturn(new PassthroughArgumentProcessor());
+            $renderingContext->method('buildParserConfiguration')->willReturn(new Configuration());
+        } else {
+            $renderingContext->method('getConfiguration')->willReturn(new Configuration());
         }
 
         $namespaceDetectionTemplateProcessor->setRenderingContext($renderingContext);
