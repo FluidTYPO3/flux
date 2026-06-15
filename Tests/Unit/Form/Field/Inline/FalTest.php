@@ -23,7 +23,6 @@ class FalTest extends AbstractFieldTest
         'useCombination' => false,
         'useSortable' => false,
         'showPossibleLocalizationRecords' => false,
-        'showRemovedLocalizationRecords' => false,
         'showAllLocalizationLink' => false,
         'showSynchronizationLink' => false,
         'enabledControls' => [

@@ -47,7 +47,6 @@ class FlexFormImplementation extends AbstractImplementation implements Implement
                     'levelLinksPosition' => 'none',
                     'useSortable' => 0,
                     'showPossibleLocalizationRecords' => 0,
-                    'showRemovedLocalizationRecords' => 0,
                     'showAllLocalizationLink' => 0,
                     'showSynchronizationLink' => 0,
                     'enabledControls' => [
