@@ -3,8 +3,6 @@
 $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
 (function () use ($conf) {
-    $coreVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version();
-
     if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] ?? null)) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['flux'] = array(
             'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
@@ -36,11 +34,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
 
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['BackendLayoutDataProvider']['flux'] = \FluidTYPO3\Flux\Backend\BackendLayoutDataProvider::class;
 
-        if (version_compare($coreVersion, '12', '<')) {
-            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/db_layout.php']['drawHeaderHook'][] = \FluidTYPO3\Flux\Integration\HookSubscribers\PagePreviewRenderer::class . '->render';
-        }
-
-        if (version_compare($coreVersion, '13.4', '<')) {
+        if (!\FluidTYPO3\Flux\Utility\VersionUtility::isCoreAtLeast13()) {
             $GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] .= ($GLOBALS['TYPO3_CONF_VARS']['FE']['addRootLineFields'] == '' ? '' : ',') .
                 'tx_fed_page_controller_action,tx_fed_page_controller_action_sub,tx_fed_page_flexform,tx_fed_page_flexform_sub,';
         }
@@ -92,10 +86,9 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
         'class' => \FluidTYPO3\Flux\Integration\FormEngine\ProtectValueWizard::class,
     ];
 
-    if (version_compare($coreVersion, '13.4', '<')) {
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Extbase\Configuration\ConfigurationManager::class]['className'] = version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.0', '<')
-            ? \FluidTYPO3\Flux\Integration\Overrides\LegacyChimeraConfigurationManager::class
-            : \FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager::class;
+    if (!\FluidTYPO3\Flux\Utility\VersionUtility::isCoreAtLeast13()) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Extbase\Configuration\ConfigurationManager::class]['className'] =
+            \FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager::class;
     }
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
