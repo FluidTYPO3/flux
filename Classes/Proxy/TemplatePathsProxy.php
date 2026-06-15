@@ -8,7 +8,7 @@ namespace FluidTYPO3\Flux\Proxy;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3Fluid\Fluid\View\TemplatePaths;
 
 /**
@@ -18,7 +18,7 @@ class TemplatePathsProxy
 {
     public static function toArray(TemplatePaths $templatePaths): array
     {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+        if (VersionUtility::isCoreAtLeast13()) {
             return [
                 TemplatePaths::CONFIG_TEMPLATEROOTPATHS => $templatePaths->getTemplateRootPaths(),
                 TemplatePaths::CONFIG_PARTIALROOTPATHS => $templatePaths->getPartialRootPaths(),

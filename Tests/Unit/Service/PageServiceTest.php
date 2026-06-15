@@ -15,10 +15,10 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\TransientBackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\View\ViewInterface;
@@ -217,7 +217,7 @@ class PageServiceTest extends AbstractTestCase
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['flux'][ExtensionOption::OPTION_PLUG_AND_PLAY_DIRECTORY]
             = './';
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+        if (VersionUtility::isCoreAtLeast13()) {
             $templatePaths = $this->getMockBuilder(TemplatePaths::class)
                 ->disableOriginalConstructor()
                 ->getMock();
@@ -268,7 +268,7 @@ class PageServiceTest extends AbstractTestCase
 
     public function testGetPageConfigurationReturnsDefaultTemplatePaths(): void
     {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+        if (VersionUtility::isCoreAtLeast13()) {
             $templatePaths = $this->getMockBuilder(TemplatePaths::class)
                 ->disableOriginalConstructor()
                 ->getMock();
