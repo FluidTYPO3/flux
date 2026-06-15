@@ -9,8 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field\Inline;
  */
 
 use FluidTYPO3\Flux\Form\Field\Inline\Fal;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\ViewHelpers\Field\AbstractInlineFieldViewHelper;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileType;
 use TYPO3\CMS\Core\Resource\Filter\FileExtensionFilter;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -227,13 +229,19 @@ class FalViewHelper extends AbstractInlineFieldViewHelper
                 ]
             ]]);
 
+        if (VersionUtility::isCoreAtLeast14()) {
+            $imageTypeConstant = FileType::IMAGE->value;
+        } else {
+            $imageTypeConstant = File::FILETYPE_IMAGE;
+        }
+
         if (!isset($arguments['foreignTypes'])) {
             $component->setForeignTypes([
                 '0' => [
                     'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.' .
                         'imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
                 ],
-                File::FILETYPE_IMAGE => [
+                $imageTypeConstant => [
                     'showitem' => '--palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.' .
                         'imageoverlayPalette;imageoverlayPalette,--palette--;;filePalette'
                 ],
