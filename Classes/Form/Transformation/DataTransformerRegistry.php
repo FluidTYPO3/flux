@@ -18,8 +18,6 @@ class DataTransformerRegistry
      */
     private array $transformers = [];
 
-    private static array $legacy = [];
-
     public function __construct(private ServiceLocator $locator)
     {
     }
@@ -41,23 +39,9 @@ class DataTransformerRegistry
         return $this->transformers;
     }
 
-    public static function registerTransformerOnLegacyPhpVersion(string $transformerClassName): void
-    {
-        self::$legacy[] = $transformerClassName;
-    }
-
     public function resolveDataTransformerByType(string $type): DataTransformerInterface
     {
         foreach ($this->instanceTransformers() as $transformer) {
-            if ($transformer->canTransformToType($type)) {
-                return $transformer;
-            }
-        }
-
-        /** @var class-string $legacyClassName */
-        foreach (self::$legacy as $legacyClassName) {
-            /** @var DataTransformerInterface $transformer */
-            $transformer = GeneralUtility::makeInstance($legacyClassName);
             if ($transformer->canTransformToType($type)) {
                 return $transformer;
             }
