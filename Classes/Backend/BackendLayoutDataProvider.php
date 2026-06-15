@@ -29,7 +29,7 @@ class BackendLayoutDataProvider implements DataProviderInterface
         $this->recordService = $recordService;
     }
 
-    #[\Override] public function getIdentifier(): string
+    public function getIdentifier(): string
     {
         return 'flux';
     }
