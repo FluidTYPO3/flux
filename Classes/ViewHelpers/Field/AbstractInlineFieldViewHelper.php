@@ -65,13 +65,6 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
             false
         );
         $this->registerArgument(
-            'showRemovedLocalizationRecords',
-            'boolean',
-            'Show records which were once localized but do not exist in the original language anymore.',
-            false,
-            false
-        );
-        $this->registerArgument(
             'showAllLocalizationLink',
             'boolean',
             "Show the 'localize all records' link to fetch untranslated records from the original language.",
@@ -140,7 +133,6 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $component->setUseCombination($arguments['useCombination']);
         $component->setUseSortable($arguments['useSortable']);
         $component->setShowPossibleLocalizationRecords($arguments['showPossibleLocalizationRecords']);
-        $component->setShowRemovedLocalizationRecords($arguments['showRemovedLocalizationRecords']);
         $component->setShowAllLocalizationLink($arguments['showAllLocalizationLink']);
         $component->setShowSynchronizationLink($arguments['showSynchronizationLink']);
         if (is_array($arguments['enabledControls'])) {
