@@ -13,12 +13,20 @@ use FluidTYPO3\Flux\Integration\HookSubscribers\PagePreviewRenderer;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
+use PHPUnit\Framework\MockObject\MockObject;
+use TYPO3\CMS\Backend\Context\PageContext;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
+use TYPO3\CMS\Backend\Domain\Model\Language\PageLanguageInformation;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
+use TYPO3\CMS\Core\Type\Bitmask\Permission;
 
 class PagePreviewRendererTest extends AbstractTestCase
 {
     public function testRenderWithoutRecordReturnsEmptyString(): void
     {
+        $record = ['uid' => 123];
+
         $pageProvider = $this->getMockBuilder(PageProvider::class)
             ->setMethods(['getForm'])
             ->disableOriginalConstructor()
@@ -28,13 +36,10 @@ class PagePreviewRendererTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $subject->method('getPageProvider')->willReturn($pageProvider);
-        $subject->method('getRecord')->willReturn(['uid' => 123]);
+        $subject->method('getRecord')->willReturn($record);
         $subject->method('getForm')->willReturn(Form::create());
 
-        $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->setInaccessiblePropertyValue($pageLayoutController, 'id', 123);
+        $pageLayoutController = $this->createPageControllerMock($record);
 
         $result = $subject->render([], $pageLayoutController);
         self::assertSame('', $result);
@@ -45,16 +50,15 @@ class PagePreviewRendererTest extends AbstractTestCase
      */
     public function testRender(ProviderInterface $provider, string $expected): void
     {
+        $record = ['uid' => 123];
+
         $subject = $this->getMockBuilder(PagePreviewRenderer::class)
             ->setMethods(['getPageProvider', 'getRecord'])
             ->disableOriginalConstructor()
             ->getMock();
         $subject->expects($this->once())->method('getPageProvider')->willReturn($provider);
         $subject->expects($this->once())->method('getRecord')->with(123)->willReturn(['uid' => 123]);
-        $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->setInaccessiblePropertyValue($pageLayoutController, 'id', 123);
+        $pageLayoutController = $this->createPageControllerMock($record);
         $result = $subject->render([], $pageLayoutController);
         $this->assertSame($expected, $result);
     }
@@ -87,5 +91,28 @@ class PagePreviewRendererTest extends AbstractTestCase
             [$withDisabledForm, ''],
             [$withPreview, 'preview'],
         ];
+    }
+
+    protected function createPageControllerMock(array $record): PageLayoutController&MockObject
+    {
+        $pageLayoutController = $this->getMockBuilder(PageLayoutController::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        if (VersionUtility::isCoreAtLeast14()) {
+            $pageContext = new PageContext(
+                $record['uid'],
+                $record,
+                $this->getMockBuilder(SiteInterface::class)->getMock(),
+                [],
+                [],
+                [],
+                new PageLanguageInformation($record['uid'], [], [], [], [], false, []),
+                new Permission(0)
+            );
+            $this->setInaccessiblePropertyValue($pageLayoutController, 'pageContext', $pageContext);
+        } else {
+            $this->setInaccessiblePropertyValue($pageLayoutController, 'id', 123);
+        }
+        return $pageLayoutController;
     }
 }
