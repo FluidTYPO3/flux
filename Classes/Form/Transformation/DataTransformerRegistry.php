@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Form\Transformation;
  */
 
 use Symfony\Component\DependencyInjection\ServiceLocator;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataTransformerRegistry
 {

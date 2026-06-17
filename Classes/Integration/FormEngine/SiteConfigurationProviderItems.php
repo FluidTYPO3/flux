@@ -12,7 +12,6 @@ use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class SiteConfigurationProviderItems
@@ -26,7 +25,7 @@ class SiteConfigurationProviderItems
         $this->pageService = $pageService;
     }
 
-    public function processContentTypeItems(array $tca, TcaSelectItems $bar): array
+    public function processContentTypeItems(): array
     {
         foreach ($this->contentTypeManager->fetchContentTypeNames() as $contentTypeName) {
             $tca['items'][] = [
@@ -37,7 +36,7 @@ class SiteConfigurationProviderItems
         return $tca;
     }
 
-    public function processPageTemplateItems(array $tca, TcaSelectItems $bar): array
+    public function processPageTemplateItems(array $tca): array
     {
         foreach ($this->pageService->getAvailablePageTemplateFiles() as $extensionName => $templateGroup) {
             foreach ($templateGroup as $form) {

@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ColumnPositionItems
 {
