@@ -18,6 +18,11 @@ use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Charset\CharsetProvider;
+use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Package\Package;
+use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class AbstractTestCase extends TestCase
@@ -60,6 +65,27 @@ abstract class AbstractTestCase extends TestCase
         $this->singletonInstancesBackup = GeneralUtility::getSingletonInstances();
         foreach ($this->singletonInstances as $className => $singletonInstance) {
             GeneralUtility::setSingletonInstance($className, $singletonInstance);
+        }
+
+        $root = realpath(__DIR__ . '/../../');
+        Environment::initialize(
+            new ApplicationContext('Testing'),
+            true,
+            true,
+            $root,
+            $root . '/public/',
+            $root . '/var/',
+            $root . '/config/',
+            $root,
+            'unknown'
+        );
+
+        if (VersionUtility::isCoreAtLeast14()) {
+            $packageManager = $this->getMockBuilder(PackageManager::class)->disableOriginalConstructor()->getMock();
+            $packageManager->method('extractPackageKeyFromPackagePath')->willReturn('flux');
+            $package = $this->getMockBuilder(Package::class)->disableOriginalConstructor()->getMock();
+            $packageManager->method('getPackage')->willReturn($package);
+            ExtensionManagementUtility::setPackageManager($packageManager);
         }
     }
 
