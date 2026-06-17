@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 
 /**
  * Base class for all FlexForm related ViewHelpers
