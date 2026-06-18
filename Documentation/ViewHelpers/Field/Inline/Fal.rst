@@ -868,19 +868,6 @@ showPossibleLocalizationRecords
 :aspect:`Description`
    Show unlocalized records which are in the original language, but not yet localized.
 
-.. _field.inline.fal_showremovedlocalizationrecords:
-
-showRemovedLocalizationRecords
-------------------------------
-
-:aspect:`DataType`
-   boolean
-
-:aspect:`Required`
-   false
-:aspect:`Description`
-   Show records which were once localized but do not exist in the original language anymore.
-
 .. _field.inline.fal_showalllocalizationlink:
 
 showAllLocalizationLink
