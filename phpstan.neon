@@ -19,6 +19,7 @@ parameters:
         - "#^Call to an undefined static method FluidTYPO3\\\\Flux\\\\ViewHelpers\\\\AbstractViewHelper\\:\\:renderStatic\\(\\)\\.$#"
 
         - "#(invalid (return )?type|unknown class) Doctrine\\\\DBAL\\\\FetchMode#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Context\\\\PageContext#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\AfterPageColumnsSelectedForLocalizationEvent#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\ModifyNewContentElementWizardItemsEvent#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Backend\\\\Controller\\\\Event\\\\ModifyPageLayoutContentEvent#"
@@ -28,6 +29,7 @@ parameters:
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\Event\\\\BeforeFlexFormDataStructureIdentifierInitializedEvent#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\Event\\\\BeforeFlexFormDataStructureParsedEvent#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Core\\\\Event\\\\BootCompletedEvent#"
+        - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Domain\\\\FlexFormFieldValues#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\Http\\\\JsonResponse#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\TemplateService#"
         - "#(invalid (return )?type|unknown class) TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\FrontendTypoScript#"
@@ -43,6 +45,7 @@ parameters:
         - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\BackendLayout\\\\Grid\\\\GridColumnItem not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\PageLayoutView not found\\.$#"
+        - "#^Class TYPO3\\\\CMS\\\\Core\\\\Domain\\\\FlexFormFieldValues not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\AST\\\\Node\\\\RootNode not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Core\\\\TypoScript\\\\FrontendTypoScript not found\\.$#"
         - "#^Class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Response not found\\.$#"
@@ -59,6 +62,11 @@ parameters:
 
         - "#^Instanceof between (iterable|array) and TYPO3Fluid\\\\Fluid\\\\Component\\\\Argument\\\\ArgumentCollection will always evaluate to false\\.$#"
         - "#^Parameter \\#1 \\$templateString of method TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\TemplateParser\\:\\:parse\\(\\) expects string, TYPO3Fluid\\\\Fluid\\\\Core\\\\Parser\\\\Source given\\.$#"
+        - "#generic class SplObjectStorage (but )?does not specify its types#"
+        - "#generic class DOMNodeList (but )?does not specify its types#"
+        - "#generic class Symfony\\\\Component\\\\DependencyInjection\\\\ServiceLocator (but )?does not specify its types#"
+        - "#generic interface TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\QueryInterface (but )?does not specify its types#"
+        - "#generic interface TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\RepositoryInterface (but )?does not specify its types#"
 
         - "#Access to constant [A-Z]+ on an unknown class TYPO3\\\\CMS\\\\Core\\\\Type\\\\ContextualFeedbackSeverity\\.#"
         - "#Access to undefined constant TYPO3\\\\CMS\\\\Core\\\\Messaging\\\\FlashMessage\\:\\:#"

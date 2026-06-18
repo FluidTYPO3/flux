@@ -27,7 +27,7 @@ class ModifyLoadedPageTsConfigEventListener
     {
         $tsConfig = $event->getTsConfig();
 
-        /** @var array<ProviderInterface, string> $providers */
+        /** @var array<ProviderInterface|string> $providers */
         $providers = Core::getRegisteredFlexFormProviders();
         foreach ($providers as $provider) {
             if (!$provider instanceof ContentTypeProviderInterface || !$provider instanceof FormProviderInterface) {

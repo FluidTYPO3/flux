@@ -254,6 +254,7 @@ abstract class AbstractFluxController extends ActionController
             $templatePathAndFilename = $this->provider->getTemplatePathAndFilename($record);
         }
 
+        /** @var TemplateView|FluidViewAdapter $view */
         $view = $this->viewBuilder->buildTemplateView(
             $extensionKey,
             $this->resolver->resolveControllerNameFromControllerClassName(get_class($this)),
@@ -418,7 +419,7 @@ abstract class AbstractFluxController extends ActionController
 
     /**
      * @param class-string $controllerClassName
-     * @return \Psr\Http\Message\ResponseInterface|ResponseInterface|null
+     * @return ResponseInterface|null
      */
     protected function callSubControllerAction(
         string $extensionName,
@@ -457,7 +458,6 @@ abstract class AbstractFluxController extends ActionController
                 ]
             );
 
-            /** @var ResponseInterface $responseFromCall */
             $response = $potentialControllerInstance->processRequest($request);
         } catch (StopActionException $error) {
             // intentionally left blank
@@ -531,7 +531,7 @@ abstract class AbstractFluxController extends ActionController
 
         [$table, $recordUid] = GeneralUtility::trimExplode(
             ':',
-            $tsfe && $tsfe->currentRecord ?: $contentObject->currentRecord
+            (string) ($tsfe && $tsfe->currentRecord ?: $contentObject->currentRecord)
         );
         $record = $this->recordService->getSingle($table, '*', (int) $recordUid);
         if ($record === null) {
