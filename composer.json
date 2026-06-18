@@ -27,11 +27,11 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "ext-dom": "*",
-        "typo3/cms-core": "^12 || ^13 || dev-main",
-        "typo3/cms-fluid": "^12 || ^13 || dev-main",
-        "typo3/cms-backend": "^12 || ^13 || dev-main",
-        "typo3/cms-frontend": "^12 || ^13 || dev-main",
-        "typo3/cms-recordlist": "^12 || ^13 || dev-main"
+        "typo3/cms-core": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-fluid": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-backend": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-frontend": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-recordlist": "^12 || ^13 || ^14.3 || dev-main"
     },
     "extra": {
         "typo3/cms": {
