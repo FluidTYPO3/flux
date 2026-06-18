@@ -11,7 +11,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\BackendLayoutRenderer;
-use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -187,10 +186,6 @@ class PreviewViewTest extends AbstractTestCase
 
     public function testRenderGridWithChildrenWorkspaceEnabled(): void
     {
-        if (!class_exists(\TYPO3\CMS\Backend\View\PageLayoutView::class)) {
-            $this->markTestSkipped('Skipping test with PageLayoutView dependency');
-        }
-
         $renderer = $this->getMockBuilder(BackendLayoutRenderer::class)
             ->setMethods(['drawContent', 'getTable_tt_content', 'getContext'])
             ->disableOriginalConstructor()
@@ -262,34 +257,16 @@ class PreviewViewTest extends AbstractTestCase
 
     public function getRenderGridWithChildrenTestValues(): array
     {
-        if (!class_exists(\TYPO3\CMS\Backend\View\PageLayoutView::class)) {
-            $this->markTestSkipped('Skipping test with PageLayoutView dependency');
-        }
-
         $backendLayoutRenderer = $this->getMockBuilder(BackendLayoutRenderer::class)
-            ->setMethods(['drawContent', 'getTable_tt_content'])
+            ->setMethods(['drawContent', 'getTable_tt_content', 'getContext'])
             ->disableOriginalConstructor()
             ->getMock();
         $backendLayoutRenderer->method('drawContent')->willReturn('rendered');
         $backendLayoutRenderer->method('getTable_tt_content')->willReturn('rendered');
-
-        $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)
-            ->setMethods(['getTable_tt_content', 'generateList'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $pageLayoutView->method('getTable_tt_content')->willReturn('rendered');
-
-        $legacyPageLayoutView = $this->getMockBuilder(PageLayoutView::class)
-            ->setMethods(['generateList'])
-            ->addMethods(['start'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $legacyPageLayoutView->HTMLcode = 'rendered';
+        $backendLayoutRenderer->method('getContext')->willReturn($this->createMock(PageLayoutContext::class));
 
         return [
             'with backend layout renderer' => [$backendLayoutRenderer],
-            'with page layout view' => [$pageLayoutView],
-            'with legacy page layout view' => [$legacyPageLayoutView],
         ];
     }
 
