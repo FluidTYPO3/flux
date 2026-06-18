@@ -16,14 +16,13 @@ use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\RenderingContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
-use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 class PreviewViewTest extends AbstractTestCase
 {
@@ -152,16 +151,7 @@ class PreviewViewTest extends AbstractTestCase
             ->getMock();
         $languageService->method('sL')->willReturnArgument(0);
 
-        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
-            ->setMethods(['setTemplatePathAndFilename'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $renderingContext = $this->getMockBuilder(RenderingContext::class)
-            ->setMethods(['getTemplatePaths', 'setControllerName', 'setControllerAction'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
+        $renderingContext = new RenderingContext();
 
         $subject = $this->getMockBuilder(PreviewView::class)
             ->setMethods(['getRenderingContext', 'getLanguageService', 'renderSection'])

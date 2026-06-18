@@ -11,18 +11,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Container;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\RenderingContext;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
-use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
-use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
-use TYPO3Fluid\Fluid\Core\Parser\TemplateParser;
-use TYPO3Fluid\Fluid\Core\Parser\TemplateProcessor\NamespaceDetectionTemplateProcessor;
-use TYPO3Fluid\Fluid\Core\Variables\StandardVariableProvider;
-use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInvoker;
-use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperResolver;
-use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
-use TYPO3Fluid\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
 class GridTest extends AbstractContainerTest
@@ -185,61 +176,15 @@ STRING;
         string $gridName = 'grid',
         string $template = self::FIXTURE_TEMPLATE_BASICGRID
     ): Grid {
-        $templateCompiler = $this->getMockBuilder(TemplateCompiler::class)->getMock();
-        $templateParser = new TemplateParser();
-        $viewHelperVariableContainer = new ViewHelperVariableContainer();
-        $variableProvider = new StandardVariableProvider();
-        $viewHelperResolver = new ViewHelperResolver();
-        $viewHelperInvoker = new ViewHelperInvoker();
-        $namespaceDetectionTemplateProcessor = new NamespaceDetectionTemplateProcessor();
-        $templatePaths = new TemplatePaths();
-        $templatePaths->setTemplateRootPaths(['Tests/Fixtures/Templates/']);
-        $templatePaths->setPartialRootPaths(['Tests/Fixtures/Partials/']);
-        $templatePaths->setLayoutRootPaths(['Tests/Fixtures/Layouts/']);
-        $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getControllerExtensionName'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->method('getControllerExtensionName')->willReturn('Flux');
-
-        $renderingContext = $this->getMockBuilder(RenderingContext::class)->setMethods(
-            [
-                'getTemplatePaths',
-                'getViewHelperVariableContainer',
-                'getVariableProvider',
-                'getTemplateCompiler',
-                'getViewHelperInvoker',
-                'getTemplateParser',
-                'getViewHelperResolver',
-                'getTemplateProcessors',
-                'getExpressionNodeTypes',
-                'getControllerName',
-                'getControllerAction',
-                'getControllerContext',
-            ]
-        )->disableOriginalConstructor()->getMock();
-        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
-        $renderingContext->method('getViewHelperVariableContainer')->willReturn($viewHelperVariableContainer);
-        $renderingContext->method('getVariableProvider')->willReturn($variableProvider);
-        $renderingContext->method('getTemplateCompiler')->willReturn($templateCompiler);
-        $renderingContext->method('getTemplateParser')->willReturn($templateParser);
-        $renderingContext->method('getViewHelperInvoker')->willReturn($viewHelperInvoker);
-        $renderingContext->method('getViewHelperResolver')->willReturn($viewHelperResolver);
-        $renderingContext->method('getTemplateProcessors')->willReturn([$namespaceDetectionTemplateProcessor]);
-        $renderingContext->method('getExpressionNodeTypes')->willReturn([]);
-        $renderingContext->method('getControllerName')->willReturn('Content');
-        $renderingContext->method('getControllerAction')->willReturn(basename($template, '.html'));
-
-        $namespaceDetectionTemplateProcessor->setRenderingContext($renderingContext);
-
-        $templateParser->setRenderingContext($renderingContext);
+        $renderingContext = new RenderingContext();
+        $renderingContext->controllerAction = basename($template, '.html');
+        $renderingContext->controllerName = 'Content';
 
         $view = new TemplateView($renderingContext);
 
         $view->renderSection('Configuration', [], true);
-        return $view->getRenderingContext()
-            ->getViewHelperVariableContainer()
-            ->get(FormViewHelper::class, 'grids')[$gridName] ?? Grid::create();
+        return $renderingContext->viewHelperVariableContainer->get(FormViewHelper::class, 'grids')[$gridName]
+            ?? Grid::create();
     }
 
     /**

@@ -13,12 +13,12 @@ use FluidTYPO3\Flux\Builder\RequestBuilder;
 use FluidTYPO3\Flux\Builder\ViewBuilder;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Service\TypoScriptService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\RenderingContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3\CMS\Fluid\View\TemplateView;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class ViewBuilderTest extends AbstractTestCase
@@ -26,10 +26,11 @@ class ViewBuilderTest extends AbstractTestCase
     protected RenderingContextBuilder $renderingContextBuilder;
     protected RequestBuilder $requestBuilder;
     protected TypoScriptService $typoScriptService;
+    protected RenderingContext $renderingContext;
 
     protected function setUp(): void
     {
-        $renderingContext = $this->getMockBuilder(RenderingContextInterface::class)->getMockForAbstractClass();
+        $this->renderingContext = new RenderingContext();
         $this->renderingContextBuilder = $this->getMockBuilder(RenderingContextBuilder::class)
             ->setMethods(['buildRenderingContextFor'])
             ->disableOriginalConstructor()
@@ -40,7 +41,7 @@ class ViewBuilderTest extends AbstractTestCase
         $this->typoScriptService = $this->getMockBuilder(TypoScriptService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->renderingContextBuilder->method('buildRenderingContextFor')->willReturn($renderingContext);
+        $this->renderingContextBuilder->method('buildRenderingContextFor')->willReturn($this->renderingContext);
         $this->typoScriptService->method('getTypoScriptByPath')->willReturn(null);
 
         parent::setUp();
