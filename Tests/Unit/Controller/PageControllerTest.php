@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Controller;
 
 use FluidTYPO3\Flux\Controller\PageController;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\PageInformation;
@@ -18,6 +19,10 @@ class PageControllerTest extends AbstractTestCase
 {
     public function testGetRecordReadsFromPageInformation(): void
     {
+        if (!VersionUtility::isCoreAtLeast13()) {
+            $this->markTestSkipped('Skipping test with PageInformation dependency on v12');
+        }
+
         $record = ['foo' => 'bar'];
 
         $pageInformation = new PageInformation();
