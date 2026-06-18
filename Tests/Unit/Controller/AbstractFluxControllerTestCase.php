@@ -229,12 +229,23 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
 
     public function testCanGetRecord(): void
     {
-        $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+        $contentObjectRendererMock = $this->getMockBuilder(ContentObjectRenderer::class)
             ->addMethods(['dummy'])
-            ->disableOriginalConstructor()
-            ->getMock();
+            ->disableOriginalConstructor();
+
+        if (VersionUtility::isCoreBelow14()) {
+            $contentObjectRendererMock->onlyMethods(['getTypoScriptFrontendController']);
+        }
+
+        $contentObjectRenderer = $contentObjectRendererMock->getMock();
         $contentObjectRenderer->data = [];
         $contentObjectRenderer->currentRecord = 'tt_conten:123';
+
+        if (VersionUtility::isCoreBelow14()) {
+            $contentObjectRenderer->method('getTypoScriptFrontendController')->willReturn(
+                $this->createMock(TypoScriptFrontendController::class)
+            );
+        }
 
         $this->recordService->method('getSingle')->willReturn(['uid' => 123]);
 
@@ -715,15 +726,15 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             $this->getMockBuilder(ServerRequestInterface::class)->getMockForAbstractClass()
         );
 
+        $tsfe = $this->getMockBuilder(TypoScriptFrontendController::class)
+            ->addMethods(['dummy'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
             ->onlyMethods(['getTypoScriptFrontendController'])
             ->disableOriginalConstructor()
             ->getMock();
-        $contentObjectRenderer->method('getTypoScriptFrontendController')->willReturn(
-            $tsfe = $this->getMockBuilder(TypoScriptFrontendController::class)
-                ->disableOriginalConstructor()
-                ->getMock()
-        );
+        $contentObjectRenderer->method('getTypoScriptFrontendController')->willReturn($tsfe);
 
         $contentObjectRenderer->data = [];
         $tsfe->currentRecord = 'tt_content:123';
