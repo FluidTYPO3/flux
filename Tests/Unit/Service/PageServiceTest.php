@@ -14,13 +14,13 @@ use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\AccessibleCore;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyPageService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\RenderingContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\Utility\VersionUtility;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Backend\TransientBackendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class PageServiceTest extends AbstractTestCase

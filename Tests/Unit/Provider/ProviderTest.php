@@ -18,18 +18,20 @@ use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\CustomForm;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\RenderingContext;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Fixtures\Data\Xml;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
-use TYPO3\CMS\Fluid\View\TemplateView;
-use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
+use TYPO3Fluid\Fluid\Core\Parser\ParsedTemplateInterface;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
+use TYPO3Fluid\Fluid\View\TemplateView;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class ProviderTest extends AbstractProviderTestCase
 {
@@ -1193,7 +1195,7 @@ XML;
     public function testExtractConfigurationReturnsNullOnInvalidTemplateResource(): void
     {
         $view = $this->prepareTemplateViewMock();
-        $view->method('renderSection')->willThrowException(new InvalidTemplateResourceException(''));
+        $view->method('renderSection')->willThrowException(new InvalidTemplateResourceException('', 0));
 
         $this->typoScriptService->method('getSettingsForExtensionName')->willReturn([]);
 
@@ -1208,28 +1210,46 @@ XML;
         self::assertSame(null, $output);
     }
 
-    private function prepareTemplateViewMock(): TemplateView
+    private function prepareTemplateViewMock(): ViewInterface
     {
-        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
-            ->onlyMethods(['fillDefaultsByPackageName'])
+        $renderingContext = new RenderingContext();
+
+        $viewMethods = [
+            'assignMultiple',
+            'getRenderingContext',
+            'getCurrentParsedTemplate',
+            'getCurrentRenderingContext',
+            'startRendering',
+            'render',
+            'renderSection',
+        ];
+
+        if (VersionUtility::isCoreBelow14()) {
+            $templatePathMethods = ['fillDefaultsByPackageName'];
+        } else {
+            $templatePathMethods = ['ensureAbsolutePath'];
+        }
+
+        $renderingContext->templatePaths = $this->getMockBuilder(TemplatePaths::class)
+            ->onlyMethods($templatePathMethods)
             ->disableOriginalConstructor()
             ->getMock();
-        $controllerContext = $this->getMockBuilder(ControllerContext::class)->disableOriginalConstructor()->getMock();
-        $renderingContext = $this->getMockBuilder(RenderingContext::class)->disableOriginalConstructor()->getMock();
-        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
-        $renderingContext->method('getViewHelperVariableContainer')->willReturn(new ViewHelperVariableContainer());
 
         $templateView = $this->getMockBuilder(TemplateView::class)
-            ->onlyMethods(['render', 'renderSection', 'assignMultiple', 'getRenderingContext'])
+            ->onlyMethods($viewMethods)
             ->disableOriginalConstructor()
             ->getMock();
+        $templateView->method('getCurrentParsedTemplate')
+            ->willReturn($this->createMock(ParsedTemplateInterface::class));
+
         $templateView->method('getRenderingContext')->willReturn($renderingContext);
 
         $previewView = $this->getMockBuilder(PreviewView::class)
-            ->onlyMethods(['render', 'renderSection', 'assignMultiple', 'getRenderingContext'])
+            ->onlyMethods($viewMethods)
             ->disableOriginalConstructor()
             ->getMock();
         $templateView->method('getRenderingContext')->willReturn($renderingContext);
+        #$templateView->method('getCurrentRenderingContext')->willReturn(clone $renderingContext);
 
         $this->viewBuilder->method('buildTemplateView')->willReturn($templateView);
         $this->viewBuilder->method('buildPreviewView')->willReturn($previewView);
@@ -1242,8 +1262,6 @@ XML;
             UriBuilder::class,
             $this->getMockBuilder(UriBuilder::class)->disableOriginalConstructor()->getMock()
         );
-        GeneralUtility::addInstance(RenderingContext::class, $renderingContext);
-        GeneralUtility::addInstance(ControllerContext::class, $controllerContext);
 
         return $templateView;
     }

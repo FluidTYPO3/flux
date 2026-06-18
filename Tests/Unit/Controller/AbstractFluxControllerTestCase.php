@@ -294,18 +294,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->setMethods(['fillDefaultsByPackageName'])
             ->disableOriginalConstructor()
             ->getMock();
-
-        $renderingContext = $this->getMockBuilder(RenderingContextInterface::class)
-            ->setMethods(['getTemplatePaths'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
-
-        $view = $this->getMockBuilder(TemplateView::class)
-            ->setMethods(['getRenderingContext', 'render'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $view->method('getRenderingContext')->willReturn($renderingContext);
+        $view->method('getRenderingContext')->willReturn(new RenderingContext());
         $view->method('render')->willReturn('rendered');
 
         $configurationManager = $this->getMockBuilder(ConfigurationManagerInterface::class)->getMockForAbstractClass();
@@ -383,7 +372,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
             ->addMethods(['dummy'])
             ->disableOriginalConstructor()
             ->getMock();
-        $view->setRenderingContext(new RenderingContext());
+        $view->method('getRenderingContext')->willReturn(new RenderingContext());
         $instance = $this->getMockBuilder($controllerClassName)
             ->onlyMethods(
                 [
@@ -413,10 +402,10 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
     {
         $controllerClassName = str_replace('Tests\\Unit\\', '', substr(get_class($this), 0, -4));
         $view = $this->getMockBuilder(TemplateView::class)
-            ->addMethods(['setTemplateSource'])
+            ->addMethods(['getRenderingContext'])
             ->disableOriginalConstructor()
             ->getMock();
-        $view->setRenderingContext(new RenderingContext());
+        $view->method('getRenderingContext')->willReturn(
         $instance = $this->getMockBuilder($controllerClassName)
             ->onlyMethods(
                 [
