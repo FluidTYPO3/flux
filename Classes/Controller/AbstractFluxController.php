@@ -23,24 +23,24 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ContentObjectFetcher;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\Utility\RequestResolver;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
-use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Controller\Arguments;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Extbase\Mvc\Response;
-use TYPO3\CMS\Extbase\Mvc\ResponseInterface;
+use TYPO3\CMS\Fluid\View\FluidViewAdapter;
 use TYPO3\CMS\Fluid\View\TemplateView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperVariableContainer;
-use TYPO3Fluid\Fluid\View\ViewInterface;
+
 
 /**
  * Abstract Flux-enabled controller
@@ -236,7 +236,7 @@ abstract class AbstractFluxController extends ActionController
         $this->initializeOverriddenSettings();
     }
 
-    protected function resolveView(): ViewInterface
+    protected function initializeView(): void
     {
         if (!$this->provider instanceof ControllerProviderInterface) {
             throw new \RuntimeException(
@@ -278,20 +278,7 @@ abstract class AbstractFluxController extends ActionController
                 'extensionKey' => $extensionKey
             ]
         );
-        return $view;
-    }
-
-    /**
-     * @return \Psr\Http\Message\ResponseInterface|Response
-     */
-    protected function createHtmlResponse(string $html = null)
-    {
-        if (method_exists($this, 'htmlResponse')) {
-            return parent::htmlResponse($html);
-        }
-        $response = clone $this->response;
-        $response->setContent((string) $html);
-        return $response;
+        $this->view = $view;
     }
 
     /**
@@ -343,23 +330,13 @@ abstract class AbstractFluxController extends ActionController
         return $this->getServerRequest()->getQueryParams()[$pluginSignature]['action'] ?? null;
     }
 
-    /**
-     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
-     */
     protected function performSubRendering(
         string $extensionName,
         string $controllerName,
         string $actionName,
         string $pluginName,
         string $pluginSignature
-    ) {
-        if (property_exists($this, 'responseFactory') && $this->responseFactory instanceof ResponseFactoryInterface) {
-            $response = $this->responseFactory->createResponse();
-        } else {
-            /** @var ResponseInterface $response */
-            $response = GeneralUtility::makeInstance(Response::class);
-        }
-
+    ): ResponseInterface {
         $shouldRelay = $this->hasSubControllerActionOnForeignController($extensionName, $controllerName, $actionName);
         $foreignControllerClass = null;
         $content = null;
@@ -413,16 +390,13 @@ abstract class AbstractFluxController extends ActionController
                 'view' => $this->view,
                 'content' => $content,
                 'request' => $this->request,
-                'response' => $response,
                 'extensionName' => $extensionName,
                 'controllerClassName' => $foreignControllerClass,
                 'controllerActionName' => $actionName
             ]
         )['content'];
 
-        return $content instanceof \Psr\Http\Message\ResponseInterface || $content instanceof ResponseInterface
-            ? $content
-            : $this->createHtmlResponse($content);
+        return $content instanceof ResponseInterface ? $content : $this->htmlResponse($content);
     }
 
     protected function hasSubControllerActionOnForeignController(
@@ -472,31 +446,19 @@ abstract class AbstractFluxController extends ActionController
         /** @var ControllerInterface $potentialControllerInstance */
         $potentialControllerInstance = GeneralUtility::makeInstance($controllerClassName);
 
-        if (property_exists($this, 'responseFactory') && $this->responseFactory instanceof ResponseFactoryInterface) {
-            /** @var ResponseInterface\ $response */
-            $response = $this->responseFactory->createResponse();
-        } else {
-            /** @var ResponseInterface $response */
-            $response = GeneralUtility::makeInstance(Response::class);
-        }
-
         try {
             HookHandler::trigger(
                 HookHandler::CONTROLLER_BEFORE_REQUEST,
                 [
                     'request' => $this->request,
-                    'response' => $response,
                     'extensionName' => $extensionName,
                     'controllerClassName' => $controllerClassName,
                     'controllerActionName' => $controllerActionName
                 ]
             );
 
-            /** @var \Psr\Http\Message\ResponseInterface|ResponseInterface|null $responseFromCall */
-            $responseFromCall = $potentialControllerInstance->processRequest($request, $response);
-            if ($responseFromCall) {
-                $response = $responseFromCall;
-            }
+            /** @var ResponseInterface $responseFromCall */
+            $response = $potentialControllerInstance->processRequest($request);
         } catch (StopActionException $error) {
             // intentionally left blank
         }
@@ -548,17 +510,15 @@ abstract class AbstractFluxController extends ActionController
             );
         }
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<')) {
-            /** @var TypoScriptFrontendController|null $tsfe */
-            $tsfe = $GLOBALS['TSFE'] ?? null;
-        } else {
+        $tsfe = null;
+        if (VersionUtility::isCoreBelow14()) {
             $tsfe = $contentObject->getTypoScriptFrontendController();
-        }
-        if ($tsfe === null) {
-            throw new \UnexpectedValueException(
-                "Record of table " . $this->getFluxTableName() . ' not found',
-                1729864782
-            );
+            if ($tsfe === null) {
+                throw new \UnexpectedValueException(
+                    "Record of table " . $this->getFluxTableName() . ' not found',
+                    1729864782
+                );
+            }
         }
 
         if (!empty($contentObject->data) && $this->fluxTableName === $contentObject->getCurrentTable()) {
@@ -571,7 +531,7 @@ abstract class AbstractFluxController extends ActionController
 
         [$table, $recordUid] = GeneralUtility::trimExplode(
             ':',
-            $tsfe->currentRecord ?: $contentObject->currentRecord
+            $tsfe && $tsfe->currentRecord ?: $contentObject->currentRecord
         );
         $record = $this->recordService->getSingle($table, '*', (int) $recordUid);
         if ($record === null) {
@@ -604,8 +564,6 @@ abstract class AbstractFluxController extends ActionController
         if ($this->request instanceof ServerRequestInterface) {
             return $this->request;
         }
-        /** @var ServerRequestInterface $request */
-        $request = $GLOBALS['TYPO3_REQUEST'];
-        return $request;
+        return RequestResolver::getRequest();
     }
 }
