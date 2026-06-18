@@ -8,12 +8,12 @@ namespace FluidTYPO3\Flux\Utility;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Proxy\PageInformationProxy;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+use TYPO3\CMS\Frontend\Page\PageInformation;
 
 class RequestResolver
 {
@@ -27,10 +27,10 @@ class RequestResolver
         return $request;
     }
 
-    public static function getPageInformation(): PageInformationProxy
+    public static function getPageInformation(): PageInformation
     {
-        /** @var PageInformationProxy $pageInformation */
-        $pageInformation = GeneralUtility::makeInstance(PageInformationProxy::class, self::getRequest());
+        /** @var PageInformation $pageInformation */
+        $pageInformation = GeneralUtility::makeInstance(PageInformation::class, self::getRequest());
         return $pageInformation;
     }
 
