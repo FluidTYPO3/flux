@@ -26,6 +26,15 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
     public const string SCOPE_VARIABLE_CONTAINER = 'container';
     public const string SCOPE_VARIABLE_GRIDS = 'grids';
 
+    /**
+     * @param string $name
+     * @param string $type
+     * @param string $description
+     * @param bool $required
+     * @param mixed $defaultValue
+     * @param bool|null $escape
+     * @return self
+     */
     protected function overrideArgument(
         $name,
         $type,
@@ -33,7 +42,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         $required = false,
         $defaultValue = null,
         $escape = null
-    ) {
+    ): self {
         if (VersionUtility::isCoreAtLeast13()) {
             return parent::registerArgument($name, $type, $description, $required, $defaultValue, $escape);
         }
