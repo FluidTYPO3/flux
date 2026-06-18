@@ -10,6 +10,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
 use FluidTYPO3\Flux\Utility\RequestResolver;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
@@ -174,7 +175,9 @@ class ControllerActionsViewHelper extends SelectViewHelper
             $actions = iterator_to_array($actions);
         }
         $request = null;
-        if (method_exists($renderingContext, 'getRequest')) {
+        if (VersionUtility::isCoreAtLeast13()) {
+            $request = $renderingContext->getAttribute(ServerRequestInterface::class);
+        } elseif (method_exists($renderingContext, 'getRequest')) {
             $request = $renderingContext->getRequest();
         } else {
             $request = RequestResolver::getRequest();
