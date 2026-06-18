@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Controller;
  */
 
 use FluidTYPO3\Flux\Utility\RequestResolver;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 
 class PageController extends AbstractFluxController
 {
@@ -17,6 +18,9 @@ class PageController extends AbstractFluxController
 
     public function getRecord(): array
     {
+        if (!VersionUtility::isCoreAtLeast13()) {
+            return parent::getRecord();
+        }
         return RequestResolver::getPageInformation()->getPageRecord();
     }
 }
