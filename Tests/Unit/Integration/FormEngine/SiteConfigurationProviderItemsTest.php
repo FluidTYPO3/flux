@@ -46,10 +46,7 @@ class SiteConfigurationProviderItemsTest extends AbstractTestCase
         $expected['items'][] = ['flux_test2', 'flux_test2'];
 
         $subject = new SiteConfigurationProviderItems($this->contentTypeManager, $this->pageService);
-        $output = $subject->processContentTypeItems(
-            $tca,
-            $this->getMockBuilder(TcaSelectItems::class)->disableOriginalConstructor()->getMock()
-        );
+        $output = $subject->processContentTypeItems($tca);
 
         self::assertSame(
             $expected,

@@ -25,7 +25,7 @@ class SiteConfigurationProviderItems
         $this->pageService = $pageService;
     }
 
-    public function processContentTypeItems(): array
+    public function processContentTypeItems(array $tca): array
     {
         foreach ($this->contentTypeManager->fetchContentTypeNames() as $contentTypeName) {
             $tca['items'][] = [
