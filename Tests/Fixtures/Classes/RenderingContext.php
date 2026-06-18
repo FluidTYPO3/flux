@@ -5,6 +5,8 @@ namespace FluidTYPO3\Flux\Tests\Fixtures\Classes;
 use FluidTYPO3\Flux\Utility\VersionUtility;
 use PHPUnit\Framework\MockObject\Generator;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
 use TYPO3Fluid\Fluid\Core\Parser\Configuration;
@@ -106,6 +108,11 @@ class RenderingContext extends \TYPO3\CMS\Fluid\Core\Rendering\RenderingContext
         $this->templatePaths->setTemplateRootPaths([$root . '/Tests/Fixtures/Templates/']);
         $this->templatePaths->setPartialRootPaths([$root . '/Tests/Fixtures/Partials/']);
         $this->templatePaths->setLayoutRootPaths([$root . '/Tests/Fixtures/Layouts/']);
+
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        if (method_exists($this, 'setAttribute') && isset($GLOBALS['TYPO3_REQUEST'])) {
+            $this->setAttribute(ServerRequestInterface::class, $GLOBALS['TYPO3_REQUEST']);
+        }
     }
 
     public function buildParserConfiguration(): Configuration

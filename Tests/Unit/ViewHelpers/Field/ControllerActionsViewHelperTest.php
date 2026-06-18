@@ -14,6 +14,12 @@ use TYPO3\CMS\Extbase\Mvc\Request;
 
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
 {
+    protected function setUp(): void
+    {
+        $this->simulateRequestWithExtbaseParameters('');
+        parent::setUp();
+    }
+
     protected array $defaultArguments = [
         'label' => 'Test field',
         'controllerExtensionName' => '',
@@ -59,8 +65,6 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
      */
     public function throwsExceptionOnInvalidExtensionPluginNameAndActionsCombination(): void
     {
-        $this->simulateRequestWithExtbaseParameters('');
-
         $arguments = [
             'label' => 'Test field',
             'controllerExtensionName' => '',

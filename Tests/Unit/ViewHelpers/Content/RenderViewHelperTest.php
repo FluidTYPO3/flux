@@ -34,8 +34,10 @@ class RenderViewHelperTest extends AbstractViewHelperTestCase
         parent::setUp();
 
         $this->contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+            ->onlyMethods(['getRecords', 'cObjGetSingle'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->contentObjectRenderer->method('getRecords')->willReturn([]);
 
         $GLOBALS['TYPO3_REQUEST'] = $this->getMockBuilder(ServerRequestInterface::class)->getMock();
         $GLOBALS['TYPO3_REQUEST']->method('getAttribute')
