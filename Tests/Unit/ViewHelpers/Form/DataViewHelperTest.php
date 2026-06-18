@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Tests\Fixtures\Data\Records;
 use FluidTYPO3\Flux\Tests\Unit\ViewHelpers\AbstractViewHelperTestCase;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 class DataViewHelperTest extends AbstractViewHelperTestCase
 {
@@ -84,7 +85,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
         ];
         $viewHelper = $this->buildViewHelperInstance($arguments);
 
-        $this->expectViewHelperException(
+        $this->expectExceptionMessage(
             'Invalid table:field "' .
             $arguments['table'] .
             ':' .
@@ -115,7 +116,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
 
         GeneralUtility::addInstance(ConnectionPool::class, $connectionPool);
 
-        $this->expectViewHelperException('dummy');
+        $this->expectException(Exception::class);
         $this->executeViewHelper($arguments);
     }
 
@@ -129,7 +130,7 @@ class DataViewHelperTest extends AbstractViewHelperTestCase
             'field' => 'invalid',
             'uid' => 1
         ];
-        $this->expectViewHelperException('dummy');
+        $this->expectException(Exception::class);
         $this->executeViewHelper($arguments);
     }
 

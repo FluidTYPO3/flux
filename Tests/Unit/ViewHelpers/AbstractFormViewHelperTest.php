@@ -9,9 +9,9 @@ namespace FluidTYPO3\Flux\Tests\Unit\ViewHelpers;
  */
 
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\RenderingContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use FluidTYPO3\Flux\ViewHelpers\AbstractFormViewHelper;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 class AbstractFormViewHelperTest extends AbstractTestCase
 {
@@ -20,7 +20,7 @@ class AbstractFormViewHelperTest extends AbstractTestCase
         self::assertInstanceOf(
             Form::class,
             AbstractFormViewHelper::getComponent(
-                $this->getMockBuilder(RenderingContextInterface::class)->getMockForAbstractClass(),
+                new RenderingContext(),
                 []
             )
         );
