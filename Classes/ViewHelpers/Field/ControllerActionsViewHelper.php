@@ -199,7 +199,6 @@ class ControllerActionsViewHelper extends SelectViewHelper
         );
         $component->setItems($arguments['items']);
         $component->setControllerExtensionName($extensionName);
-        $component->setPluginName($pluginName);
         $component->setControllerName($controllerName);
         $component->setActions($actions);
         $component->setExcludeActions($arguments['excludeActions']);
@@ -207,6 +206,9 @@ class ControllerActionsViewHelper extends SelectViewHelper
         $component->setDisableLocalLanguageLabels($arguments['disableLocalLanguageLabels']);
         $component->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $component->setSubActions($arguments['subActions']);
+        if (!empty($pluginName)) {
+            $component->setPluginName($pluginName);
+        }
         if (!empty($separator)) {
             $component->setSeparator($separator);
         }
@@ -224,9 +226,6 @@ class ControllerActionsViewHelper extends SelectViewHelper
     {
         /** @var ExtbaseRequestParameters $extbaseParameters */
         $extbaseParameters = $request->getAttribute('extbase');
-        $vendorName = null;
-        $extensionName = $extbaseParameters->getControllerExtensionName();
-
-        return $vendorName ? $vendorName . '.' . $extensionName : $extensionName;
+        return $extbaseParameters->getControllerExtensionName();
     }
 }
