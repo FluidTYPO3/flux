@@ -99,7 +99,7 @@ $conf = isset($_EXTCONF) ? $_EXTCONF : null;
     \FluidTYPO3\Flux\Utility\CompatibilityRegistry::register(
         \FluidTYPO3\Flux\Builder\ContentTypeBuilder::DEFAULT_SHOWITEM,
         [
-            '10.4.0' => '
+            '12.4.0' => '
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.general;general,
                 --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.headers;headers,
