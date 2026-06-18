@@ -32,7 +32,6 @@ use TYPO3\CMS\Core\Http\ResponseFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Extbase\Mvc\Response;
@@ -402,11 +401,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance->expects(self::once())->method('initializeViewHelperVariableContainer');
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
         $this->setInaccessiblePropertyValue($instance, 'provider', $provider);
-        if (class_exists(ControllerContext::class)) {
-            $controllerContext = new ControllerContext();
-            $controllerContext->setRequest(new Request());
-            $this->setInaccessiblePropertyValue($instance, 'controllerContext', $controllerContext);
-        }
+
         $instance->method('getRecord')->willReturn(['uid' => 1]);
 
         GeneralUtility::addInstance(TemplateView::class, $view);
@@ -439,11 +434,7 @@ abstract class AbstractFluxControllerTestCase extends AbstractTestCase
         $instance->expects(self::once())->method('initializeViewHelperVariableContainer');
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMock();
         $this->setInaccessiblePropertyValue($instance, 'provider', $provider);
-        if (class_exists(ControllerContext::class)) {
-            $controllerContext = new ControllerContext();
-            $controllerContext->setRequest(new Request());
-            $this->setInaccessiblePropertyValue($instance, 'controllerContext', $controllerContext);
-        }
+
         $instance->method('getRecord')->willReturn(['uid' => 1]);
 
         GeneralUtility::addInstance(TemplatePaths::class, new TemplatePaths());

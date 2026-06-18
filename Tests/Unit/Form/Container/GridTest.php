@@ -13,7 +13,6 @@ use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
@@ -230,11 +229,6 @@ STRING;
         $renderingContext->method('getExpressionNodeTypes')->willReturn([]);
         $renderingContext->method('getControllerName')->willReturn('Content');
         $renderingContext->method('getControllerAction')->willReturn(basename($template, '.html'));
-        if (class_exists(ControllerContext::class)) {
-            $controllerContext = new ControllerContext();
-            $controllerContext->setRequest($request);
-            $renderingContext->method('getControllerContext')->willReturn($controllerContext);
-        }
 
         $namespaceDetectionTemplateProcessor->setRenderingContext($renderingContext);
 

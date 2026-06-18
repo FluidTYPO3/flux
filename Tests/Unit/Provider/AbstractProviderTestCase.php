@@ -15,7 +15,6 @@ use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\TypoScriptService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 
 abstract class AbstractProviderTestCase extends AbstractTestCase
 {
