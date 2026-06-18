@@ -426,7 +426,7 @@ abstract class AbstractFluxController extends ActionController
         string $controllerActionName,
         string $pluginName,
         string $pluginSignature
-    ) {
+    ): ?ResponseInterface {
         $serverRequest = $this->getServerRequest();
         $arguments = $serverRequest->getQueryParams()[$pluginSignature] ?? [];
         $arguments = array_merge($arguments, ((array) $serverRequest->getParsedBody())[$pluginSignature] ?? []);
@@ -445,6 +445,7 @@ abstract class AbstractFluxController extends ActionController
         /** @var ControllerInterface $potentialControllerInstance */
         $potentialControllerInstance = GeneralUtility::makeInstance($controllerClassName);
 
+        $response = null;
         try {
             HookHandler::trigger(
                 HookHandler::CONTROLLER_BEFORE_REQUEST,
