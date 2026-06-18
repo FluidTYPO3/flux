@@ -9,6 +9,9 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
+use FluidTYPO3\Flux\Utility\RequestResolver;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -173,12 +176,14 @@ class ControllerActionsViewHelper extends SelectViewHelper
         $request = null;
         if (method_exists($renderingContext, 'getRequest')) {
             $request = $renderingContext->getRequest();
+        } else {
+            $request = RequestResolver::getRequest();
         }
         if (empty($extensionName)) {
             $extensionName = static::getFullExtensionNameFromRequest($request);
         }
         if (empty($pluginName)) {
-            $pluginName = $request->getPluginName();
+            $pluginName = static::getPluginNameFromRequest($request);
         }
         if (empty($extensionName) && empty($pluginName) && count($actions) < 1) {
             throw new \RuntimeException(
@@ -208,10 +213,20 @@ class ControllerActionsViewHelper extends SelectViewHelper
         return $component;
     }
 
-    protected static function getFullExtensionNameFromRequest(Request $request): string
+    protected static function getPluginNameFromRequest(Request|ServerRequestInterface $request): ?string
     {
-        $vendorName = method_exists($request, 'getControllerVendorName') ? $request->getControllerVendorName() : null;
-        $extensionName = (string) $request->getControllerExtensionName();
+        /** @var ExtbaseRequestParameters $extbaseParameters */
+        $extbaseParameters = $request->getAttribute('extbase');
+        return $extbaseParameters->getPluginName();
+    }
+
+    protected static function getFullExtensionNameFromRequest(Request|ServerRequestInterface $request): string
+    {
+        /** @var ExtbaseRequestParameters $extbaseParameters */
+        $extbaseParameters = $request->getAttribute('extbase');
+        $vendorName = null;
+        $extensionName = $extbaseParameters->getControllerExtensionName();
+
         return $vendorName ? $vendorName . '.' . $extensionName : $extensionName;
     }
 }

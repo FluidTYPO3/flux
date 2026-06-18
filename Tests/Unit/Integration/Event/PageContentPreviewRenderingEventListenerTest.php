@@ -11,10 +11,12 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Event;
 use FluidTYPO3\Flux\Integration\Event\PageContentPreviewRenderingEventListener;
 use FluidTYPO3\Flux\Integration\PreviewRenderer;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
+use TYPO3\CMS\Core\Domain\RawRecord;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class PageContentPreviewRenderingEventListenerTest extends AbstractTestCase
 {
@@ -33,7 +35,14 @@ class PageContentPreviewRenderingEventListenerTest extends AbstractTestCase
     public function testRenderPreview(?string $expected, string $table, string $preview): void
     {
         $context = $this->getMockBuilder(PageLayoutContext::class)->disableOriginalConstructor()->getMock();
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+        if (VersionUtility::isCoreAtLeast14()) {
+            $event = new PageContentPreviewRenderingEvent(
+                $table,
+                'type',
+                new RawRecord(1, 1, [], new Record\ComputedProperties(), 'foo.bar'),
+                $this->getMockBuilder(PageLayoutContext::class)->disableOriginalConstructor()->getMock()
+            );
+        } elseif (VersionUtility::isCoreAtLeast13()) {
             $event = new PageContentPreviewRenderingEvent($table, 'type', [], $context);
         } else {
             $event = new PageContentPreviewRenderingEvent($table, [], $context);
