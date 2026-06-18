@@ -18,8 +18,6 @@ abstract class AbstractFieldViewHelperTestCase extends AbstractFormViewHelperTes
      */
     public function createsValidFieldInterfaceComponents()
     {
-        $this->simulateRequestWithExtbaseParameters();
-
         $instance = $this->buildViewHelperInstance($this->defaultArguments);
         $component = $instance->getComponent(
             $this->renderingContext,

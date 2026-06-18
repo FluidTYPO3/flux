@@ -109,9 +109,11 @@ class RenderingContext extends \TYPO3\CMS\Fluid\Core\Rendering\RenderingContext
         $this->templatePaths->setPartialRootPaths([$root . '/Tests/Fixtures/Partials/']);
         $this->templatePaths->setLayoutRootPaths([$root . '/Tests/Fixtures/Layouts/']);
 
-        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
         if (method_exists($this, 'setAttribute') && isset($GLOBALS['TYPO3_REQUEST'])) {
             $this->setAttribute(ServerRequestInterface::class, $GLOBALS['TYPO3_REQUEST']);
+        }
+        if (property_exists($this, 'request') && isset($GLOBALS['TYPO3_REQUEST'])) {
+            $this->request = $GLOBALS['TYPO3_REQUEST'];
         }
     }
 

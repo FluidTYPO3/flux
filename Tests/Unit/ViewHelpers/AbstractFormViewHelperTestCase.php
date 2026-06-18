@@ -12,13 +12,17 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface;
 
 abstract class AbstractFormViewHelperTestCase extends AbstractViewHelperTestCase
 {
+    protected function setUp(): void
+    {
+        $this->simulateRequestWithExtbaseParameters();
+        parent::setUp();
+    }
+
     /**
      * @test
      */
     public function canCreateViewHelperInstanceAndRenderWithoutArguments(): void
     {
-        $this->simulateRequestWithExtbaseParameters();
-
         /** @var ViewHelperInterface $instance */
         $instance = $this->buildViewHelperInstance($this->defaultArguments);
         $this->renderingContext->getViewHelperInvoker()->invoke(
