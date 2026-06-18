@@ -30,7 +30,7 @@ class RequestResolver
     public static function getPageInformation(): PageInformation
     {
         /** @var PageInformation $pageInformation */
-        $pageInformation = GeneralUtility::makeInstance(PageInformation::class, self::getRequest());
+        $pageInformation = self::getRequest()->getAttribute('frontend.page.information');
         return $pageInformation;
     }
 
