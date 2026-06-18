@@ -185,7 +185,7 @@ abstract class AbstractFluxController extends ActionController
         $this->provider = $provider;
     }
 
-    protected function initializeViewVariables(ViewInterface $view): void
+    protected function initializeViewVariables(TemplateView|FluidViewAdapter $view): void
     {
         $contentObject = $this->getContentObject();
         $row = $this->getRecord();
@@ -301,20 +301,16 @@ abstract class AbstractFluxController extends ActionController
      * request. The "default" action is also returned by
      * vanilla Provider instances when registering them for
      * content object types or other ad-hoc registrations.
-     *
-     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
-    public function defaultAction()
+    public function defaultAction(): ResponseInterface
     {
         return $this->renderAction();
     }
 
     /**
      * Render content
-     *
-     * @return \Psr\Http\Message\ResponseInterface|Response|ResponseInterface
      */
-    public function renderAction()
+    public function renderAction(): ResponseInterface
     {
         if (!$this->provider instanceof ControllerProviderInterface) {
             throw new \RuntimeException(

@@ -33,10 +33,7 @@ class MultipleItemsProcFunc
         $GLOBALS['TCA'][$table]['columns'][$field]['config']['itemsProcFunc'] = $newFunction;
     }
 
-    /**
-     * @param ItemProcessingService|FormDataProviderInterface $formDataProvider
-     */
-    public function execute(array &$parameters, $formDataProvider): void
+    public function execute(array &$parameters, ItemProcessingService|FormDataProviderInterface $formDataProvider): void
     {
         $table = $parameters['table'];
         $field = $parameters['field'];

@@ -40,14 +40,6 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         return parent::overrideArgument($name, $type, $description, $required, $defaultValue, $escape);
     }
 
-    /**
-     * @return string
-     */
-    public function render()
-    {
-        return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
-    }
-
     protected function callRenderMethod(): string
     {
         return static::renderStatic(
@@ -81,10 +73,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         return Form::create();
     }
 
-    /**
-     * @return mixed
-     */
-    public function renderChildren()
+    public function renderChildren(): mixed
     {
         // Make sure the current extension name always propagates to child nodes
         static::setExtensionNameInRenderingContext(
