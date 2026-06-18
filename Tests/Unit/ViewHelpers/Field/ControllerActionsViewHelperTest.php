@@ -141,21 +141,13 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
             ->setMethods(['getExtbaseAttribute', 'getAttribute'])
             ->disableOriginalConstructor()
             ->getMock();
-        if (class_exists(ExtbaseRequestParameters::class)) {
-            $parameters = new ExtbaseRequestParameters(ContentController::class);
-            $parameters->setControllerExtensionName('Flux');
-            $request->method('getExtbaseAttribute')->willReturn($parameters);
-            $request->method('getAttribute')->willReturn($parameters);
-        } else {
-            $request->setControllerExtensionName('Flux');
-        }
-        if (method_exists($request, 'setControllerVendorName')) {
-            $request->setControllerVendorName('FluidTYPO3');
-            $expected = $expected = 'FluidTYPO3.Flux';
-        } else {
-            $expected = 'Flux';
-        }
+
+        $parameters = new ExtbaseRequestParameters(ContentController::class);
+        $parameters->setControllerExtensionName('Flux');
+        $request->method('getExtbaseAttribute')->willReturn($parameters);
+        $request->method('getAttribute')->willReturn($parameters);
+
         $result = $this->callInaccessibleMethod($instance, 'getFullExtensionNameFromRequest', $request);
-        $this->assertEquals($expected, $result);
+        $this->assertEquals('Flux', $result);
     }
 }
