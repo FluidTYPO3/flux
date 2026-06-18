@@ -33,7 +33,7 @@ class PreviewRenderer
             $row = $row->toArray();
         }
         $fieldName = null;
-        $headerContent = $currentHeader;
+        $headerContent = $header;
         $drawItem = true;
         $itemContent = $currentPreview;
         $preview = [$headerContent, $itemContent, $drawItem];
@@ -56,34 +56,20 @@ class PreviewRenderer
             [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);
             if (!empty($previewContent)) {
                 $drawItem = false;
-                switch ($previewOptionValue) {
-                    case PreviewOption::MODE_PREPEND:
-                        $itemContent = $anchorLink . $previewContent . $currentPreview;
-                        break;
-                    case PreviewOption::MODE_APPEND:
-                        $itemContent = $anchorLink . $currentPreview . $previewContent;
-                        break;
-                    case PreviewOption::MODE_REPLACE:
-                    default:
-                        $itemContent = $anchorLink . $previewContent;
-                        break;
-                }
+                $itemContent = match ($previewOptionValue) {
+                    PreviewOption::MODE_PREPEND => $anchorLink . $previewContent . $currentPreview,
+                    PreviewOption::MODE_APPEND => $anchorLink . $currentPreview . $previewContent,
+                    default => $anchorLink . $previewContent,
+                };
             }
 
             if (!empty($previewHeader)) {
                 $drawItem = false;
-                switch ($previewOptionValue) {
-                    case PreviewOption::MODE_PREPEND:
-                        $headerContent = $previewHeader . (!empty($currentHeader) ? ': ' . $currentHeader : '');
-                        break;
-                    case PreviewOption::MODE_APPEND:
-                        $headerContent = (!empty($currentHeader) ? $currentHeader . ': ' : '') . $previewHeader;
-                        break;
-                    case PreviewOption::MODE_REPLACE:
-                    default:
-                        $headerContent = $previewHeader;
-                        break;
-                }
+                $headerContent = match ($previewOptionValue) {
+                    PreviewOption::MODE_PREPEND => $previewHeader . (!empty($header) ? ': ' . $header : ''),
+                    PreviewOption::MODE_APPEND => (!empty($header) ? $header . ': ' : '') . $previewHeader,
+                    default => $previewHeader,
+                };
             }
 
             $preview = [$headerContent, $itemContent, $drawItem];
