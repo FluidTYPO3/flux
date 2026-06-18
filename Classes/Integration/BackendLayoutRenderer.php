@@ -45,11 +45,6 @@ class BackendLayoutRenderer
         $this->transferredContext = $context;
     }
 
-    public function getGridForPageLayoutContext(PageLayoutContext $context): Grid
-    {
-        return $this->backendLayoutRenderer->getGridForPageLayoutContext($context);
-    }
-
     public function drawContent(
         ServerRequestInterface $request,
         PageLayoutContext $pageLayoutContext,
