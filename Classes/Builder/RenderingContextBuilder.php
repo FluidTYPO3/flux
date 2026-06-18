@@ -11,22 +11,12 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Extbase\Mvc\RequestInterface;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 class RenderingContextBuilder implements SingletonInterface
 {
-    private RequestBuilder $requestBuilder;
-
-    public function __construct(RequestBuilder $requestBuilder)
-    {
-        $this->requestBuilder = $requestBuilder;
-    }
-
     public function buildRenderingContextFor(
         string $extensionIdentity,
         string $controllerName,
