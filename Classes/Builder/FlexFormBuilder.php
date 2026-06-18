@@ -89,19 +89,20 @@ class FlexFormBuilder
                     /** @var array $body */
                     $body = $request->getParsedBody();
                     if (isset($body['recordTypeValue']) && ($body['vanillaUid'] ?? 0) < 0) {
-                        // Special case: we're adding a new content element and after another content element. This causes
-                        // TYPO3 to read the CType value of the *neighbor* content record and pass it as CType in the
-                        // $identifier "record" property which holds a virtual record. This in turn causes Flux to resolve
-                        // an incorrect DS (the one belonging to the related record's type, not the new record's type).
-                        // Normally this doesn't cause any trouble because FormEngine handles this special case, but logic
-                        // which is called via AJAX for handling fields in the DS (for example: section objects) will
-                        // receive the incorrect DS which triggers errors if there are fields in the *current, new* record's
-                        // DS that aren't in the *neighbor* record's DS.
-                        // All of this boils down to TYPO3 declaring "CType" as part of the "useColumnsForDefaultValues" TCA
-                        // instruction for tt_content. Values of fields mentioned in this instruction are copied from the
-                        // neigbor record to the virtual record mentioned above. Which is good, when it comes to things like
-                        // colPos or language - but really bad when it comes to "CType" which changes the record UI
-                        // composition.
+                        // Special case: we're adding a new content element and after another content element. This
+                        // causes TYPO3 to read the CType value of the *neighbor* content record and pass it as CType
+                        // in the $identifier "record" property which holds a virtual record. This in turn causes Flux
+                        // to resolve an incorrect DS (the one belonging to the related record's type, not the new
+                        // record's type).
+                        // Normally this doesn't cause any trouble because FormEngine handles this special case, but
+                        // logic which is called via AJAX for handling fields in the DS (for example: section objects)
+                        // will receive the incorrect DS which triggers errors if there are fields in the *current,
+                        // new* record's DS that aren't in the *neighbor* record's DS.
+                        // All of this boils down to TYPO3 declaring "CType" as part of the
+                        // "useColumnsForDefaultValues" TCA instruction for tt_content. Values of fields mentioned in
+                        // this instruction are copied from the neigbor record to the virtual record mentioned above.
+                        // Which is good, when it comes to things like colPos or language - but really bad when it
+                        // comes to "CType" which changes the record UI composition.
                         $record['CType'] = $body['recordTypeValue'];
                     }
                 }
