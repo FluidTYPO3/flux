@@ -301,7 +301,7 @@ class ContentTypeBuilder
         );
 
         return $group . PHP_EOL . sprintf(
-                'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
+            'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
                     title = %s
                     description = %s
@@ -310,15 +310,15 @@ class ContentTypeBuilder
                     }
                 }
                 mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
-                $groupName,
-                $formId,
-                $icon,
-                $form->getLabel(),
-                $form->getDescription(),
-                $contentType,
-                $groupName,
-                $formId
-            );
+            $groupName,
+            $formId,
+            $icon,
+            $form->getLabel(),
+            $form->getDescription(),
+            $contentType,
+            $groupName,
+            $formId
+        );
     }
 
     protected function sanitizeString(string $string): string
@@ -342,14 +342,14 @@ class ContentTypeBuilder
 
         $groups[$groupName] = true;
         return sprintf(
-                'mod.wizards.newContentElement.wizardItems.%s {
+            'mod.wizards.newContentElement.wizardItems.%s {
                     %s
                     elements {
                     }
                 }',
-                $groupName,
-                'header = ' . $groupLabel
-            );
+            $groupName,
+            'header = ' . $groupLabel
+        );
     }
 
     /**

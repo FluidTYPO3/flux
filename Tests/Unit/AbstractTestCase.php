@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class AbstractTestCase extends TestCase
 {
+    // phpcs:disable
     protected const string FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
     protected const string FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/Content/WithoutForm.html';
     protected const string FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Content/Sheets.html';
@@ -38,6 +39,7 @@ abstract class AbstractTestCase extends TestCase
     protected const string FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/DualGrid.html';
     protected const string FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/CollidingGrid.html';
     protected const string FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
+    // phpcs:enable
 
     protected array $singletonInstances = [];
     private array $singletonInstancesBackup = [];
