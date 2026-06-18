@@ -171,10 +171,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
             $actions = iterator_to_array($actions);
         }
         $request = null;
-        if (method_exists($renderingContext, 'getControllerContext')) {
-            $controllerContext = $renderingContext->getControllerContext();
-            $request = $controllerContext->getRequest();
-        } elseif (method_exists($renderingContext, 'getRequest')) {
+        if (method_exists($renderingContext, 'getRequest')) {
             $request = $renderingContext->getRequest();
         }
         if (empty($extensionName)) {

@@ -14,7 +14,6 @@ use FluidTYPO3\Flux\Outlet\StandardOutlet;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\PassthroughArgumentProcessor;
 use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
 use TYPO3Fluid\Fluid\Core\Parser\Configuration;
