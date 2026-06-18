@@ -11,6 +11,8 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use TYPO3\CMS\Core\Domain\RawRecord;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
 class PreviewRenderer
@@ -25,8 +27,11 @@ class PreviewRenderer
         $this->providerResolver = $providerResolver;
     }
 
-    public function renderPreview(array $row, ?string $currentHeader, ?string $currentPreview): ?array
+    public function renderPreview(array|Record|RawRecord $row, ?string $header, ?string $currentPreview): ?array
     {
+        if ($row instanceof Record) {
+            $row = $row->toArray();
+        }
         $fieldName = null;
         $headerContent = $currentHeader;
         $drawItem = true;

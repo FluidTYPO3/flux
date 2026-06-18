@@ -19,7 +19,7 @@ class DataProviderContextProxy
     public static function createInstance(int $pageUid): DataProviderContext
     {
         if (VersionUtility::isCoreAtLeast13()) {
-            $context = new DataProviderContext(1);
+            $context = new DataProviderContext(1, 'pages', 'tx_fed_page_flexform', [], []);
         } else {
             $context = new DataProviderContext();
             $context->setPageId(1);
