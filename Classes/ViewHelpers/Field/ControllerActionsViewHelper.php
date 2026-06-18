@@ -188,7 +188,7 @@ class ControllerActionsViewHelper extends SelectViewHelper
         if (empty($pluginName)) {
             $pluginName = static::getPluginNameFromRequest($request);
         }
-        if (empty($extensionName) && empty($pluginName) && count($actions) < 1) {
+        if ((empty($extensionName) || empty($pluginName)) && count($actions) < 1) {
             throw new \RuntimeException(
                 'Either "actions", or both "extensionName" and "pluginName" must be used on ' .
                 'flux:field.controllerActions. None were found and none were detected from the Request.',
