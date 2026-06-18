@@ -23,7 +23,7 @@
         "fluidtypo3/vhs": "ViewHelper library for Fluid templates."
     },
     "require": {
-        "php": "^7.4.0 || ^8",
+        "php": "^8.3",
         "ext-json": "*",
         "ext-pdo": "*",
         "ext-dom": "*",
