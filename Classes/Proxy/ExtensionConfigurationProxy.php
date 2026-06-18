@@ -26,10 +26,10 @@ class ExtensionConfigurationProxy
     }
 
     public function synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions(
-        bool $skipWriteIfLocalConfigurationDoesNotExist = false
+        bool|string $skipOrExtensionKey = false
     ): void {
         $this->extensionConfiguration->synchronizeExtConfTemplateWithLocalConfiguration(
-            $skipWriteIfLocalConfigurationDoesNotExist
+            $skipOrExtensionKey
         );
     }
 
