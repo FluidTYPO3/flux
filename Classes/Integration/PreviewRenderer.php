@@ -30,6 +30,8 @@ class PreviewRenderer
     public function renderPreview(array|Record|RawRecord $row, ?string $header, ?string $currentPreview): ?array
     {
         if ($row instanceof Record) {
+            $row = $row->getRawRecord()->toArray();
+        } elseif ($row instanceof RawRecord) {
             $row = $row->toArray();
         }
         $fieldName = null;
