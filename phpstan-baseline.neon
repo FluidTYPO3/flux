@@ -65,9 +65,17 @@ parameters:
             count: 2
             path: Classes/Integration/BackendLayoutRenderer.php
         -
+            message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer constructor invoked with 2 parameters, 1 required\\.$#"
+            count: 1
+            path: Classes/Integration/BackendLayoutRenderer.php
+        -
             message: "#^Caught class Doctrine\\\\DBAL\\\\DBALException not found\\.$#"
             count: 1
             path: Classes/Content/ContentTypeManager.php
+        -
+            message: "#^Property TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Controller\\\\ActionController\\:\\:\\$view \\(TYPO3Fluid\\\\Fluid\\\\View\\\\ViewInterface\\) does not accept TYPO3\\\\CMS\\\\Fluid\\\\View\\\\FluidViewAdapter\\|TYPO3\\\\CMS\\\\Fluid\\\\View\\\\TemplateView\\.$#"
+            count: 1
+            path: Classes/Controller/AbstractFluxController.php
         -
             message: "#^Caught class TYPO3\\\\CMS\\\\Extbase\\\\Mvc\\\\Exception\\\\StopActionException not found\\.$#"
             count: 1
