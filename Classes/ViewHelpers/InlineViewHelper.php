@@ -48,7 +48,7 @@ class InlineViewHelper extends AbstractViewHelper
     {
         $this->registerArgument(
             'code',
-            'string',
+            'string|null',
             'Fluid code to be rendered as if it were part of the template rendering it. '
                 . 'Can be passed as inline argument or tag content'
         );
