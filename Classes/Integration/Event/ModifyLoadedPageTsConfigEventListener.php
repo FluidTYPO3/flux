@@ -13,7 +13,7 @@ use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Provider\Interfaces\ContentTypeProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\FormProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use TYPO3\CMS\Core\Attribute\AsEventListener;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use TYPO3\CMS\Core\TypoScript\IncludeTree\Event\ModifyLoadedPageTsConfigEvent;
 
 class ModifyLoadedPageTsConfigEventListener
