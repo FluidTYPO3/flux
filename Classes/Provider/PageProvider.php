@@ -92,7 +92,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             // The page inherits page layout from parent(s). Read the root line for the first page that defines a value
             // in the sub-action field, then use that record and resolve the Form used in the sub-configuration field.
             // If the row is a new page, use the inherited form from the parent page.
-            $pageUid = $row['uid'] ?? 0;
+            $pageUid = ($row['t3ver_oid'] > 0 ? $row['t3ver_oid'] : $row['uid'] ?? 0);
             $pageUidIsParent = false;
             if (is_string($pageUid) && substr($pageUid, 0, 3) === 'NEW') {
                 $pageUid = $row['pid'] ?? 0;
