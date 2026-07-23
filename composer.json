@@ -23,15 +23,15 @@
         "fluidtypo3/vhs": "ViewHelper library for Fluid templates."
     },
     "require": {
-        "php": "^7.4.0 || ^8",
+        "php": "^8.3",
         "ext-json": "*",
         "ext-pdo": "*",
         "ext-dom": "*",
-        "typo3/cms-core": "^10 || ^11 || ^12 || ^13 || dev-main",
-        "typo3/cms-fluid": "^10 || ^11 || ^12 || ^13 || dev-main",
-        "typo3/cms-backend": "^10 || ^11 || ^12 || ^13 || dev-main",
-        "typo3/cms-frontend": "^10 || ^11 || ^12 || ^13 || dev-main",
-        "typo3/cms-recordlist": "^10 || ^11 || ^12 || ^13 || dev-main"
+        "typo3/cms-core": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-fluid": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-backend": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-frontend": "^12 || ^13 || ^14.3 || dev-main",
+        "typo3/cms-recordlist": "^12 || ^13 || ^14.3 || dev-main"
     },
     "extra": {
         "typo3/cms": {
@@ -51,8 +51,9 @@
     "non-feature-branches": ["development", "staging"],
     "config": {
         "allow-plugins": {
-            "typo3/cms-composer-installers": true,
-            "typo3/class-alias-loader": true
+            "pixelfear/composer-dist-plugin": true,
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
         }
     }
 }

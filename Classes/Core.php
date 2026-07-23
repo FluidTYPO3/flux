@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux;
 
 /*
@@ -24,7 +23,7 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class Core
 {
-    const CONTROLLER_ALL = '_all';
+    public const string CONTROLLER_ALL = '_all';
 
     protected static array $providers = [];
     private static array $unregisteredProviders = [];

@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Builder;
 
 /*
@@ -35,41 +34,19 @@ class RequestBuilder implements SingletonInterface
         $serverRequest = $this->getServerRequest();
 
         $controllerExtensionName = ExtensionNamingUtility::getExtensionName($extensionIdentity);
-        if (class_exists(ExtbaseRequestParameters::class)) {
-            $expectedControllerClassName = $this->buildControllerClassName($extensionIdentity, $controllerName);
-            $extbaseQueryParameters = new ExtbaseRequestParameters($expectedControllerClassName);
-            $extbaseQueryParameters->setControllerExtensionName($controllerExtensionName);
-            $extbaseQueryParameters->setControllerName($controllerName);
-            $extbaseQueryParameters->setControllerActionName($controllerActionName);
-            $extbaseQueryParameters->setPluginName($pluginName);
-            $extbaseQueryParameters->setArguments($arguments);
-            /** @var Request $request */
-            $request = GeneralUtility::makeInstance(
-                Request::class,
-                $serverRequest->withAttribute('extbase', $extbaseQueryParameters)
-            );
-        } else {
-            /** @var Request $request */
-            $request = GeneralUtility::makeInstance(Request::class);
-            if (method_exists($request, 'setFormat')) {
-                $request->setFormat('html');
-            }
-            if (method_exists($request, 'setControllerName')) {
-                $request->setControllerName($controllerName);
-            }
-            if (method_exists($request, 'setControllerExtensionName')) {
-                $request->setControllerExtensionName($controllerExtensionName);
-            }
-            if (method_exists($request, 'setControllerActionName')) {
-                $request->setControllerActionName($controllerActionName);
-            }
-            if (method_exists($request, 'setArguments')) {
-                $request->setArguments($arguments);
-            }
-            if (method_exists($request, 'setPluginName')) {
-                $request->setPluginName($pluginName);
-            }
-        }
+
+        $expectedControllerClassName = $this->buildControllerClassName($extensionIdentity, $controllerName);
+        $extbaseQueryParameters = new ExtbaseRequestParameters($expectedControllerClassName);
+        $extbaseQueryParameters->setControllerExtensionName($controllerExtensionName);
+        $extbaseQueryParameters->setControllerName($controllerName);
+        $extbaseQueryParameters->setControllerActionName($controllerActionName);
+        $extbaseQueryParameters->setPluginName($pluginName);
+        $extbaseQueryParameters->setArguments($arguments);
+        /** @var Request $request */
+        $request = GeneralUtility::makeInstance(
+            Request::class,
+            $serverRequest->withAttribute('extbase', $extbaseQueryParameters)
+        );
 
         if (method_exists($request, 'setRequestUri')) {
             $request->setRequestUri($this->getEnvironmentVariable('TYPO3_REQUEST_URL'));

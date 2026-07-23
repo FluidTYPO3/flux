@@ -18,23 +18,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataHandlerSubscriberTest extends AbstractTestCase
 {
-    /**
-     * @dataProvider getClearCacheCommandTestValues
-     */
-    public function testClearCacheCommand(bool $expectsRegenerateMethodCall, array $command): void
-    {
-        $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
-            ->setMethods(['regenerateContentTypes'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        if ($expectsRegenerateMethodCall) {
-            $subject->expects(self::once())->method('regenerateContentTypes');
-        } else {
-            $subject->expects(self::never())->method('regenerateContentTypes');
-        }
-        $subject->clearCacheCommand($command);
-    }
-
     public function getClearCacheCommandTestValues(): array
     {
         return [
@@ -47,10 +30,10 @@ class DataHandlerSubscriberTest extends AbstractTestCase
     public function testProcessCommandMapBeforeStartWithContentTypesTable(): void
     {
         $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
-            ->setMethods(['regenerateContentTypes'])
+            ->onlyMethods(['cascadeCommandToChildRecords'])
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->expects(self::once())->method('regenerateContentTypes');
+        $subject->expects(self::never())->method('cascadeCommandToChildRecords');
 
         $dataHandler = $this->createStub(DataHandler::class);
         $dataHandler->cmdmap = [
@@ -65,14 +48,12 @@ class DataHandlerSubscriberTest extends AbstractTestCase
         $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
             ->setMethods(
                 [
-                    'regenerateContentTypes',
                     'fetchAllColumnNumbersBeneathParent',
                     'cascadeCommandToChildRecords'
                 ]
             )
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->expects(self::never())->method('regenerateContentTypes');
         $subject->expects(self::never())->method('fetchAllColumnNumbersBeneathParent');
         $subject->expects(self::never())->method('cascadeCommandToChildRecords');
 
@@ -89,14 +70,12 @@ class DataHandlerSubscriberTest extends AbstractTestCase
         $subject = $this->getMockBuilder(DataHandlerSubscriber::class)
             ->setMethods(
                 [
-                    'regenerateContentTypes',
                     'fetchAllColumnNumbersBeneathParent',
                     'cascadeCommandToChildRecords'
                 ]
             )
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->expects(self::never())->method('regenerateContentTypes');
         $subject->expects(self::never())->method('fetchAllColumnNumbersBeneathParent');
         $subject->expects(self::never())->method('cascadeCommandToChildRecords');
 

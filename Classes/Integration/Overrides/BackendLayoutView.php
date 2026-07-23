@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\Overrides;
 
 /*
@@ -12,13 +11,19 @@ namespace FluidTYPO3\Flux\Integration\Overrides;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
+#[Autoconfigure(public: true)]
+class BackendLayoutView
 {
     protected ?GridProviderInterface $provider = null;
     protected array $record = [];
+
+    public function __construct(private \TYPO3\CMS\Backend\View\BackendLayoutView $backendLayoutView)
+    {
+    }
 
     public function setProvider(GridProviderInterface $provider): void
     {
@@ -42,7 +47,7 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
                 $this->resolveParentRecordUid($this->record)
             );
         }
-        return parent::getSelectedBackendLayout($pageId);
+        return $this->backendLayoutView->getSelectedBackendLayout($pageId);
     }
 
     /**
@@ -91,5 +96,30 @@ class BackendLayoutView extends \TYPO3\CMS\Backend\View\BackendLayoutView
             null,
             [GridProviderInterface::class]
         );
+    }
+
+    public function addBackendLayoutItems(array &$parameters)
+    {
+        return $this->backendLayoutView->addBackendLayoutItems($parameters);
+    }
+
+    public function getSelectedCombinedIdentifier(int $pageId): string|false
+    {
+        return $this->getSelectedCombinedIdentifier($pageId);
+    }
+
+    public function colPosListItemProcFunc(array &$parameters): void
+    {
+        $this->backendLayoutView->colPosListItemProcFunc($parameters);
+    }
+
+    public function getBackendLayoutForPage(int $pageId): ?BackendLayout
+    {
+        return $this->backendLayoutView->getBackendLayoutForPage($pageId);
+    }
+
+    public function parseStructure(BackendLayout $backendLayout): array
+    {
+        return $this->backendLayoutView->parseStructure($backendLayout);
     }
 }

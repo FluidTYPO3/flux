@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -30,8 +29,8 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class Section extends AbstractFormContainer implements ContainerInterface
 {
-    const GRID_MODE_ROWS = 'rows';
-    const GRID_MODE_COLUMNS = 'columns';
+    public const string GRID_MODE_ROWS = 'rows';
+    public const string GRID_MODE_COLUMNS = 'columns';
 
     protected string $gridMode = self::GRID_MODE_ROWS;
 

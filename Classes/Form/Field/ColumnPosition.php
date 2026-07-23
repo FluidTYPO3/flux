@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -11,7 +10,7 @@ namespace FluidTYPO3\Flux\Form\Field;
 
 class ColumnPosition extends UserFunction
 {
-    const FIELD_NAME = 'colPos';
+    public const string FIELD_NAME = 'colPos';
 
     protected ?string $name = self::FIELD_NAME;
 

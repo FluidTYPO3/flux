@@ -11,25 +11,17 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\BackendLayoutRenderer;
-use FluidTYPO3\Flux\Integration\Overrides\PageLayoutView;
 use FluidTYPO3\Flux\Integration\PreviewView;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
-use FluidTYPO3\Flux\Proxy\SiteFinderProxy;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Tests\Fixtures\Classes\RenderingContext;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
-use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Configuration\Features;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
-use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 class PreviewViewTest extends AbstractTestCase
 {
@@ -158,16 +150,7 @@ class PreviewViewTest extends AbstractTestCase
             ->getMock();
         $languageService->method('sL')->willReturnArgument(0);
 
-        $templatePaths = $this->getMockBuilder(TemplatePaths::class)
-            ->setMethods(['fillDefaultsByPackageName', 'setTemplatePathAndFilename'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $renderingContext = $this->getMockBuilder(RenderingContext::class)
-            ->setMethods(['getTemplatePaths', 'setControllerName', 'setControllerAction'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $renderingContext->method('getTemplatePaths')->willReturn($templatePaths);
+        $renderingContext = new RenderingContext();
 
         $subject = $this->getMockBuilder(PreviewView::class)
             ->setMethods(['getRenderingContext', 'getLanguageService', 'renderSection'])
@@ -203,10 +186,6 @@ class PreviewViewTest extends AbstractTestCase
 
     public function testRenderGridWithChildrenWorkspaceEnabled(): void
     {
-        if (!class_exists(\TYPO3\CMS\Backend\View\PageLayoutView::class)) {
-            $this->markTestSkipped('Skipping test with PageLayoutView dependency');
-        }
-
         $renderer = $this->getMockBuilder(BackendLayoutRenderer::class)
             ->setMethods(['drawContent', 'getTable_tt_content', 'getContext'])
             ->disableOriginalConstructor()
@@ -224,10 +203,10 @@ class PreviewViewTest extends AbstractTestCase
         $backendUser->workspace = 1;
 
         $subject = $this->getMockBuilder(PreviewView::class)
-            ->setMethods(['getInitializedPageLayoutView', 'fetchWorkspaceVersionOfRecord', 'getBackendUser'])
+            ->setMethods(['getInitializedBackendLayoutView', 'fetchWorkspaceVersionOfRecord', 'getBackendUser'])
             ->disableOriginalConstructor()
             ->getMock();
-        $subject->method('getInitializedPageLayoutView')->willReturn($renderer);
+        $subject->method('getInitializedBackendLayoutView')->willReturn($renderer);
         $subject->method('fetchWorkspaceVersionOfRecord')->willReturn(null);
         $subject->method('getBackendUser')->willReturn($backendUser);
 
@@ -256,9 +235,9 @@ class PreviewViewTest extends AbstractTestCase
     public function testRenderGridWithChildren($renderer): void
     {
         $subject = $this->getMockBuilder(PreviewView::class)
-            ->setMethods(['getInitializedPageLayoutView', 'getBackendUser'])
+            ->setMethods(['getInitializedBackendLayoutView', 'getBackendUser'])
             ->getMock();
-        $subject->method('getInitializedPageLayoutView')->willReturn($renderer);
+        $subject->method('getInitializedBackendLayoutView')->willReturn($renderer);
         $grid = Form\Container\Grid::create();
         /** @var Form\Container\Column $column */
         $column = $grid->createContainer(Form\Container\Row::class, 'row')
@@ -278,165 +257,17 @@ class PreviewViewTest extends AbstractTestCase
 
     public function getRenderGridWithChildrenTestValues(): array
     {
-        if (!class_exists(\TYPO3\CMS\Backend\View\PageLayoutView::class)) {
-            $this->markTestSkipped('Skipping test with PageLayoutView dependency');
-        }
-
         $backendLayoutRenderer = $this->getMockBuilder(BackendLayoutRenderer::class)
-            ->setMethods(['drawContent', 'getTable_tt_content'])
+            ->setMethods(['drawContent', 'getTable_tt_content', 'getContext'])
             ->disableOriginalConstructor()
             ->getMock();
         $backendLayoutRenderer->method('drawContent')->willReturn('rendered');
         $backendLayoutRenderer->method('getTable_tt_content')->willReturn('rendered');
-
-        $pageLayoutView = $this->getMockBuilder(PageLayoutView::class)
-            ->setMethods(['getTable_tt_content', 'generateList'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $pageLayoutView->method('getTable_tt_content')->willReturn('rendered');
-
-        $legacyPageLayoutView = $this->getMockBuilder(PageLayoutView::class)
-            ->setMethods(['generateList'])
-            ->addMethods(['start'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $legacyPageLayoutView->HTMLcode = 'rendered';
+        $backendLayoutRenderer->method('getContext')->willReturn($this->createMock(PageLayoutContext::class));
 
         return [
             'with backend layout renderer' => [$backendLayoutRenderer],
-            'with page layout view' => [$pageLayoutView],
-            'with legacy page layout view' => [$legacyPageLayoutView],
         ];
-    }
-
-    public function testGetInitializedPageLayoutViewWithFluidPageModuleFeatureEnabled(): void
-    {
-        $record = [
-            'uid' => 123,
-            'pid' => 1,
-            'l18n_parent' => 0,
-            't3ver_oid' => 0,
-            'sys_language_uid' => 0,
-        ];
-
-        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
-
-        $this->recordService->method('getSingle')->willReturn(['uid' => 1]);
-
-        $backendUser = $this->getMockBuilder(BackendUserAuthentication::class)
-            ->setMethods(['getModuleData'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $renderer = $this->getMockBuilder(BackendLayoutRenderer::class)
-            ->setMethods(['drawContent', 'getTable_tt_content'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $renderer->method('drawContent')->willReturn('rendered');
-        $renderer->method('getTable_tt_content')->willReturn('rendered');
-
-        $subject = $this->getMockBuilder(PreviewView::class)
-            ->setMethods(['getBackendUser', 'fetchPageRecordWithoutOverlay', 'createBackendLayoutRenderer'])
-            ->getMock();
-        $subject->method('fetchPageRecordWithoutOverlay')->willReturn(['uid' => 456]);
-        $subject->method('createBackendLayoutRenderer')->willReturn($renderer);
-
-        $features = $this->getMockBuilder(Features::class)
-            ->setMethods(['isFeatureEnabled'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $features->method('isFeatureEnabled')->willReturn(true);
-        GeneralUtility::addInstance(Features::class, $features);
-
-        $siteFinder = $this->getMockBuilder(SiteFinderProxy::class)
-            ->setMethods(['getSiteByPageId'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        GeneralUtility::addInstance(SiteFinderProxy::class, $siteFinder);
-
-        $pageLayoutContext = $this->getMockBuilder(PageLayoutContext::class)
-            ->setMethods(['getDrawingConfiguration'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $pageLayoutContext->method('getDrawingConfiguration')->willReturn(new DrawingConfiguration());
-        GeneralUtility::addInstance(PageLayoutContext::class, $pageLayoutContext);
-
-        $output = $this->callInaccessibleMethod($subject, 'getInitializedPageLayoutView', $provider, $record);
-        self::assertSame($renderer, $output);
-    }
-
-    public function testGetInitializedPageLayoutViewWithFluidPageModuleFeatureDisabled(): void
-    {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '>')) {
-            $this->markTestSkipped('Skipping test with PageLayoutView dependency');
-        }
-        $singletonInstances = GeneralUtility::getSingletonInstances();
-
-        $record = [
-            'uid' => 123,
-            'pid' => 1,
-            'l18n_parent' => 0,
-            't3ver_oid' => 0,
-            'sys_language_uid' => 0,
-        ];
-
-        $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
-
-        $languageService = $this->getMockBuilder(LanguageService::class)
-            ->setMethods(['sL'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $recordService = $this->getMockBuilder(WorkspacesAwareRecordService::class)
-            ->setMethods(['getSingle'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $recordService->method('getSingle')->willReturn(['uid' => 1]);
-        GeneralUtility::setSingletonInstance(WorkspacesAwareRecordService::class, $recordService);
-
-        $backendUser = $this->getMockBuilder(BackendUserAuthentication::class)
-            ->setMethods(['getModuleData'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $subject = $this->getMockBuilder(PreviewView::class)
-            ->setMethods(['getBackendUser', 'fetchPageRecordWithoutOverlay', 'getLanguageService', 'checkAccessToPage'])
-            ->getMock();
-        $subject->method('fetchPageRecordWithoutOverlay')->willReturn(['uid' => 456]);
-        $subject->method('getLanguageService')->willReturn($languageService);
-        $subject->method('checkAccessToPage')->willReturn(['read' => true]);
-
-        $features = $this->getMockBuilder(Features::class)
-            ->setMethods(['isFeatureEnabled'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $features->method('isFeatureEnabled')->willReturn(false);
-        GeneralUtility::addInstance(Features::class, $features);
-
-        $eventDispatcher = $this->getMockBuilder(EventDispatcher::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        GeneralUtility::setSingletonInstance(EventDispatcher::class, $eventDispatcher);
-
-        $renderer = $this->getMockBuilder(PageLayoutView::class)
-            ->setMethods(['dummy'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        GeneralUtility::addInstance(PageLayoutView::class, $renderer);
-
-        $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] = [
-            [
-                'foo',
-                'bar',
-                'baz',
-            ],
-        ];
-
-        $output = $this->callInaccessibleMethod($subject, 'getInitializedPageLayoutView', $provider, $record);
-
-        GeneralUtility::resetSingletonInstances($singletonInstances);
-
-        self::assertSame($renderer, $output);
     }
 
     /**

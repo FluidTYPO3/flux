@@ -1,6 +1,12 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\NormalizedData;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Form\Transformation\FormDataTransformer;
@@ -24,12 +30,6 @@ trait DataAccessTrait
         }
 
         $contentObject = ContentObjectFetcher::resolve($this->configurationManager);
-        if ($contentObject === null) {
-            throw new \UnexpectedValueException(
-                "Record of table " . $this->getFluxTableName() . ' not found',
-                1666538343
-            );
-        }
         $table = $this->fluxTableName ?? $contentObject->getCurrentTable();
         $field = $this->fluxRecordField ?? 'pi_flexform';
         $record = $contentObject->data;

@@ -22,8 +22,11 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Tests\Fixtures\Classes\DummyConfigurationProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Exception;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
@@ -120,6 +123,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
             ->method('configureContentTypeFromTemplateFile')
             ->willReturn($this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass());
 
+        $this->createAndInsertSchemaServiceMockIfNeeded();
         $this->subject->processData();
     }
 
@@ -140,6 +144,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
             ->method('configureContentTypeFromTemplateFile')
             ->willThrowException(new Exception('test'));
 
+        $this->createAndInsertSchemaServiceMockIfNeeded();
         $this->subject->processData();
     }
 
@@ -160,6 +165,7 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
             ->method('registerContentType')
             ->willThrowException(new Exception('test'));
 
+        $this->createAndInsertSchemaServiceMockIfNeeded();
         $this->subject->processData();
     }
 
@@ -171,5 +177,16 @@ class SpooledConfigurationApplicatorTest extends AbstractTestCase
             'spoolQueuedContentTypeTableConfigurations',
             [['FluidTYPO3.Flux', __DIR__ . '/../../../Fixtures/Templates/Content/Default.html', null, 'flux']]
         );
+    }
+
+    protected function createAndInsertSchemaServiceMockIfNeeded(): void
+    {
+
+        if (VersionUtility::isCoreAtLeast13()) {
+            $schemaFactory = $this->getMockBuilder(TcaSchemaFactory::class)->disableOriginalConstructor()->getMock();
+            $schemaFactory->expects(self::once())->method('rebuild');
+            GeneralUtility::addInstance(TcaSchemaFactory::class, $schemaFactory);
+            $GLOBALS['TCA'] = [];
+        }
     }
 }

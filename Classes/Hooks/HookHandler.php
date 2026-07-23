@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Hooks;
 
 /*
@@ -13,47 +12,47 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class HookHandler
 {
-    const FORM_CREATED = 'formCreated';
-    const FORM_BUILT = 'formBuilt';
-    const FORM_FETCHED = 'formFetched';
-    const FORM_CHILD_ADDED = 'formChildAdded';
-    const FORM_CHILD_REMOVED = 'formChildRemoved';
-    const FORM_COMPONENT_CREATED = 'formComponentCreated';
-    const FORM_COMPONENT_MODIFIED = 'formComponentModified';
-    const FORM_DATA_FETCHED = 'formDataFetched';
-    const PREVIEW_RENDERED = 'previewRendered';
-    const PREVIEW_COLUMN_RENDERED = 'previewColumnRendered';
-    const PREVIEW_RECORDS_FETCHED = 'previewRecordsFetched';
-    const PREVIEW_RECORD_RENDERED = 'previewRecordRendered';
-    const PREVIEW_GRID_RENDERED = 'previewGridRendered';
-    const PREVIEW_GRID_TOGGLE_STATUS_FETCHED = 'previewGridToggleStatusFetched';
-    const PREVIEW_GRID_TOGGLE_RENDERED = 'previewGridToggleRendered';
-    const VALUE_BEFORE_TRANSFORM = 'valueBeforeTransform';
-    const VALUE_AFTER_TRANSFORM = 'valueAfterTransform';
-    const CONTROLLER_RESOLVED = 'controllerResolved';
-    const CONTROLLER_BEFORE_REQUEST = 'controllerBeforeRequest';
-    const CONTROLLER_AFTER_REQUEST = 'controllerAfterRequest';
-    const CONTROLLER_AFTER_RENDERING = 'controllerAfterRendering';
-    const CONTROLLER_VARIABLES_ASSIGNED = 'controllerVariablesAssigned';
-    const CONTROLLER_SETTINGS_INITIALIZED = 'controllerSettingsInitialized';
-    const CONTROLLER_VIEW_INITIALIZED = 'controllerViewInitialized';
-    const PROVIDERS_RESOLVED = 'providersResolved';
-    const PROVIDER_RESOLVED_TEMPLATE = 'providerResolvedTemplate';
-    const PROVIDER_EXTRACTED_OBJECT = 'providerExtractedObject';
-    const PROVIDER_COMMAND_EXECUTED = 'providerCommandExecuted';
-    const PROVIDER_REGISTERED = 'providerRegistered';
-    const PROVIDER_EXTENSION_REGISTERED = 'providerExtensionRegistered';
-    const NESTED_CONTENT_FETCHED = 'nestedContentFetched';
-    const NESTED_CONTENT_RENDERED = 'nestedContentRendered';
-    const ALLOWED_CONTENT_RULES_FETCHED = 'allowedContentRulesFetched';
-    const ALLOWED_CONTENT_FILTERED = 'allowedContentFiltered';
-    const CONTENT_TYPE_CONFIGURED = 'contentTypeConfigured';
-    const RECORD_MOVED = 'recordMoved';
-    const RECORD_CHILD_PLACEHOLDERS_MOVED = 'recordChildPlaceholdersMoved';
-    const RECORD_CONTENT_SORTED = 'recordSorted';
-    const RECORD_RESOLVED = 'recordResolved';
-    const RECORD_INITIALIZED = 'recordInitialized';
-    const CACHES_CLEARED = 'cachesCleared';
+    public const string FORM_CREATED = 'formCreated';
+    public const string FORM_BUILT = 'formBuilt';
+    public const string FORM_FETCHED = 'formFetched';
+    public const string FORM_CHILD_ADDED = 'formChildAdded';
+    public const string FORM_CHILD_REMOVED = 'formChildRemoved';
+    public const string FORM_COMPONENT_CREATED = 'formComponentCreated';
+    public const string FORM_COMPONENT_MODIFIED = 'formComponentModified';
+    public const string FORM_DATA_FETCHED = 'formDataFetched';
+    public const string PREVIEW_RENDERED = 'previewRendered';
+    public const string PREVIEW_COLUMN_RENDERED = 'previewColumnRendered';
+    public const string PREVIEW_RECORDS_FETCHED = 'previewRecordsFetched';
+    public const string PREVIEW_RECORD_RENDERED = 'previewRecordRendered';
+    public const string PREVIEW_GRID_RENDERED = 'previewGridRendered';
+    public const string PREVIEW_GRID_TOGGLE_STATUS_FETCHED = 'previewGridToggleStatusFetched';
+    public const string PREVIEW_GRID_TOGGLE_RENDERED = 'previewGridToggleRendered';
+    public const string VALUE_BEFORE_TRANSFORM = 'valueBeforeTransform';
+    public const string VALUE_AFTER_TRANSFORM = 'valueAfterTransform';
+    public const string CONTROLLER_RESOLVED = 'controllerResolved';
+    public const string CONTROLLER_BEFORE_REQUEST = 'controllerBeforeRequest';
+    public const string CONTROLLER_AFTER_REQUEST = 'controllerAfterRequest';
+    public const string CONTROLLER_AFTER_RENDERING = 'controllerAfterRendering';
+    public const string CONTROLLER_VARIABLES_ASSIGNED = 'controllerVariablesAssigned';
+    public const string CONTROLLER_SETTINGS_INITIALIZED = 'controllerSettingsInitialized';
+    public const string CONTROLLER_VIEW_INITIALIZED = 'controllerViewInitialized';
+    public const string PROVIDERS_RESOLVED = 'providersResolved';
+    public const string PROVIDER_RESOLVED_TEMPLATE = 'providerResolvedTemplate';
+    public const string PROVIDER_EXTRACTED_OBJECT = 'providerExtractedObject';
+    public const string PROVIDER_COMMAND_EXECUTED = 'providerCommandExecuted';
+    public const string PROVIDER_REGISTERED = 'providerRegistered';
+    public const string PROVIDER_EXTENSION_REGISTERED = 'providerExtensionRegistered';
+    public const string NESTED_CONTENT_FETCHED = 'nestedContentFetched';
+    public const string NESTED_CONTENT_RENDERED = 'nestedContentRendered';
+    public const string ALLOWED_CONTENT_RULES_FETCHED = 'allowedContentRulesFetched';
+    public const string ALLOWED_CONTENT_FILTERED = 'allowedContentFiltered';
+    public const string CONTENT_TYPE_CONFIGURED = 'contentTypeConfigured';
+    public const string RECORD_MOVED = 'recordMoved';
+    public const string RECORD_CHILD_PLACEHOLDERS_MOVED = 'recordChildPlaceholdersMoved';
+    public const string RECORD_CONTENT_SORTED = 'recordSorted';
+    public const string RECORD_RESOLVED = 'recordResolved';
+    public const string RECORD_INITIALIZED = 'recordInitialized';
+    public const string CACHES_CLEARED = 'cachesCleared';
 
     /**
      * @var HookSubscriberInterface[][]

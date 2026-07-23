@@ -1355,11 +1355,6 @@ Use `<flux:field.inline.fal>` if you want this feature.
           <xsd:documentation><![CDATA[Show unlocalized records which are in the original language, but not yet localized.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="showRemovedLocalizationRecords" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Show records which were once localized but do not exist in the original language anymore.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="showAllLocalizationLink" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Show the 'localize all records' link to fetch untranslated records from the original language.]]></xsd:documentation>
@@ -1750,11 +1745,6 @@ The crop configuration can now be passed to the image viewhelper:
       <xsd:attribute type="xsd:boolean" name="showPossibleLocalizationRecords" default="false">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Show unlocalized records which are in the original language, but not yet localized.]]></xsd:documentation>
-        </xsd:annotation>
-      </xsd:attribute>
-      <xsd:attribute type="xsd:boolean" name="showRemovedLocalizationRecords" default="false">
-        <xsd:annotation>
-          <xsd:documentation><![CDATA[Show records which were once localized but do not exist in the original language anymore.]]></xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute type="xsd:boolean" name="showAllLocalizationLink" default="false">
@@ -2514,7 +2504,7 @@ Features a two-list style that shows all selectable items
 in a list on the right side,
 and all selected items in a list on the left side.
 
-Related: ``MultiRelationViewHelper``.
+Related: ``MultiRelationViewHelper``
 
 ### Example: Select a content element
 
@@ -4648,7 +4638,7 @@ to templates, as an alternative to creating new partial templates.
       <xsd:sequence>
         <xsd:any minOccurs="0" maxOccurs="1"/>
       </xsd:sequence>
-      <xsd:attribute type="xsd:string" name="code" default="NULL">
+      <xsd:attribute type="xsd:anySimpleType" name="code" default="NULL">
         <xsd:annotation>
           <xsd:documentation><![CDATA[Fluid code to be rendered as if it were part of the template rendering it. Can be passed as inline argument or tag content]]></xsd:documentation>
         </xsd:annotation>

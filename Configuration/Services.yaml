@@ -62,8 +62,6 @@ services:
     public: true
   FluidTYPO3\Flux\Integration\HookSubscribers\TableConfigurationPostProcessor:
     public: true
-  FluidTYPO3\Flux\Integration\HookSubscribers\StaticTypoScriptInclusion:
-    public: true
   FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager:
     public: true
   FluidTYPO3\Flux\Integration\Overrides\LegacyChimeraConfigurationManager:
@@ -90,17 +88,6 @@ services:
     public: true
   FluidTYPO3\Flux\Provider\PageProvider:
     shared: false
-    public: true
-  FluidTYPO3\Flux\Content\RuntimeDefinedContentProvider:
-    shared: false
-    public: true
-  FluidTYPO3\Flux\Content\ContentTypeProvider:
-    shared: false
-    public: true
-  FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentGridProvider:
-    shared: false
-    public: true
-  FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinitionRepository:
     public: true
   FluidTYPO3\Flux\Form\Transformation\FormDataTransformer:
     public: true

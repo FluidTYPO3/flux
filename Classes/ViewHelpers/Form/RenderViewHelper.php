@@ -1,6 +1,12 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Form;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 /*
  * This file is part of the FluidTYPO3/Fluidbackend project under GPLv2 or later.
@@ -11,10 +17,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Form;
 
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 
 /**
  * ## Main form rendering ViewHelper
@@ -63,7 +69,7 @@ class RenderViewHelper extends AbstractViewHelper
             'databaseRow' => $record,
             'inlineStructure' => [],
             'parameterArray' => [
-                'itemFormElName' => sprintf('data[%s][%d][%s]', $table, (integer) $record['uid'], $field),
+                'itemFormElName' => sprintf('data[%s][%d][%s]', $table, (int) $record['uid'], $field),
                 'itemFormElValue' => static::convertXmlToArray($record[$field]),
                 'fieldChangeFunc' => [],
                 'fieldConf' => [

@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Controller;
 
 /*
@@ -9,6 +8,9 @@ namespace FluidTYPO3\Flux\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Utility\RequestResolver;
+use FluidTYPO3\Flux\Utility\VersionUtility;
+
 class PageController extends AbstractFluxController
 {
     protected ?string $fluxRecordField = 'tx_fed_page_flexform';
@@ -16,6 +18,9 @@ class PageController extends AbstractFluxController
 
     public function getRecord(): array
     {
-        return $GLOBALS['TSFE']->page ?? [];
+        if (!VersionUtility::isCoreAtLeast13()) {
+            return parent::getRecord();
+        }
+        return RequestResolver::getPageInformation()->getPageRecord();
     }
 }

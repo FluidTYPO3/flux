@@ -9,7 +9,6 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Enum\ExtensionOption;
 use FluidTYPO3\Flux\Provider\Interfaces\GridProviderInterface;
 use FluidTYPO3\Flux\Provider\Interfaces\RecordProcessingProvider;
@@ -19,7 +18,6 @@ use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use FluidTYPO3\Flux\Utility\DoctrineQueryProxy;
 use FluidTYPO3\Flux\Utility\ExtensionConfigurationUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -32,13 +30,6 @@ class DataHandlerSubscriber
 {
     protected static array $copiedRecords = [];
 
-    public function clearCacheCommand(array $command): void
-    {
-        if (($command['cacheCmd'] ?? null) === 'all' || ($command['cacheCmd'] ?? null) === 'system') {
-            $this->regenerateContentTypes();
-        }
-    }
-
     /**
      * @param string $command Command that was executed
      * @param string $table The table TCEmain is currently processing
@@ -50,18 +41,8 @@ class DataHandlerSubscriber
     // @phpcs:ignore PSR1.Methods.CamelCapsMethodName
     public function processDatamap_afterDatabaseOperations($command, $table, $id, $fieldArray, $reference)
     {
-        if ($table === 'content_types') {
-            // Changing records in table "content_types" has to flush the system cache to regenerate various cached
-            // definitions of plugins etc. that are based on those "content_types" records.
-            /** @var CacheManager $cacheManager */
-            $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-            $cacheManager->flushCachesInGroup('system');
-            $this->regenerateContentTypes();
-            return;
-        }
-
         if ($GLOBALS['BE_USER']->workspace) {
-            $record = BackendUtility::getRecord($table, (integer) $id);
+            $record = BackendUtility::getRecord($table, (int) $id);
         } else {
             $record = $reference->datamap[$table][$id] ?? null;
         }
@@ -77,7 +58,7 @@ class DataHandlerSubscriber
             );
 
             foreach ($providers as $provider) {
-                if ($provider->postProcessRecord($command, (integer) $id, $record, $reference, [])) {
+                if ($provider->postProcessRecord($command, (int) $id, $record, $reference, [])) {
                     break;
                 }
             }
@@ -123,7 +104,7 @@ class DataHandlerSubscriber
             // of parent, rather, parent was pasted somewhere else).
             // If language of child record is different from resolved parent (copyToLanguage occurred), resolve the
             // right parent for the language and update the column position accordingly.
-            $recordUid = (integer) ($record['uid'] ?? $id);
+            $recordUid = (int) ($record['uid'] ?? $id);
             $originalParentUid = ColumnNumberUtility::calculateParentUid($fieldArray['colPos']);
             $originalParent = $this->getSingleRecordWithoutRestrictions($table, $originalParentUid, 'sys_language_uid');
             $currentRecordLanguageUid = $fieldArray['sys_language_uid']
@@ -248,7 +229,7 @@ class DataHandlerSubscriber
             $record = $this->getSingleRecordWithoutRestrictions($table, (int) $id, 'pid, colPos, l18n_parent');
             $uidInDefaultLanguage = $record['l18n_parent'] ?? null;
             if ($uidInDefaultLanguage && isset($dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'])) {
-                $fieldArray['colPos'] = (integer) $dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'];
+                $fieldArray['colPos'] = (int) $dataHandler->datamap[$table][$uidInDefaultLanguage]['colPos'];
             }
         }
     }
@@ -295,11 +276,6 @@ class DataHandlerSubscriber
     public function processCmdmap_beforeStart(DataHandler $dataHandler)
     {
         foreach ($dataHandler->cmdmap as $table => $commandSets) {
-            if ($table === 'content_types') {
-                $this->regenerateContentTypes();
-                continue;
-            }
-
             if ($table !== 'tt_content') {
                 continue;
             }
@@ -310,7 +286,7 @@ class DataHandlerSubscriber
                         case 'move':
                             // Verify that the target column is not within the element or any child hereof.
                             if (is_array($value) && isset($value['update']['colPos'])) {
-                                $invalidColumnNumbers = $this->fetchAllColumnNumbersBeneathParent((integer) $id);
+                                $invalidColumnNumbers = $this->fetchAllColumnNumbersBeneathParent((int) $id);
                                 // Only react to move commands which contain a target colPos
                                 if (in_array((int) $value['update']['colPos'], $invalidColumnNumbers, true)) {
                                     // Invalid target detected - delete the "move" command so it does not happen, and
@@ -318,7 +294,7 @@ class DataHandlerSubscriber
                                     unset($dataHandler->cmdmap[$table][$id]);
                                     $dataHandler->log(
                                         $table,
-                                        (integer) $id,
+                                        (int) $id,
                                         4,
                                         0,
                                         1,
@@ -416,7 +392,7 @@ class DataHandlerSubscriber
 
         [$originalRecord, $recordsToProcess] = $this->getParentAndRecordsNestedInGrid(
             $table,
-            (integer) $id,
+            (int) $id,
             'uid, pid, colPos',
             false,
             $command
@@ -435,7 +411,7 @@ class DataHandlerSubscriber
         } else {
             $relativeRecord = $this->getSingleRecordWithoutRestrictions(
                 $table,
-                (integer) abs((integer) $relativeTo),
+                (int) abs((int) $relativeTo),
                 'pid'
             );
             $destinationPid = $relativeRecord['pid'] ?? $relativeTo;
@@ -444,7 +420,7 @@ class DataHandlerSubscriber
         $this->recursivelyMoveChildRecords(
             $table,
             $recordsToProcess,
-            (integer) $destinationPid,
+            (int) $destinationPid,
             $languageUid,
             $reference
         );
@@ -685,15 +661,5 @@ class DataHandlerSubscriber
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         return $connectionPool->getQueryBuilderForTable($table);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function regenerateContentTypes(): void
-    {
-        /** @var ContentTypeManager $contentTypeManager */
-        $contentTypeManager = GeneralUtility::makeInstance(ContentTypeManager::class);
-        $contentTypeManager->regenerate();
     }
 }

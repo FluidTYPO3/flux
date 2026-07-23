@@ -22,6 +22,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\CompatibilityRegistry;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -34,16 +35,10 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
  */
 class ContentTypeBuilder
 {
-    const DEFAULT_SHOWITEM = 'defaultShowItem';
+    public const string DEFAULT_SHOWITEM = 'defaultShowItem';
 
     /**
-     * @param string $providerExtensionName
-     * @param string $templateFilename
      * @param class-string $providerClassName
-     * @param string|null $contentType
-     * @param string $defaultControllerExtensionName
-     * @param string|null $controllerActionName
-     * @return ProviderInterface
      */
     public function configureContentTypeFromTemplateFile(
         string $providerExtensionName,
@@ -223,7 +218,16 @@ class ContentTypeBuilder
         }
 
         $icon = $this->addIcon($form, $contentType);
-        $this->addPageTsConfig($form, $contentType, $icon);
+
+        if (VersionUtility::isCoreBelow14()) {
+            // Registration for "new content element" wizard to show our new CType
+            // (otherwise, only selectable via "Content type" drop-down)
+            if (!isset($GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'])) {
+                $GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'] = '';
+            }
+            $GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'] .= PHP_EOL
+                . $this->createPageTsConfig($form, $contentType, $icon);
+        }
 
         ExtensionManagementUtility::addPlugin(
             [
@@ -247,14 +251,14 @@ class ContentTypeBuilder
         }
     }
 
-    protected function addIcon(Form $form, string $contentType): string
+    public function addIcon(Form $form, string $contentType): string
     {
         if (isset($GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType])) {
             return $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType];
         }
         $icon = MiscellaneousUtility::getIconForTemplate($form);
         if (!$icon) {
-            $icon = ExtensionManagementUtility::extPath('flux', 'Resources/Public/Icons/Extension.svg');
+            $icon = 'EXT:flux/Resources/Public/Icons/Extension.svg';
         }
         $iconIdentifier = $this->createIcon($icon, $contentType);
         $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$contentType] = $iconIdentifier;
@@ -273,7 +277,7 @@ class ContentTypeBuilder
         ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'pi_flexform', $contentType);
     }
 
-    protected function addPageTsConfig(Form $form, string $contentType, string $icon): void
+    public function createPageTsConfig(Form $form, string $contentType, string $icon): string
     {
         // Icons required solely for use in the "new content element" wizard
         $formId = $form->getId() ?: $contentType;
@@ -290,16 +294,14 @@ class ContentTypeBuilder
             . $form->getLocalLanguageFileRelativePath()
             . ':'
             . $labelSubReference;
-        $this->initializeNewContentWizardGroup(
+
+        $group = $this->initializeNewContentWizardGroup(
             $groupName,
             $labelReference
         );
 
-        // Registration for "new content element" wizard to show our new CType
-        // (otherwise, only selectable via "Content type" drop-down)
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'] .= PHP_EOL .
-            sprintf(
-                'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
+        return $group . PHP_EOL . sprintf(
+            'mod.wizards.newContentElement.wizardItems.%s.elements.%s {
                     iconIdentifier = %s
                     title = %s
                     description = %s
@@ -308,15 +310,15 @@ class ContentTypeBuilder
                     }
                 }
                 mod.wizards.newContentElement.wizardItems.%s.show := addToList(%s)',
-                $groupName,
-                $formId,
-                $icon,
-                $form->getLabel(),
-                $form->getDescription(),
-                $contentType,
-                $groupName,
-                $formId
-            );
+            $groupName,
+            $formId,
+            $icon,
+            $form->getLabel(),
+            $form->getDescription(),
+            $contentType,
+            $groupName,
+            $formId
+        );
     }
 
     protected function sanitizeString(string $string): string
@@ -327,28 +329,27 @@ class ContentTypeBuilder
         return empty($replaced) ? md5($string) : $replaced;
     }
 
-    protected function initializeNewContentWizardGroup(string $groupName, string $groupLabel): void
+    protected function initializeNewContentWizardGroup(string $groupName, string $groupLabel): string
     {
         static $groups = [];
         if (isset($groups[$groupName])) {
-            return;
+            return '';
         }
 
         if (in_array($groupName, ['common', 'menu', 'special', 'forms', 'plugins'], true)) {
-            return;
+            return '';
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['defaultPageTSconfig'] .= PHP_EOL .
-            sprintf(
-                'mod.wizards.newContentElement.wizardItems.%s {
+        $groups[$groupName] = true;
+        return sprintf(
+            'mod.wizards.newContentElement.wizardItems.%s {
                     %s
                     elements {
                     }
                 }',
-                $groupName,
-                'header = ' . $groupLabel
-            );
-        $groups[$groupName] = true;
+            $groupName,
+            'header = ' . $groupLabel
+        );
     }
 
     /**

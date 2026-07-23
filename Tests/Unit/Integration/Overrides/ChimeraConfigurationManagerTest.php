@@ -10,10 +10,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\Overrides;
 
 use FluidTYPO3\Flux\Integration\Overrides\ChimeraConfigurationManager;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager;
@@ -30,10 +30,8 @@ class ChimeraConfigurationManagerTest extends AbstractTestCase
     {
         parent::setUp();
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '11.5', '<')) {
-            self::markTestSkipped('Skipping chimera configuration manager test on v10');
-        } elseif (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
-            self::markTestSkipped('Skipping chimera configuration manager test on v13');
+        if (VersionUtility::isCoreAtLeast13()) {
+            self::markTestSkipped('Skipping chimera configuration manager test on v13+');
         }
 
         $this->frontendConfigurationManager = $this->getMockBuilder(FrontendConfigurationManager::class)

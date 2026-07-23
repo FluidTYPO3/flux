@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Transformation;
 
 /*
@@ -10,7 +9,6 @@ namespace FluidTYPO3\Flux\Form\Transformation;
  */
 
 use Symfony\Component\DependencyInjection\ServiceLocator;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataTransformerRegistry
 {
@@ -19,12 +17,17 @@ class DataTransformerRegistry
      */
     private array $transformers = [];
 
-    private static array $legacy = [];
-
-    public function __construct(ServiceLocator $locator)
+    public function __construct(private ServiceLocator $locator)
     {
+    }
+
+    private function instanceTransformers(): array
+    {
+        if (!empty($this->transformers)) {
+            return $this->transformers;
+        }
         /** @var DataTransformerInterface[] $transformers */
-        $transformers = array_map([$locator, 'get'], array_keys($locator->getProvidedServices()));
+        $transformers = array_map([$this->locator, 'get'], array_keys($this->locator->getProvidedServices()));
         $this->transformers = $transformers;
         usort(
             $this->transformers,
@@ -32,25 +35,12 @@ class DataTransformerRegistry
                 return $b->getPriority() <=> $a->getPriority();
             }
         );
-    }
-
-    public static function registerTransformerOnLegacyPhpVersion(string $transformerClassName): void
-    {
-        self::$legacy[] = $transformerClassName;
+        return $this->transformers;
     }
 
     public function resolveDataTransformerByType(string $type): DataTransformerInterface
     {
-        foreach ($this->transformers as $transformer) {
-            if ($transformer->canTransformToType($type)) {
-                return $transformer;
-            }
-        }
-
-        /** @var class-string $legacyClassName */
-        foreach (self::$legacy as $legacyClassName) {
-            /** @var DataTransformerInterface $transformer */
-            $transformer = GeneralUtility::makeInstance($legacyClassName);
+        foreach ($this->instanceTransformers() as $transformer) {
             if ($transformer->canTransformToType($type)) {
                 return $transformer;
             }

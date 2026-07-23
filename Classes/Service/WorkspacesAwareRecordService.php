@@ -8,10 +8,14 @@ namespace FluidTYPO3\Flux\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Utility\RequestResolver;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Service to wrap around record operations normally going through
@@ -79,11 +83,15 @@ class WorkspacesAwareRecordService extends RecordService implements SingletonInt
 
     protected function hasWorkspacesSupport(string $table): bool
     {
-        return (
-            $GLOBALS['BE_USER'] instanceof BackendUserAuthentication
+        $backendUser = RequestResolver::getBackendUser();
+        if (VersionUtility::isCoreAtLeast14()) {
+            /** @var TcaSchemaFactory $schemaFactory */
+            $schemaFactory = GeneralUtility::makeInstance(TcaSchemaFactory::class);
+            return $backendUser && $schemaFactory->get($table)->hasCapability(TcaSchemaCapability::Workspace);
+        }
+        return $backendUser
             && ExtensionManagementUtility::isLoaded('workspaces')
-            && BackendUtility::isTableWorkspaceEnabled($table)
-        );
+            && BackendUtility::isTableWorkspaceEnabled($table);
     }
 
     /**

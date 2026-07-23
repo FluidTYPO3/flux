@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -131,7 +130,7 @@ class Text extends Input implements FieldInterface
             /** @var array|null $record */
             $record = $root->getOption('record');
             if ($record !== null) {
-                $pageUid = (integer) ($record['pid'] ?? 0);
+                $pageUid = (int) ($record['pid'] ?? 0);
             }
         }
 

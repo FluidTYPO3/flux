@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -11,7 +10,6 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 
 use TYPO3Fluid\Fluid\Core\Parser\Source;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 
 /**
  * Inline Fluid rendering ViewHelper
@@ -50,7 +48,7 @@ class InlineViewHelper extends AbstractViewHelper
     {
         $this->registerArgument(
             'code',
-            'string',
+            'string|null',
             'Fluid code to be rendered as if it were part of the template rendering it. '
                 . 'Can be passed as inline argument or tag content'
         );

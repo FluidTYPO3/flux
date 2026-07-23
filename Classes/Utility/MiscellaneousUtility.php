@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
 
 /*
@@ -18,6 +17,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -89,8 +89,10 @@ class MiscellaneousUtility
             return $originalFile;
         }
 
-        if (strpos($originalFile, 'EXT:') === 0 || $originalFile[0] !== '/') {
-            $originalFile = GeneralUtility::getFileAbsFileName($originalFile);
+        if (VersionUtility::isCoreAtLeast14()) {
+            $iconSizeConstant = IconSize::DEFAULT;
+        } else {
+            $iconSizeConstant = Icon::SIZE_DEFAULT;
         }
 
         $extension = pathinfo($originalFile, PATHINFO_EXTENSION);
@@ -107,7 +109,7 @@ class MiscellaneousUtility
         $iconRegistry->registerIcon(
             $iconIdentifier,
             $iconProvider,
-            ['source' => $originalFile, 'size' => Icon::SIZE_DEFAULT]
+            ['source' => $originalFile, 'size' => $iconSizeConstant]
         );
         return $iconIdentifier;
     }
@@ -191,6 +193,9 @@ class MiscellaneousUtility
         $dataNodes = $dom->getElementsByTagName('data');
         /** @var DOMElement $dataNode */
         $dataNode = $dataNodes->item(0);
+        if ($dataNode === null) {
+            return '';
+        }
         $elements = $dataNode->getElementsByTagName('sheet');
         if (0 === $elements->length) {
             return '';

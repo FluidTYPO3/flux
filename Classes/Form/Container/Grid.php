@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Container;
 
 /*
@@ -12,7 +11,6 @@ namespace FluidTYPO3\Flux\Form\Container;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form\AbstractFormContainer;
 use FluidTYPO3\Flux\Form\ContainerInterface;
-use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 
@@ -102,7 +100,11 @@ class Grid extends AbstractFormContainer implements ContainerInterface
                 $key = ($index + 1) . '.';
                 $columns[$key] = $column;
                 $colPosList[$colPos] = $colPos;
-                $items[] = (new SelectOption($columns[$key]['name'], $colPos, $column['icon']))->toArray();
+                $items[] = [
+                    'label' => $columns[$key]['name'],
+                    'value' => $colPos,
+                    'icon' => $column['icon'],
+                ];
                 $colCount += $column['colspan'] ? $column['colspan'] : 1;
                 $backendLayout['usedColumns'][$colPos] = $column['name'];
                 ++ $index;

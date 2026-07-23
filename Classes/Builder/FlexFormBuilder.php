@@ -15,9 +15,9 @@ use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
 use FluidTYPO3\Flux\Service\CacheService;
 use FluidTYPO3\Flux\Service\PageService;
+use FluidTYPO3\Flux\Utility\RequestResolver;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class FlexFormBuilder
 {
@@ -51,7 +51,7 @@ class FlexFormBuilder
         if (($originalIdentifier['dataStructureKey'] ?? 'default') !== 'default') {
             return [];
         }
-        if ((integer) ($record['uid'] ?? 0) > 0) {
+        if ((int) ($record['uid'] ?? 0) > 0) {
             // If we are resolving a DS for an identified record, the only thing that matters is the record's UID.
             $limitedRecordData = ['uid' => $record['uid']];
         } else {
@@ -70,11 +70,11 @@ class FlexFormBuilder
                 // template selection values as part of our DS identifier.
                 // This is NOT necessary if the input record contains an explicitly selected page layout, hence the
                 // added check above before entering this condition block.
-                if ((integer) $record['pid'] < 0) {
+                if ((int) $record['pid'] < 0) {
                     // we have uid of sibling, need first not-deleted parent
                     $record['pid'] = $this->loadRecordWithoutRestriction(
                         'pages',
-                        (integer) abs($record['pid']),
+                        (int) abs($record['pid']),
                         'uid',
                         false
                     )['uid'] ?? 0;
@@ -83,7 +83,31 @@ class FlexFormBuilder
                     $record,
                     $this->pageService->getPageTemplateConfiguration($record['pid'], true) ?? []
                 );
+            } elseif ($tableName === 'tt_content') {
+                $request = RequestResolver::getRequest();
+                if (strtolower($request->getMethod()) === 'post') {
+                    /** @var array $body */
+                    $body = $request->getParsedBody();
+                    if (isset($body['recordTypeValue']) && ($body['vanillaUid'] ?? 0) < 0) {
+                        // Special case: we're adding a new content element and after another content element. This
+                        // causes TYPO3 to read the CType value of the *neighbor* content record and pass it as CType
+                        // in the $identifier "record" property which holds a virtual record. This in turn causes Flux
+                        // to resolve an incorrect DS (the one belonging to the related record's type, not the new
+                        // record's type).
+                        // Normally this doesn't cause any trouble because FormEngine handles this special case, but
+                        // logic which is called via AJAX for handling fields in the DS (for example: section objects)
+                        // will receive the incorrect DS which triggers errors if there are fields in the *current,
+                        // new* record's DS that aren't in the *neighbor* record's DS.
+                        // All of this boils down to TYPO3 declaring "CType" as part of the
+                        // "useColumnsForDefaultValues" TCA instruction for tt_content. Values of fields mentioned in
+                        // this instruction are copied from the neigbor record to the virtual record mentioned above.
+                        // Which is good, when it comes to things like colPos or language - but really bad when it
+                        // comes to "CType" which changes the record UI composition.
+                        $record['CType'] = $body['recordTypeValue'];
+                    }
+                }
             }
+
             if ($GLOBALS['TCA'][$tableName]['ctrl']['type'] ?? false) {
                 $typeField = $GLOBALS['TCA'][$tableName]['ctrl']['type'];
                 $fields[] = $GLOBALS['TCA'][$tableName]['ctrl']['type'];
@@ -127,7 +151,7 @@ class FlexFormBuilder
         }
         if (count($record) === 1 && isset($record['uid']) && is_numeric($record['uid'])) {
             // The record is a stub, has only "uid" and "uid" is numeric. Reload the full record from DB.
-            $record = $this->loadRecordWithoutRestriction($identifier['tableName'], (integer) $record['uid']);
+            $record = $this->loadRecordWithoutRestriction($identifier['tableName'], (int) $record['uid']);
         }
         if (empty($record)) {
             throw new \UnexpectedValueException('Unable to resolve record for DS processing', 1668011937);
@@ -153,10 +177,6 @@ class FlexFormBuilder
             $dataStructArray = ['ROOT' => ['el' => []]];
         }
 
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '<')) {
-            $dataStructArray = $this->patchTceformsWrapper($dataStructArray);
-        }
-
         if ($form && $form->getOption(FormOption::STATIC)) {
             // This provider has requested static DS caching; stop attempting
             // to process any other DS, cache and return this DS as final result:
@@ -165,26 +185,6 @@ class FlexFormBuilder
         }
 
         return $dataStructArray;
-    }
-
-    /**
-     * Temporary method during FormEngine transition!
-     *
-     * Performs a duplication in data source, applying a wrapper
-     * around field configurations which require it for correct
-     * rendering in flex form containers.
-     */
-    protected function patchTceformsWrapper(array $dataStructure, ?string $parentIndex = null): array
-    {
-        foreach ($dataStructure as $index => $subStructure) {
-            if (is_array($subStructure)) {
-                $dataStructure[$index] = $this->patchTceformsWrapper($subStructure, $index);
-            }
-        }
-        if (isset($dataStructure['config']['type']) && $parentIndex !== 'TCEforms') {
-            $dataStructure = ['TCEforms' => $dataStructure];
-        }
-        return $dataStructure;
     }
 
     /**

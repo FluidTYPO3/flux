@@ -26,8 +26,6 @@ interface InlineRelationFieldInterface extends RelationFieldInterface
     public function getShowAllLocalizationLink(): bool;
     public function setShowPossibleLocalizationRecords(bool $showPossibleLocalizationRecords): self;
     public function getShowPossibleLocalizationRecords(): bool;
-    public function setShowRemovedLocalizationRecords(bool $showRemovedLocalizationRecords): self;
-    public function getShowRemovedLocalizationRecords(): bool;
     public function setShowSynchronizationLink(bool $showSynchronizationLink): self;
     public function getShowSynchronizationLink(): bool;
     public function setUseCombination(bool $useCombination): self;

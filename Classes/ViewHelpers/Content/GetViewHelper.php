@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Content;
 
 /*
@@ -15,15 +14,15 @@ use FluidTYPO3\Flux\Hooks\HookHandler;
 use FluidTYPO3\Flux\Provider\AbstractProvider;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ColumnNumberUtility;
+use FluidTYPO3\Flux\Utility\ContentObjectFetcher;
+use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 /**
@@ -101,7 +100,7 @@ class GetViewHelper extends AbstractViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ) {
-        $contentObjectRenderer = static::getContentObjectRenderer();
+        $contentObjectRenderer = ContentObjectFetcher::resolve();
 
         $registerVariables = (array) $arguments['loadRegister'];
         $loadRegister = false;
@@ -121,7 +120,7 @@ class GetViewHelper extends AbstractViewHelper
 
         if (is_numeric($workspaceId) && $workspaceId > 0) {
             $placeholder = BackendUtility::getWorkspaceVersionOfRecord(
-                (integer) $workspaceId,
+                (int) $workspaceId,
                 'tt_content',
                 $record['uid'] ?? 0
             );
@@ -138,7 +137,7 @@ class GetViewHelper extends AbstractViewHelper
         $grid = $provider->getGrid($record);
         $rows = static::getContentRecords($arguments, $record, $grid);
 
-        $elements = false === (boolean) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
+        $elements = false === (bool) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
         if (empty($arguments['as'])) {
             $content = $elements;
         } else {
@@ -191,7 +190,7 @@ class GetViewHelper extends AbstractViewHelper
             )
         );
 
-        $rows = static::getContentObjectRenderer()->getRecords(
+        $rows = ContentObjectFetcher::resolve()->getRecords(
             'tt_content',
             [
                 'max' => $arguments['limit'],
@@ -211,11 +210,6 @@ class GetViewHelper extends AbstractViewHelper
         )['records'];
     }
 
-    protected static function getContentObjectRenderer(): ContentObjectRenderer
-    {
-        return $GLOBALS['TSFE']->cObj;
-    }
-
     /**
      * This function renders an array of tt_content record into an array of rendered content
      * it returns a list of elements rendered by typoscript RECORDS function
@@ -229,7 +223,7 @@ class GetViewHelper extends AbstractViewHelper
                 'source' => $row['uid'],
                 'dontCheckPid' => 1,
             ];
-            $elements[] = static::getContentObjectRenderer()->cObjGetSingle('RECORDS', $conf);
+            $elements[] = ContentObjectFetcher::resolve()->cObjGetSingle('RECORDS', $conf);
         }
         return HookHandler::trigger(
             HookHandler::NESTED_CONTENT_RENDERED,

@@ -10,27 +10,36 @@ namespace FluidTYPO3\Flux\Tests\Unit;
 
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Field\Custom;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
+use TYPO3\CMS\Core\Charset\CharsetProvider;
+use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Package\Package;
+use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class AbstractTestCase extends TestCase
 {
-    const FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
-    const FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/Content/WithoutForm.html';
-    const FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Content/Sheets.html';
-    const FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/Content/UsesPartial.html';
-    const FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/Content/CustomSection.html';
-    const FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/Content/EmptyPreview.html';
-    const FIXTURE_TEMPLATE_PREVIEW = 'EXT:flux/Tests/Fixtures/Templates/Content/Preview.html';
-    const FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/BasicGrid.html';
-    const FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/DualGrid.html';
-    const FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/CollidingGrid.html';
-    const FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
+    // phpcs:disable
+    protected const string FIXTURE_TEMPLATE_ABSOLUTELYMINIMAL = 'EXT:flux/Tests/Fixtures/Templates/Content/AbsolutelyMinimal.html';
+    protected const string FIXTURE_TEMPLATE_WITHOUTFORM = 'EXT:flux/Tests/Fixtures/Templates/Content/WithoutForm.html';
+    protected const string FIXTURE_TEMPLATE_SHEETS = 'EXT:flux/Tests/Fixtures/Templates/Content/Sheets.html';
+    protected const string FIXTURE_TEMPLATE_USESPARTIAL = 'EXT:flux/Tests/Fixtures/Templates/Content/UsesPartial.html';
+    protected const string FIXTURE_TEMPLATE_CUSTOM_SECTION = 'EXT:flux/Tests/Fixtures/Templates/Content/CustomSection.html';
+    protected const string FIXTURE_TEMPLATE_PREVIEW_EMPTY = 'EXT:flux/Tests/Fixtures/Templates/Content/EmptyPreview.html';
+    protected const string FIXTURE_TEMPLATE_PREVIEW = 'EXT:flux/Tests/Fixtures/Templates/Content/Preview.html';
+    protected const string FIXTURE_TEMPLATE_BASICGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/BasicGrid.html';
+    protected const string FIXTURE_TEMPLATE_DUALGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/DualGrid.html';
+    protected const string FIXTURE_TEMPLATE_COLLIDINGGRID = 'EXT:flux/Tests/Fixtures/Templates/Content/CollidingGrid.html';
+    protected const string FIXTURE_TYPOSCRIPT_DIR = 'EXT:flux/Tests/Fixtures/Data/TypoScript';
+    // phpcs:enable
 
     protected array $singletonInstances = [];
     private array $singletonInstancesBackup = [];
@@ -40,19 +49,14 @@ abstract class AbstractTestCase extends TestCase
         if (!defined('LF')) {
             define('LF', PHP_EOL);
         }
-        if (!defined('TYPO3_REQUESTTYPE')) {
-            define('TYPO3_REQUESTTYPE', 1);
-        }
-        if (!defined('TYPO3_REQUESTTYPE_FE')) {
-            define('TYPO3_REQUESTTYPE_FE', 1);
-        }
 
-        if (!defined('TYPO3_version')) { // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
-            define('TYPO3_version', '9.5.0'); // @phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
+        $charsetProvider = null;
+        if (VersionUtility::isCoreAtLeast14()) {
+            $charsetProvider = new CharsetProvider();
         }
 
         $GLOBALS['EXEC_TIME'] = time();
-        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter()];
+        $GLOBALS['LANG'] = (object) ['csConvObj' => new CharsetConverter($charsetProvider)];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['preProcessors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['interceptors'] = [];
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fluid_template'] = [
@@ -63,6 +67,27 @@ abstract class AbstractTestCase extends TestCase
         $this->singletonInstancesBackup = GeneralUtility::getSingletonInstances();
         foreach ($this->singletonInstances as $className => $singletonInstance) {
             GeneralUtility::setSingletonInstance($className, $singletonInstance);
+        }
+
+        $root = realpath(__DIR__ . '/../../');
+        Environment::initialize(
+            new ApplicationContext('Testing'),
+            true,
+            true,
+            $root,
+            $root . '/public/',
+            $root . '/var/',
+            $root . '/config/',
+            $root,
+            'unknown'
+        );
+
+        if (VersionUtility::isCoreAtLeast14()) {
+            $packageManager = $this->getMockBuilder(PackageManager::class)->disableOriginalConstructor()->getMock();
+            $packageManager->method('extractPackageKeyFromPackagePath')->willReturn('flux');
+            $package = $this->getMockBuilder(Package::class)->disableOriginalConstructor()->getMock();
+            $packageManager->method('getPackage')->willReturn($package);
+            ExtensionManagementUtility::setPackageManager($packageManager);
         }
     }
 

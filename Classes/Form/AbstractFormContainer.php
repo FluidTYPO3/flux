@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form;
 
 /*
@@ -41,8 +40,8 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
 
     public function add(FormInterface $child): self
     {
-        if (!$this->children->contains($child)) {
-            $this->children->attach($child);
+        if (!$this->children->offsetExists($child)) {
+            $this->children->offsetSet($child);
             $child->setParent($this);
             if ($child->getTransform()) {
                 $root = $this->getRoot();
@@ -76,7 +75,7 @@ abstract class AbstractFormContainer extends AbstractFormComponent implements Co
             $isMatchingInstance = ($childName instanceof FormInterface && $childName->getName() === $child->getName());
             $isMatchingName = ($childName === $child->getName());
             if ($isMatchingName || $isMatchingInstance) {
-                $this->children->detach($child);
+                $this->children->offsetUnset($child);
                 $this->children->rewind();
                 $child->setParent(null);
                 HookHandler::trigger(HookHandler::FORM_CHILD_REMOVED, ['parent' => $this, 'child' => $child]);

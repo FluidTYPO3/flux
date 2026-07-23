@@ -10,6 +10,8 @@ namespace FluidTYPO3\Flux\Integration\HookSubscribers;
 
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Provider\PageProvider;
+use FluidTYPO3\Flux\Utility\VersionUtility;
+use TYPO3\CMS\Backend\Context\PageContext;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -21,11 +23,19 @@ class PagePreviewRenderer
         $pageProvider = $this->getPageProvider();
         $previewContent = '';
 
-        $idProperty = new \ReflectionProperty($pageLayoutController, 'id');
-        $idProperty->setAccessible(true);
-        $id = $idProperty->getValue($pageLayoutController);
+        if (VersionUtility::isCoreBelow14()) {
+            $idProperty = new \ReflectionProperty($pageLayoutController, 'id');
+            $idProperty->setAccessible(true);
+            $id = $idProperty->getValue($pageLayoutController);
+        } else {
+            $idProperty = new \ReflectionProperty($pageLayoutController, 'pageContext');
+            $idProperty->setAccessible(true);
+            /** @var PageContext $context */
+            $context = $idProperty->getValue($pageLayoutController);
+            $id = $context->pageId;
+        }
 
-        $row = $this->getRecord(is_scalar($id) ? (integer) $id : 0);
+        $row = $this->getRecord(is_scalar($id) ? (int) $id : 0);
         if (!$row) {
             return '';
         }

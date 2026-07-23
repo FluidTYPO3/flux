@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Builder;
 
 /*
@@ -12,23 +11,12 @@ namespace FluidTYPO3\Flux\Builder;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
-use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Extbase\Mvc\RequestInterface;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 class RenderingContextBuilder implements SingletonInterface
 {
-    private RequestBuilder $requestBuilder;
-
-    public function __construct(RequestBuilder $requestBuilder)
-    {
-        $this->requestBuilder = $requestBuilder;
-    }
-
     public function buildRenderingContextFor(
         string $extensionIdentity,
         string $controllerName,
@@ -38,26 +26,6 @@ class RenderingContextBuilder implements SingletonInterface
         $extensionKey = ExtensionNamingUtility::getExtensionKey($extensionIdentity);
 
         $renderingContext = $this->createRenderingContextInstance();
-
-        if (method_exists($renderingContext, 'getControllerContext')) {
-            /** @var RequestInterface&Request $request */
-            $request = $this->requestBuilder->buildRequestFor(
-                $extensionIdentity,
-                $controllerName,
-                $controllerActionName,
-                $pluginName
-            );
-
-            /** @var ControllerContext $controllerContext */
-            $controllerContext = $this->buildControllerContext($request);
-            try {
-                $renderingContext->setControllerContext($controllerContext);
-            } catch (\TypeError $error) {
-                throw new \UnexpectedValueException(
-                    'Controller class ' . $request->getControllerObjectName() . ' caused error: ' . $error->getMessage()
-                );
-            }
-        }
 
         if (method_exists($renderingContext, 'setControllerAction')) {
             $renderingContext->setControllerAction($controllerActionName);
@@ -84,25 +52,5 @@ class RenderingContextBuilder implements SingletonInterface
             $renderingContext = GeneralUtility::makeInstance(RenderingContext::class);
         }
         return $renderingContext;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function buildControllerContext(RequestInterface $request): ?ControllerContext
-    {
-        /** @var RequestInterface&Request $request */
-        if (class_exists(ControllerContext::class)) {
-            /** @var UriBuilder $uriBuilder */
-            $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-            $uriBuilder->setRequest($request);
-
-            /** @var ControllerContext $controllerContext */
-            $controllerContext = GeneralUtility::makeInstance(ControllerContext::class);
-            $controllerContext->setRequest($request);
-            $controllerContext->setUriBuilder($uriBuilder);
-        }
-
-        return $controllerContext ?? null;
     }
 }

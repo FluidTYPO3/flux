@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -37,10 +36,10 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
  */
 class PageProvider extends AbstractProvider implements ProviderInterface
 {
-    const FIELD_NAME_MAIN = 'tx_fed_page_flexform';
-    const FIELD_NAME_SUB = 'tx_fed_page_flexform_sub';
-    const FIELD_ACTION_MAIN = 'tx_fed_page_controller_action';
-    const FIELD_ACTION_SUB = 'tx_fed_page_controller_action_sub';
+    public const string FIELD_NAME_MAIN = 'tx_fed_page_flexform';
+    public const string FIELD_NAME_SUB = 'tx_fed_page_flexform_sub';
+    public const string FIELD_ACTION_MAIN = 'tx_fed_page_controller_action';
+    public const string FIELD_ACTION_SUB = 'tx_fed_page_controller_action_sub';
 
     protected ?string $tableName = 'pages';
     protected ?string $parentFieldName = 'pid';
@@ -101,7 +100,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             }
 
             $pageTemplateConfiguration = $this->pageService->getPageTemplateConfiguration(
-                (integer) $pageUid,
+                (int) $pageUid,
                 $pageUidIsParent
             );
 
@@ -173,7 +172,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                 : $row[self::FIELD_ACTION_SUB];
         }
         if (isset($row['uid'])) {
-            $configuration = $this->pageService->getPageTemplateConfiguration((integer) $row['uid']);
+            $configuration = $this->pageService->getPageTemplateConfiguration((int) $row['uid']);
             $fieldName = self::FIELD_ACTION_SUB;
             if ($forField === self::FIELD_NAME_MAIN) {
                 $fieldName = self::FIELD_ACTION_MAIN;
@@ -236,8 +235,8 @@ class PageProvider extends AbstractProvider implements ProviderInterface
                     $parent = $field->getParent();
                     $fieldName = (string) $field->getName();
                     $sheetName = (string) $parent->getName();
-                    $inherit = (boolean) $field->getInherit();
-                    $inheritEmpty = (boolean) $field->getInheritEmpty();
+                    $inherit = (bool) $field->getInherit();
+                    $inheritEmpty = (bool) $field->getInheritEmpty();
                     if (is_array($record[$tableFieldName]['data'] ?? null)) {
                         $value = $record[$tableFieldName]['data'][$sheetName]['lDEF'][$fieldName]['vDEF'] ?? null;
                         $inheritedConfiguration = $this->getInheritedConfiguration($record);
@@ -550,7 +549,7 @@ class PageProvider extends AbstractProvider implements ProviderInterface
             return [];
         }
         /** @var RootlineUtility $rootLineUtility */
-        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, (integer) ($record['uid'] ?? 0));
+        $rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, (int) ($record['uid'] ?? 0));
         return array_slice($rootLineUtility->get(), 1);
     }
 }

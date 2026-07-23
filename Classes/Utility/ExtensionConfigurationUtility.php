@@ -1,15 +1,21 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Enum\ExtensionOption;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use FluidTYPO3\Flux\Proxy\ExtensionConfigurationProxy;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExtensionConfigurationUtility
 {
-    public const OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
+    public const string OPTION_FLEXFORM_TO_IRRE = 'flexFormToIrre';
 
     protected static array $defaults = [
         ExtensionOption::OPTION_DEBUG_MODE => false,
@@ -32,8 +38,8 @@ class ExtensionConfigurationUtility
 
         if (empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'])) {
             $legacyConfiguration = &$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['flux']['setup'];
-            /** @var ExtensionConfiguration $extensionConfigurationManager */
-            $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+            /** @var ExtensionConfigurationProxy $extensionConfigurationManager */
+            $extensionConfigurationManager = GeneralUtility::makeInstance(ExtensionConfigurationProxy::class);
             $legacyConfiguration = $extensionConfigurationManager->get('flux');
         }
     }

@@ -1,6 +1,12 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Integration\NormalizedData;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Flux\Integration\NormalizedData\Converter\ConverterInterface;
 use FluidTYPO3\Flux\Integration\NormalizedData\Converter\InlineRecordDataConverter;
@@ -41,7 +47,6 @@ class FlexFormImplementation extends AbstractImplementation implements Implement
                     'levelLinksPosition' => 'none',
                     'useSortable' => 0,
                     'showPossibleLocalizationRecords' => 0,
-                    'showRemovedLocalizationRecords' => 0,
                     'showAllLocalizationLink' => 0,
                     'showSynchronizationLink' => 0,
                     'enabledControls' => [

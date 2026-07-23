@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Content;
 
 /*
@@ -14,7 +13,6 @@ use Doctrine\DBAL\Driver\Exception;
 use FluidTYPO3\Flux\Content\TypeDefinition\ContentTypeDefinitionInterface;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\DropInContentTypeDefinition;
 use FluidTYPO3\Flux\Content\TypeDefinition\FluidFileBased\FluidFileBasedContentTypeDefinition;
-use FluidTYPO3\Flux\Content\TypeDefinition\RecordBased\RecordBasedContentTypeDefinition;
 use FluidTYPO3\Flux\Service\CacheService;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -27,7 +25,7 @@ use TYPO3\CMS\Core\SingletonInterface;
  */
 class ContentTypeManager implements SingletonInterface
 {
-    const CACHE_IDENTIFIER = 'flux_content_types';
+    public const string CACHE_IDENTIFIER = 'flux_content_types';
 
     protected CacheService $cacheService;
 
@@ -60,8 +58,7 @@ class ContentTypeManager implements SingletonInterface
             if (!$types) {
                 $types = array_replace(
                     $this->fetchDropInContentTypes(),
-                    $this->fetchFileBasedContentTypes(),
-                    $this->fetchRecordBasedContentTypes()
+                    $this->fetchFileBasedContentTypes()
                 );
                 $this->cacheService->setInCaches($types, true, self::CACHE_IDENTIFIER);
             }
@@ -103,12 +100,6 @@ class ContentTypeManager implements SingletonInterface
         return $this->determineContentTypeForTypeString($record['CType'] ?? $record['content_type'] ?? '');
     }
 
-    public function regenerate(): void
-    {
-        $this->cacheService->remove(self::CACHE_IDENTIFIER);
-        $this->cacheService->setInCaches($this->fetchContentTypes(), true, static::CACHE_IDENTIFIER);
-    }
-
     /**
      * @codeCoverageIgnore
      */
@@ -123,13 +114,5 @@ class ContentTypeManager implements SingletonInterface
     protected function fetchFileBasedContentTypes(): array
     {
         return (array) FluidFileBasedContentTypeDefinition::fetchContentTypes();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function fetchRecordBasedContentTypes(): array
-    {
-        return (array) RecordBasedContentTypeDefinition::fetchContentTypes();
     }
 }

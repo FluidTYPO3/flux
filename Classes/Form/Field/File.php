@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field;
 
 /*
@@ -95,7 +94,7 @@ class File extends AbstractMultiValueFormField
 
     public function getShowThumbnails(): bool
     {
-        return (boolean) $this->showThumbnails;
+        return (bool) $this->showThumbnails;
     }
 
     public function setUseFalRelation(bool $useFalRelation): self

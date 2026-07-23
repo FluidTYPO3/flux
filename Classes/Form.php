@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux;
 
 /*
@@ -21,7 +20,7 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class Form extends Form\AbstractFormContainer implements Form\FieldContainerInterface, Form\OptionCarryingInterface
 {
-    const DEFAULT_LANGUAGEFILE = '/Resources/Private/Language/locallang.xlf';
+    public const string DEFAULT_LANGUAGEFILE = '/Resources/Private/Language/locallang.xlf';
 
     /**
      * Machine-readable, lowerCamelCase ID of this form. DOM compatible.
@@ -75,14 +74,14 @@ class Form extends Form\AbstractFormContainer implements Form\FieldContainerInte
                 && !$firstChild->hasChildren()
             ) {
                 // Form has a single sheet, it's the default sheet and it has no fields. Replace it.
-                $this->children->detach($firstChild);
+                $this->children->offsetUnset($firstChild);
             }
             foreach ($this->children as $existingChild) {
                 if ($child->getName() === $existingChild->getName()) {
                     return $this;
                 }
             }
-            $this->children->attach($child);
+            $this->children->offsetSet($child);
             $child->setParent($this);
         }
         HookHandler::trigger(HookHandler::FORM_CHILD_ADDED, ['parent' => $this, 'child' => $child]);

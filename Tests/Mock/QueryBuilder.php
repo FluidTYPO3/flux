@@ -20,12 +20,12 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this;
     }
 
-    public function delete(string $delete, string $alias = null): self
+    public function delete(string $delete, ?string $alias = null): self
     {
         return $this;
     }
 
-    public function update(string $update, string $alias = null): self
+    public function update(string $update, ?string $alias = null): self
     {
         return $this;
     }
@@ -61,7 +61,7 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this->expressionBuilder;
     }
 
-    public function createNamedParameter($value, $type = Connection::PARAM_STR, string $placeHolder = null): string
+    public function createNamedParameter($value, $type = Connection::PARAM_STR, ?string $placeHolder = null): string
     {
         return 'p';
     }
@@ -91,7 +91,7 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this;
     }
 
-    public function from(string $from, string $alias = null): self
+    public function from(string $from, ?string $alias = null): self
     {
         return $this;
     }
@@ -111,7 +111,7 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this;
     }
 
-    public function join(string $fromAlias, string $join, string $alias, string $condition = null): self
+    public function join(string $fromAlias, string $join, string $alias, ?string $condition = null): self
     {
         return $this;
     }
@@ -136,12 +136,12 @@ class QueryBuilder extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
         return $this;
     }
 
-    public function orderBy(string $fieldName, string $order = null): self
+    public function orderBy(string $fieldName, ?string $order = null): self
     {
         return $this;
     }
 
-    public function addOrderBy(string $fieldName, string $order = null): self
+    public function addOrderBy(string $fieldName, ?string $order = null): self
     {
         return $this;
     }

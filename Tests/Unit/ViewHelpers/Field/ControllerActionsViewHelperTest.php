@@ -14,6 +14,12 @@ use TYPO3\CMS\Extbase\Mvc\Request;
 
 class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
 {
+    protected function setUp(): void
+    {
+        $this->simulateRequestWithExtbaseParameters('');
+        parent::setUp();
+    }
+
     protected array $defaultArguments = [
         'label' => 'Test field',
         'controllerExtensionName' => '',
@@ -136,23 +142,16 @@ class ControllerActionsViewHelperTest extends AbstractFieldViewHelperTestCase
         ];
         $instance = $this->buildViewHelperInstance($arguments);
         $request = $this->getMockBuilder(Request::class)
-            ->setMethods(['getExtbaseAttribute'])
+            ->setMethods(['getExtbaseAttribute', 'getAttribute'])
             ->disableOriginalConstructor()
             ->getMock();
-        if (class_exists(ExtbaseRequestParameters::class)) {
-            $parameters = new ExtbaseRequestParameters(ContentController::class);
-            $parameters->setControllerExtensionName('Flux');
-            $request->method('getExtbaseAttribute')->willReturn($parameters);
-        } else {
-            $request->setControllerExtensionName('Flux');
-        }
-        if (method_exists($request, 'setControllerVendorName')) {
-            $request->setControllerVendorName('FluidTYPO3');
-            $expected = $expected = 'FluidTYPO3.Flux';
-        } else {
-            $expected = 'Flux';
-        }
+
+        $parameters = new ExtbaseRequestParameters(ContentController::class);
+        $parameters->setControllerExtensionName('Flux');
+        $request->method('getExtbaseAttribute')->willReturn($parameters);
+        $request->method('getAttribute')->willReturn($parameters);
+
         $result = $this->callInaccessibleMethod($instance, 'getFullExtensionNameFromRequest', $request);
-        $this->assertEquals($expected, $result);
+        $this->assertEquals('Flux', $result);
     }
 }

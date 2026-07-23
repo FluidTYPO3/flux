@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers;
 
 /*
@@ -12,22 +11,30 @@ namespace FluidTYPO3\Flux\ViewHelpers;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\FormInterface;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use TYPO3Fluid\Fluid\Component\Argument\ArgumentCollection;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use FluidTYPO3\Flux\ViewHelpers\AbstractViewHelper;
 
 /**
  * Base class for all FlexForm related ViewHelpers
  */
 abstract class AbstractFormViewHelper extends AbstractViewHelper
 {
-    const SCOPE = FormViewHelper::class;
-    const SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
-    const SCOPE_VARIABLE_FORM = 'form';
-    const SCOPE_VARIABLE_CONTAINER = 'container';
-    const SCOPE_VARIABLE_GRIDS = 'grids';
+    public const string SCOPE = FormViewHelper::class;
+    public const string SCOPE_VARIABLE_EXTENSIONNAME = 'extensionName';
+    public const string SCOPE_VARIABLE_FORM = 'form';
+    public const string SCOPE_VARIABLE_CONTAINER = 'container';
+    public const string SCOPE_VARIABLE_GRIDS = 'grids';
 
+    /**
+     * @param string $name
+     * @param string $type
+     * @param string $description
+     * @param bool $required
+     * @param mixed $defaultValue
+     * @param bool|null $escape
+     * @return self
+     */
     protected function overrideArgument(
         $name,
         $type,
@@ -35,19 +42,11 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         $required = false,
         $defaultValue = null,
         $escape = null
-    ) {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+    ): self {
+        if (VersionUtility::isCoreAtLeast13()) {
             return parent::registerArgument($name, $type, $description, $required, $defaultValue, $escape);
         }
         return parent::overrideArgument($name, $type, $description, $required, $defaultValue, $escape);
-    }
-
-    /**
-     * @return string
-     */
-    public function render()
-    {
-        return static::renderStatic($this->arguments, $this->buildRenderChildrenClosure(), $this->renderingContext);
     }
 
     protected function callRenderMethod(): string
@@ -83,10 +82,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         return Form::create();
     }
 
-    /**
-     * @return mixed
-     */
-    public function renderChildren()
+    public function renderChildren(): mixed
     {
         // Make sure the current extension name always propagates to child nodes
         static::setExtensionNameInRenderingContext(
@@ -116,22 +112,7 @@ abstract class AbstractFormViewHelper extends AbstractViewHelper
         if ($extensionName = $viewHelperVariableContainer->get(static::SCOPE, static::SCOPE_VARIABLE_EXTENSIONNAME)) {
             return is_scalar($extensionName) ? (string) $extensionName : 'FluidTYPO3.Flux';
         }
-        $request = null;
-        $controllerContext = null;
-        if (method_exists($renderingContext, 'getControllerContext')) {
-            $controllerContext = $renderingContext->getControllerContext();
-            if ($controllerContext && $controllerContext->getRequest()) {
-                $request = $controllerContext->getRequest();
-            }
-        } elseif (method_exists($renderingContext, 'getRequest')) {
-            $request = $renderingContext->getRequest();
-        }
-        if (!$request && $controllerContext) {
-            $request = $controllerContext->getRequest();
-            /** @var string|null $controllerExtensionName */
-            $controllerExtensionName = $request->getControllerExtensionName();
-            return $controllerExtensionName ?? 'FluidTYPO3.Flux';
-        }
+
         return 'FluidTYPO3.Flux';
     }
 

@@ -11,8 +11,9 @@ namespace FluidTYPO3\Flux\Integration;
 use FluidTYPO3\Flux\Enum\PreviewOption;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
+use TYPO3\CMS\Core\Domain\RawRecord;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class PreviewRenderer
 {
@@ -26,10 +27,15 @@ class PreviewRenderer
         $this->providerResolver = $providerResolver;
     }
 
-    public function renderPreview(array $row, ?string $currentHeader, ?string $currentPreview): ?array
+    public function renderPreview(array|Record|RawRecord $row, ?string $header, ?string $currentPreview): ?array
     {
+        if ($row instanceof Record) {
+            $row = $row->getRawRecord()->toArray();
+        } elseif ($row instanceof RawRecord) {
+            $row = $row->toArray();
+        }
         $fieldName = null;
-        $headerContent = $currentHeader;
+        $headerContent = $header;
         $drawItem = true;
         $itemContent = $currentPreview;
         $preview = [$headerContent, $itemContent, $drawItem];
@@ -52,34 +58,20 @@ class PreviewRenderer
             [$previewHeader, $previewContent, $continueDrawing] = $provider->getPreview($row);
             if (!empty($previewContent)) {
                 $drawItem = false;
-                switch ($previewOptionValue) {
-                    case PreviewOption::MODE_PREPEND:
-                        $itemContent = $anchorLink . $previewContent . $currentPreview;
-                        break;
-                    case PreviewOption::MODE_APPEND:
-                        $itemContent = $anchorLink . $currentPreview . $previewContent;
-                        break;
-                    case PreviewOption::MODE_REPLACE:
-                    default:
-                        $itemContent = $anchorLink . $previewContent;
-                        break;
-                }
+                $itemContent = match ($previewOptionValue) {
+                    PreviewOption::MODE_PREPEND => $anchorLink . $previewContent . $currentPreview,
+                    PreviewOption::MODE_APPEND => $anchorLink . $currentPreview . $previewContent,
+                    default => $anchorLink . $previewContent,
+                };
             }
 
             if (!empty($previewHeader)) {
                 $drawItem = false;
-                switch ($previewOptionValue) {
-                    case PreviewOption::MODE_PREPEND:
-                        $headerContent = $previewHeader . (!empty($currentHeader) ? ': ' . $currentHeader : '');
-                        break;
-                    case PreviewOption::MODE_APPEND:
-                        $headerContent = (!empty($currentHeader) ? $currentHeader . ': ' : '') . $previewHeader;
-                        break;
-                    case PreviewOption::MODE_REPLACE:
-                    default:
-                        $headerContent = $previewHeader;
-                        break;
-                }
+                $headerContent = match ($previewOptionValue) {
+                    PreviewOption::MODE_PREPEND => $previewHeader . (!empty($header) ? ': ' . $header : ''),
+                    PreviewOption::MODE_APPEND => (!empty($header) ? $header . ': ' : '') . $previewHeader,
+                    default => $previewHeader,
+                };
             }
 
             $preview = [$headerContent, $itemContent, $drawItem];
@@ -98,11 +90,6 @@ class PreviewRenderer
     {
         if (!static::$assetsIncluded) {
             $this->pageRenderer->addCssFile('EXT:flux/Resources/Public/css/flux.css');
-            if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.4', '<')) {
-                // Collapse feature is inoperable on v12 and above.
-                $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Flux/FluxCollapse');
-            }
-
             static::$assetsIncluded = true;
         }
     }

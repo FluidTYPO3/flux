@@ -12,7 +12,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration\HookSubscribers;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
-use FluidTYPO3\Flux\Integration\FormEngine\SelectOption;
 use FluidTYPO3\Flux\Integration\HookSubscribers\ColumnPositionItems;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ProviderResolver;
@@ -87,14 +86,14 @@ class ColumnPositionItemsTest extends AbstractTestCase
         $parameters = ['row' => ['colPos' => 103]];
         $expected = $parameters;
         $expected['items'] = [
-            (new SelectOption(
-                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent',
-                '--div--'
-            ))->toArray(),
-            (new SelectOption(
-                'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..columns.col',
-                103
-            ))->toArray(),
+            [
+                'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux.backendLayout.columnsInParent',
+                'value' => '--div--',
+            ],
+            [
+                'label' => 'LLL:EXT:flux/Resources/Private/Language/locallang.xlf:flux..columns.col',
+                'value' => 103,
+            ],
         ];
 
         $subject->colPosListItemProcFunc($parameters);

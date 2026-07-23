@@ -11,11 +11,10 @@ namespace FluidTYPO3\Flux\Tests\Unit\Integration;
 use FluidTYPO3\Flux\Integration\MultipleItemsProcFunc;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
-use TYPO3\CMS\Core\DataHandling\ItemProcessingService;
 
 class MultipleItemsProcFuncTest extends AbstractTestCase
 {
-    private static $executed = false;
+    private static bool $executed = false;
 
     public function testRegistersFunction(): void
     {
@@ -44,14 +43,10 @@ class MultipleItemsProcFuncTest extends AbstractTestCase
     public function testExecutesFunctionWithItemProcessingService(): void
     {
         static::$executed = false;
-        if (!class_exists(ItemProcessingService::class)) {
-            $this->markTestSkipped('Skippped, class ' . ItemProcessingService::class . ' does not exist');
-        }
+
         MultipleItemsProcFunc::register('table', 'field', static::class . '->dummyFunction');
         $parameters = ['table' => 'table', 'field' => 'field'];
-        $itemProcessingServiceProvider = $this->getMockBuilder(ItemProcessingService::class)
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $itemProcessingServiceProvider = $this->createMock(FormDataProviderInterface::class);
         (new MultipleItemsProcFunc())->execute($parameters, $itemProcessingServiceProvider);
                                                
         self::assertTrue(static::$executed);

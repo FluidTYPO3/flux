@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Backend;
 
 /*
@@ -28,6 +27,11 @@ class BackendLayoutDataProvider implements DataProviderInterface
     {
         $this->providerResolver = $providerResolver;
         $this->recordService = $recordService;
+    }
+
+    public function getIdentifier(): string
+    {
+        return 'flux';
     }
 
     public function addBackendLayouts(

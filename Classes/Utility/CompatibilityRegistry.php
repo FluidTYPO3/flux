@@ -1,6 +1,12 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Utility;
+
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
@@ -157,7 +163,7 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
  */
 abstract class CompatibilityRegistry
 {
-    const VERSION_DEFAULT = 'default';
+    public const string VERSION_DEFAULT = 'default';
 
     protected static array $registry = [];
     protected static array $featureFlags = [];

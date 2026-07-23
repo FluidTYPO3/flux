@@ -11,14 +11,7 @@ on:
 jobs:
   phpcs:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    name: "CodeSniffer, PHP ${{ matrix.php }} TYPO3 ${{ matrix.typo3 }}"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - php: "8.1"
-            typo3: "^11.5"
+    name: "CodeSniffer, PHP 8.5 TYPO3 14.3"
 
     runs-on: ubuntu-latest
 
@@ -29,13 +22,13 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: 8.5
           extensions: mbstring, json
           ini-values: date.timezone="Europe/Copenhagen", opcache.fast_shutdown=0
           tools: composer:v2.2
 
       - name: Select TYPO3 version
-        run: "composer require typo3/cms-core:${{ matrix.typo3 }} -W --no-update"
+        run: "composer require typo3/cms-core:^14.3 -W --no-update"
 
       - name: Composer install
         uses: ramsey/composer-install@v2
@@ -51,20 +44,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: "7.4"
-            typo3: "^10.4"
-          - php: "8.0"
-            typo3: "^11.5"
-          - php: "8.1"
-            typo3: "^11.5"
-          - php: "8.2"
-            typo3: "^11.5"
-          - php: "8.2"
-            typo3: "^12.4"
           - php: "8.3"
             typo3: "^12.4"
           - php: "8.3"
             typo3: "^13.4"
+          - php: "8.4"
+            typo3: "^14.3"
+          - php: "8.5"
+            typo3: "^14.3"
 
     runs-on: ubuntu-latest
 
@@ -97,20 +84,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: "7.4"
-            typo3: "^10.4"
-          - php: "8.0"
-            typo3: "^11.5"
-          - php: "8.1"
-            typo3: "^11.5"
-          - php: "8.2"
-            typo3: "^11.5"
-          - php: "8.2"
-            typo3: "^12.4"
           - php: "8.3"
             typo3: "^12.4"
           - php: "8.3"
             typo3: "^13.4"
+          - php: "8.4"
+            typo3: "^14.3"
+          - php: "8.5"
+            typo3: "^14.3"
 
     runs-on: ubuntu-latest
 

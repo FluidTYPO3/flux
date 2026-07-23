@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -10,6 +9,10 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  */
 
 use FluidTYPO3\Flux\Form\Field\ControllerActions;
+use FluidTYPO3\Flux\Utility\RequestResolver;
+use FluidTYPO3\Flux\Utility\VersionUtility;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
@@ -172,19 +175,20 @@ class ControllerActionsViewHelper extends SelectViewHelper
             $actions = iterator_to_array($actions);
         }
         $request = null;
-        if (method_exists($renderingContext, 'getControllerContext')) {
-            $controllerContext = $renderingContext->getControllerContext();
-            $request = $controllerContext->getRequest();
+        if (VersionUtility::isCoreAtLeast13()) {
+            $request = $renderingContext->getAttribute(ServerRequestInterface::class);
         } elseif (method_exists($renderingContext, 'getRequest')) {
             $request = $renderingContext->getRequest();
+        } else {
+            $request = RequestResolver::getRequest();
         }
         if (empty($extensionName)) {
             $extensionName = static::getFullExtensionNameFromRequest($request);
         }
         if (empty($pluginName)) {
-            $pluginName = $request->getPluginName();
+            $pluginName = static::getPluginNameFromRequest($request);
         }
-        if (empty($extensionName) && empty($pluginName) && count($actions) < 1) {
+        if ((empty($extensionName) || empty($pluginName)) && count($actions) < 1) {
             throw new \RuntimeException(
                 'Either "actions", or both "extensionName" and "pluginName" must be used on ' .
                 'flux:field.controllerActions. None were found and none were detected from the Request.',
@@ -198,7 +202,6 @@ class ControllerActionsViewHelper extends SelectViewHelper
         );
         $component->setItems($arguments['items']);
         $component->setControllerExtensionName($extensionName);
-        $component->setPluginName($pluginName);
         $component->setControllerName($controllerName);
         $component->setActions($actions);
         $component->setExcludeActions($arguments['excludeActions']);
@@ -206,16 +209,26 @@ class ControllerActionsViewHelper extends SelectViewHelper
         $component->setDisableLocalLanguageLabels($arguments['disableLocalLanguageLabels']);
         $component->setLocalLanguageFileRelativePath($arguments['localLanguageFileRelativePath']);
         $component->setSubActions($arguments['subActions']);
+        if (!empty($pluginName)) {
+            $component->setPluginName($pluginName);
+        }
         if (!empty($separator)) {
             $component->setSeparator($separator);
         }
         return $component;
     }
 
-    protected static function getFullExtensionNameFromRequest(Request $request): string
+    protected static function getPluginNameFromRequest(Request|ServerRequestInterface $request): ?string
     {
-        $vendorName = method_exists($request, 'getControllerVendorName') ? $request->getControllerVendorName() : null;
-        $extensionName = (string) $request->getControllerExtensionName();
-        return $vendorName ? $vendorName . '.' . $extensionName : $extensionName;
+        /** @var ExtbaseRequestParameters $extbaseParameters */
+        $extbaseParameters = $request->getAttribute('extbase');
+        return $extbaseParameters->getPluginName();
+    }
+
+    protected static function getFullExtensionNameFromRequest(Request|ServerRequestInterface $request): string
+    {
+        /** @var ExtbaseRequestParameters $extbaseParameters */
+        $extbaseParameters = $request->getAttribute('extbase');
+        return $extbaseParameters->getControllerExtensionName();
     }
 }

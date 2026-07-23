@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Provider;
 
 /*
@@ -21,6 +20,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
+use FluidTYPO3\Flux\Utility\VersionUtility;
 use FluidTYPO3\Flux\ViewHelpers\FormViewHelper;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
@@ -29,14 +29,13 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3Fluid\Fluid\View\Exception\InvalidTemplateResourceException;
 use TYPO3Fluid\Fluid\View\ViewInterface;
 
 class AbstractProvider implements ProviderInterface
 {
-    const FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
+    public const string FORM_CLASS_PATTERN = '%s\\Form\\%s\\%sForm';
     const CONTENT_OBJECT_TYPE_LIST = 'list';
 
     /**
@@ -343,7 +342,7 @@ class AbstractProvider implements ProviderInterface
                 FormOption::TEMPLATE_FILE,
                 $this->getTemplatePathAndFilename($row, $forField)
             );
-            $cachePersistent = (boolean) $variables['form']->getOption(FormOption::STATIC);
+            $cachePersistent = (bool) $variables['form']->getOption(FormOption::STATIC);
         }
 
         $this->cacheService->setInCaches(
@@ -571,7 +570,7 @@ class AbstractProvider implements ProviderInterface
                 } else {
                     $wizardFieldName = $sheetFieldName . $wizardTagName;
                     if (isset($data[$sheetName]['lDEF'][$wizardFieldName]['vDEF'])) {
-                        if ((boolean) $data[$sheetName]['lDEF'][$wizardFieldName]['vDEF']) {
+                        if ((bool) $data[$sheetName]['lDEF'][$wizardFieldName]['vDEF']) {
                             $fieldNames[] = $sheetFieldName;
                         }
                     }
@@ -845,7 +844,7 @@ class AbstractProvider implements ProviderInterface
      */
     protected function dispatchFlashMessageForException(\Throwable $error): void
     {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '13.4', '>=')) {
+        if (VersionUtility::isCoreAtLeast13()) {
             $level = ContextualFeedbackSeverity::ERROR;
         } else {
             $level = FlashMessage::ERROR;

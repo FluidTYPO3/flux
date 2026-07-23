@@ -41,7 +41,7 @@ code
 ----
 
 :aspect:`DataType`
-   string
+   mixed
 
 :aspect:`Required`
    false

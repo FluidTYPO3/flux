@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Transformation\Transformer;
 
 /*
@@ -67,7 +66,7 @@ class FileTransformer implements DataTransformerInterface
             $fieldName = $form->getOption(FormOption::RECORD_FIELD) . '.' . $fieldName;
         }
 
-        $references = $this->fetchFileReferences($table, $fieldName, (integer) $record['uid']);
+        $references = $this->fetchFileReferences($table, $fieldName, (int) $record['uid']);
 
         switch ($type) {
             case 'file':

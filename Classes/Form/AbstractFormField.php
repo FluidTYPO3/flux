@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form;
 
 /*
@@ -12,7 +11,6 @@ namespace FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Form\Container\Section;
 use FluidTYPO3\Flux\UserFunction\ClearValueWizard;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 abstract class AbstractFormField extends AbstractFormComponent implements FieldInterface
 {
@@ -134,9 +132,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
             'transform' => $this->getTransform(),
             'default' => $this->getDefault(),
         ];
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')
-            && $this->getRequired()
-        ) {
+        if ($this->getRequired()) {
             $config['required'] = $this->getRequired();
         }
         return $config;
@@ -239,22 +235,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     public function getValidate(): ?string
     {
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
-            return $this->validate;
-        }
-
-        if (!$this->getRequired()) {
-            $validate = $this->validate;
-        } else {
-            if (empty($this->validate)) {
-                $validate = 'required';
-            } else {
-                $validators = GeneralUtility::trimExplode(',', $this->validate);
-                array_push($validators, 'required');
-                $validate = implode(',', $validators);
-            }
-        }
-        return $validate;
+        return $this->validate;
     }
 
     public function getPosition(): ?string
@@ -270,7 +251,7 @@ abstract class AbstractFormField extends AbstractFormComponent implements FieldI
 
     public function setClearable(bool $clearable): self
     {
-        $this->clearable = (boolean) $clearable;
+        $this->clearable = (bool) $clearable;
         return $this;
     }
 

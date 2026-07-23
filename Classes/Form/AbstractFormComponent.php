@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form;
 
 /*
@@ -27,8 +26,8 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 abstract class AbstractFormComponent implements FormInterface
 {
-    const NAMESPACE_FIELD = 'FluidTYPO3\\Flux\\Form\\Field';
-    const NAMESPACE_CONTAINER = 'FluidTYPO3\\Flux\\Form\\Container';
+    public const string NAMESPACE_FIELD = 'FluidTYPO3\\Flux\\Form\\Field';
+    public const string NAMESPACE_CONTAINER = 'FluidTYPO3\\Flux\\Form\\Container';
 
     protected ?string $name = null;
     protected bool $enabled = true;
@@ -151,7 +150,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     public function setEnabled(bool $enabled): self
     {
-        $this->enabled = (boolean) $enabled;
+        $this->enabled = (bool) $enabled;
         return $this;
     }
 
@@ -268,7 +267,7 @@ abstract class AbstractFormComponent implements FormInterface
 
     public function setDisableLocalLanguageLabels(bool $disableLocalLanguageLabels): self
     {
-        $this->disableLocalLanguageLabels = (boolean) $disableLocalLanguageLabels;
+        $this->disableLocalLanguageLabels = (bool) $disableLocalLanguageLabels;
         return $this;
     }
 
@@ -400,7 +399,7 @@ abstract class AbstractFormComponent implements FormInterface
                             $propertyValue = (bool) $propertyValue;
                             break;
                         case 'int':
-                            $propertyValue = (integer) $propertyValue;
+                            $propertyValue = (int) $propertyValue;
                             break;
                         case 'array':
                             $propertyValue = is_array($propertyValue)

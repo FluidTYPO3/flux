@@ -66,7 +66,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
      */
     public function getPageTemplateConfiguration(int $pageUid, bool $pageUidIsParentUid = false): ?array
     {
-        $pageUid = (integer) $pageUid;
+        $pageUid = (int) $pageUid;
         if (!$pageUid) {
             return null;
         }
@@ -86,7 +86,7 @@ class PageService implements SingletonInterface, LoggerAwareInterface
         // Initialize with possibly-empty values and loop root line
         // to fill values as they are detected.
         foreach ($rootLine as $page) {
-            $rootLinePageUid = (integer) ($page['uid'] ?? 0);
+            $rootLinePageUid = (int) ($page['uid'] ?? 0);
             $mainFieldValue = $page[PageProvider::FIELD_ACTION_MAIN] ?? null;
             $subFieldValue = $page[PageProvider::FIELD_ACTION_SUB] ?? null;
             $resolvedMainTemplateIdentity = is_array($mainFieldValue) ? $mainFieldValue[0] : $mainFieldValue;
@@ -128,14 +128,14 @@ class PageService implements SingletonInterface, LoggerAwareInterface
      */
     public function getPageFlexFormSource(int $pageUid): ?string
     {
-        $pageUid = (integer) $pageUid;
+        $pageUid = (int) $pageUid;
         if (!$pageUid) {
             return null;
         }
         $fieldList = 'uid,pid,t3ver_oid,tx_fed_page_flexform';
         $page = $this->workspacesAwareRecordService->getSingle('pages', $fieldList, $pageUid);
-        while ($page !== null && 0 !== (integer) $page['uid'] && empty($page['tx_fed_page_flexform'])) {
-            $resolveParentPageUid = (integer) (0 > $page['pid'] ? $page['t3ver_oid'] : $page['pid']);
+        while ($page !== null && 0 !== (int) $page['uid'] && empty($page['tx_fed_page_flexform'])) {
+            $resolveParentPageUid = (int) (0 > $page['pid'] ? $page['t3ver_oid'] : $page['pid']);
             $page = $this->workspacesAwareRecordService->getSingle('pages', $fieldList, $resolveParentPageUid);
         }
         return $page['tx_fed_page_flexform'] ?? null;

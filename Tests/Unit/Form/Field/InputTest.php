@@ -8,8 +8,6 @@ namespace FluidTYPO3\Flux\Tests\Unit\Form\Field;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-
 class InputTest extends AbstractFieldTest
 {
     protected array $chainProperties = [
@@ -31,12 +29,8 @@ class InputTest extends AbstractFieldTest
     {
         $instance = $this->canChainAllChainableSetters();
         $instance->setRequired(true);
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
-            $this->assertEquals('trim,int', $instance->getValidate());
-            $this->assertTrue($instance->build()['config']['required']);
-        } else {
-            $this->assertEquals('trim,int,required', $instance->getValidate());
-        }
+        $this->assertEquals('trim,int', $instance->getValidate());
+        $this->assertTrue($instance->build()['config']['required']);
     }
 
     /**
@@ -47,11 +41,7 @@ class InputTest extends AbstractFieldTest
         $instance = $this->canChainAllChainableSetters();
         $instance->setValidate(null);
         $instance->setRequired(true);
-        if (version_compare(VersionNumberUtility::getCurrentTypo3Version(), '12.0', '>=')) {
-            $this->assertEquals('', $instance->getValidate());
-            $this->assertTrue($instance->build()['config']['required']);
-        } else {
-            $this->assertEquals('required', $instance->getValidate());
-        }
+        $this->assertEquals('', $instance->getValidate());
+        $this->assertTrue($instance->build()['config']['required']);
     }
 }

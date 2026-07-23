@@ -1,11 +1,17 @@
 <?php
 namespace FluidTYPO3\Flux\Integration\FormEngine;
 
+/*
+ * This file is part of the FluidTYPO3/Flux project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
 use FluidTYPO3\Flux\Content\ContentTypeManager;
 use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Service\PageService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
-use TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class SiteConfigurationProviderItems
@@ -19,7 +25,7 @@ class SiteConfigurationProviderItems
         $this->pageService = $pageService;
     }
 
-    public function processContentTypeItems(array $tca, TcaSelectItems $bar): array
+    public function processContentTypeItems(array $tca): array
     {
         foreach ($this->contentTypeManager->fetchContentTypeNames() as $contentTypeName) {
             $tca['items'][] = [
@@ -30,7 +36,7 @@ class SiteConfigurationProviderItems
         return $tca;
     }
 
-    public function processPageTemplateItems(array $tca, TcaSelectItems $bar): array
+    public function processPageTemplateItems(array $tca): array
     {
         foreach ($this->pageService->getAvailablePageTemplateFiles() as $extensionName => $templateGroup) {
             foreach ($templateGroup as $form) {

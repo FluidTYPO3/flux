@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Grid;
 
 /*
@@ -83,10 +82,10 @@ class ColumnViewHelper extends AbstractFormViewHelper
         $column->setExtensionName(
             static::getExtensionNameFromRenderingContextOrArguments($renderingContext, $arguments)
         );
-        $column->setColspan((integer) ($arguments['colspan'] ?? 1));
-        $column->setRowspan((integer) ($arguments['rowspan'] ?? 1));
+        $column->setColspan((int) ($arguments['colspan'] ?? 1));
+        $column->setRowspan((int) ($arguments['rowspan'] ?? 1));
         $column->setStyle($arguments['style']);
-        $column->setColumnPosition((integer) $arguments['colPos']);
+        $column->setColumnPosition((int) $arguments['colPos']);
         $column->setVariables($arguments['variables']);
         return $column;
     }

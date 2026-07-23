@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -62,13 +61,6 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
             'showPossibleLocalizationRecords',
             'boolean',
             'Show unlocalized records which are in the original language, but not yet localized.',
-            false,
-            false
-        );
-        $this->registerArgument(
-            'showRemovedLocalizationRecords',
-            'boolean',
-            'Show records which were once localized but do not exist in the original language anymore.',
             false,
             false
         );
@@ -141,7 +133,6 @@ abstract class AbstractInlineFieldViewHelper extends AbstractRelationFieldViewHe
         $component->setUseCombination($arguments['useCombination']);
         $component->setUseSortable($arguments['useSortable']);
         $component->setShowPossibleLocalizationRecords($arguments['showPossibleLocalizationRecords']);
-        $component->setShowRemovedLocalizationRecords($arguments['showRemovedLocalizationRecords']);
         $component->setShowAllLocalizationLink($arguments['showAllLocalizationLink']);
         $component->setShowSynchronizationLink($arguments['showSynchronizationLink']);
         if (is_array($arguments['enabledControls'])) {

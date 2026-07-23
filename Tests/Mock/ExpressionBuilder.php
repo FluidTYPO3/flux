@@ -112,37 +112,37 @@ class ExpressionBuilder extends \TYPO3\CMS\Core\Database\Query\Expression\Expres
         return __FUNCTION__;
     }
 
-    public function min(string $fieldName, string $alias = null): string
+    public function min(string $fieldName, ?string $alias = null): string
     {
         return __FUNCTION__;
     }
 
-    public function max(string $fieldName, string $alias = null): string
+    public function max(string $fieldName, ?string $alias = null): string
     {
         return __FUNCTION__;
     }
 
-    public function avg(string $fieldName, string $alias = null): string
+    public function avg(string $fieldName, ?string $alias = null): string
     {
         return __FUNCTION__;
     }
 
-    public function sum(string $fieldName, string $alias = null): string
+    public function sum(string $fieldName, ?string $alias = null): string
     {
         return __FUNCTION__;
     }
 
-    public function count(string $fieldName, string $alias = null): string
+    public function count(string $fieldName, ?string $alias = null): string
     {
         return __FUNCTION__;
     }
 
-    public function length(string $fieldName, string $alias = null): string
+    public function length(string $fieldName, ?string $alias = null): string
     {
         return __FUNCTION__;
     }
 
-    protected function calculation(string $aggregateName, string $fieldName, string $alias = null): string
+    protected function calculation(string $aggregateName, string $fieldName, ?string $alias = null): string
     {
         return __FUNCTION__;
     }

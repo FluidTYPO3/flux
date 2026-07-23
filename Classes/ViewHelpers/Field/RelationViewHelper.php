@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\ViewHelpers\Field;
 
 /*
@@ -16,7 +15,7 @@ namespace FluidTYPO3\Flux\ViewHelpers\Field;
  * in a list on the right side,
  * and all selected items in a list on the left side.
  *
- * Related: ``MultiRelationViewHelper``.
+ * Related: ``MultiRelationViewHelper``
  *
  * ### Example: Select a content element
  *

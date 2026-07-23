@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Form\Field\Inline;
 
 /*
@@ -14,17 +13,17 @@ use FluidTYPO3\Flux\Form\AbstractInlineFormField;
 
 class Fal extends AbstractInlineFormField
 {
-    const DEFAULT_TABLE = 'sys_file_reference';
-    const DEFAULT_FOREIGN_FIELD = 'uid_foreign';
-    const DEFAULT_FOREIGN_TABLE_FIELD = 'tablenames';
-    const DEFAULT_FOREIGN_LABEL = 'uid_local';
-    const DEFAULT_FOREIGN_SELECTOR = 'uid_local';
-    const DEFAULT_FOREIGN_SORTBY = 'sorting_foreign';
-    const DEFAULT_USE_SORTABLE = true;
-    const DEFAULT_LEVEL_LINKS_POSITION = 'both';
-    const DEFAULT_LOCALIZATION_MODE = 'select';
-    const DEFAULT_NEW_RECORD_LINK_ADD_TITLE = true;
-    const DEFAULT_CREATE_NEW_RELATION_LINK_TITLE = 'LLL:EXT:lang/locallang_core.xlf:cm.createNewRelation';
+    public const string DEFAULT_TABLE = 'sys_file_reference';
+    public const string DEFAULT_FOREIGN_FIELD = 'uid_foreign';
+    public const string DEFAULT_FOREIGN_TABLE_FIELD = 'tablenames';
+    public const string DEFAULT_FOREIGN_LABEL = 'uid_local';
+    public const string DEFAULT_FOREIGN_SELECTOR = 'uid_local';
+    public const string DEFAULT_FOREIGN_SORTBY = 'sorting_foreign';
+    public const bool DEFAULT_USE_SORTABLE = true;
+    public const string DEFAULT_LEVEL_LINKS_POSITION = 'both';
+    public const string DEFAULT_LOCALIZATION_MODE = 'select';
+    public const bool DEFAULT_NEW_RECORD_LINK_ADD_TITLE = true;
+    public const string DEFAULT_CREATE_NEW_RELATION_LINK_TITLE = 'LLL:EXT:lang/locallang_core.xlf:cm.createNewRelation';
 
     protected string $table = self::DEFAULT_TABLE;
 

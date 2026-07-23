@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace FluidTYPO3\Flux\Attribute;
 
 /*
@@ -12,7 +11,7 @@ namespace FluidTYPO3\Flux\Attribute;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class DataTransformer
 {
-    public const TAG_NAME = 'flux.datatransformer';
+    public const string TAG_NAME = 'flux.datatransformer';
     public string $identifier;
 
     public function __construct(
