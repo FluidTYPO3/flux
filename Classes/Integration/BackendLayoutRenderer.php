@@ -27,7 +27,7 @@ class BackendLayoutRenderer
 
     private \TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer $backendLayoutRenderer;
 
-    public function __construct(BackendViewFactory $backendViewFactory, RecordFactory $recordFactory)
+    public function __construct(BackendViewFactory $backendViewFactory, ?RecordFactory $recordFactory = null)
     {
         $this->backendLayoutRenderer = new \TYPO3\CMS\Backend\View\Drawing\BackendLayoutRenderer(
             $backendViewFactory,

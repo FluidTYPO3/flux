@@ -61,11 +61,11 @@ parameters:
             count: 1
             path: Classes/Service/RecordService.php
         -
-            message: "#^Call to function property_exists\\(\\) with \\$this\\(FluidTYPO3\\\\Flux\\\\Integration\\\\BackendLayoutRenderer\\) and 'context' will always evaluate to false\\.$#"
-            count: 2
+            message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer constructor invoked with 2 parameters, 1 required\\.$#"
+            count: 1
             path: Classes/Integration/BackendLayoutRenderer.php
         -
-            message: "#^Class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer constructor invoked with 2 parameters, 1 required\\.$#"
+            message: "#^Parameter \\#2 \\$recordFactory of class TYPO3\\\\CMS\\\\Backend\\\\View\\\\Drawing\\\\BackendLayoutRenderer constructor expects TYPO3\\\\CMS\\\\Core\\\\Domain\\\\RecordFactory, TYPO3\\\\CMS\\\\Core\\\\Domain\\\\RecordFactory\\|null given\\.$#"
             count: 1
             path: Classes/Integration/BackendLayoutRenderer.php
         -
