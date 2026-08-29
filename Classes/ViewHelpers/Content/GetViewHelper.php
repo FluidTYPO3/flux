@@ -127,6 +127,7 @@ class GetViewHelper extends AbstractViewHelper
             if ($placeholder) {
                 // Use the move placeholder if one exists, ensuring that "pid" and "tx_flux_parent" values are taken
                 // from the workspace-only placeholder.
+                $liveRecord = $record;
                 /** @var array $record */
                 $record = $placeholder;
             }
@@ -136,6 +137,9 @@ class GetViewHelper extends AbstractViewHelper
         $provider = $renderingContext->getViewHelperVariableContainer()->get(FormViewHelper::class, 'provider');
         $grid = $provider->getGrid($record);
         $rows = static::getContentRecords($arguments, $record, $grid);
+        if (isset($liveRecord)) {
+            array_push($rows, ...static::getContentRecords($arguments, $liveRecord, $grid));
+        }
 
         $elements = false === (bool) $arguments['render'] ? $rows : static::getRenderedRecords($rows);
         if (empty($arguments['as'])) {
