@@ -234,6 +234,8 @@ class ContentTypeBuilder
                 $form->getLabel(),
                 $contentType,
                 $icon,
+                $form->getOption(FormOption::GROUP) ?? 'flux',
+                $form->getDescription(),
             ],
             'CType',
             $providerExtensionName

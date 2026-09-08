@@ -9,6 +9,7 @@ namespace FluidTYPO3\Flux\Tests\Unit\Builder;
  */
 
 use FluidTYPO3\Flux\Builder\ContentTypeBuilder;
+use FluidTYPO3\Flux\Enum\FormOption;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
@@ -61,7 +62,18 @@ class ContentTypeBuilderTest extends AbstractTestCase
         $this->assertNotEmpty($GLOBALS['TCA']['tt_content']['types']['foobar']);
     }
 
-    public function testRegisterContentType(): void
+    public static function contentTypeGroups(): array
+    {
+        return [
+            'default group' => [null, 'flux'],
+            'configured group' => ['custom', 'custom'],
+        ];
+    }
+
+    /**
+     * @dataProvider contentTypeGroups
+     */
+    public function testRegisterContentType(?string $group, string $expectedGroup): void
     {
         $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] = [];
 
@@ -70,6 +82,10 @@ class ContentTypeBuilderTest extends AbstractTestCase
             ->getMock();
         $subject->method('createIcon')->willReturn('icon');
         $form = $this->getMockBuilder(Form::class)->setMethods(['dummy'])->getMock();
+        $form->setDescription('Describes the content element in the creation wizard');
+        if ($group !== null) {
+            $form->setOption(FormOption::GROUP, $group);
+        }
         $provider = $this->getMockBuilder(ProviderInterface::class)->getMockForAbstractClass();
         $provider->expects($this->once())->method('getForm')->willReturn($form);
 
@@ -78,7 +94,14 @@ class ContentTypeBuilderTest extends AbstractTestCase
             'foobarextension',
             $provider
         );
-        self::assertTrue(true);
+        self::assertSame(
+            'Describes the content element in the creation wizard',
+            $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'][0]['description']
+        );
+        self::assertSame(
+            $expectedGroup,
+            $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'][0]['group']
+        );
     }
 
     public function testConfigureContentTypeFromTemplateFile(): void
