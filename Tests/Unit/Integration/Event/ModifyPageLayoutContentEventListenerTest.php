@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Integration\Event\ModifyPageLayoutContentEventListener;
 use FluidTYPO3\Flux\Provider\PageProvider;
 use FluidTYPO3\Flux\Tests\Unit\AbstractTestCase;
+use TYPO3\CMS\Backend\Context\PageContext;
 use TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -31,11 +32,12 @@ class ModifyPageLayoutContentEventListenerTest extends AbstractTestCase
         parent::setUp();
 
         $moduleTemplateReflection = new \ReflectionClass(ModuleTemplate::class);
-        $moduleTemplateReflection->newInstanceWithoutConstructor();
+        $pageContextReflection = new \ReflectionClass(PageContext::class);
 
         $this->event = new ModifyPageLayoutContentEvent(
             $this->getMockBuilder(ServerRequest::class)->disableOriginalConstructor()->getMock(),
-            $moduleTemplateReflection->newInstanceWithoutConstructor()
+            $moduleTemplateReflection->newInstanceWithoutConstructor(),
+            $pageContextReflection->newInstanceWithoutConstructor()
         );
         $this->pageProvider = $this->getMockBuilder(PageProvider::class)
             ->onlyMethods(['getForm', 'getPreview'])
